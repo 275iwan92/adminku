@@ -115,7 +115,7 @@
 
 <h3 id="menu">Menu dan tab</h3>
 <ul class="g-list">
-    <li>Menu ada di panel kiri, dikelompokkan: <b>Data Master</b>, <b>Stok</b> (membuka dua kelompok: <b>Transaksi</b> dan <b>Laporan</b>), dan <b>Keamanan</b> (menempel di bawah). Hanya menu yang boleh Anda buka yang tampil.</li>
+    <li>Menu ada di panel kiri, dikelompokkan: <b>Data Master</b>, <b>Transaksi</b>, <b>Laporan</b>, dan <b>Keamanan</b> (menempel di bawah). Hanya menu yang boleh Anda buka yang tampil.</li>
     <li>Setiap menu yang Anda pilih terbuka sebagai <b>tab</b> kerja. Anda bisa membuka beberapa tab sekaligus dan berpindah di antaranya tanpa kehilangan isian.</li>
     <li>Klik nama atau foto Anda untuk membuka <b>menu profil</b>: <b>Notifikasi</b>, <b>Edit profil</b>, <b>Bantuan &amp; dukungan</b> (panduan ini), <b>Bahasa</b>, <b>Ubah password</b>, dan <b>Keluar aplikasi</b>.</li>
     <li>Tombol <b>F1</b> di layar mana pun membuka panduan ini.</li>
