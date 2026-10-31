@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['doc_no', 'count_date', 'scope_type', 'scope_value', 'status', 'blind', 'lock_transactions', 'threshold_pct', 'cutoff_at', 'created_by', 'submitted_by', 'submitted_at', 'approved_by', 'approved_at', 'adjustment_document_id', 'unlocked_by', 'unlocked_at', 'locked_by', 'locked_at', 'cancelled_by', 'cancelled_at', 'review_note', 'note'])]
 class StockCount extends Model
 {
+    protected $table = 'i_count';
+
     public const STATUS = ['counting' => 'Sedang dihitung', 'review' => 'Tinjau', 'done' => 'Selesai', 'cancelled' => 'Dibatalkan'];
 
     public const SCOPE = ['all' => 'Semua barang', 'category' => 'Per Kategori', 'location' => 'Per Lokasi'];

@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Laporan Kedaluwarsa: barang yang masih ada stoknya dan sudah kedaluwarsa / akan kedaluwarsa dalam N hari (bawaan 30), dari yang paling dulu.
- Sumber hulu  : ReportController@expiry (items.expiry_date + stock_qty). Nilai stok hanya untuk Supervisor.
+ Sumber hulu  : ReportController@expiry (i_batch.expiry_date + stock_qty). Nilai stok hanya untuk Supervisor.
  Input        : sup, days, categories, rows.
  Output       : filter (dalam berapa hari, kategori) + x-dl::report.
  Dipakai oleh : route reports.expiry (menu Laporan > Laporan Kedaluwarsa), KPI beranda.
@@ -39,5 +39,5 @@
             $sup ? ['key' => 'value', 'label' => 'Stock Value', 'type' => 'money', 'sum' => true] : null,
             ['key' => 'status', 'label' => 'Status', 'type' => 'badge', 'tones' => ['KEDALUWARSA' => 'danger', 'HAMPIR' => 'warn'], 'rowTones' => ['KEDALUWARSA' => 'danger']],
         ]))"
-        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="items" />
+        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="i_batch" />
 @endsection

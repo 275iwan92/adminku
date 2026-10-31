@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['product_id', 'ordered_at', 'ref_no', 'created_by', 'closed_at', 'receiving_id', 'supplier_id', 'qty', 'note', 'received_qty', 'first_received_at', 'close_reason'])]
 class ReorderOrder extends Model
 {
+    protected $table = 'i_reorder_order';
+
     protected function casts(): array
     {
         return ['ordered_at' => 'date', 'closed_at' => 'datetime', 'qty' => 'float', 'received_qty' => 'float', 'first_received_at' => 'datetime'];
@@ -40,9 +42,9 @@ class ReorderOrder extends Model
     public function receivedSince(): float
     {
         return round((float) StockMovement::query()
-            ->join('items', 'items.id', '=', 'rm_stockcard.item_id')
+            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.item_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
-            ->where('items.product_id', $this->product_id)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
+            ->where('i_batch.product_id', $this->product_id)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])->where('rm_stockcard.moved_at', '>=', $this->ordered_at->copy()->startOfDay())
             ->sum('rm_stockcard.qty'), 3);
     }

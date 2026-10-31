@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// Satuan barang. Item menyimpan kode satuan di items.unit (foreign key ke m_unit.code); kode tidak diubah setelah disimpan.
+// Satuan barang. Item menyimpan kode satuan di i_batch.unit (foreign key ke m_unit.code); kode tidak diubah setelah disimpan.
 #[Fillable(['code', 'name', 'kind', 'is_active'])]
 class Unit extends Model
 {

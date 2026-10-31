@@ -46,11 +46,11 @@ class StockDocumentRequest extends FormRequest
         // Penerimaan / Saldo Awal: produk + tanggal kedaluwarsa (batch dibuat otomatis); batch langsung (item_id) tetap diterima untuk pemakaian lewat kode.
         $byProduct = [
             'lines.*.product_id' => ['nullable', 'required_without:lines.*.item_id', Rule::exists('m_item', 'id')->where('is_active', true)],
-            'lines.*.item_id' => ['nullable', 'required_without:lines.*.product_id', Rule::exists('items', 'id')->where('is_active', true)],
+            'lines.*.item_id' => ['nullable', 'required_without:lines.*.product_id', Rule::exists('i_batch', 'id')->where('is_active', true)],
             'lines.*.expiry_date' => ['nullable', 'date'],
         ];
         // Pengeluaran / Penyesuaian: batch (barang) yang dipilih.
-        $byItem = ['lines.*.item_id' => ['required', 'distinct', Rule::exists('items', 'id')->where('is_active', true)]];
+        $byItem = ['lines.*.item_id' => ['required', 'distinct', Rule::exists('i_batch', 'id')->where('is_active', true)]];
 
         return $common + match ($this->type()) {
             StockDocumentType::Receiving => [

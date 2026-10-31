@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
  * Tujuan       : Jadwal Stok Opname rutin dan pengingatnya di Beranda. Jadwal (Mingguan: hari; Bulanan: tanggal atau akhir bulan; bawaan Bulanan akhir bulan) disimpan di tabel constants (opname.*).
  *                "Berikutnya" dihitung dari tanggal Stok Opname SELESAI terakhir (dibatalkan tidak dihitung), atau dari tanggal jadwal disimpan bila belum pernah ada, atau hari ini bila jadwal belum pernah disimpan.
  *                Status: biasa (masih jauh), peringatan (H-3 sampai hari H), terlambat. Hanya tampilan Beranda; tanpa notifikasi e-mail / WhatsApp.
- * Sumber hulu  : constants, stock_counts.
+ * Sumber hulu  : constants, i_count.
  * Output       : config(), save(), next(), state() untuk Beranda, daftar Stok Opname, dan lencana menu.
  * Dipakai oleh : StockCountController (jadwal), HomeController, Menu.
  * Status       : Aktif.
@@ -117,7 +117,7 @@ final class CountSchedule
     // Tabel opname baru ada sesudah migrasi dijalankan; Beranda dan menu tidak boleh rusak sebelum itu.
     public static function available(): bool
     {
-        return Schema::hasTable('stock_counts');
+        return Schema::hasTable('i_count');
     }
 
     /** Lencana menu: sedang berjalan atau terlambat (null = tanpa lencana). @return array{badge: string, tone: string, title: string}|null tone = badgeTone Layer Shell (partial = kuning, danger = merah) */

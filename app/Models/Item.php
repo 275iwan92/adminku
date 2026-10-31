@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['product_id', 'code', 'name', 'category_id', 'unit', 'location', 'expiry_date', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'is_active'])]
 class Item extends Model
 {
+    protected $table = 'i_batch';
+
     // Peringatan "hampir kedaluwarsa" muncul bila tinggal sekian hari.
     public const EXPIRY_WARN_DAYS = 30;
 

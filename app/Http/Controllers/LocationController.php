@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 
 /* REMARK
  * Tujuan       : Master Lokasi Penyimpanan (rak / gudang) yang dipilih di form Barang. Hanya Supervisor. Lokasi tidak dihapus (barang memakainya); yang tidak dipakai lagi dinonaktifkan.
- * Sumber hulu  : m_location (+ jumlah barang pemakai lewat items.location).
+ * Sumber hulu  : m_location (+ jumlah barang pemakai lewat i_batch.location).
  * Output       : grid Lokasi, form Lokasi.
  * Dipakai oleh : routes/web.php (locations.*, grup supervisor).
  * Status       : Aktif.

@@ -399,9 +399,9 @@ class StockCountEngineTest extends TestCase
 
         $done = false;
         DB::listen(function ($query) use (&$done, $stem) {
-            if (! $done && str_starts_with($query->sql, 'select') && str_contains($query->sql, '"stock_counts"') && str_contains($query->sql, 'doc_no')) {
+            if (! $done && str_starts_with($query->sql, 'select') && str_contains($query->sql, '"i_count"') && str_contains($query->sql, 'doc_no')) {
                 $done = true;
-                DB::table('stock_counts')->insert(['doc_no' => $stem.'0002', 'count_date' => today(), 'status' => 'cancelled', 'cutoff_at' => now(), 'created_by' => $this->sup->id, 'created_at' => now(), 'updated_at' => now()]);
+                DB::table('i_count')->insert(['doc_no' => $stem.'0002', 'count_date' => today(), 'status' => 'cancelled', 'cutoff_at' => now(), 'created_by' => $this->sup->id, 'created_at' => now(), 'updated_at' => now()]);
             }
         });
 

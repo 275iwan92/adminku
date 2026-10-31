@@ -10,11 +10,11 @@ use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 
 /* REMARK
- * Tujuan       : Aturan penutupan pesanan ulang (reorder_orders). Pesanan yang punya jumlah ditutup HANYA saat jumlah diterima memenuhi jumlah dipesan; penerimaan sebagian = "diterima sebagian", tetap terbuka.
+ * Tujuan       : Aturan penutupan pesanan ulang (i_reorder_order). Pesanan yang punya jumlah ditutup HANYA saat jumlah diterima memenuhi jumlah dipesan; penerimaan sebagian = "diterima sebagian", tetap terbuka.
  *                Pesanan lama tanpa jumlah: penerimaan pertama sejak tanggal pesan menutupnya (aturan lama). Pesanan yang tak akan dipenuhi penuh ditutup manual (close_reason 'manual'), tidak ikut dialokasikan lagi.
  *                Perkiraan tiba / terlambat memakai kedatangan PERTAMA: setelah ada penerimaan pertama pesanan tidak ditandai terlambat lagi.
- * Sumber hulu  : penerimaan terkonfirmasi yang tidak dibatalkan (rm_stockcard jenis Penerimaan, satuan stok, semua batch produk), reorder_orders.
- * Output       : reorder_orders.received_qty, first_received_at, closed_at, close_reason, receiving_id. reconcile() idempoten: hasilnya hanya bergantung pada data penerimaan, jadi pembatalan lalu reconcile membuka kembali pesanan yang seharusnya terbuka.
+ * Sumber hulu  : penerimaan terkonfirmasi yang tidak dibatalkan (rm_stockcard jenis Penerimaan, satuan stok, semua batch produk), i_reorder_order.
+ * Output       : i_reorder_order.received_qty, first_received_at, closed_at, close_reason, receiving_id. reconcile() idempoten: hasilnya hanya bergantung pada data penerimaan, jadi pembatalan lalu reconcile membuka kembali pesanan yang seharusnya terbuka.
  * Dipakai oleh : StockDocuments (konfirmasi dan pembatalan Penerimaan), ReorderOrderController.
  * Status       : Aktif.
  */
@@ -24,9 +24,9 @@ final class ReorderOrders
     public static function receipts(int $productId)
     {
         return StockMovement::query()
-            ->join('items', 'items.id', '=', 'rm_stockcard.item_id')
+            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.item_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
-            ->where('items.product_id', $productId)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
+            ->where('i_batch.product_id', $productId)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])
             ->orderBy('rm_stockcard.moved_at')->orderBy('rm_stockcard.id')
             ->get(['rm_stockcard.id', 'rm_stockcard.stock_document_id', 'rm_stockcard.moved_at', 'rm_stockcard.qty']);

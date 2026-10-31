@@ -51,8 +51,8 @@ final class ProductUnits
     public static function usage(Product $product): array
     {
         return StockDocumentLine::query()->join('rm_stock', 'rm_stock.id', '=', 'rm_stock_line.stock_document_id')
-            ->join('items', 'items.id', '=', 'rm_stock_line.item_id')
-            ->where('items.product_id', $product->id)->where('rm_stock.type', StockDocumentType::Receiving)->whereNotNull('rm_stock.confirmed_at')
+            ->join('i_batch', 'i_batch.id', '=', 'rm_stock_line.item_id')
+            ->where('i_batch.product_id', $product->id)->where('rm_stock.type', StockDocumentType::Receiving)->whereNotNull('rm_stock.confirmed_at')
             ->whereNotNull('rm_stock_line.entered_unit')
             ->groupBy('rm_stock_line.entered_unit')->selectRaw('rm_stock_line.entered_unit as unit, count(distinct rm_stock.id) as total')
             ->pluck('total', 'unit')->map(fn ($n) => (int) $n)->all();

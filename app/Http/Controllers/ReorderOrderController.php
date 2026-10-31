@@ -14,8 +14,8 @@ use Illuminate\Validation\Rule;
 /* REMARK
  * Tujuan       : Mencatat bahwa barang di bawah Reorder Point sudah dipesan (catatan sederhana, bukan PO): supplier, jumlah dalam satuan stok, tanggal, referensi dan catatan opsional. Pesanan ditutup otomatis bila jumlah yang diterima (Receiving) memenuhi jumlah dipesan, atau ditutup manual bila tidak akan dipenuhi penuh.
  *                Layar Riwayat Pemesanan (modul ORD): semua pesanan dengan semua status (Dipesan, Diterima sebagian, Selesai, Ditutup manual), detail beserta penerimaan yang dialokasikan, dan tombol Tutup Pesanan yang sama dengan di Beranda.
- * Sumber hulu  : form di opening screen (product_id, supplier_id, qty, ordered_at, ref_no, note); popup Tutup Pesanan (alasan opsional); reorder_orders, ReorderOrders::allocations.
- * Output       : reorder_orders; kembali ke opening screen (atau ke detail pesanan bila ditutup dari Riwayat Pemesanan). Tanpa nilai uang.
+ * Sumber hulu  : form di opening screen (product_id, supplier_id, qty, ordered_at, ref_no, note); popup Tutup Pesanan (alasan opsional); i_reorder_order, ReorderOrders::allocations.
+ * Output       : i_reorder_order; kembali ke opening screen (atau ke detail pesanan bila ditutup dari Riwayat Pemesanan). Tanpa nilai uang.
  * Dipakai oleh : routes/web.php (reorder-orders.store, close di Beranda; reorder-orders.index, show di modul ORD).
  * Status       : Aktif.
  */

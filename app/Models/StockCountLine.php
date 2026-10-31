@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['stock_count_id', 'item_id', 'system_qty', 'unit_cost', 'counted_qty', 'recount_qty', 'counted_by', 'entered_by', 'entered_at', 'rev', 'skipped', 'reason', 'note', 'added_manually'])]
 class StockCountLine extends Model
 {
+    protected $table = 'i_count_line';
+
     protected function casts(): array
     {
         return ['system_qty' => 'float', 'unit_cost' => 'float', 'counted_qty' => 'float', 'recount_qty' => 'float', 'skipped' => 'boolean', 'added_manually' => 'boolean', 'entered_at' => 'datetime', 'rev' => 'integer'];

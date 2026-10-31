@@ -165,7 +165,7 @@ class StockCountController extends Controller
     // Tambah barang / batch yang ditemukan fisik tetapi tidak ada di lembar.
     public function addItem(Request $request, StockCount $count): RedirectResponse
     {
-        $data = $request->validate(['item_id' => ['required', 'exists:items,id']], ['item_id.required' => 'Pilih barang / batch yang ditemukan.'], ['item_id' => 'barang']);
+        $data = $request->validate(['item_id' => ['required', 'exists:i_batch,id']], ['item_id.required' => 'Pilih barang / batch yang ditemukan.'], ['item_id' => 'barang']);
         $line = $this->counts->addItem($count, Item::query()->findOrFail($data['item_id']));
 
         return redirect()->route('stock-counts.show', $count)->with('status', "{$line->item->code} ditambahkan ke lembar hitung (stok sistem saat ini). Isi hasil hitungnya.");

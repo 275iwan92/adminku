@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Schema;
 final class SampleData
 {
     // Tabel yang dihitung di layar (nama tabel => label).
-    public const COUNTED = ['m_item' => 'Barang', 'items' => 'Batch', 'rm_stock' => 'Dokumen stok', 'rm_stockcard' => 'Pergerakan stok', 'users' => 'Pengguna'];
+    public const COUNTED = ['m_item' => 'Barang', 'i_batch' => 'Batch', 'rm_stock' => 'Dokumen stok', 'rm_stockcard' => 'Pergerakan stok', 'users' => 'Pengguna'];
 
     public static function enabled(): bool
     {

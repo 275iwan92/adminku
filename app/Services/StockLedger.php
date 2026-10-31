@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /* REMARK
- * Tujuan       : Satu-satunya pintu yang mengubah saldo stok: memposting baris dokumen ke buku besar rm_stockcard dan memperbarui items.stock_qty / avg_cost (moving average).
+ * Tujuan       : Satu-satunya pintu yang mengubah saldo stok: memposting baris dokumen ke buku besar rm_stockcard dan memperbarui i_batch.stock_qty / avg_cost (moving average).
  * Sumber hulu  : rm_stock + rm_stock_line (qty, unit_cost, selisih penyesuaian).
  * Output       : baris rm_stockcard (dengan saldo sesudah transaksi); daftar item yang menyentuh Reorder Point.
  * Dipakai oleh : StockDocuments (masuk, keluar, saldo awal, persetujuan penyesuaian, pembatalan); penjaga kunci Stok Opname (StockCount::lockingNow) ada di sini.

@@ -196,7 +196,7 @@ class LeadTimeTest extends TestCase
 
         \Illuminate\Support\Facades\DB::enableQueryLog();
         $all = LeadTimes::forMany($products);
-        $queries = collect(\Illuminate\Support\Facades\DB::getQueryLog())->filter(fn ($q) => str_contains($q['query'], 'reorder_orders'))->count();
+        $queries = collect(\Illuminate\Support\Facades\DB::getQueryLog())->filter(fn ($q) => str_contains($q['query'], 'i_reorder_order'))->count();
 
         $this->assertSame(1, $queries);
         $this->assertSame([$products[0]->id, $products[1]->id], array_keys($all));

@@ -45,5 +45,5 @@
             ['key' => 'order_qty', 'label' => 'Jumlah Dipesan', 'wrap' => true],
             ['key' => 'order', 'label' => 'Info Pemesanan', 'wrap' => true],
         ]))"
-        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="items, rm_stockcard" />
+        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="i_batch, rm_stockcard" />
 @endsection

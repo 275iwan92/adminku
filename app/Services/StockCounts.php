@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 /* REMARK
  * Tujuan       : Siklus Stok Opname (penghitungan fisik rutin): mulai (snapshot stok per batch) > Sedang dihitung > Selesai hitung (Tinjau) > Setujui (satu Penyesuaian otomatis) | Kembalikan | Batalkan.
  *                Stok TIDAK berubah sebelum persetujuan; saat disetujui, selisih diposting lewat StockDocuments::recordCountAdjustment (buku besar StockLedger, kunci baris item). Kunci transaksi dijaga StockLedger.
- * Sumber hulu  : items (stok + biaya rata-rata saat cut-off), stock_counts, stock_count_lines.
+ * Sumber hulu  : i_batch (stok + biaya rata-rata saat cut-off), i_count, i_count_line.
  * Output       : StockCount beserta baris; baris untuk layar input (entryRows) dan layar tinjau (reviewRows).
  * Dipakai oleh : StockCountController.
  * Status       : Aktif.

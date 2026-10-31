@@ -34,6 +34,17 @@ class ItemIntegrityMigrationTest extends TestCase
         return require base_path(self::FILE);
     }
 
+    // Migrasi lama menyebut tabel dengan nama lama (items); selama dijalankan, i_batch dinamai sementara items.
+    private function legacy(callable $run): void
+    {
+        Schema::rename('i_batch', 'items');
+        try {
+            $run();
+        } finally {
+            Schema::rename('items', 'i_batch');
+        }
+    }
+
     private function dropIndexes(): void
     {
         Schema::table('items', function ($table) {
@@ -52,22 +63,22 @@ class ItemIntegrityMigrationTest extends TestCase
 
     public function test_indexes_exist_and_one_product_has_one_batch_per_expiry_date(): void
     {
-        $this->assertTrue(Schema::hasIndex('items', ['expiry_date']));
-        $this->assertTrue(Schema::hasIndex('items', ['product_id', 'expiry_date'], 'unique'));
+        $this->assertTrue(Schema::hasIndex('i_batch', ['expiry_date']));
+        $this->assertTrue(Schema::hasIndex('i_batch', ['product_id', 'expiry_date'], 'unique'));
 
         $product = $this->product();
         $batch = $product->batchFor('2027-01-31');
         $this->assertSame($batch->id, $product->batchFor('2027-01-31')->id);   // dua lot bertanggal sama menyatu
 
         $this->expectException(UniqueConstraintViolationException::class);
-        DB::table('items')->insert($this->copyOf($batch, 'LAIN'));
+        DB::table('i_batch')->insert($this->copyOf($batch, 'LAIN'));
     }
 
     public function test_undated_batches_may_repeat_since_null_is_not_unique(): void
     {
         $product = $this->product();
         $undated = $product->items()->create($product->only(Product::BATCH_COPY) + ['code' => 'X-1', 'expiry_date' => null]);
-        DB::table('items')->insert($this->copyOf($undated, 'X-2'));
+        DB::table('i_batch')->insert($this->copyOf($undated, 'X-2'));
 
         $this->assertSame(2, Item::where('product_id', $product->id)->whereNull('expiry_date')->count());
     }
@@ -76,46 +87,46 @@ class ItemIntegrityMigrationTest extends TestCase
     {
         $product = $this->product();
         $batch = $product->batchFor('2027-02-28');
-        $this->dropIndexes();
-        DB::table('items')->insert($this->copyOf($batch, 'OBT-0001-DUP'));
+        $this->legacy(fn () => $this->dropIndexes());
+        DB::table('i_batch')->insert($this->copyOf($batch, 'OBT-0001-DUP'));
 
         try {
-            $this->migration()->up();
+            $this->legacy(fn () => $this->migration()->up());
             $this->fail('Migrasi seharusnya berhenti.');
         } catch (RuntimeException $e) {
             $this->assertStringContainsString("batch ganda: produk #{$product->id} tanggal kedaluwarsa", $e->getMessage());
             $this->assertStringContainsString('data tidak diubah', $e->getMessage());
         }
         $this->assertSame(2, Item::where('product_id', $product->id)->count());   // tidak ada yang dihapus
-        $this->assertFalse(Schema::hasIndex('items', ['expiry_date']));          // dan tidak ada indeks yang setengah terpasang
+        $this->assertFalse(Schema::hasIndex('i_batch', ['expiry_date']));          // dan tidak ada indeks yang setengah terpasang
     }
 
     public function test_migration_stops_when_a_stock_qty_is_negative(): void
     {
         $item = $this->product()->batchFor('2027-03-31');
-        $this->dropIndexes();
-        DB::table('items')->where('id', $item->id)->update(['stock_qty' => -2]);
+        $this->legacy(fn () => $this->dropIndexes());
+        DB::table('i_batch')->where('id', $item->id)->update(['stock_qty' => -2]);
 
         try {
-            $this->migration()->up();
+            $this->legacy(fn () => $this->migration()->up());
             $this->fail('Migrasi seharusnya berhenti.');
         } catch (RuntimeException $e) {
             $this->assertStringContainsString("stok negatif: item #{$item->id} {$item->code}", $e->getMessage());
         }
-        $this->assertEquals(-2, DB::table('items')->where('id', $item->id)->value('stock_qty'));   // tidak diubah
+        $this->assertEquals(-2, DB::table('i_batch')->where('id', $item->id)->value('stock_qty'));   // tidak diubah
     }
 
     public function test_migration_applies_cleanly_on_existing_valid_data_and_rolls_back(): void
     {
         $this->product()->batchFor('2027-04-30');
         $migration = $this->migration();
-        $migration->down();
-        $this->assertFalse(Schema::hasIndex('items', ['expiry_date']));
+        $this->legacy(fn () => $migration->down());
+        $this->assertFalse(Schema::hasIndex('i_batch', ['expiry_date']));
 
-        $migration->up();
+        $this->legacy(fn () => $migration->up());
 
-        $this->assertTrue(Schema::hasIndex('items', ['expiry_date']));
-        $this->assertTrue(Schema::hasIndex('items', ['product_id', 'expiry_date'], 'unique'));
+        $this->assertTrue(Schema::hasIndex('i_batch', ['expiry_date']));
+        $this->assertTrue(Schema::hasIndex('i_batch', ['product_id', 'expiry_date'], 'unique'));
         $this->assertSame(1, Item::count());
     }
 }

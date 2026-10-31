@@ -101,7 +101,7 @@ class Product extends Model
     // Stok tersedia (batch yang belum kedaluwarsa) sebagai potongan SQL; dipakai scope dan urutan.
     public static function availableSql(): string
     {
-        return '(select coalesce(sum(i.stock_qty), 0) from items i where i.product_id = m_item.id and (i.expiry_date is null or i.expiry_date >= ?))';
+        return '(select coalesce(sum(i.stock_qty), 0) from i_batch i where i.product_id = m_item.id and (i.expiry_date is null or i.expiry_date >= ?))';
     }
 
     public function scopeWithAvailable(Builder $query): Builder

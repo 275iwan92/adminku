@@ -34,10 +34,10 @@ class ProductController extends Controller
     {
         $sup = $request->user()->isSupervisor();
         $rows = Product::query()->with('category')->withAvailable()
-            ->selectRaw('(select coalesce(sum(stock_qty), 0) from items where items.product_id = m_item.id) as stock_total')
-            ->selectRaw('(select coalesce(sum(stock_qty * avg_cost), 0) from items where items.product_id = m_item.id) as stock_value')
-            ->selectRaw('(select min(expiry_date) from items where items.product_id = m_item.id and stock_qty > 0) as next_expiry')
-            ->selectRaw('(select count(*) from items where items.product_id = m_item.id) as batch_count')
+            ->selectRaw('(select coalesce(sum(stock_qty), 0) from i_batch where i_batch.product_id = m_item.id) as stock_total')
+            ->selectRaw('(select coalesce(sum(stock_qty * avg_cost), 0) from i_batch where i_batch.product_id = m_item.id) as stock_value')
+            ->selectRaw('(select min(expiry_date) from i_batch where i_batch.product_id = m_item.id and stock_qty > 0) as next_expiry')
+            ->selectRaw('(select count(*) from i_batch where i_batch.product_id = m_item.id) as batch_count')
             ->orderBy('code')->get()->map(function (Product $p) use ($sup) {
                 $below = $p->is_active && $p->reorder_point > 0 && (float) $p->available_qty <= $p->reorder_point;
 

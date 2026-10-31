@@ -70,9 +70,9 @@ class NumberingRaceTest extends TestCase
     public function test_batch_collision_reuses_the_batch_created_by_the_other_saver(): void
     {
         $product = Product::register(['name' => 'Obat', 'category_id' => Category::create(['code' => 'OBT', 'name' => 'Obat'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'tracks_expiry' => true], 'OBT-0001');
-        $this->interloperAfterSelect('items', function () use ($product) {
+        $this->interloperAfterSelect('i_batch', function () use ($product) {
             $row = $product->items()->make(['code' => 'OBT-0001-271231', 'expiry_date' => '2027-12-31'] + $product->only(Product::BATCH_COPY))->getAttributes();
-            DB::table('items')->insert($row + ['product_id' => $product->id, 'created_at' => now(), 'updated_at' => now()]);
+            DB::table('i_batch')->insert($row + ['product_id' => $product->id, 'created_at' => now(), 'updated_at' => now()]);
         });
 
         $batch = $product->batchFor('2027-12-31');
