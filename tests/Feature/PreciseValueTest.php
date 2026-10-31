@@ -93,13 +93,13 @@ class PreciseValueTest extends TestCase
 
         $this->assertSame([3.0, 33.3333], [$item->fresh()->stock_qty, $item->fresh()->avg_cost]);
         $this->assertSame(100.0, $item->fresh()->stockValue());   // 3 x 33,3333 = 99,9999 tampil 100,00
-        $this->assertSame(1.0, UnitConverter::convert(3, 'pcs', 'box'));                       // lewat baris yang sama, tanpa 1/3 yang sudah dibulatkan
+        $this->assertSame(1.0, Decimal::round(UnitConverter::exact('3', 'pcs', 'box'), 6));     // lewat baris yang sama, tanpa 1/3 yang sudah dibulatkan
     }
 
     public function test_cost_conversion_through_an_inverse_row_is_exact(): void
     {
         UnitConversion::create(['from_unit' => 'pcs', 'to_unit' => 'box', 'factor' => 0.25]);   // hanya arah pcs -> box: 1 pcs = 0,25 box
-        $this->assertSame(16.0, UnitConverter::convert(4, 'box', 'pcs'));
+        $this->assertSame(16.0, Decimal::round(UnitConverter::exact('4', 'box', 'pcs'), 6));
         $this->assertSame(0.625, Decimal::round(UnitConverter::exact('2.5', 'pcs', 'box'), 4));
         $this->assertSame(10.0, Decimal::round(UnitConverter::exact('2.5', 'pcs', 'box', true), 4));
     }

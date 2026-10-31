@@ -10,6 +10,7 @@ use App\Models\Supplier;
 use App\Models\Unit;
 use App\Models\UnitConversion;
 use App\Models\User;
+use App\Support\Decimal;
 use App\Support\UnitConverter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -176,8 +177,8 @@ class UnitTest extends TestCase
         $this->assertEqualsWithDelta(1 / 12, UnitConverter::factor('pcs', 'box'), 1e-9);
         $this->assertSame(1.0, UnitConverter::factor('kg', 'kg'));
         $this->assertNull(UnitConverter::factor('box', 'kg'));
-        $this->assertSame(60.0, UnitConverter::convert(5, 'box', 'pcs'));
-        $this->assertSame(2.0, UnitConverter::convert(24, 'pcs', 'box'));
+        $this->assertSame(60.0, Decimal::round(UnitConverter::exact('5', 'box', 'pcs'), 6));
+        $this->assertSame(2.0, Decimal::round(UnitConverter::exact('24', 'pcs', 'box'), 6));
     }
 
     // Simpan (draf) lalu Confirm supaya diproses ke stok.

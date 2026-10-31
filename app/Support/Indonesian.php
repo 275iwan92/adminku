@@ -26,8 +26,8 @@ final class Indonesian
         'Back to Draft' => 'Kembali ke Draf', 'Back' => 'Kembali', 'Deactivate' => 'Nonaktifkan', 'Activate' => 'Aktifkan', 'Approve' => 'Setujui', 'Reject' => 'Tolak',
         'Hold' => 'Tahan', 'Print' => 'Cetak', 'Email' => 'Email', 'Close' => 'Tutup',
         'Draft' => 'Draf', 'Confirmed' => 'Terkonfirmasi', 'Cancelled' => 'Dibatalkan', 'Closed' => 'Ditutup', 'Active' => 'Aktif', 'Inactive' => 'Nonaktif',
-        'Approved' => 'Disetujui', 'Rejected' => 'Ditolak', 'Waiting Approval' => 'Menunggu Persetujuan', 'Waiting Approval 1' => 'Menunggu Persetujuan 1',
-        'Approval 1' => 'Persetujuan 1', 'Hold L1' => 'Ditahan T1',
+        'Approved' => 'Disetujui', 'Rejected' => 'Ditolak', 'Waiting Approval' => 'Menunggu Persetujuan',
+        'Approval 1' => 'Persetujuan 1',
         '+ New Record' => '+ Data Baru', 'Filters' => 'Saring', 'Reset filter' => 'Reset saringan', 'Export' => 'Ekspor', 'Created by' => 'Dibuat oleh', 'Created at' => 'Dibuat pada',
         'Last updated by' => 'Terakhir diubah oleh', 'Last updated at' => 'Terakhir diubah pada', 'History' => 'Riwayat',
 
@@ -35,11 +35,11 @@ final class Indonesian
         'Home' => 'Beranda', 'Sign in' => 'Masuk', 'Items' => 'Barang', 'Item' => 'Barang', 'Suppliers' => 'Supplier', 'Supplier' => 'Supplier', 'Units' => 'Satuan', 'Unit' => 'Satuan',
         'Stock Card' => 'Kartu Stok', 'Summary Stock' => 'Ringkasan Stok', 'Receiving Report' => 'Laporan Penerimaan', 'Issuance Report' => 'Laporan Pengeluaran',
         'Opname & Adjustment Report' => 'Laporan Opname & Penyesuaian', 'Stoku' => 'Stoku',
-        'Item · ' => 'Barang · ', 'Item · New' => 'Barang · Baru', 'Supplier · ' => 'Supplier · ', 'Supplier · New' => 'Supplier · Baru', 'Unit · ' => 'Satuan · ', 'Unit · New' => 'Satuan · Baru',
+        'Supplier · ' => 'Supplier · ',
 
         // Beranda
         'Active items' => 'Barang aktif', 'At / below reorder point' => 'Di / bawah titik pesan ulang', 'Receiving today' => 'Penerimaan hari ini', 'Issuance today' => 'Pengeluaran hari ini',
-        'Stock value' => 'Nilai stok', 'Nilai Stok' => 'Nilai Stok', 'Documents waiting approval' => 'Dokumen menunggu persetujuan', 'Open Receiving' => 'Buka Penerimaan', 'Current Stock' => 'Stok saat ini', 'Order Status' => 'Status Pesanan', 'Record Order' => 'Catat Pemesanan', 'Close Order' => 'Tutup Pesanan', 'Order Date' => 'Tanggal Pesan', 'Order Reference No.' => 'No. Referensi Pemesanan', 'Stock value ' => 'Nilai stok',
+        'Stock value' => 'Nilai stok', 'Nilai Stok' => 'Nilai Stok', 'Documents waiting approval' => 'Dokumen menunggu persetujuan', 'Open Receiving' => 'Buka Penerimaan', 'Current Stock' => 'Stok saat ini', 'Order Status' => 'Status Pesanan', 'Record Order' => 'Catat Pemesanan', 'Close Order' => 'Tutup Pesanan', 'Order Date' => 'Tanggal Pesan', 'Order Reference No.' => 'No. Referensi Pemesanan',
         'Code' => 'Kode', 'Category' => 'Kategori', 'Location' => 'Lokasi', 'Stock' => 'Stok', 'Reorder Point' => 'Titik Pesan Ulang', 'Reorder Qty' => 'Jml Pesan Ulang', 'Lead Time' => 'Lead Time',
 
         // Grid master
@@ -50,10 +50,9 @@ final class Indonesian
         'All units' => 'Semua satuan', 'Search code or name...' => 'Cari kode atau nama...', 'Type' => 'Jenis', 'Conversions' => 'Konversi', 'Items using it' => 'Barang pemakai',
 
         // Form Barang
-        'Stock on hand' => 'Stok saat ini', 'Average cost' => 'Biaya rata-rata', 'Moving average of purchases' => 'Rata-rata bergerak dari pembelian', 'Stock x average cost' => 'Stok x biaya rata-rata',
+        'Stock on hand' => 'Stok saat ini',
         'Reorder and Price' => 'Pesan Ulang dan Harga', 'Item Name' => 'Nama Barang', 'Item Code' => 'Kode Barang', 'Rack / Storage Location' => 'Lokasi Rak / Penyimpanan',
         'Unique. Cannot be changed after saving.' => 'Unik. Tidak bisa diubah setelah disimpan.', 'Unit Price (IDR)' => 'Harga Satuan (Rp)',
-        'Alert shows when stock is at or below this quantity. 0 = no alert.' => 'Peringatan muncul bila stok sama dengan atau di bawah jumlah ini. 0 = tanpa peringatan.',
         'Suggested quantity to order.' => 'Jumlah pesanan yang disarankan.', 'Days from placing the order until the supplier delivers.' => 'Hari sejak pesanan dibuat sampai supplier mengirim.',
         'Reference price. Stock valuation uses the moving average of purchase prices.' => 'Harga acuan. Valuasi stok memakai rata-rata bergerak harga pembelian.',
 
@@ -65,12 +64,10 @@ final class Indonesian
         'Region' => 'Wilayah', 'Postcode' => 'Kode Pos',
 
         // Master Kategori dan Lokasi Penyimpanan, kedaluwarsa
-        'Categories' => 'Kategori', 'Storage Locations' => 'Lokasi Penyimpanan', 'Storage Location' => 'Lokasi Penyimpanan', 'Category · ' => 'Kategori · ',
+        'Categories' => 'Kategori', 'Storage Locations' => 'Lokasi Penyimpanan', 'Storage Location' => 'Lokasi Penyimpanan',
         'Code Prefix' => 'Awalan Kode', 'Category Name' => 'Nama Kategori', 'Exactly 3 letters or digits. Cannot be changed after saving.' => 'Tepat 3 huruf atau angka. Tidak bisa diubah setelah disimpan.',
         'Location Code' => 'Kode Lokasi', 'Location Name' => 'Nama Lokasi', 'Unique, for example A1-01. Cannot be changed after saving.' => 'Unik, misalnya A1-01. Tidak bisa diubah setelah disimpan.',
         'All locations' => 'Semua lokasi', 'All categories' => 'Semua kategori', 'Expiry Date' => 'Tanggal Kedaluwarsa', 'Expiry' => 'Kedaluwarsa',
-        'Generated automatically: category prefix, running number, and the expiry year and month if the item expires.' => 'Dibuat otomatis: awalan kategori, nomor urut, dan tahun-bulan kedaluwarsa bila barang kedaluwarsa.',
-        'Fill only for items that expire. The expiry year and month become part of the item code, so it cannot be changed after saving.' => 'Isi hanya untuk barang yang kedaluwarsa. Tahun dan bulannya menjadi bagian kode barang, jadi tidak bisa diubah setelah disimpan.',
 
         // Kedaluwarsa
         'Near expiry / expired' => 'Hampir kedaluwarsa / kedaluwarsa', 'Expiry Report' => 'Laporan Kedaluwarsa',
@@ -94,7 +91,7 @@ final class Indonesian
         // Dokumen stok
         'Document No.' => 'No. Dokumen', 'Date & Time' => 'Tanggal & Jam', 'Entered by' => 'Diinput oleh', 'Balance As Of (period start)' => 'Saldo per Tanggal (awal periode)',
         'Only for items without any stock movement yet.' => 'Hanya untuk barang yang belum punya pergerakan stok.', 'Reference No. (delivery note / PO / invoice)' => 'No. Referensi (surat jalan / PO / faktur)',
-        'Recipient' => 'Penerima', 'Forgot password?' => 'Lupa password?', 'Forgot password' => 'Lupa password', 'Enter your username or e-mail. We will send a link to set a new password.' => 'Isi username atau e-mail Anda. Kami kirim tautan untuk mengatur password baru.', 'Send reset link' => 'Kirim tautan reset', 'Back to sign in' => 'Kembali ke halaman masuk', 'Reset password' => 'Atur ulang password', 'Choose a new password (at least 8 characters).' => 'Pilih password baru (minimal 8 karakter).', 'New password' => 'Password baru', 'Confirm new password' => 'Konfirmasi password baru', 'Save new password' => 'Simpan password baru', 'Groups' => 'Grup', 'Group' => 'Grup', 'Group Code' => 'Kode Grup', 'Group Name' => 'Nama Grup', 'All groups' => 'Semua grup', 'Members' => 'Anggota', 'Modules' => 'Modul', 'Module' => 'Modul', 'Menu' => 'Menu', 'Minimum Role' => 'Peran Minimal', 'Groups With Access' => 'Grup yang Punya Akses', 'All modules' => 'Semua modul', 'Search code, module...' => 'Cari kode, modul...', 'Modules this group may open' => 'Modul yang boleh dibuka grup ini', 'Decides which modules this user can open. Empty = the default modules of the role.' => 'Menentukan modul yang boleh dibuka pengguna ini. Kosong = modul bawaan peran.', 'A user also needs a high enough role: Supervisor-only and Administrator-only modules stay closed to lower roles even when ticked. Administrators always see everything.' => 'Pengguna juga harus berperan cukup tinggi: modul khusus Supervisor atau Administrator tetap tertutup bagi peran di bawahnya walau dicentang. Administrator selalu melihat semuanya.', 'Users' => 'Pengguna', 'Full Name' => 'Nama Lengkap', 'Username' => 'Username', 'Role' => 'Peran', 'Password' => 'Password', 'All users' => 'Semua pengguna', 'Search name, username, email...' => 'Cari nama, username, email...', 'Lowercase. Cannot be changed after saving.' => 'Huruf kecil. Tidak bisa diubah setelah disimpan.', 'At least 8 characters.' => 'Minimal 8 karakter.', 'Leave empty to keep the current password.' => 'Kosongkan bila password tidak diganti.', 'Data Entry: receiving and issuance. Supervisor: all stock functions. Administrator: Supervisor + Security menu.' => 'Data Entry: penerimaan dan pengeluaran. Supervisor: semua fungsi stok. Administrator: Supervisor + menu Keamanan.', 'Language' => 'Bahasa', 'New Recipient' => 'Penerima baru', 'New Department' => 'Departemen baru', 'Add Recipient' => 'Tambah Penerima', 'Add Department' => 'Tambah Departemen', 'Recipient Name' => 'Nama Penerima', 'Department Name' => 'Nama Departemen', 'Department Code' => 'Kode Departemen', 'Default Department' => 'Departemen Bawaan', 'Recipients' => 'Penerima', 'Departments' => 'Departemen', 'Issuance Documents' => 'Dokumen Pengeluaran', 'All departments' => 'Semua departemen', 'All recipients' => 'Semua penerima', 'Search code, name...' => 'Cari kode, nama...', 'Search name, department...' => 'Cari nama, departemen...', 'Used in Issuance when no department is chosen.' => 'Dipakai di Pengeluaran bila departemen tidak dipilih.', "Empty = the recipient's default department." => 'Kosong = departemen bawaan penerima.', 'Department' => 'Departemen', 'Purpose (maintenance / ATK ...)' => 'Keperluan (maintenance / ATK ...)',
+        'Recipient' => 'Penerima', 'Forgot password?' => 'Lupa password?', 'Forgot password' => 'Lupa password', 'Enter your username or e-mail. We will send a link to set a new password.' => 'Isi username atau e-mail Anda. Kami kirim tautan untuk mengatur password baru.', 'Send reset link' => 'Kirim tautan reset', 'Back to sign in' => 'Kembali ke halaman masuk', 'Reset password' => 'Atur ulang password', 'Choose a new password (at least 8 characters).' => 'Pilih password baru (minimal 8 karakter).', 'New password' => 'Password baru', 'Confirm new password' => 'Konfirmasi password baru', 'Save new password' => 'Simpan password baru', 'Groups' => 'Grup', 'Group' => 'Grup', 'Group Code' => 'Kode Grup', 'Group Name' => 'Nama Grup', 'All groups' => 'Semua grup', 'Members' => 'Anggota', 'Modules' => 'Modul', 'Module' => 'Modul', 'Menu' => 'Menu', 'Minimum Role' => 'Peran Minimal', 'Groups With Access' => 'Grup yang Punya Akses', 'All modules' => 'Semua modul', 'Search code, module...' => 'Cari kode, modul...', 'Decides which modules this user can open. Empty = the default modules of the role.' => 'Menentukan modul yang boleh dibuka pengguna ini. Kosong = modul bawaan peran.', 'Users' => 'Pengguna', 'Full Name' => 'Nama Lengkap', 'Username' => 'Username', 'Role' => 'Peran', 'Password' => 'Password', 'All users' => 'Semua pengguna', 'Search name, username, email...' => 'Cari nama, username, email...', 'Lowercase. Cannot be changed after saving.' => 'Huruf kecil. Tidak bisa diubah setelah disimpan.', 'At least 8 characters.' => 'Minimal 8 karakter.', 'Leave empty to keep the current password.' => 'Kosongkan bila password tidak diganti.', 'Data Entry: receiving and issuance. Supervisor: all stock functions. Administrator: Supervisor + Security menu.' => 'Data Entry: penerimaan dan pengeluaran. Supervisor: semua fungsi stok. Administrator: Supervisor + menu Keamanan.', 'Language' => 'Bahasa', 'Add Recipient' => 'Tambah Penerima', 'Add Department' => 'Tambah Departemen', 'Recipient Name' => 'Nama Penerima', 'Department Name' => 'Nama Departemen', 'Department Code' => 'Kode Departemen', 'Default Department' => 'Departemen Bawaan', 'Recipients' => 'Penerima', 'Departments' => 'Departemen', 'Issuance Documents' => 'Dokumen Pengeluaran', 'All departments' => 'Semua departemen', 'All recipients' => 'Semua penerima', 'Search code, name...' => 'Cari kode, nama...', 'Search name, department...' => 'Cari nama, departemen...', 'Used in Issuance when no department is chosen.' => 'Dipakai di Pengeluaran bila departemen tidak dipilih.', "Empty = the recipient's default department." => 'Kosong = departemen bawaan penerima.', 'Department' => 'Departemen', 'Purpose (maintenance / ATK ...)' => 'Keperluan (maintenance / ATK ...)',
         'Reason for adjustment / opname' => 'Alasan penyesuaian / opname', 'Notes' => 'Catatan', '+ Add Item' => '+ Tambah Barang',
         'Qty' => 'Jml', 'Purchase Price / Unit' => 'Harga Beli / Satuan', 'Subtotal' => 'Subtotal', '= In stock unit' => '= Dalam satuan stok', 'Line Note' => 'Catatan Baris',
         'Available' => 'Tersedia', 'Opening Qty' => 'Jml Awal', 'Unit Value' => 'Nilai Satuan', 'Valuation' => 'Valuasi', 'System Qty' => 'Jml Sistem',
@@ -104,20 +101,18 @@ final class Indonesian
 
         // Laporan
         'From date' => 'Dari tanggal', 'To date' => 'Sampai tanggal', 'Apply' => 'Terapkan', 'All categories' => 'Semua kategori', 'Filter' => 'Saring',
-        'Only items at / below reorder point' => 'Hanya barang di / bawah titik pesan ulang', 'Include inactive items' => 'Termasuk barang nonaktif', 'All suppliers ' => 'Semua supplier',
+        'Only items at / below reorder point' => 'Hanya barang di / bawah titik pesan ulang', 'Include inactive items' => 'Termasuk barang nonaktif',
         'Recipient / Department' => 'Penerima / Departemen', 'Choose an item' => 'Pilih barang', 'Select an item and a period, then press Apply to see its stock card.' => 'Pilih barang dan periode, lalu tekan Terapkan untuk melihat kartu stoknya.',
         'Stock movement history per item' => 'Riwayat pergerakan stok per barang', 'Stock position and movement per period' => 'Posisi dan pergerakan stok per periode',
         'Goods received from suppliers' => 'Barang diterima dari supplier', 'Goods issued for maintenance / ATK' => 'Barang keluar untuk maintenance / ATK', 'Physical count vs system stock' => 'Hitung fisik dibanding stok sistem',
         'Period' => 'Periode', 'Scope' => 'Cakupan', 'Type ' => 'Tipe',
         'Opening' => 'Awal', 'In' => 'Masuk', 'Out' => 'Keluar', 'Adjustment' => 'Penyesuaian', 'Balance' => 'Saldo', 'Closing' => 'Akhir', 'Unit Cost' => 'Biaya Satuan', 'Balance Value' => 'Nilai Saldo',
-        'Reference / Note' => 'Referensi / Catatan', 'User' => 'User', 'Item Code ' => 'Kode Barang', 'Lead Time (d)' => 'Lead Time (hari)', 'Avg Cost' => 'Biaya Rata-rata',
+        'Reference / Note' => 'Referensi / Catatan', 'User' => 'User', 'Lead Time (d)' => 'Lead Time (hari)', 'Avg Cost' => 'Biaya Rata-rata',
         'Qty (stock unit)' => 'Jml (satuan stok)', 'Received as' => 'Diterima sebagai', 'Purchase Price' => 'Harga Beli', 'Amount' => 'Jumlah', 'Cost' => 'Biaya', 'Counted Qty' => 'Jml Hitung',
         'Value Effect' => 'Dampak Nilai', 'Counted by' => 'Dihitung oleh', 'Approved / Rejected by' => 'Disetujui / Ditolak oleh',
         'Per Month' => 'Per Bulan', 'Per Category' => 'Per Kategori', 'Per Status' => 'Per Status', 'Per Supplier' => 'Per Supplier', 'Per Department' => 'Per Departemen',
         'Per Recipient' => 'Per Penerima', 'Per Document' => 'Per Dokumen',
-        'Opening Balance' => 'Saldo Awal', 'Total In' => 'Total Masuk', 'Total Out' => 'Total Keluar', 'Closing Balance' => 'Saldo Akhir', 'Total Stock Value' => 'Total Nilai Stok',
-        'Lines received' => 'Baris diterima', 'Total Purchase Value' => 'Total Nilai Pembelian', 'Lines issued' => 'Baris dikeluarkan', 'Total Cost Issued' => 'Total Biaya Keluar',
-        'Lines counted' => 'Baris dihitung', 'Net value effect' => 'Dampak nilai bersih',
+        'Opening Balance' => 'Saldo Awal',
         'Prepared by' => 'Dibuat oleh', 'Warehouse' => 'Gudang', 'Checked by' => 'Diperiksa oleh', 'Received by' => 'Diterima oleh', 'Approved by' => 'Disetujui oleh', 'Supervisor' => 'Supervisor',
 
         // Form Grup

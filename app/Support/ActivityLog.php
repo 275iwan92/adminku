@@ -13,8 +13,6 @@ namespace App\Support;
  */
 final class ActivityLog
 {
-    public const COLUMNS = ['Waktu', 'User', 'IP', 'Aksi', 'Rincian'];
-
     // Perkiraan byte per baris untuk membaca ekor berkas tanpa memuat seluruhnya.
     private const ROW_BYTES = 400;
 

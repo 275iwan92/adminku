@@ -8,7 +8,7 @@ use App\Models\UnitConversion;
 /* REMARK
  * Tujuan       : Mengubah jumlah antar satuan: faktor satuan masuk milik BARANG lebih dulu (m_item_unit, hanya ke satuan stok barang itu), lalu master konversi global: langsung (1 box = 12 pcs), kebalikannya (1 / faktor), atau satuan yang sama (faktor 1). Tanpa rantai (box > pcs > gram tidak dihitung otomatis).
  * Sumber hulu  : m_item_unit, m_unit_conversion.
- * Output       : factor(from, to, productId) atau null bila tidak ada aturannya; convert(qty, from, to); exact(...).
+ * Output       : factor(from, to, productId) atau null bila tidak ada aturannya; exact(...).
  * Dipakai oleh : StockDocuments (Penerimaan dan Pengeluaran: satuan baris dikonversi ke satuan stok barang).
  * Status       : Aktif.
  */
@@ -35,13 +35,6 @@ final class UnitConverter
         $inverse = UnitConversion::query()->where('from_unit', $to)->where('to_unit', $from)->value('factor');
 
         return $inverse ? 1 / (float) $inverse : null;
-    }
-
-    public static function convert(float $qty, string $from, string $to): ?float
-    {
-        $exact = self::exact(Decimal::of($qty), $from, $to);
-
-        return $exact === null ? null : Decimal::round($exact, 6);
     }
 
     /**
