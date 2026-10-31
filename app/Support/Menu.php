@@ -58,19 +58,23 @@ final class Menu
             }
         }
 
-        // Modul Jays berikutnya (belum dibuat): GA dan Purchase satu layar "Segera hadir", HR berisi Employee dan Recruitment. Hanya Administrator yang melihat.
+        // Modul Jays berikutnya (belum dibuat): GA berisi Perawatan Gedung, Aset Kendaraan, AC; HR berisi Employee dan Recruitment, Purchase berisi PR, PO, PV. Hanya Administrator yang melihat.
         if ($user->isAdministrator()) {
             $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
             $next = [
                 ['code' => 'GA', 'short' => 'GA', 'label' => 'GA', 'icon' => 'fa-solid fa-building-user', 'children' => [
-                    $soon('GA-SOON', 'Segera hadir', 'fa-solid fa-clock', 'ga'),
+                    $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung'),
+                    $soon('GA-VEH', 'Perawatan Aset Kendaraan', 'fa-solid fa-car', 'kendaraan'),
+                    $soon('GA-AC', 'Perawatan AC', 'fa-solid fa-snowflake', 'ac'),
                 ]],
                 ['code' => 'HR', 'short' => 'HR', 'label' => 'HR', 'icon' => 'fa-solid fa-user-tie', 'children' => [
                     $soon('HR-EMP', 'Employee', 'fa-solid fa-id-card', 'employee'),
                     $soon('HR-REC', 'Recruitment', 'fa-solid fa-user-plus', 'recruitment'),
                 ]],
                 ['code' => 'PUR', 'short' => 'PUR', 'label' => 'Purchase', 'icon' => 'fa-solid fa-cart-shopping', 'children' => [
-                    $soon('PUR-SOON', 'Segera hadir', 'fa-solid fa-clock', 'purchase'),
+                    $soon('PUR-PR', 'Permohonan Pembelian (PR)', 'fa-solid fa-file-pen', 'pr'),
+                    $soon('PUR-PO', 'Purchase Order (PO)', 'fa-solid fa-file-invoice', 'po'),
+                    $soon('PUR-PV', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'pv'),
                 ]],
             ];
             $at = collect($out)->search(fn ($p) => $p['code'] === 'SEC');

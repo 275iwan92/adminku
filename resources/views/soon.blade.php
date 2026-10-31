@@ -1,12 +1,12 @@
 {{-- REMARK
- Tujuan       : Layar sementara untuk menu modul Jays yang belum dibuat (GA, HR: Employee dan Recruitment, Purchase).
+ Tujuan       : Layar sementara untuk menu modul Jays yang belum dibuat (GA: Gedung, Kendaraan, AC; HR; Purchase: PR, PO, PV).
  Sumber hulu  : route soon (parameter name).
  Input        : name.
  Output       : x-dl::empty-state.
  Dipakai oleh : Menu::layers (modul GA, HR, Purchase).
  Status       : Sementara.
 --}}
-@php($label = ['ga' => 'GA', 'employee' => 'Employee', 'recruitment' => 'Recruitment', 'purchase' => 'Purchase'][$name])
+@php($label = ['gedung' => 'Perawatan Gedung', 'kendaraan' => 'Perawatan Aset Kendaraan', 'ac' => 'Perawatan AC', 'employee' => 'Employee', 'recruitment' => 'Recruitment', 'pr' => 'Permohonan Pembelian (PR)', 'po' => 'Purchase Order (PO)', 'pv' => 'Penerimaan Pembelian (PV)'][$name])
 @extends('layout', ['title' => $label])
 @section('body')
     <x-dl::empty-state :title="$label" message="Segera hadir." icon="clock" />
