@@ -8,7 +8,7 @@ use Illuminate\Routing\Route;
 /* REMARK
  * Tujuan       : Daftar modul (layar menu) aplikasi, satu-satunya sumber untuk: menu Layer Shell, pengaturan akses Grup terhadap Modul, daftar modul, dan penjagaan rute.
  *                Akses = peran cukup (min) DAN modul dicentang di Grup pengguna; pengguna tanpa Grup memakai bawaan peran. Administrator selalu penuh.
- * Output       : all() (kode => definisi), defaults($level), forRoute(Route), parents().
+ * Output       : all() (kode => definisi), defaults($level), forRoute(Route), PARENTS.
  * Dipakai oleh : Menu, User::canAccess, EnsureModuleAccess, GroupController, ModuleController.
  * Status       : Aktif.
  */

@@ -26,8 +26,8 @@ final class Indonesian
         'Back to Draft' => 'Kembali ke Draf', 'Back' => 'Kembali', 'Deactivate' => 'Nonaktifkan', 'Activate' => 'Aktifkan', 'Approve' => 'Setujui', 'Reject' => 'Tolak',
         'Hold' => 'Tahan', 'Print' => 'Cetak', 'Email' => 'Email', 'Close' => 'Tutup',
         'Draft' => 'Draf', 'Confirmed' => 'Terkonfirmasi', 'Cancelled' => 'Dibatalkan', 'Closed' => 'Ditutup', 'Active' => 'Aktif', 'Inactive' => 'Nonaktif',
-        'Approved' => 'Disetujui', 'Rejected' => 'Ditolak', 'Waiting Approval' => 'Menunggu Persetujuan',
-        'Approval 1' => 'Persetujuan 1',
+        'Approved' => 'Disetujui', 'Rejected' => 'Ditolak', 'Waiting Approval 1' => 'Menunggu Persetujuan 1',
+        'Approval 1' => 'Persetujuan 1', 'Hold L1' => 'Ditahan T1',
         '+ New Record' => '+ Data Baru', 'Filters' => 'Saring', 'Reset filter' => 'Reset saringan', 'Export' => 'Ekspor', 'Created by' => 'Dibuat oleh', 'Created at' => 'Dibuat pada',
         'Last updated by' => 'Terakhir diubah oleh', 'Last updated at' => 'Terakhir diubah pada', 'History' => 'Riwayat',
 
@@ -80,9 +80,6 @@ final class Indonesian
         'Tick for items that expire. The expiry date is then entered on every Receiving / Opening Balance line and each date becomes its own batch. Cannot be changed after saving.' => 'Centang untuk barang yang kedaluwarsa. Tanggalnya diisi di setiap baris Penerimaan / Saldo Awal dan tiap tanggal menjadi satu batch. Tidak bisa diubah setelah disimpan.',
         'Alert shows when the available stock (all batches that are not expired) is at or below this quantity. 0 = no alert.' => 'Peringatan muncul bila stok tersedia (semua batch yang belum kedaluwarsa) sama dengan atau di bawah jumlah ini. 0 = tanpa peringatan.',
 
-        // Data Contoh
-        'Sample Data' => 'Data Contoh',
-
         // Form Satuan
         'Unit Code' => 'Kode Satuan', 'Unit Name' => 'Nama Satuan', 'Short, lowercase (pcs, box, kg). Cannot be changed after saving.' => 'Singkat, huruf kecil (pcs, box, kg). Tidak bisa diubah setelah disimpan.',
         'Sets the colour of the unit in lists (for example weight units share one colour).' => 'Menentukan warna satuan di daftar (misalnya satuan berat satu warna).',
@@ -105,14 +102,13 @@ final class Indonesian
         'Recipient / Department' => 'Penerima / Departemen', 'Choose an item' => 'Pilih barang', 'Select an item and a period, then press Apply to see its stock card.' => 'Pilih barang dan periode, lalu tekan Terapkan untuk melihat kartu stoknya.',
         'Stock movement history per item' => 'Riwayat pergerakan stok per barang', 'Stock position and movement per period' => 'Posisi dan pergerakan stok per periode',
         'Goods received from suppliers' => 'Barang diterima dari supplier', 'Goods issued for maintenance / ATK' => 'Barang keluar untuk maintenance / ATK', 'Physical count vs system stock' => 'Hitung fisik dibanding stok sistem',
-        'Period' => 'Periode', 'Scope' => 'Cakupan', 'Type ' => 'Tipe',
+        'Period' => 'Periode', 'Scope' => 'Cakupan',
         'Opening' => 'Awal', 'In' => 'Masuk', 'Out' => 'Keluar', 'Adjustment' => 'Penyesuaian', 'Balance' => 'Saldo', 'Closing' => 'Akhir', 'Unit Cost' => 'Biaya Satuan', 'Balance Value' => 'Nilai Saldo',
         'Reference / Note' => 'Referensi / Catatan', 'User' => 'User', 'Lead Time (d)' => 'Lead Time (hari)', 'Avg Cost' => 'Biaya Rata-rata',
         'Qty (stock unit)' => 'Jml (satuan stok)', 'Received as' => 'Diterima sebagai', 'Purchase Price' => 'Harga Beli', 'Amount' => 'Jumlah', 'Cost' => 'Biaya', 'Counted Qty' => 'Jml Hitung',
         'Value Effect' => 'Dampak Nilai', 'Counted by' => 'Dihitung oleh', 'Approved / Rejected by' => 'Disetujui / Ditolak oleh',
         'Per Month' => 'Per Bulan', 'Per Category' => 'Per Kategori', 'Per Status' => 'Per Status', 'Per Supplier' => 'Per Supplier', 'Per Department' => 'Per Departemen',
         'Per Recipient' => 'Per Penerima', 'Per Document' => 'Per Dokumen',
-        'Opening Balance' => 'Saldo Awal',
         'Prepared by' => 'Dibuat oleh', 'Warehouse' => 'Gudang', 'Checked by' => 'Diperiksa oleh', 'Received by' => 'Diterima oleh', 'Approved by' => 'Disetujui oleh', 'Supervisor' => 'Supervisor',
 
         // Form Grup
