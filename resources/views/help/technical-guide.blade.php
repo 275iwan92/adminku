@@ -215,6 +215,39 @@
             </tbody>
         </table>
 
+        <h3 id="table-prefix">Table naming convention (prefix)</h3>
+        <p>Decided by the owner on 2026-11-01 for Jays, which keeps every module (Stok, GA, HR, Purchase) in one database. The prefix says what kind of table it is and which module owns it, and sorts tables into groups in any database tool. Names are <b>singular</b>, as in tmmockup.</p>
+        <table class="g-table">
+            <thead><tr><th>Prefix</th><th>Holds</th><th>Examples</th></tr></thead>
+            <tbody>
+                <tr><td><code>m_</code></td><td>All master data, whichever module uses it</td><td><code>m_item</code>, <code>m_supplier</code>, <code>m_unit</code>, <code>m_category</code>, <code>m_location</code>, <code>m_recipient</code>, <code>m_department</code>; later <code>m_employee</code></td></tr>
+                <tr><td><code>s_</code></td><td>Stok transactions and stock state</td><td><code>s_batch</code>, <code>s_document</code>, <code>s_movement</code>, <code>s_count</code></td></tr>
+                <tr><td><code>p_</code>, <code>g_</code>, <code>h_</code></td><td>Transactions of Purchase, General Affairs and HR (modules not built yet)</td><td><code>p_order</code>, <code>g_maintenance_order</code>, <code>h_application</code></td></tr>
+                <tr><td><code>sys_</code></td><td>System: accounts, groups, settings, menu, logs</td><td><code>sys_user</code>, <code>sys_user_group</code>, <code>sys_user_group_module</code>, <code>sys_constant</code></td></tr>
+                <tr><td>none</td><td>Laravel framework tables, whose names are read from framework config</td><td><code>cache</code>, <code>cache_locks</code>, <code>jobs</code>, <code>job_batches</code>, <code>failed_jobs</code>, <code>sessions</code>, <code>migrations</code>, <code>password_reset_tokens</code></td></tr>
+            </tbody>
+        </table>
+        <p>Map from the old Stoku names (migrations written before the rename keep the old names and run before the rename migrations, so a fresh install still works):</p>
+        <table class="g-table">
+            <thead><tr><th>Old table</th><th>New table</th></tr></thead>
+            <tbody>
+                <tr><td><code>suppliers</code>, <code>departments</code>, <code>units</code>, <code>unit_conversions</code>, <code>categories</code>, <code>locations</code>, <code>recipients</code></td><td><code>m_supplier</code>, <code>m_department</code>, <code>m_unit</code>, <code>m_unit_conversion</code>, <code>m_category</code>, <code>m_location</code>, <code>m_recipient</code></td></tr>
+                <tr><td><code>products</code>, <code>product_units</code></td><td><code>m_item</code>, <code>m_item_unit</code> (see Open items for the Item / Product wording)</td></tr>
+                <tr><td><code>items</code> (batches), <code>reorder_orders</code></td><td><code>s_batch</code>, <code>s_reorder_order</code></td></tr>
+                <tr><td><code>stock_documents</code>, <code>stock_document_lines</code>, <code>stock_movements</code>, <code>stock_counts</code>, <code>stock_count_lines</code></td><td><code>s_document</code>, <code>s_document_line</code>, <code>s_movement</code>, <code>s_count</code>, <code>s_count_line</code></td></tr>
+                <tr><td><code>users</code>, <code>user_groups</code>, <code>user_group_modules</code>, <code>constants</code></td><td><code>sys_user</code>, <code>sys_user_group</code>, <code>sys_user_group_module</code>, <code>sys_constant</code></td></tr>
+                <tr><td><code>geo_country</code>, <code>geo_region</code>, <code>geo_city</code>, <code>geo_district</code>, <code>geo_village</code></td><td>Not decided: kept as they are for now (<code>sstock:import-geo</code> copies them from <code>tm2mst</code> under the same names)</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Every model declares <code>protected $table</code></b>: Laravel's plural guess no longer matches. A table written as a string (<code>exists:</code> / <code>unique:</code> / <code>Rule::exists</code>, <code>DB::table</code>, <code>join</code>, <code>Schema::hasTable</code>, raw SQL, <code>'table.column'</code>) is not found by searching class names, so search for the old name as a literal string.</li>
+            <li><b>Foreign keys always name the table</b>: <code>constrained('m_supplier')</code>; without an argument Laravel guesses <code>suppliers</code> from the column name. A pivot table needs its name written out.</li>
+            <li><b>Renaming keeps old constraint and index names</b> (for example <code>items_product_id_foreign</code>, <code>items_product_id_expiry_date_unique</code>), because Laravel names them from the table at creation time. In a later migration drop an index or foreign key by its explicit name, not by column list. Foreign keys that point to a renamed table follow it automatically (SQLite checked; InnoDB documented). A rename migration must fail if the new name already exists, never drop it.</li>
+            <li><b>Views are not updated by <code>RENAME TABLE</code></b>. On 2026-11-01 there were no views, routines, triggers or events in the <code>jays</code> database on the laptop or on Biznet (read from <code>information_schema</code>). Check again before any rename, and create any later view only after the rename.</li>
+            <li><b>Applying it on Biznet</b>: back up with <code>mysqldump</code> to the laptop, then <code>php artisan down</code>, pull, <code>migrate --force</code>, <code>optimize</code>, <code>up</code>. Rows are not touched, and <code>sessions</code> keeps its name, so testers stay signed in. Never run <code>migrate:fresh</code> or <code>composer sample</code> there.</li>
+            <li>Stoku is frozen and keeps its old names. Jays can no longer take code from Stoku with <code>git pull</code> after the rename.</li>
+        </ul>
+
         <h3>Migrations</h3>
         <p>Migrations are the source of truth for the schema (<code>database/sql/sstock_mysql_ddl.sql</code> is a reference DDL regenerated on 2026-10-29 and goes stale after each new migration). In order:</p>
         <table class="g-table">
@@ -470,6 +503,8 @@ composer test                        # config:clear, then php artisan test</pre>
 
         <h2 id="open">12. Open items</h2>
         <ul class="g-list">
+            <li>Item / Product wording: in the owner's terms <code>m_item</code> is the stock item master (today the model <code>Product</code>, table <code>products</code>) and a batch is <code>s_batch</code> (today the model <code>Item</code>, table <code>items</code>). Option A renames only the tables, so <code>product_id</code> points to <code>m_item</code> and <code>item_id</code> to <code>s_batch</code>. Option B also renames models, columns (<code>item_id</code> to <code>batch_id</code>, then <code>product_id</code> to <code>item_id</code>) and relations. Not decided; no table has both columns, so the column renames are independent in the database, but the search-and-replace in code must run in that order.</li>
+            <li>Table prefix for <code>geo_*</code> (see Table naming convention).</li>
             <li>Re-order records: no screen to edit or delete an order (only <i>Close Order</i> exists). The list and detail are in Riwayat Pemesanan.</li>
             <li>Segregation of duties between creator and approver (Adjustment, Stok Opname).</li>
             <li>Hide the Save button on RO modules (the server already rejects the save).</li>
