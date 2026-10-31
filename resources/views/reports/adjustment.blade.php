@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Laporan Stock Opname & Penyesuaian: stok sistem vs fisik, selisih, alasan, tanggal, jam, status persetujuan dan dampak nilai.
- Sumber hulu  : ReportController@adjustment (stock_document_lines tipe ADJ). Hanya Supervisor.
+ Sumber hulu  : ReportController@adjustment (rm_stock_line tipe ADJ). Hanya Supervisor.
  Input        : sup, from, to, rows.
  Output       : filter (periode + status) + x-dl::report.
  Dipakai oleh : route reports.adjustment (menu Reports > Opname & Adjustment Report).
@@ -30,5 +30,5 @@
             ['key' => 'user', 'label' => 'Counted by'],
             ['key' => 'approver', 'label' => 'Approved / Rejected by'],
         ]"
-        :rows="$rows" :signatures="[['Counted by', 'Warehouse'], ['Approved by', 'Supervisor']]" source="stock_document_lines (ADJ)" />
+        :rows="$rows" :signatures="[['Counted by', 'Warehouse'], ['Approved by', 'Supervisor']]" source="rm_stock_line (ADJ)" />
 @endsection

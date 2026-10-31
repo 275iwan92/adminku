@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /* REMARK
- * Tujuan       : Satu-satunya pintu yang mengubah saldo stok: memposting baris dokumen ke buku besar stock_movements dan memperbarui items.stock_qty / avg_cost (moving average).
- * Sumber hulu  : stock_documents + stock_document_lines (qty, unit_cost, selisih penyesuaian).
- * Output       : baris stock_movements (dengan saldo sesudah transaksi); daftar item yang menyentuh Reorder Point.
+ * Tujuan       : Satu-satunya pintu yang mengubah saldo stok: memposting baris dokumen ke buku besar rm_stockcard dan memperbarui items.stock_qty / avg_cost (moving average).
+ * Sumber hulu  : rm_stock + rm_stock_line (qty, unit_cost, selisih penyesuaian).
+ * Output       : baris rm_stockcard (dengan saldo sesudah transaksi); daftar item yang menyentuh Reorder Point.
  * Dipakai oleh : StockDocuments (masuk, keluar, saldo awal, persetujuan penyesuaian, pembatalan); penjaga kunci Stok Opname (StockCount::lockingNow) ada di sini.
  * Status       : Aktif.
  */
@@ -147,7 +147,7 @@ final class StockLedger
     private function unreversed(StockDocument $doc)
     {
         return StockMovement::query()->where('stock_document_id', $doc->id)->whereNull('reversal_of')
-            ->whereNotExists(fn ($q) => $q->from('stock_movements as r')->whereColumn('r.reversal_of', 'stock_movements.id'))->orderByDesc('id');
+            ->whereNotExists(fn ($q) => $q->from('rm_stockcard as r')->whereColumn('r.reversal_of', 'rm_stockcard.id'))->orderByDesc('id');
     }
 
     // Satu-satunya penjaga kunci Stok Opname: selama opname berjalan dengan kunci aktif, tidak ada dokumen yang boleh memposting atau membalik stok (draf tetap boleh disimpan).

@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 /* REMARK
  * Tujuan       : Deret nilai persediaan (saldo x biaya rata-rata semua barang) untuk grafik di opening screen: satu bulan per tampilan,
  *                titik per minggu (tanggal 7, 14, 21, 28, lalu akhir bulan atau hari ini), dengan navigasi bulan sebelum/sesudahnya.
- * Sumber hulu  : stock_movements (balance_qty, balance_avg_cost sesudah tiap pergerakan).
+ * Sumber hulu  : rm_stockcard (balance_qty, balance_avg_cost sesudah tiap pergerakan).
  * Output       : ['labels' => [...], 'values' => [...], 'month' => Carbon, 'title' => 'Oktober 2026', 'prev' => 'YYYY-MM'|null, 'next' => 'YYYY-MM'|null].
  * Dipakai oleh : HomeController (hanya Supervisor).
  * Status       : Aktif.

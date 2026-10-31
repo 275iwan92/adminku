@@ -9,7 +9,7 @@ use Devlib\PrintDoc\Document;
 /* REMARK
  * Tujuan       : Cetakan dokumen stok (Saldo Awal, Penerimaan, Pengeluaran, Penyesuaian) memakai tata letak DevLib x-dl::print-doc. Setiap cetakan membawa MODE dokumen
  *                (DRAFT / CONFIRMED / CANCELLED, penyesuaian juga WAITING APPROVAL / APPROVED / REJECTED); yang belum / tidak sah diberi tanda air.
- * Sumber hulu  : stock_documents + stock_document_lines (+ items, supplier, pembuat / penyetuju).
+ * Sumber hulu  : rm_stock + rm_stock_line (+ items, supplier, pembuat / penyetuju).
  * Input        : StockDocument (load()).
  * Output       : objek Document (A5 landscape sampai 5 baris, A4 portrait di atasnya).
  * Dipakai oleh : StockDocumentController@print (rute docs.print), tombol Print di docs/form.blade.php.

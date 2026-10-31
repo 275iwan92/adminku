@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Laporan Pengeluaran Barang per periode (tanggal, jam, penerima, departemen, keperluan, item, qty, user).
- Sumber hulu  : ReportController@issuance (stock_document_lines tipe OUT). Biaya & jumlah hanya untuk Supervisor.
+ Sumber hulu  : ReportController@issuance (rm_stock_line tipe OUT). Biaya & jumlah hanya untuk Supervisor.
  Input        : sup, from, to, rows.
  Output       : filter (periode + penerima / departemen) + x-dl::report.
  Dipakai oleh : route reports.issuance (menu Reports > Issuance Report).
@@ -27,5 +27,5 @@
             $sup ? ['key' => 'amount', 'label' => 'Cost', 'type' => 'money', 'sum' => true, 'bold' => true] : null,
             ['key' => 'user', 'label' => 'Entered by'],
         ]))"
-        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Received by', 'Recipient'], ['Checked by', 'Supervisor']]" source="stock_document_lines (OUT)" />
+        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Received by', 'Recipient'], ['Checked by', 'Supervisor']]" source="rm_stock_line (OUT)" />
 @endsection

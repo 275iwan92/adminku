@@ -17,7 +17,7 @@ use Illuminate\Validation\ValidationException;
  * Tujuan       : Satuan masuk per barang (m_item_unit): daftar kemasan yang sah saat barang diterima beserta faktornya ke satuan stok, dan aturan siapa boleh mengubah faktornya.
  *                Siapa pun boleh MEMBUAT faktor baru dan MEMPERBAIKI faktor yang belum pernah dipakai di dokumen terkonfirmasi; faktor yang sudah dipakai hanya boleh diubah pemegang hak tulis modul Satuan (UOM, Supervisor).
  *                Dokumen lama tidak pernah berubah: baris dokumen menyimpan qty yang sudah dikonversi dan yang diketik (entered_*).
- * Sumber hulu  : m_item_unit, m_unit_conversion (cadangan global), stock_document_lines (pemakaian).
+ * Sumber hulu  : m_item_unit, m_unit_conversion (cadangan global), rm_stock_line (pemakaian).
  * Output       : options(product) untuk pilihan satuan di baris Penerimaan; usage(product); save(product, unit, factor, user).
  * Dipakai oleh : ItemLookups, StockDocumentController (baris form + jendela konversi), ProductController (bagian Satuan masuk).
  * Status       : Aktif.
@@ -50,11 +50,11 @@ final class ProductUnits
     /** Jumlah dokumen Penerimaan terkonfirmasi (termasuk yang kemudian dibatalkan) yang memakai tiap satuan masuk barang ini. @return array<string, int> */
     public static function usage(Product $product): array
     {
-        return StockDocumentLine::query()->join('stock_documents', 'stock_documents.id', '=', 'stock_document_lines.stock_document_id')
-            ->join('items', 'items.id', '=', 'stock_document_lines.item_id')
-            ->where('items.product_id', $product->id)->where('stock_documents.type', StockDocumentType::Receiving)->whereNotNull('stock_documents.confirmed_at')
-            ->whereNotNull('stock_document_lines.entered_unit')
-            ->groupBy('stock_document_lines.entered_unit')->selectRaw('stock_document_lines.entered_unit as unit, count(distinct stock_documents.id) as total')
+        return StockDocumentLine::query()->join('rm_stock', 'rm_stock.id', '=', 'rm_stock_line.stock_document_id')
+            ->join('items', 'items.id', '=', 'rm_stock_line.item_id')
+            ->where('items.product_id', $product->id)->where('rm_stock.type', StockDocumentType::Receiving)->whereNotNull('rm_stock.confirmed_at')
+            ->whereNotNull('rm_stock_line.entered_unit')
+            ->groupBy('rm_stock_line.entered_unit')->selectRaw('rm_stock_line.entered_unit as unit, count(distinct rm_stock.id) as total')
             ->pluck('total', 'unit')->map(fn ($n) => (int) $n)->all();
     }
 

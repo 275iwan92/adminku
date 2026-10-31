@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['item_id', 'stock_document_id', 'type', 'moved_at', 'qty', 'unit_cost', 'balance_qty', 'balance_avg_cost', 'user_id', 'reversal_of'])]
 class StockMovement extends Model
 {
+    protected $table = 'rm_stockcard';
+
     public const UPDATED_AT = null;
 
     protected function casts(): array

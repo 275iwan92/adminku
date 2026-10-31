@@ -48,10 +48,10 @@ class NumberingRaceTest extends TestCase
     public function test_document_number_collision_takes_the_next_number_instead_of_failing(): void
     {
         $first = $this->receiving();
-        $this->interloperAfterSelect('stock_documents', function (QueryExecuted $query) use ($first) {
+        $this->interloperAfterSelect('rm_stock', function (QueryExecuted $query) use ($first) {
             $row = $first->getAttributes();
             unset($row['id']);
-            DB::table('stock_documents')->insert(['doc_no' => rtrim($query->bindings[0], '%').'0002'] + $row);
+            DB::table('rm_stock')->insert(['doc_no' => rtrim($query->bindings[0], '%').'0002'] + $row);
         });
 
         $second = $this->receiving();   // penyelip mengambil 0002; INSERT kita bertabrakan, lalu mengulang

@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
 /* REMARK
  * Tujuan       : Riwayat contoh lewat jalur resmi (StockDocuments -> StockLedger): saldo awal bulan lalu, penerimaan, pengeluaran (ada yang membuat stok di bawah Reorder Point), satu penyesuaian disetujui dan satu menunggu persetujuan.
  * Sumber hulu  : ItemSeeder::ITEMS (stok awal), users, m_supplier.
- * Output       : stock_documents, stock_document_lines, stock_movements, items.stock_qty / avg_cost.
+ * Output       : rm_stock, rm_stock_line, rm_stockcard, items.stock_qty / avg_cost.
  * Dipakai oleh : DatabaseSeeder. Dilewati bila sudah ada dokumen stok.
  * Status       : Aktif (data contoh).
  */

@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Kartu Stok per item: histori pergerakan (saldo awal, masuk, keluar, penyesuaian, saldo berjalan) dalam rentang tanggal, lengkap tanggal, jam, dokumen, user.
- Sumber hulu  : ReportController@stockCard (stock_movements). Kolom biaya & nilai saldo hanya untuk Supervisor.
+ Sumber hulu  : ReportController@stockCard (rm_stockcard). Kolom biaya & nilai saldo hanya untuk Supervisor.
  Input        : sup, from, to, item, rows, opening, items (pilihan item).
  Output       : filter + x-dl::report (bisa dicetak).
  Dipakai oleh : route reports.stock-card (menu Reports > Stock Card).
@@ -42,6 +42,6 @@
                 $sup ? ['key' => 'cost', 'label' => 'Unit Cost', 'type' => 'money'] : null,
                 $sup ? ['key' => 'bal_value', 'label' => 'Balance Value', 'type' => 'money'] : null,
             ]))"
-            :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="stock_movements" />
+            :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="rm_stockcard" />
     @endif
 @endsection

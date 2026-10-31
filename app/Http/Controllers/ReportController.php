@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
 
 /* REMARK
  * Tujuan       : Laporan utama: Kartu Stok, Summary Stock, Kedaluwarsa, Penerimaan, Pengeluaran, Opname & Penyesuaian. Semua tampil sebagai x-dl::report (kop, kriteria, ringkasan, kelompok, cetak).
- * Sumber hulu  : stock_movements (kartu stok), items (summary), stock_document_lines + stock_documents (laporan dokumen). Kolom harga / nilai hanya untuk Supervisor.
+ * Sumber hulu  : rm_stockcard (kartu stok), items (summary), rm_stock_line + rm_stock (laporan dokumen). Kolom harga / nilai hanya untuk Supervisor.
  * Output       : view reports.* dengan filter GET (periode, item, dst) + x-dl::report.
  * Dipakai oleh : routes/web.php (reports.*).
  * Status       : Aktif.

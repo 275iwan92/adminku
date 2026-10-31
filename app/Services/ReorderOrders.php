@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
  * Tujuan       : Aturan penutupan pesanan ulang (reorder_orders). Pesanan yang punya jumlah ditutup HANYA saat jumlah diterima memenuhi jumlah dipesan; penerimaan sebagian = "diterima sebagian", tetap terbuka.
  *                Pesanan lama tanpa jumlah: penerimaan pertama sejak tanggal pesan menutupnya (aturan lama). Pesanan yang tak akan dipenuhi penuh ditutup manual (close_reason 'manual'), tidak ikut dialokasikan lagi.
  *                Perkiraan tiba / terlambat memakai kedatangan PERTAMA: setelah ada penerimaan pertama pesanan tidak ditandai terlambat lagi.
- * Sumber hulu  : penerimaan terkonfirmasi yang tidak dibatalkan (stock_movements jenis Penerimaan, satuan stok, semua batch produk), reorder_orders.
+ * Sumber hulu  : penerimaan terkonfirmasi yang tidak dibatalkan (rm_stockcard jenis Penerimaan, satuan stok, semua batch produk), reorder_orders.
  * Output       : reorder_orders.received_qty, first_received_at, closed_at, close_reason, receiving_id. reconcile() idempoten: hasilnya hanya bergantung pada data penerimaan, jadi pembatalan lalu reconcile membuka kembali pesanan yang seharusnya terbuka.
  * Dipakai oleh : StockDocuments (konfirmasi dan pembatalan Penerimaan), ReorderOrderController.
  * Status       : Aktif.
@@ -24,12 +24,12 @@ final class ReorderOrders
     public static function receipts(int $productId)
     {
         return StockMovement::query()
-            ->join('items', 'items.id', '=', 'stock_movements.item_id')
-            ->join('stock_documents', 'stock_documents.id', '=', 'stock_movements.stock_document_id')
-            ->where('items.product_id', $productId)->where('stock_movements.type', StockDocumentType::Receiving->value)->whereNull('stock_movements.reversal_of')
-            ->whereIn('stock_documents.status', ['confirmed', 'cancel_pending'])
-            ->orderBy('stock_movements.moved_at')->orderBy('stock_movements.id')
-            ->get(['stock_movements.id', 'stock_movements.stock_document_id', 'stock_movements.moved_at', 'stock_movements.qty']);
+            ->join('items', 'items.id', '=', 'rm_stockcard.item_id')
+            ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
+            ->where('items.product_id', $productId)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
+            ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])
+            ->orderBy('rm_stockcard.moved_at')->orderBy('rm_stockcard.id')
+            ->get(['rm_stockcard.id', 'rm_stockcard.stock_document_id', 'rm_stockcard.moved_at', 'rm_stockcard.qty']);
     }
 
     /** Hitung ulang semua pesanan produk dari data penerimaan; dipanggil setelah Penerimaan dikonfirmasi atau dibatalkan. */

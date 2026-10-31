@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Laporan Penerimaan Barang Masuk per periode (tanggal, jam, supplier, no. referensi, item, qty, harga beli, user).
- Sumber hulu  : ReportController@receiving (stock_document_lines tipe IN). Harga & jumlah hanya untuk Supervisor.
+ Sumber hulu  : ReportController@receiving (rm_stock_line tipe IN). Harga & jumlah hanya untuk Supervisor.
  Input        : sup, from, to, rows, suppliers.
  Output       : filter + x-dl::report.
  Dipakai oleh : route reports.receiving (menu Reports > Receiving Report).
@@ -29,5 +29,5 @@
             $sup ? ['key' => 'amount', 'label' => 'Amount', 'type' => 'money', 'sum' => true, 'bold' => true] : null,
             ['key' => 'user', 'label' => 'Entered by'],
         ]))"
-        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="stock_document_lines (IN)" />
+        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="rm_stock_line (IN)" />
 @endsection

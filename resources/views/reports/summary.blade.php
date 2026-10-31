@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Summary Stock per periode (dari tanggal sampai tanggal): saldo awal, masuk, keluar, penyesuaian, saldo akhir per item, status Reorder Point terhadap saldo akhir, dan untuk Supervisor nilai valuasi + total aset persediaan.
- Sumber hulu  : ReportController@summary (items + stock_movements). Data Entry tidak melihat biaya / nilai.
+ Sumber hulu  : ReportController@summary (items + rm_stockcard). Data Entry tidak melihat biaya / nilai.
  Input        : sup, from, to, categories, rows.
  Output       : filter (periode, kategori, hanya reorder, termasuk nonaktif) + x-dl::report.
  Dipakai oleh : route reports.summary (menu Reports > Summary Stock).
@@ -45,5 +45,5 @@
             ['key' => 'order_qty', 'label' => 'Jumlah Dipesan', 'wrap' => true],
             ['key' => 'order', 'label' => 'Info Pemesanan', 'wrap' => true],
         ]))"
-        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="items, stock_movements" />
+        :rows="$rows" :signatures="[['Prepared by', 'Warehouse'], ['Checked by', 'Supervisor']]" source="items, rm_stockcard" />
 @endsection

@@ -12,7 +12,7 @@ use Devlib\Engine\LeadTime;
  * Tujuan       : Menyambung engine LeadTime DevLib ke Stoku: lead time per barang dari pesanan nyata (reorder_orders: tanggal pesan sampai tanggal masuk), dengan lead time manual barang (m_item.lead_time_days) sebagai cadangan.
  *                Tanggal masuk = penerimaan PERTAMA (first_received_at), juga untuk pesanan yang masih diterima sebagian. Pesanan tanpa penerimaan (termasuk yang ditutup manual tanpa penerimaan) tidak dihitung; bila penerimaan dibatalkan, ReorderOrders::reconcile mengosongkannya lagi.
  *                Hanya SARAN dan keterangan: tidak mengubah lead time manual, titik pesan ulang, aturan penutupan pesanan, maupun perhitungan peringatan.
- * Sumber hulu  : reorder_orders, m_item.lead_time_days (0 = belum diisi, dianggap tanpa cadangan), stock_movements (pemakaian harian).
+ * Sumber hulu  : reorder_orders, m_item.lead_time_days (0 = belum diisi, dianggap tanpa cadangan), rm_stockcard (pemakaian harian).
  * Output       : LeadTime per produk (forMany: satu query untuk banyak produk), pemakaian harian rata-rata.
  * Dipakai oleh : ReorderOrder::note, HomeController, ProductController, ReportController (Ringkasan Stok), form barang.
  * Status       : Aktif.
@@ -51,11 +51,11 @@ final class LeadTimes
     public static function dailyUsage(Product $product): float
     {
         $out = StockMovement::query()
-            ->join('items', 'items.id', '=', 'stock_movements.item_id')
-            ->join('stock_documents', 'stock_documents.id', '=', 'stock_movements.stock_document_id')
-            ->where('items.product_id', $product->id)->where('stock_movements.type', StockDocumentType::Issuance->value)->whereNull('stock_movements.reversal_of')
-            ->whereIn('stock_documents.status', ['confirmed', 'cancel_pending'])->where('stock_movements.moved_at', '>=', now()->subDays(self::USAGE_DAYS))
-            ->sum('stock_movements.qty');
+            ->join('items', 'items.id', '=', 'rm_stockcard.item_id')
+            ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
+            ->where('items.product_id', $product->id)->where('rm_stockcard.type', StockDocumentType::Issuance->value)->whereNull('rm_stockcard.reversal_of')
+            ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])->where('rm_stockcard.moved_at', '>=', now()->subDays(self::USAGE_DAYS))
+            ->sum('rm_stockcard.qty');
 
         return abs((float) $out) / self::USAGE_DAYS;
     }
