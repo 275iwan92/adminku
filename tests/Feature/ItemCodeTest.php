@@ -6,7 +6,7 @@ use App\Enums\StockDocumentType;
 use App\Models\Category;
 use App\Models\Batch;
 use App\Models\Location;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\Recipient;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -30,11 +30,11 @@ class ItemCodeTest extends TestCase
         return array_merge(['name' => 'Barang uji', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 5, 'lead_time_days' => 1], $extra);
     }
 
-    private function product(array $extra = [], ?string $code = null): Product
+    private function product(array $extra = [], ?string $code = null): Item
     {
         $cat = Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK']);
 
-        return Product::register($this->payload($cat, $extra), $code);
+        return Item::register($this->payload($cat, $extra), $code);
     }
 
     // Penerimaan (draf lalu Confirm) lewat jalur resmi; baris = [produk, jumlah, tanggal kedaluwarsa].
@@ -43,7 +43,7 @@ class ItemCodeTest extends TestCase
         $docs = app(StockDocuments::class);
         $by ??= User::factory()->create();
         $doc = $docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id], array_map(
-            fn ($l) => ['product_id' => $l[0]->id, 'qty' => $l[1], 'unit_cost' => 10, 'expiry_date' => $l[2] ?? null], $lines), $by);
+            fn ($l) => ['item_id' => $l[0]->id, 'qty' => $l[1], 'unit_cost' => 10, 'expiry_date' => $l[2] ?? null], $lines), $by);
         $docs->confirm($doc, $by);
     }
 
@@ -57,7 +57,7 @@ class ItemCodeTest extends TestCase
         $this->post(route('products.store'), $this->payload($atk, ['tracks_expiry' => 1]))->assertRedirect();
         $this->post(route('products.store'), $this->payload($tls))->assertRedirect();
 
-        $this->assertEqualsCanonicalizing(['ATK-0001', 'ATK-0002', 'TLS-0001'], Product::pluck('code')->all());
+        $this->assertEqualsCanonicalizing(['ATK-0001', 'ATK-0002', 'TLS-0001'], Item::pluck('code')->all());
         // Barang biasa langsung punya satu batch berkode sama; barang berkedaluwarsa belum punya batch sampai ada penerimaan bertanggal.
         $this->assertEqualsCanonicalizing(['ATK-0001', 'TLS-0001'], Batch::pluck('code')->all());
     }
@@ -67,7 +67,7 @@ class ItemCodeTest extends TestCase
         $atk = Category::create(['code' => 'ATK', 'name' => 'ATK']);
 
         $this->actingAs(User::factory()->create())->post(route('products.store'), ['name' => 'Spidol', 'category_id' => $atk->id, 'unit' => 'pcs'])->assertRedirect();
-        $product = Product::firstOrFail();
+        $product = Item::firstOrFail();
         $this->assertSame([0.0, 0.0, 'ATK-0001'], [$product->unit_price, $product->reorder_point, $product->code]);
 
         $this->put(route('products.update', $product), ['_action' => 'save', 'name' => 'X', 'unit' => 'pcs'])->assertForbidden();
@@ -79,7 +79,7 @@ class ItemCodeTest extends TestCase
         $tls = Category::create(['code' => 'TLS', 'name' => 'Tools']);
         $this->actingAs(User::factory()->supervisor()->create());
         $this->post(route('products.store'), $this->payload($atk, ['tracks_expiry' => 1]));
-        $product = Product::firstOrFail();
+        $product = Item::firstOrFail();
 
         $this->put(route('products.update', $product), ['_action' => 'save'] + $this->payload($tls, ['name' => 'Baru', 'code' => 'HACK', 'tracks_expiry' => 0]))->assertRedirect();
 
@@ -110,7 +110,7 @@ class ItemCodeTest extends TestCase
         $this->post(route('products.store'), $this->payload($cat, ['location' => 'GHOST']))->assertSessionHasErrors('location');
         $this->post(route('products.store'), $this->payload($cat, ['location' => 'OLD']))->assertSessionHasErrors('location');
         $this->post(route('products.store'), $this->payload($off))->assertSessionHasErrors('category_id');
-        $this->assertSame(1, Product::count());
+        $this->assertSame(1, Item::count());
     }
 
     public function test_location_master_is_supervisor_only_and_code_stays(): void
@@ -144,7 +144,7 @@ class ItemCodeTest extends TestCase
         $sup = Supplier::create(['code' => 'S1', 'name' => 'S']);
         $this->actingAs(User::factory()->create());
 
-        $line = ['product_id' => $lem->id, 'qty' => 5, 'unit_cost' => 10];
+        $line = ['item_id' => $lem->id, 'qty' => 5, 'unit_cost' => 10];
         $this->post(route('docs.store', 'receiving'), ['supplier_id' => $sup->id, 'lines' => [$line]])->assertSessionHasErrors('lines.0.expiry_date');
 
         $this->post(route('docs.store', 'receiving'), ['supplier_id' => $sup->id, 'lines' => [$line + ['expiry_date' => '2026-03-15']]])->assertRedirect();
@@ -187,11 +187,11 @@ class ItemCodeTest extends TestCase
 
         // 55 di rak, tetapi 50 sudah kedaluwarsa: tersedia 5 <= titik 10.
         $this->assertTrue($lem->fresh()->isBelowReorderPoint());
-        $this->assertSame([$lem->id], Product::belowReorderPoint()->pluck('id')->all());
+        $this->assertSame([$lem->id], Item::belowReorderPoint()->pluck('id')->all());
 
         $this->receive([[$lem, 20, today()->addDays(120)->toDateString()]]);                // dua batch sehat: 25 > 10
         $this->assertFalse($lem->fresh()->isBelowReorderPoint());
-        $this->assertSame([], Product::belowReorderPoint()->pluck('id')->all());
+        $this->assertSame([], Item::belowReorderPoint()->pluck('id')->all());
     }
 
     public function test_expiry_state_and_alerts_only_count_active_items_that_still_have_stock(): void
@@ -223,10 +223,10 @@ class ItemCodeTest extends TestCase
         $this->seed();
 
         $this->assertSame(0, Batch::whereNull('location')->count());
-        $this->assertSame(0, Batch::whereNull('product_id')->count());
+        $this->assertSame(0, Batch::whereNull('item_id')->count());
         $this->assertSame(Location::count(), Location::whereIn('code', Batch::pluck('location'))->count());
         $this->assertSame(2, Batch::nearExpiry()->count());  // satu sudah lewat, satu hampir; dua batch lain masih lama
-        $this->assertSame(2, Product::where('name', 'Lem Kayu Fox 100 ml')->firstOrFail()->batches()->count());   // satu produk, dua batch
+        $this->assertSame(2, Item::where('name', 'Lem Kayu Fox 100 ml')->firstOrFail()->batches()->count());   // satu produk, dua batch
         $this->actingAs(User::where('username', 'supervisor')->firstOrFail())->get(route('home'))->assertOk()->assertSee('Lem Kayu Fox 100 ml');
     }
 }

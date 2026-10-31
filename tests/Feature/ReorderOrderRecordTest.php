@@ -46,7 +46,7 @@ class ReorderOrderRecordTest extends TestCase
 
     private function order(array $extra = []): array
     {
-        return array_merge(['product_id' => $this->item->product_id, 'supplier_id' => $this->supplier->id, 'qty' => 25, 'ordered_at' => today()->toDateString(), 'ref_no' => 'PO-5', 'note' => 'kirim pagi'], $extra);
+        return array_merge(['item_id' => $this->item->item_id, 'supplier_id' => $this->supplier->id, 'qty' => 25, 'ordered_at' => today()->toDateString(), 'ref_no' => 'PO-5', 'note' => 'kirim pagi'], $extra);
     }
 
     public function test_the_popup_saves_supplier_quantity_date_ref_and_note(): void
@@ -86,7 +86,7 @@ class ReorderOrderRecordTest extends TestCase
         $expected = 'Sudah dipesan 25 pcs ke Toko Maju pada '.today()->format('d/m/Y').', ref PO-5 oleh Sari Supervisor. Diterima sejak dipesan: 3 dari 25 pcs.';
 
         $this->get(route('home'))->assertOk()->assertSee($expected, false)->assertSee('Catatan: kirim pagi', false);
-        $this->get(route('products.show', $this->item->product))->assertOk()->assertSee($expected, false);
+        $this->get(route('products.show', $this->item->item))->assertOk()->assertSee($expected, false);
         $html = $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk()->getContent();
         foreach (['Supplier Pesanan', 'Jumlah Dipesan', 'Toko Maju', '25 pcs'] as $text) {
             $this->assertStringContainsString($text, $html);
@@ -95,12 +95,12 @@ class ReorderOrderRecordTest extends TestCase
 
     public function test_an_old_order_without_supplier_or_quantity_still_shows_without_error(): void
     {
-        ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today(), 'ref_no' => 'PO-OLD', 'created_by' => $this->sup->id]);
+        ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today(), 'ref_no' => 'PO-OLD', 'created_by' => $this->sup->id]);
 
         $this->assertStringStartsWith('Sudah dicatat dipesan pada '.today()->format('d/m/Y').', ref PO-OLD oleh Sari Supervisor.', ReorderOrder::firstOrFail()->note());
         $this->get(route('home'))->assertOk()->assertSee('Sudah dicatat dipesan pada', false)->assertSee('PO-OLD', false);
         $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk();
-        $this->get(route('products.show', $this->item->product))->assertOk();
+        $this->get(route('products.show', $this->item->item))->assertOk();
     }
 
     public function test_a_deleted_supplier_leaves_the_order_readable(): void

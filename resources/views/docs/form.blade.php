@@ -22,7 +22,7 @@
         // Penerimaan / Saldo Awal memilih produk + tanggal kedaluwarsa (batch dibuat otomatis); Pengeluaran / Penyesuaian memilih batch.
         $lookup = ['product_in', 'item_out', 'product_opn', 'item_adj'][array_search($t, [T::Receiving, T::Issuance, T::Opening, T::Adjustment], true)];
         $byProduct = in_array($t, [T::Receiving, T::Opening], true);
-        $item = ['key' => $byProduct ? 'product_id' : 'batch_id', 'label' => 'Item', 'type' => 'lookup', 'lookup' => $lookup, 'required' => true, 'width' => '300px'];
+        $item = ['key' => $byProduct ? 'item_id' : 'batch_id', 'label' => 'Item', 'type' => 'lookup', 'lookup' => $lookup, 'required' => true, 'width' => '300px'];
         $expiry = ['key' => 'expiry_date', 'label' => 'Expiry Date', 'type' => 'date', 'width' => '150px'];
         $unit = ['key' => 'unit', 'label' => 'Unit', 'type' => 'display', 'width' => '80px'];
         $note = ['key' => 'note', 'label' => 'Line Note', 'width' => '200px'];

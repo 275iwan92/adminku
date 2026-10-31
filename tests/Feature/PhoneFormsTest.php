@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Product;
-use App\Models\ProductUnit;
+use App\Models\Item;
+use App\Models\ItemUnit;
 use App\Models\Supplier;
 use App\Models\Unit;
 use App\Models\User;
@@ -29,11 +29,11 @@ class PhoneFormsTest extends TestCase
         parent::setUp();
     }
 
-    private function product(): Product
+    private function product(): Item
     {
         Unit::firstOrCreate(['code' => 'dus'], ['name' => 'Dus']);
 
-        return Product::register(['name' => 'Pensil HP', 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 10]);
+        return Item::register(['name' => 'Pensil HP', 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 10]);
     }
 
     /** @return array<string, string> nama layar => alamat */
@@ -64,7 +64,7 @@ class PhoneFormsTest extends TestCase
     {
         $this->actingAs(User::factory()->supervisor()->create());
         $p = $this->product();
-        ProductUnit::create(['product_id' => $p->id, 'unit' => 'dus', 'factor' => 12]);
+        ItemUnit::create(['item_id' => $p->id, 'unit' => 'dus', 'factor' => 12]);
         $html = $this->withCookie('ui', 'phone')->get(route('products.show', $p))->assertOk()->getContent();
         $this->assertSame(2, substr_count($html, 'dl-table--stack'), 'tabel Batch dan Satuan masuk');
         $this->assertStringContainsString('data-label="Faktor ke pcs"', $html);

@@ -2,7 +2,7 @@
  Tujuan       : Baris Penerimaan menawarkan satuan menurut barangnya: satuan stok + satuan masuk milik barang itu (grup "Satuan lain" untuk satuan tanpa faktor / hanya punya faktor global),
                 dan kolom "= In stock unit" menghitung langsung hasil konversi (mis. 5 dus x 12 = 60 pcs) sebelum Confirm. Perhitungan resmi tetap di server (StockDocuments::toStockUnit); ini hanya tampilan.
                 Dokumen terkunci menampilkan qty tersimpan (stock_qty dari server), bukan hitung ulang dengan faktor sekarang.
- Sumber hulu  : baris form (packs = JSON ProductUnits::options, stock_unit, unit, qty, stock_qty), daftar satuan aktif ($units).
+ Sumber hulu  : baris form (packs = JSON ItemUnits::options, stock_unit, unit, qty, stock_qty), daftar satuan aktif ($units).
  Input        : units (kode => label).
  Output       : pengganti cellRaw (kolom unit, stock_qty) dan refresh milik komponen x-dl::lines `lines` di halaman ini; tidak mengubah DevLib.
  Dipakai oleh : docs/form.blade.php (Penerimaan).

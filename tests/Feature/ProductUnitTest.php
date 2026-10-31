@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Product;
-use App\Models\ProductUnit;
+use App\Models\Item;
+use App\Models\ItemUnit;
 use App\Models\StockDocument;
 use App\Models\StockDocumentLine;
 use App\Models\Supplier;
@@ -24,24 +24,24 @@ class ProductUnitTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function product(string $code = 'PU-1'): Product
+    private function product(string $code = 'PU-1'): Item
     {
         Unit::firstOrCreate(['code' => 'dus'], ['name' => 'Dus']);
         Unit::firstOrCreate(['code' => 'lusin'], ['name' => 'Lusin']);
 
-        return Product::register(['name' => 'Pensil '.$code, 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 5], $code);
+        return Item::register(['name' => 'Pensil '.$code, 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 5], $code);
     }
 
-    private function pack(Product $p, string $unit, float $factor): ProductUnit
+    private function pack(Item $p, string $unit, float $factor): ItemUnit
     {
-        return ProductUnit::create(['product_id' => $p->id, 'unit' => $unit, 'factor' => $factor]);
+        return ItemUnit::create(['item_id' => $p->id, 'unit' => $unit, 'factor' => $factor]);
     }
 
-    private function receive(Product $p, float $qty, string $unit, float $cost = 1200)
+    private function receive(Item $p, float $qty, string $unit, float $cost = 1200)
     {
         $supplier = Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S One']);
 
-        return $this->post(route('docs.store', 'receiving'), ['supplier_id' => $supplier->id, 'lines' => [['product_id' => $p->id, 'qty' => $qty, 'unit' => $unit, 'unit_cost' => $cost]]]);
+        return $this->post(route('docs.store', 'receiving'), ['supplier_id' => $supplier->id, 'lines' => [['item_id' => $p->id, 'qty' => $qty, 'unit' => $unit, 'unit_cost' => $cost]]]);
     }
 
     public function test_five_dus_of_twelve_become_sixty_pcs_in_stock(): void
@@ -52,7 +52,7 @@ class ProductUnitTest extends TestCase
 
         $this->receive($p, 5, 'dus')->assertRedirect();
         $doc = StockDocument::latest('id')->firstOrFail();
-        $this->put(route('docs.update', ['receiving', $doc]), ['supplier_id' => $doc->supplier_id, 'lines' => [['product_id' => $p->id, 'qty' => 5, 'unit' => 'dus', 'unit_cost' => 1200]], '_action' => 'confirm'])->assertRedirect();
+        $this->put(route('docs.update', ['receiving', $doc]), ['supplier_id' => $doc->supplier_id, 'lines' => [['item_id' => $p->id, 'qty' => 5, 'unit' => 'dus', 'unit_cost' => 1200]], '_action' => 'confirm'])->assertRedirect();
 
         $line = StockDocumentLine::firstOrFail();
         $this->assertSame([60.0, 100.0], [$line->qty, $line->unit_cost]);   // 1200 per dus = 100 per pcs
@@ -110,17 +110,17 @@ class ProductUnitTest extends TestCase
         $this->actingAs($entry);
         $p = $this->product();
 
-        $this->receive($p, 2, 'dus')->assertSessionHasErrors('lines')->assertSessionHas('missing_conversions', [['product_id' => $p->id, 'from' => 'dus', 'to' => 'pcs', 'items' => 'PU-1']]);
+        $this->receive($p, 2, 'dus')->assertSessionHasErrors('lines')->assertSessionHas('missing_conversions', [['item_id' => $p->id, 'from' => 'dus', 'to' => 'pcs', 'items' => 'PU-1']]);
         $this->assertSame(0, StockDocumentLine::count());
 
-        $this->postJson(route('docs.conversion', 'receiving'), ['product_id' => $p->id, 'unit' => 'dus', 'factor' => 12])->assertOk();
+        $this->postJson(route('docs.conversion', 'receiving'), ['item_id' => $p->id, 'unit' => 'dus', 'factor' => 12])->assertOk();
         $this->assertSame(0, UnitConversion::count());   // bukan konversi global
-        $unit = ProductUnit::firstOrFail();
-        $this->assertSame([$p->id, 'dus', '12.000000', $entry->id, $entry->id], [$unit->product_id, $unit->unit, $unit->factor, $unit->created_by, $unit->updated_by]);
+        $unit = ItemUnit::firstOrFail();
+        $this->assertSame([$p->id, 'dus', '12.000000', $entry->id, $entry->id], [$unit->item_id, $unit->unit, $unit->factor, $unit->created_by, $unit->updated_by]);
 
         $this->receive($p, 2, 'dus')->assertSessionHasNoErrors();
         $this->assertSame(24.0, StockDocumentLine::firstOrFail()->qty);
-        $this->assertNull(ProductUnit::query()->where('product_id', $this->product('PU-2')->id)->first());   // barang lain tidak ikut
+        $this->assertNull(ItemUnit::query()->where('item_id', $this->product('PU-2')->id)->first());   // barang lain tidak ikut
     }
 
     public function test_the_popup_rejects_the_stock_unit_a_zero_factor_and_issuance(): void
@@ -128,10 +128,10 @@ class ProductUnitTest extends TestCase
         $this->actingAs(User::factory()->create());
         $p = $this->product();
 
-        $this->postJson(route('docs.conversion', 'receiving'), ['product_id' => $p->id, 'unit' => 'pcs', 'factor' => 12])->assertStatus(422);
-        $this->postJson(route('docs.conversion', 'receiving'), ['product_id' => $p->id, 'unit' => 'dus', 'factor' => 0])->assertStatus(422);
-        $this->postJson(route('docs.conversion', 'issuance'), ['product_id' => $p->id, 'unit' => 'dus', 'factor' => 12])->assertNotFound();
-        $this->assertSame(0, ProductUnit::count());
+        $this->postJson(route('docs.conversion', 'receiving'), ['item_id' => $p->id, 'unit' => 'pcs', 'factor' => 12])->assertStatus(422);
+        $this->postJson(route('docs.conversion', 'receiving'), ['item_id' => $p->id, 'unit' => 'dus', 'factor' => 0])->assertStatus(422);
+        $this->postJson(route('docs.conversion', 'issuance'), ['item_id' => $p->id, 'unit' => 'dus', 'factor' => 12])->assertNotFound();
+        $this->assertSame(0, ItemUnit::count());
     }
 
     public function test_the_stock_unit_cannot_change_while_the_product_has_pack_units(): void

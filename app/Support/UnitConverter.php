@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Models\ProductUnit;
+use App\Models\ItemUnit;
 use App\Models\UnitConversion;
 
 /* REMARK
@@ -17,7 +17,7 @@ final class UnitConverter
     // Faktor satuan masuk milik barang (1 {from} = n satuan stok); $to harus satuan stok barang itu. Null bila barang belum punya.
     private static function own(?int $productId, string $from): ?string
     {
-        return $productId ? ProductUnit::query()->where('product_id', $productId)->where('unit', $from)->value('factor') : null;
+        return $productId ? ItemUnit::query()->where('item_id', $productId)->where('unit', $from)->value('factor') : null;
     }
 
     // Berapa {to} dalam 1 {from}; null bila tidak ada aturan. $productId = barang yang diterima (faktor miliknya didahulukan).

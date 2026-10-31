@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Enums\StockDocumentType;
-use App\Models\Product;
-use App\Models\ProductUnit;
+use App\Models\Item;
+use App\Models\ItemUnit;
 use App\Models\StockDocumentLine;
 use App\Models\Unit;
 use App\Models\UnitConversion;
@@ -22,7 +22,7 @@ use Illuminate\Validation\ValidationException;
  * Dipakai oleh : ItemLookups, StockDocumentController (baris form + jendela konversi), ProductController (bagian Satuan masuk).
  * Status       : Aktif.
  */
-final class ProductUnits
+final class ItemUnits
 {
     public const USED_MESSAGE = 'Faktor ini sudah dipakai di dokumen; hubungi Supervisor untuk mengubahnya.';
 
@@ -32,9 +32,9 @@ final class ProductUnits
      *
      * @return array{stock: string, own: array<string, string>, global: array<string, string>}
      */
-    public static function options(Product $product): array
+    public static function options(Item $product): array
     {
-        $own = $product->packUnits->mapWithKeys(fn (ProductUnit $u) => [$u->unit => $u->factor])->all();
+        $own = $product->packUnits->mapWithKeys(fn (ItemUnit $u) => [$u->unit => $u->factor])->all();
         $global = [];
         foreach (UnitConversion::query()->get() as $c) {
             if ($c->to_unit === $product->unit) {
@@ -48,18 +48,18 @@ final class ProductUnits
     }
 
     /** Jumlah dokumen Penerimaan terkonfirmasi (termasuk yang kemudian dibatalkan) yang memakai tiap satuan masuk barang ini. @return array<string, int> */
-    public static function usage(Product $product): array
+    public static function usage(Item $product): array
     {
         return StockDocumentLine::query()->join('rm_stock', 'rm_stock.id', '=', 'rm_stock_line.stock_document_id')
             ->join('i_batch', 'i_batch.id', '=', 'rm_stock_line.batch_id')
-            ->where('i_batch.product_id', $product->id)->where('rm_stock.type', StockDocumentType::Receiving)->whereNotNull('rm_stock.confirmed_at')
+            ->where('i_batch.item_id', $product->id)->where('rm_stock.type', StockDocumentType::Receiving)->whereNotNull('rm_stock.confirmed_at')
             ->whereNotNull('rm_stock_line.entered_unit')
             ->groupBy('rm_stock_line.entered_unit')->selectRaw('rm_stock_line.entered_unit as unit, count(distinct rm_stock.id) as total')
             ->pluck('total', 'unit')->map(fn ($n) => (int) $n)->all();
     }
 
     /** Buat atau perbaiki faktor satuan masuk. Faktor yang sudah dipakai di dokumen terkonfirmasi: hanya pemegang hak tulis UOM (403 untuk yang lain). */
-    public static function save(Product $product, string $unit, float|int|string $factor, User $user): ProductUnit
+    public static function save(Item $product, string $unit, float|int|string $factor, User $user): ItemUnit
     {
         if ($unit === $product->unit || ! Unit::query()->where('code', $unit)->where('is_active', true)->exists()) {
             throw ValidationException::withMessages(['unit' => $unit === $product->unit ? 'Satuan stok tidak perlu faktor (selalu 1).' : 'Satuan tidak ada atau nonaktif.']);
@@ -70,9 +70,9 @@ final class ProductUnits
         }
 
         return DB::transaction(function () use ($product, $unit, $factor, $user) {
-            $row = ProductUnit::query()->where('product_id', $product->id)->where('unit', $unit)->lockForUpdate()->first();
+            $row = ItemUnit::query()->where('item_id', $product->id)->where('unit', $unit)->lockForUpdate()->first();
             if (! $row) {
-                return ProductUnit::query()->createOrFirst(['product_id' => $product->id, 'unit' => $unit], ['factor' => $factor, 'created_by' => $user->id, 'updated_by' => $user->id]);
+                return ItemUnit::query()->createOrFirst(['item_id' => $product->id, 'unit' => $unit], ['factor' => $factor, 'created_by' => $user->id, 'updated_by' => $user->id]);
             }
             if (bccomp((string) $row->factor, $factor, 6) === 0) {
                 return $row;

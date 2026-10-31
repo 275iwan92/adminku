@@ -174,7 +174,7 @@ class DocumentLifecycleTest extends TestCase
     public function test_cancelled_documents_drop_out_of_reports_and_the_reopened_reorder_order_returns(): void
     {
         $item = $this->item;
-        $order = ReorderOrder::create(['product_id' => $item->product_id, 'ordered_at' => today(), 'ref_no' => 'PO-1']);
+        $order = ReorderOrder::create(['item_id' => $item->item_id, 'ordered_at' => today(), 'ref_no' => 'PO-1']);
 
         $in = $this->draft('receiving', $this->receivePayload(10), $this->entry);
         $this->act($in, 'confirm', $this->receivePayload(10));

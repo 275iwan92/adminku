@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Product;
-use App\Models\ProductUnit;
+use App\Models\Item;
+use App\Models\ItemUnit;
 use App\Models\StockDocument;
 use App\Models\StockDocumentLine;
 use App\Models\Supplier;
@@ -25,26 +25,26 @@ class ProductUnitRulesTest extends TestCase
 
     private const USED = 'Faktor ini sudah dipakai di dokumen; hubungi Supervisor untuk mengubahnya.';
 
-    private Product $product;
+    private Item $product;
 
     protected function setUp(): void
     {
         parent::setUp();
         Unit::create(['code' => 'dus', 'name' => 'Dus Besar']);
-        $this->product = Product::register(['name' => 'Pensil', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 5], 'PU-1');
+        $this->product = Item::register(['name' => 'Pensil', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 1, 'reorder_qty' => 5], 'PU-1');
     }
 
     private function save(string $unit, float $factor, string $route = 'products.units.save')
     {
         return $route === 'products.units.save'
             ? $this->postJson(route($route, $this->product), ['unit' => $unit, 'factor' => $factor])
-            : $this->postJson(route($route, 'receiving'), ['product_id' => $this->product->id, 'unit' => $unit, 'factor' => $factor]);
+            : $this->postJson(route($route, 'receiving'), ['item_id' => $this->product->id, 'unit' => $unit, 'factor' => $factor]);
     }
 
     // Penerimaan 5 dus yang sudah dikonfirmasi; mengembalikan dokumennya.
     private function confirmedReceiving(User $by): StockDocument
     {
-        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S One'])->id, 'lines' => [['product_id' => $this->product->id, 'qty' => 5, 'unit' => 'dus', 'unit_cost' => 1200]]];
+        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S One'])->id, 'lines' => [['item_id' => $this->product->id, 'qty' => 5, 'unit' => 'dus', 'unit_cost' => 1200]]];
         $this->actingAs($by)->post(route('docs.store', 'receiving'), $payload)->assertRedirect();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertRedirect();
@@ -58,7 +58,7 @@ class ProductUnitRulesTest extends TestCase
         $this->actingAs($entry);
 
         $this->save('dus', 12)->assertOk();
-        $row = ProductUnit::firstOrFail();
+        $row = ItemUnit::firstOrFail();
         $this->assertSame(['12.000000', $entry->id, $entry->id], [$row->factor, $row->created_by, $row->updated_by]);
     }
 
@@ -71,7 +71,7 @@ class ProductUnitRulesTest extends TestCase
 
         $this->actingAs($entry);
         $this->save('dus', 12)->assertOk();
-        $row = ProductUnit::firstOrFail();
+        $row = ItemUnit::firstOrFail();
         $this->assertSame(['12.000000', $other->id, $entry->id], [$row->factor, $row->created_by, $row->updated_by]);
     }
 
@@ -80,10 +80,10 @@ class ProductUnitRulesTest extends TestCase
         $entry = User::factory()->create();
         $this->actingAs($entry);
         $this->save('dus', 21)->assertOk();
-        $this->post(route('docs.store', 'receiving'), ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S'])->id, 'lines' => [['product_id' => $this->product->id, 'qty' => 1, 'unit' => 'dus', 'unit_cost' => 1]]])->assertRedirect();
+        $this->post(route('docs.store', 'receiving'), ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S'])->id, 'lines' => [['item_id' => $this->product->id, 'qty' => 1, 'unit' => 'dus', 'unit_cost' => 1]]])->assertRedirect();
 
         $this->save('dus', 12)->assertOk();   // draf belum mengunci faktor
-        $this->assertSame('12.000000', ProductUnit::firstOrFail()->factor);
+        $this->assertSame('12.000000', ItemUnit::firstOrFail()->factor);
     }
 
     public function test_a_used_factor_is_refused_for_data_entry_with_the_standard_message_on_both_entry_points(): void
@@ -95,7 +95,7 @@ class ProductUnitRulesTest extends TestCase
 
         $this->save('dus', 10)->assertForbidden()->assertJson(['message' => self::USED]);
         $this->save('dus', 10, 'docs.conversion')->assertForbidden()->assertJson(['message' => self::USED]);
-        $this->assertSame('12.000000', ProductUnit::firstOrFail()->factor);
+        $this->assertSame('12.000000', ItemUnit::firstOrFail()->factor);
 
         $this->save('dus', 12)->assertOk();   // nilai yang sama bukan perubahan
     }
@@ -124,7 +124,7 @@ class ProductUnitRulesTest extends TestCase
 
         $this->actingAs($sup);
         $this->save('dus', 10)->assertOk();
-        $row = ProductUnit::firstOrFail();
+        $row = ItemUnit::firstOrFail();
         $this->assertSame(['10.000000', $entry->id, $sup->id], [$row->factor, $row->created_by, $row->updated_by]);
 
         $line = StockDocumentLine::where('stock_document_id', $doc->id)->firstOrFail();
@@ -141,7 +141,7 @@ class ProductUnitRulesTest extends TestCase
         $this->save('dus', 0)->assertStatus(422);
         $this->save('pcs', 12)->assertStatus(422);
         $this->save('tidak-ada', 12)->assertStatus(422);
-        $this->assertSame(0, ProductUnit::count());
+        $this->assertSame(0, ItemUnit::count());
     }
 
     public function test_the_product_form_lists_pack_units_with_use_who_and_when(): void

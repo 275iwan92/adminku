@@ -22,8 +22,8 @@ class UnitController extends Controller
 {
     public function index()
     {
-        $rows = Unit::query()->withCount('products')->with('conversions')->orderBy('code')->get()->map(fn (Unit $u) => [
-            'id' => $u->id, 'code' => $u->code, 'name' => $u->name, 'kind' => Unit::KINDS[$u->kind] ?? $u->kind, 'hue' => Palette::unit($u->kind), 'items' => $u->products_count, 'active' => $u->is_active,
+        $rows = Unit::query()->withCount('items')->with('conversions')->orderBy('code')->get()->map(fn (Unit $u) => [
+            'id' => $u->id, 'code' => $u->code, 'name' => $u->name, 'kind' => Unit::KINDS[$u->kind] ?? $u->kind, 'hue' => Palette::unit($u->kind), 'items' => $u->items_count, 'active' => $u->is_active,
             'conv' => $u->conversions->map(fn ($c) => '1 '.$u->code.' = '.Locale::decimal($c->factor, 6).' '.$c->to_unit)->implode('; '),
         ])->all();
 
@@ -37,7 +37,7 @@ class UnitController extends Controller
 
     public function show(Unit $unit)
     {
-        return view('units.form', ['unit' => $unit->loadCount('products')] + $this->formData($unit));
+        return view('units.form', ['unit' => $unit->loadCount('items')] + $this->formData($unit));
     }
 
     public function store(UnitRequest $request): RedirectResponse|JsonResponse

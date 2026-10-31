@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -24,9 +24,9 @@ class ItemIntegrityMigrationTest extends TestCase
 
     private const FILE = 'database/migrations/2026_11_09_100000_add_integrity_constraints_to_items.php';
 
-    private function product(): Product
+    private function product(): Item
     {
-        return Product::register(['name' => 'Obat', 'category_id' => Category::firstOrCreate(['code' => 'OBT'], ['name' => 'Obat'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'tracks_expiry' => true], 'OBT-0001');
+        return Item::register(['name' => 'Obat', 'category_id' => Category::firstOrCreate(['code' => 'OBT'], ['name' => 'Obat'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'tracks_expiry' => true], 'OBT-0001');
     }
 
     private function migration(): object
@@ -34,13 +34,15 @@ class ItemIntegrityMigrationTest extends TestCase
         return require base_path(self::FILE);
     }
 
-    // Migrasi lama menyebut tabel dengan nama lama (items); selama dijalankan, i_batch dinamai sementara items.
+    // Migrasi lama menyebut tabel dan kolom dengan nama lama (items, product_id); selama dijalankan, i_batch dinamai sementara items dan item_id dinamai product_id.
     private function legacy(callable $run): void
     {
         Schema::rename('i_batch', 'items');
+        Schema::table('items', fn ($t) => $t->renameColumn('item_id', 'product_id'));
         try {
             $run();
         } finally {
+            Schema::table('items', fn ($t) => $t->renameColumn('product_id', 'item_id'));
             Schema::rename('items', 'i_batch');
         }
     }
@@ -64,7 +66,7 @@ class ItemIntegrityMigrationTest extends TestCase
     public function test_indexes_exist_and_one_product_has_one_batch_per_expiry_date(): void
     {
         $this->assertTrue(Schema::hasIndex('i_batch', ['expiry_date']));
-        $this->assertTrue(Schema::hasIndex('i_batch', ['product_id', 'expiry_date'], 'unique'));
+        $this->assertTrue(Schema::hasIndex('i_batch', ['item_id', 'expiry_date'], 'unique'));
 
         $product = $this->product();
         $batch = $product->batchFor('2027-01-31');
@@ -77,10 +79,10 @@ class ItemIntegrityMigrationTest extends TestCase
     public function test_undated_batches_may_repeat_since_null_is_not_unique(): void
     {
         $product = $this->product();
-        $undated = $product->batches()->create($product->only(Product::BATCH_COPY) + ['code' => 'X-1', 'expiry_date' => null]);
+        $undated = $product->batches()->create($product->only(Item::BATCH_COPY) + ['code' => 'X-1', 'expiry_date' => null]);
         DB::table('i_batch')->insert($this->copyOf($undated, 'X-2'));
 
-        $this->assertSame(2, Batch::where('product_id', $product->id)->whereNull('expiry_date')->count());
+        $this->assertSame(2, Batch::where('item_id', $product->id)->whereNull('expiry_date')->count());
     }
 
     public function test_migration_stops_with_a_clear_message_and_keeps_data_when_a_batch_is_duplicated(): void
@@ -97,7 +99,7 @@ class ItemIntegrityMigrationTest extends TestCase
             $this->assertStringContainsString("batch ganda: produk #{$product->id} tanggal kedaluwarsa", $e->getMessage());
             $this->assertStringContainsString('data tidak diubah', $e->getMessage());
         }
-        $this->assertSame(2, Batch::where('product_id', $product->id)->count());   // tidak ada yang dihapus
+        $this->assertSame(2, Batch::where('item_id', $product->id)->count());   // tidak ada yang dihapus
         $this->assertFalse(Schema::hasIndex('i_batch', ['expiry_date']));          // dan tidak ada indeks yang setengah terpasang
     }
 
@@ -126,7 +128,7 @@ class ItemIntegrityMigrationTest extends TestCase
         $this->legacy(fn () => $migration->up());
 
         $this->assertTrue(Schema::hasIndex('i_batch', ['expiry_date']));
-        $this->assertTrue(Schema::hasIndex('i_batch', ['product_id', 'expiry_date'], 'unique'));
+        $this->assertTrue(Schema::hasIndex('i_batch', ['item_id', 'expiry_date'], 'unique'));
         $this->assertSame(1, Batch::count());
     }
 }

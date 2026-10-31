@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\User;
 use App\Models\UserGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,18 +18,18 @@ class HpFindTest extends TestCase
 {
     use RefreshDatabase;
 
-    private Product $pensil;
+    private Item $pensil;
 
-    private Product $susu;
+    private Item $susu;
 
     protected function setUp(): void
     {
         parent::setUp();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->pensil = Product::register(['name' => 'Pensil 2B', 'category_id' => $cat->id, 'unit' => 'pcs', 'location' => 'RAK-A1', 'unit_price' => 100, 'reorder_point' => 50]);
+        $this->pensil = Item::register(['name' => 'Pensil 2B', 'category_id' => $cat->id, 'unit' => 'pcs', 'location' => 'RAK-A1', 'unit_price' => 100, 'reorder_point' => 50]);
         $this->pensil->batches()->first()->forceFill(['stock_qty' => 40, 'avg_cost' => 100])->save();
         // Susu: tiga batch, sengaja dibuat TIDAK berurutan; satu sudah kedaluwarsa, satu hampir, satu aman.
-        $this->susu = Product::register(['name' => 'Susu UHT', 'category_id' => $cat->id, 'unit' => 'liter', 'location' => 'KULKAS-1', 'unit_price' => 10, 'reorder_point' => 5, 'tracks_expiry' => true]);
+        $this->susu = Item::register(['name' => 'Susu UHT', 'category_id' => $cat->id, 'unit' => 'liter', 'location' => 'KULKAS-1', 'unit_price' => 10, 'reorder_point' => 5, 'tracks_expiry' => true]);
         foreach ([[today()->addDays(200), 7], [today()->subDays(3), 2], [today()->addDays(10), 4]] as [$date, $qty]) {
             $this->susu->batchFor($date)->forceFill(['stock_qty' => $qty, 'avg_cost' => 10])->save();
         }

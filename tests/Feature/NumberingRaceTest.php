@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Enums\StockDocumentType;
 use App\Models\Category;
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\StockDocument;
 use App\Models\Supplier;
 use App\Models\User;
@@ -69,10 +69,10 @@ class NumberingRaceTest extends TestCase
 
     public function test_batch_collision_reuses_the_batch_created_by_the_other_saver(): void
     {
-        $product = Product::register(['name' => 'Obat', 'category_id' => Category::create(['code' => 'OBT', 'name' => 'Obat'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'tracks_expiry' => true], 'OBT-0001');
+        $product = Item::register(['name' => 'Obat', 'category_id' => Category::create(['code' => 'OBT', 'name' => 'Obat'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'tracks_expiry' => true], 'OBT-0001');
         $this->interloperAfterSelect('i_batch', function () use ($product) {
-            $row = $product->batches()->make(['code' => 'OBT-0001-271231', 'expiry_date' => '2027-12-31'] + $product->only(Product::BATCH_COPY))->getAttributes();
-            DB::table('i_batch')->insert($row + ['product_id' => $product->id, 'created_at' => now(), 'updated_at' => now()]);
+            $row = $product->batches()->make(['code' => 'OBT-0001-271231', 'expiry_date' => '2027-12-31'] + $product->only(Item::BATCH_COPY))->getAttributes();
+            DB::table('i_batch')->insert($row + ['item_id' => $product->id, 'created_at' => now(), 'updated_at' => now()]);
         });
 
         $batch = $product->batchFor('2027-12-31');

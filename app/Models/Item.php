@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
  * Status       : Aktif.
  */
 #[Fillable(['code', 'name', 'category_id', 'unit', 'location', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'tracks_expiry', 'is_active'])]
-class Product extends Model
+class Item extends Model
 {
     protected $table = 'm_item';
 
@@ -47,7 +47,7 @@ class Product extends Model
     // Satuan masuk (kemasan saat diterima) beserta faktornya ke satuan stok.
     public function packUnits(): HasMany
     {
-        return $this->hasMany(ProductUnit::class)->orderBy('unit');
+        return $this->hasMany(ItemUnit::class)->orderBy('unit');
     }
 
     // Pemesanan ulang yang masih menunggu barang datang (ditutup saat Receiving).
@@ -101,7 +101,7 @@ class Product extends Model
     // Stok tersedia (batch yang belum kedaluwarsa) sebagai potongan SQL; dipakai scope dan urutan.
     public static function availableSql(): string
     {
-        return '(select coalesce(sum(i.stock_qty), 0) from i_batch i where i.product_id = m_item.id and (i.expiry_date is null or i.expiry_date >= ?))';
+        return '(select coalesce(sum(i.stock_qty), 0) from i_batch i where i.item_id = m_item.id and (i.expiry_date is null or i.expiry_date >= ?))';
     }
 
     public function scopeWithAvailable(Builder $query): Builder

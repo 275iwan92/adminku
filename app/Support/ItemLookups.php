@@ -3,8 +3,8 @@
 namespace App\Support;
 
 use App\Models\Batch;
-use App\Models\Product;
-use App\Services\ProductUnits;
+use App\Models\Item;
+use App\Services\ItemUnits;
 use Devlib\Locale;
 use Devlib\Lookup;
 use Illuminate\Support\Arr;
@@ -28,10 +28,10 @@ final class ItemLookups
             Lookup::define($name, [
                 'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', 'unit_cost' => 'price'] + ($receiving ? ['stock_unit' => 'unit', 'packs' => 'packs'] : []),
                 'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'expiry' => 'Expiry'],
-                'search' => fn (string $q) => Product::query()->with('packUnits')->where('is_active', true)
+                'search' => fn (string $q) => Item::query()->with('packUnits')->where('is_active', true)
                     ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
-                    ->orderBy('name')->limit(50)->get()->map(fn (Product $p) => self::productRow($p, $receiving)),
-                'find' => fn ($id) => ($p = Product::query()->find($id)) ? self::productRow($p, $receiving) : null,
+                    ->orderBy('name')->limit(50)->get()->map(fn (Item $p) => self::productRow($p, $receiving)),
+                'find' => fn ($id) => ($p = Item::query()->find($id)) ? self::productRow($p, $receiving) : null,
             ]);
         }
 
@@ -56,12 +56,12 @@ final class ItemLookups
         ]);
     }
 
-    private static function productRow(Product $p, bool $withPacks = false): array
+    private static function productRow(Item $p, bool $withPacks = false): array
     {
         return [
             'id' => $p->id, 'label' => "{$p->code} · {$p->name}", 'name' => $p->name, 'code' => $p->code, 'unit' => $p->unit,
             'expiry' => $p->tracks_expiry ? 'Wajib diisi' : '—', 'price' => auth()->user()?->isSupervisor() ? $p->unit_price : null,
-        ] + ($withPacks ? ['packs' => json_encode(ProductUnits::options($p))] : []);
+        ] + ($withPacks ? ['packs' => json_encode(ItemUnits::options($p))] : []);
     }
 
     private static function itemRow(Batch $i): array

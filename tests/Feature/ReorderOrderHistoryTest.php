@@ -45,7 +45,7 @@ class ReorderOrderHistoryTest extends TestCase
 
     private function order(?float $qty, int $daysAgo = 1, string $ref = 'PO', string $supplier = 'Toko Maju'): ReorderOrder
     {
-        return ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays($daysAgo), 'ref_no' => $ref, 'qty' => $qty, 'supplier_id' => $this->supplier($supplier)->id, 'created_by' => $this->sup->id]);
+        return ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays($daysAgo), 'ref_no' => $ref, 'qty' => $qty, 'supplier_id' => $this->supplier($supplier)->id, 'created_by' => $this->sup->id]);
     }
 
     private function receive(float $qty): StockDocument
@@ -199,7 +199,7 @@ class ReorderOrderHistoryTest extends TestCase
     public function test_writing_orders_needs_rw_on_the_orders_module_on_the_server(): void
     {
         $open = $this->order(10, 3, 'PO-W');
-        $payload = ['product_id' => $this->item->product_id, 'supplier_id' => $this->supplier()->id, 'qty' => 5, 'ordered_at' => today()->toDateString()];
+        $payload = ['item_id' => $this->item->item_id, 'supplier_id' => $this->supplier()->id, 'qty' => 5, 'ordered_at' => today()->toDateString()];
         $mk = fn (string $code, array $access) => tap(UserGroup::create(['code' => $code, 'name' => $code]), fn ($g) => $g->syncAccess($access));
         $ro = User::factory()->create(['group_id' => $mk('RO', ['ORD' => 'ro', 'RCV' => 'rw'])->id]);
         $none = User::factory()->create(['group_id' => $mk('NO', ['RCV' => 'rw', 'ISS' => 'rw'])->id]);

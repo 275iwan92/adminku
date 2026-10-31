@@ -89,7 +89,7 @@ class QuickAddScreensTest extends TestCase
     {
         $html = $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('id="reorder-modal"', false)->getContent();
         $this->assertSame(1, $this->plus($html, '/suppliers'));
-        $this->assertSame(1, substr_count($html, 'data-dl-select-add'));   // product_id tidak diberi plus
+        $this->assertSame(1, substr_count($html, 'data-dl-select-add'));   // item_id tidak diberi plus
 
         $group = UserGroup::create(['code' => 'ISSO', 'name' => 'Pengeluaran']);
         $group->syncAccess(['ISS' => 'rw', 'SUP' => 'ro']);
@@ -111,11 +111,11 @@ class QuickAddScreensTest extends TestCase
         $this->assertSame([1, 1, 1], [$this->plus($new, '/categories'), $this->plus($new, '/units'), $this->plus($new, '/locations')]);
         $this->assertSame(3, substr_count($new, 'data-dl-select-add'));
 
-        $show = $this->get(route('products.show', $this->item->product_id))->assertOk()->getContent();
+        $show = $this->get(route('products.show', $this->item->item_id))->assertOk()->getContent();
         $this->assertSame(2, $this->plus($show, '/units'));   // satuan stok + dialog Satuan masuk (pack_unit)
         $this->assertSame(1, $this->plus($show, '/locations'));
 
-        $showEntry = $this->actingAs($this->entry)->get(route('products.show', $this->item->product_id))->assertOk()->getContent();
+        $showEntry = $this->actingAs($this->entry)->get(route('products.show', $this->item->item_id))->assertOk()->getContent();
         $this->assertSame(0, substr_count($showEntry, 'data-dl-select-add'));
     }
 

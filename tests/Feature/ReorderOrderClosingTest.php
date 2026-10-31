@@ -46,7 +46,7 @@ class ReorderOrderClosingTest extends TestCase
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
         if ($daysAgo > 0) {
             StockMovement::where('stock_document_id', $doc->id)->update(['moved_at' => now()->subDays($daysAgo)]);
-            app(ReorderOrders::class)->reconcile($item->product_id);
+            app(ReorderOrders::class)->reconcile($item->item_id);
         }
 
         return $doc->fresh();
@@ -59,7 +59,7 @@ class ReorderOrderClosingTest extends TestCase
 
     private function order(?float $qty, int $daysAgo = 1, string $ref = 'PO'): ReorderOrder
     {
-        return ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays($daysAgo), 'ref_no' => $ref, 'qty' => $qty, 'supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'Toko Maju'])->id, 'created_by' => $this->sup->id]);
+        return ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays($daysAgo), 'ref_no' => $ref, 'qty' => $qty, 'supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'Toko Maju'])->id, 'created_by' => $this->sup->id]);
     }
 
     public function test_a_partial_receiving_does_not_close_the_order(): void
@@ -112,8 +112,8 @@ class ReorderOrderClosingTest extends TestCase
 
         $service = app(ReorderOrders::class);
         $before = $order->fresh()->getAttributes();
-        $service->reconcile($this->item->product_id);
-        $service->reconcile($this->item->product_id);
+        $service->reconcile($this->item->item_id);
+        $service->reconcile($this->item->item_id);
         $this->assertSame($before, $order->fresh()->getAttributes());   // diulang: tidak berubah
 
         $this->cancel($first);   // urutan batal bebas: sekarang tidak ada penerimaan sama sekali
@@ -198,7 +198,7 @@ class ReorderOrderClosingTest extends TestCase
         $manual = $this->order(25, 9);   // semua penerimaan (10 < 25) sudah dipakai pesanan yang lebih lama: ini tidak punya penerimaan
         $this->post(route('reorder-orders.close', $manual))->assertRedirect();
 
-        $lt = LeadTimes::for($this->item->product->fresh());
+        $lt = LeadTimes::for($this->item->item->fresh());
         $this->assertSame(1, $lt->count());   // hanya pesanan yang punya penerimaan pertama (6 hari, bukan 9)
         $this->assertNull($manual->fresh()->first_received_at);
     }
@@ -207,7 +207,7 @@ class ReorderOrderClosingTest extends TestCase
     {
         foreach ([[30, 4], [20, 5], [10, 6]] as [$ago, $days]) {   // biasanya 5 hari
             $at = today()->subDays($ago)->setTime(23, 59);
-            ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays($ago + $days), 'ref_no' => 'X', 'closed_at' => $at, 'first_received_at' => $at, 'close_reason' => 'manual']);   // sintetis tanpa penerimaan nyata: 'manual' agar tidak dihitung ulang
+            ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays($ago + $days), 'ref_no' => 'X', 'closed_at' => $at, 'first_received_at' => $at, 'close_reason' => 'manual']);   // sintetis tanpa penerimaan nyata: 'manual' agar tidak dihitung ulang
         }
         $order = $this->order(25, 9);
 

@@ -151,7 +151,7 @@
     @endunless
     @if ($isNew)
         <script>
-            // Pratinjau kode barang: awalan kategori + urutan berikutnya (rumus yang sama dengan Product::nextCode).
+            // Pratinjau kode barang: awalan kategori + urutan berikutnya (rumus yang sama dengan Item::nextCode).
             (() => {
                 const next = @json($nextCodes);
                 const cat = document.querySelector('[name="category_id"]'), code = document.querySelector('[name="code"]');

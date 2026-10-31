@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Department;
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\Recipient;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
@@ -135,7 +135,7 @@ class StockFlowTest extends TestCase
         $item = $this->item('I2', rop: 5);
         $this->receive($item, 10, 5);
         $this->issue($item, 5)->assertSessionHas('reorder');
-        $this->assertTrue($item->product->fresh()->isBelowReorderPoint());
+        $this->assertTrue($item->item->fresh()->isBelowReorderPoint());
         $this->actingAs($this->supervisor)->get(route('home'))->assertOk()->assertSee('di bawah titik pesan ulang');
     }
 
@@ -153,7 +153,7 @@ class StockFlowTest extends TestCase
         $category = Category::create(['code' => 'ATK', 'name' => 'ATK']);
         $payload = ['name' => 'Pen', 'category_id' => $category->id, 'unit' => 'box', 'unit_price' => 1500, 'reorder_point' => 5, 'reorder_qty' => 20, 'lead_time_days' => 4];
         $this->actingAs($this->supervisor)->post(route('products.store'), $payload)->assertRedirect();
-        $product = Product::where('code', 'ATK-0001')->firstOrFail();  // kode otomatis dari awalan kategori
+        $product = Item::where('code', 'ATK-0001')->firstOrFail();  // kode otomatis dari awalan kategori
         $item = $product->batches()->firstOrFail();                         // barang biasa: satu batch, kodenya sama
 
         $this->put(route('products.update', $product), ['_action' => 'save', ...$payload, 'reorder_point' => 9])->assertRedirect();
@@ -280,19 +280,19 @@ class StockFlowTest extends TestCase
 
         $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('Belum dipesan')->assertDontSee('Item R2');
 
-        $order = ['product_id' => $item->product_id, 'supplier_id' => Supplier::create(['code' => 'S9', 'name' => 'Toko Sembilan'])->id, 'qty' => 25, 'ordered_at' => today()->toDateString(), 'ref_no' => 'PO-77'];
+        $order = ['item_id' => $item->item_id, 'supplier_id' => Supplier::create(['code' => 'S9', 'name' => 'Toko Sembilan'])->id, 'qty' => 25, 'ordered_at' => today()->toDateString(), 'ref_no' => 'PO-77'];
         $this->post(route('reorder-orders.store'), $order)->assertRedirect(route('home'));
         $this->get(route('home'))->assertSee('Diterima sebagian')->assertSee('PO-77')->assertDontSee('Belum dipesan');   // 3 dari 25: penerimaan hari yang sama dengan tanggal pesan ikut dihitung
 
         $this->post(route('reorder-orders.store'), $order)->assertStatus(422);                                   // sudah terbuka
-        $this->post(route('reorder-orders.store'), ['product_id' => $fine->product_id] + $order)->assertStatus(422);        // stok masih cukup
+        $this->post(route('reorder-orders.store'), ['item_id' => $fine->item_id] + $order)->assertStatus(422);        // stok masih cukup
         $this->post(route('reorder-orders.store'), ['qty' => 0] + $order)->assertSessionHasErrors('qty');
 
         $this->receive($item, 20, 10);   // 23 dari 25: masih terbuka
-        $this->assertNull(ReorderOrder::where('product_id', $item->product_id)->first()->closed_at);
+        $this->assertNull(ReorderOrder::where('item_id', $item->item_id)->first()->closed_at);
         $this->receive($item, 2, 10);    // 25 dari 25: tuntas
-        $this->assertNotNull(ReorderOrder::where('product_id', $item->product_id)->first()->closed_at);
-        $this->assertNull($item->product->fresh()->openOrder);
+        $this->assertNotNull(ReorderOrder::where('item_id', $item->item_id)->first()->closed_at);
+        $this->assertNull($item->item->fresh()->openOrder);
     }
 
     public function test_issuance_uses_recipient_and_department_masters_and_copies_their_names(): void

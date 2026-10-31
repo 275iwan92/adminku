@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Location;
-use App\Models\Product;
+use App\Models\Item;
 use Illuminate\Database\Seeder;
 
 /* REMARK
@@ -58,7 +58,7 @@ class ItemSeeder extends Seeder
 
         foreach (self::ITEMS as [$code, $name, $cat, $unit, $location, $price, $rop, $roq, $lead]) {
             Location::firstOrCreate(['code' => $location], ['name' => 'Rak '.$location]);
-            Product::where('code', $code)->exists() || Product::register([
+            Item::where('code', $code)->exists() || Item::register([
                 'name' => $name, 'category_id' => $categories[$cat], 'unit' => $unit, 'location' => $location,
                 'unit_price' => $price, 'reorder_point' => $rop, 'reorder_qty' => $roq, 'lead_time_days' => $lead,
             ], $code);
@@ -66,7 +66,7 @@ class ItemSeeder extends Seeder
 
         foreach (self::EXPIRING as [$name, $cat, $unit, $location, $price, $rop, $roq, $lead, , $days]) {
             Location::firstOrCreate(['code' => $location], ['name' => 'Rak '.$location]);
-            $product = Product::where('name', $name)->first() ?? Product::register([
+            $product = Item::where('name', $name)->first() ?? Item::register([
                 'name' => $name, 'category_id' => $categories[$cat], 'unit' => $unit, 'location' => $location, 'tracks_expiry' => true,
                 'unit_price' => $price, 'reorder_point' => $rop, 'reorder_qty' => $roq, 'lead_time_days' => $lead,
             ]);

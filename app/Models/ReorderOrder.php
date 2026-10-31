@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['product_id', 'ordered_at', 'ref_no', 'created_by', 'closed_at', 'receiving_id', 'supplier_id', 'qty', 'note', 'received_qty', 'first_received_at', 'close_reason'])]
+#[Fillable(['item_id', 'ordered_at', 'ref_no', 'created_by', 'closed_at', 'receiving_id', 'supplier_id', 'qty', 'note', 'received_qty', 'first_received_at', 'close_reason'])]
 class ReorderOrder extends Model
 {
     protected $table = 'i_reorder_order';
@@ -20,9 +20,9 @@ class ReorderOrder extends Model
         return ['ordered_at' => 'date', 'closed_at' => 'datetime', 'qty' => 'float', 'received_qty' => 'float', 'first_received_at' => 'datetime'];
     }
 
-    public function product(): BelongsTo
+    public function item(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Item::class);
     }
 
     public function supplier(): BelongsTo
@@ -44,7 +44,7 @@ class ReorderOrder extends Model
         return round((float) StockMovement::query()
             ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.batch_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
-            ->where('i_batch.product_id', $this->product_id)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
+            ->where('i_batch.item_id', $this->item_id)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])->where('rm_stockcard.moved_at', '>=', $this->ordered_at->copy()->startOfDay())
             ->sum('rm_stockcard.qty'), 3);
     }
@@ -68,8 +68,8 @@ class ReorderOrder extends Model
     // Keterangan untuk peringatan stok menipis (beranda, laporan Ringkasan Stok, form barang). Pesanan yang masih terbuka ditambah perkiraan tiba (engine LeadTime) bila ada angkanya; $leadTime dari LeadTimes::forMany menghindari query per baris.
     public function note(?LeadTime $leadTime = null): string
     {
-        $this->loadMissing('product', 'creator', 'supplier');
-        $unit = $this->product->unit;
+        $this->loadMissing('item', 'creator', 'supplier');
+        $unit = $this->item->unit;
         $qty = $this->attributes['qty'] ?? null;   // model yang baru dibuat belum membawa kolom yang kosong
         $note = $this->attributes['note'] ?? null;
 
@@ -77,6 +77,6 @@ class ReorderOrder extends Model
         return ($qty !== null || $this->supplier ? 'Sudah dipesan' : 'Sudah dicatat dipesan').($qty !== null ? ' '.Locale::decimal($qty, 3)." {$unit}" : '').($this->supplier ? " ke {$this->supplier->name}" : '')
             .' pada '.$this->ordered_at->format('d/m/Y').($this->ref_no ? ", ref {$this->ref_no}" : '').($this->creator ? " oleh {$this->creator->name}" : '')
             .'. Diterima sejak dipesan: '.($qty !== null ? Locale::decimal((float) ($this->attributes['received_qty'] ?? 0), 3).' dari '.Locale::decimal($qty, 3) : Locale::decimal($this->receivedSince(), 3))." {$unit}.".($note ? " Catatan: {$note}." : '')
-            .($this->closed_at === null ? LeadTimes::openOrderSentence($leadTime ?? LeadTimes::for($this->product), $this) : '');
+            .($this->closed_at === null ? LeadTimes::openOrderSentence($leadTime ?? LeadTimes::for($this->item), $this) : '');
     }
 }

@@ -59,7 +59,7 @@ class ReportController extends Controller
         $sup = $request->user()->isSupervisor();
         [$from, $to] = $this->period($request);
 
-        $items = Batch::query()->with('category', 'product')->orderBy('code')
+        $items = Batch::query()->with('category', 'item')->orderBy('code')
             ->when($request->filled('category_id'), fn ($q) => $q->where('category_id', $request->query('category_id')))
             ->when(! $request->boolean('inactive'), fn ($q) => $q->where('is_active', true))->get();
 
@@ -72,28 +72,28 @@ class ReportController extends Controller
         $available = [];
         foreach ($items as $i) {
             if (! $i->expiry_date || $i->expiry_date->gte($to->copy()->startOfDay())) {
-                $key = $i->product_id ?? 'i'.$i->id;
+                $key = $i->item_id ?? 'i'.$i->id;
                 $available[$key] = ($available[$key] ?? 0) + ($closing[$i->id]->balance_qty ?? 0.0);
             }
         }
 
-        $orders = ReorderOrder::query()->whereNull('closed_at')->with('creator', 'product', 'supplier')->orderBy('id')->get()->keyBy('product_id');   // pesanan terbuka terbaru per produk
-        $leadTimes = LeadTimes::forMany($items->pluck('product')->filter()->unique('id'));   // satu query untuk semua produk di laporan
+        $orders = ReorderOrder::query()->whereNull('closed_at')->with('creator', 'item', 'supplier')->orderBy('id')->get()->keyBy('item_id');   // pesanan terbuka terbaru per produk
+        $leadTimes = LeadTimes::forMany($items->pluck('item')->filter()->unique('id'));   // satu query untuk semua produk di laporan
 
         $rows = $items->map(function (Batch $i) use ($opening, $closing, $moves, $sup, $available, $orders, $leadTimes) {
             $m = ($moves[$i->id] ?? collect())->pluck('total', 'type');
             $end = $closing[$i->id]->balance_qty ?? 0.0;
             $cost = $closing[$i->id]->balance_avg_cost ?? 0.0;
-            $status = $i->is_active && $i->reorder_point > 0 && ($available[$i->product_id ?? 'i'.$i->id] ?? 0) <= $i->reorder_point ? 'PESAN ULANG' : 'AMAN';
+            $status = $i->is_active && $i->reorder_point > 0 && ($available[$i->item_id ?? 'i'.$i->id] ?? 0) <= $i->reorder_point ? 'PESAN ULANG' : 'AMAN';
 
             return [
                 'code' => $i->code, 'name' => $i->name, 'loc' => $i->location, 'cat' => $i->category->name, 'unit' => $i->unit,
                 'open' => $opening[$i->id]->balance_qty ?? 0.0,
                 'in' => (float) ($m['IN'] ?? 0) + (float) ($m['OPENING'] ?? 0), 'out' => abs((float) ($m['OUT'] ?? 0)), 'adj' => (float) ($m['ADJ'] ?? 0),
-                'end' => $end, 'rop' => $i->reorder_point, 'roq' => $i->reorder_qty, 'lead' => $i->lead_time_days, 'lead_auto' => ($lt = $leadTimes[$i->product_id ?? 0] ?? null) && $lt->source() === 'data' ? $lt->effective() : null,
-                'status' => $status, 'order' => $status === 'PESAN ULANG' ? ($orders[$i->product_id ?? 0] ?? null)?->note() : null,
-                'order_supplier' => $status === 'PESAN ULANG' ? ($orders[$i->product_id ?? 0] ?? null)?->supplier?->name : null,
-                'order_qty' => $status === 'PESAN ULANG' && ($o = $orders[$i->product_id ?? 0] ?? null) && $o->qty !== null ? Locale::decimal($o->qty, 3).' '.$i->unit : null,
+                'end' => $end, 'rop' => $i->reorder_point, 'roq' => $i->reorder_qty, 'lead' => $i->lead_time_days, 'lead_auto' => ($lt = $leadTimes[$i->item_id ?? 0] ?? null) && $lt->source() === 'data' ? $lt->effective() : null,
+                'status' => $status, 'order' => $status === 'PESAN ULANG' ? ($orders[$i->item_id ?? 0] ?? null)?->note() : null,
+                'order_supplier' => $status === 'PESAN ULANG' ? ($orders[$i->item_id ?? 0] ?? null)?->supplier?->name : null,
+                'order_qty' => $status === 'PESAN ULANG' && ($o = $orders[$i->item_id ?? 0] ?? null) && $o->qty !== null ? Locale::decimal($o->qty, 3).' '.$i->unit : null,
                 'cost' => $sup ? $cost : null, 'value' => $sup ? Decimal::amount($end, $cost) : null,
             ];
         });

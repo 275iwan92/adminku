@@ -74,7 +74,7 @@ class UnitTest extends TestCase
 
         $item = $this->makeBatch(array_merge($this->itemPayload(), ['code' => 'U-2', 'unit' => 'box']));
         Unit::where('code', 'box')->update(['is_active' => false]);
-        $this->put(route('products.update', $item->product), array_merge($this->itemPayload(), ['_action' => 'save', 'code' => 'U-2', 'unit' => 'box', 'name' => 'Renamed']))->assertRedirect();
+        $this->put(route('products.update', $item->item), array_merge($this->itemPayload(), ['_action' => 'save', 'code' => 'U-2', 'unit' => 'box', 'name' => 'Renamed']))->assertRedirect();
         $this->assertSame('Renamed', $item->fresh()->name);
     }
 
@@ -146,13 +146,13 @@ class UnitTest extends TestCase
         $payload = ['supplier_id' => $supplier->id, 'lines' => [['batch_id' => $item->id, 'qty' => 2, 'unit' => 'box', 'unit_cost' => 1200]]];
 
         $this->actingAs(User::factory()->create())->post(route('docs.store', 'receiving'), $payload)
-            ->assertSessionHasErrors('lines')->assertSessionHas('missing_conversions', [['product_id' => $item->product_id, 'from' => 'box', 'to' => 'pcs', 'items' => 'C-4']]);
+            ->assertSessionHasErrors('lines')->assertSessionHas('missing_conversions', [['item_id' => $item->item_id, 'from' => 'box', 'to' => 'pcs', 'items' => 'C-4']]);
 
-        $this->postJson(route('docs.conversion', 'receiving'), ['product_id' => $item->product_id, 'unit' => 'box', 'factor' => 12])->assertOk();
-        $this->assertSame(12.0, UnitConverter::factor('box', 'pcs', $item->product_id));
+        $this->postJson(route('docs.conversion', 'receiving'), ['item_id' => $item->item_id, 'unit' => 'box', 'factor' => 12])->assertOk();
+        $this->assertSame(12.0, UnitConverter::factor('box', 'pcs', $item->item_id));
         $this->assertNull(UnitConverter::factor('box', 'pcs'));   // milik barang, bukan global
-        $this->postJson(route('docs.conversion', 'receiving'), ['product_id' => $item->product_id, 'unit' => 'pcs', 'factor' => 12])->assertStatus(422);
-        $this->postJson(route('docs.conversion', 'receiving'), ['product_id' => $item->product_id, 'unit' => 'box', 'factor' => 0])->assertStatus(422);
+        $this->postJson(route('docs.conversion', 'receiving'), ['item_id' => $item->item_id, 'unit' => 'pcs', 'factor' => 12])->assertStatus(422);
+        $this->postJson(route('docs.conversion', 'receiving'), ['item_id' => $item->item_id, 'unit' => 'box', 'factor' => 0])->assertStatus(422);
 
         $this->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $this->assertSame(24.0, StockDocumentLine::firstOrFail()->qty);

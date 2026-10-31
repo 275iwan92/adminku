@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\EnsureActive;
 use App\Models\Category;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Support\Menu;
@@ -72,7 +72,7 @@ class SecurityTest extends TestCase
         $this->assertSame(['ro', 'rw', null], [$entry->moduleAccess('ITM'), $entry->moduleAccess('RCV'), $entry->moduleAccess('ISS')]);
         $this->get(route('products.index'))->assertOk();                                 // RO: boleh lihat
         $this->get(route('docs.create', 'receiving'))->assertOk();                       // RW: boleh buka form
-        $product = Product::register(['name' => 'Item X', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 1], 'X1');
+        $product = Item::register(['name' => 'Item X', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 1], 'X1');
         $this->postJson(route('products.toggle', $product))->assertForbidden();                // RO: perubahan ditolak
         $this->post(route('docs.store', 'issuance'), [])->assertForbidden();             // ISS tanpa akses
     }

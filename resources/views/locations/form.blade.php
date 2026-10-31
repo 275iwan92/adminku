@@ -24,7 +24,7 @@
         </x-dl::form.row>
         @unless ($isNew)
             <x-dl::form.row :cols="3">
-                <x-dl::field.display label="Items using it" :value="(string) $location->products_count" />
+                <x-dl::field.display label="Items using it" :value="(string) $location->items_count" />
             </x-dl::form.row>
         @endunless
     </x-dl::form>

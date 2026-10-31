@@ -19,8 +19,8 @@ class LocationController extends Controller
 {
     public function index()
     {
-        $rows = Location::query()->withCount('products')->orderBy('code')->get()->map(fn (Location $l) => [
-            'id' => $l->id, 'code' => $l->code, 'name' => $l->name, 'hue' => Palette::item('LOC', $l->code), 'items' => $l->products_count, 'active' => $l->is_active,
+        $rows = Location::query()->withCount('items')->orderBy('code')->get()->map(fn (Location $l) => [
+            'id' => $l->id, 'code' => $l->code, 'name' => $l->name, 'hue' => Palette::item('LOC', $l->code), 'items' => $l->items_count, 'active' => $l->is_active,
         ])->all();
 
         return view('locations.index', ['rows' => $rows]);
@@ -33,7 +33,7 @@ class LocationController extends Controller
 
     public function show(Location $location)
     {
-        return view('locations.form', ['location' => $location->loadCount('products')]);
+        return view('locations.form', ['location' => $location->loadCount('items')]);
     }
 
     public function store(LocationRequest $request): RedirectResponse|JsonResponse

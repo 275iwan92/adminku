@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\StockDocument;
 use App\Enums\StockDocumentType;
 use App\Services\CountSchedule;
@@ -34,11 +34,11 @@ class HpController extends Controller
     public function home(Request $request)
     {
         $user = $request->user();
-        $below = Product::query()->belowReorderPoint()->withAvailable()->count();
+        $below = Item::query()->belowReorderPoint()->withAvailable()->count();
         $expiring = Batch::query()->nearExpiry()->get();
         $docs = fn (StockDocumentType $t) => StockDocument::query()->where('type', $t)->whereIn('status', ['confirmed', 'cancel_pending'])->whereDate('doc_at', today())->count();
         $cards = array_values(array_filter([
-            ['label' => 'Barang aktif', 'value' => Product::query()->where('is_active', true)->count(), 'icon' => 'fa-solid fa-boxes-stacked', 'code' => 'ITM'],
+            ['label' => 'Barang aktif', 'value' => Item::query()->where('is_active', true)->count(), 'icon' => 'fa-solid fa-boxes-stacked', 'code' => 'ITM'],
             ['label' => 'Di / bawah titik pesan ulang', 'value' => $below, 'icon' => 'fa-solid fa-triangle-exclamation', 'code' => 'ITM', 'tone' => $below ? 'danger' : ''],
             ['label' => 'Hampir / sudah kedaluwarsa', 'value' => $expiring->count(), 'icon' => 'fa-solid fa-hourglass-end', 'code' => 'R-EXP', 'tone' => $expiring->isNotEmpty() ? 'warn' : ''],
             ['label' => 'Penerimaan hari ini', 'value' => $docs(StockDocumentType::Receiving), 'icon' => 'fa-solid fa-truck-ramp-box', 'code' => 'RCV'],
@@ -88,12 +88,12 @@ class HpController extends Controller
         $q = trim((string) $request->query('q', ''));
         $products = null;
         if ($q !== '') {
-            $exact = Product::query()->where('is_active', true)->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
-            $batch = $exact ? null : Batch::query()->whereHas('product', fn ($w) => $w->where('is_active', true))->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
+            $exact = Item::query()->where('is_active', true)->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
+            $batch = $exact ? null : Batch::query()->whereHas('item', fn ($w) => $w->where('is_active', true))->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
             if ($exact || $batch) {
-                return redirect()->route('hp.find.show', ['product' => $exact?->id ?? $batch->product_id, 'b' => $batch?->code]);
+                return redirect()->route('hp.find.show', ['product' => $exact?->id ?? $batch->item_id, 'b' => $batch?->code]);
             }
-            $products = Product::query()->withAvailable()->where('is_active', true)
+            $products = Item::query()->withAvailable()->where('is_active', true)
                 ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%")->orWhere('location', 'like', "%{$q}%")
                     ->orWhereHas('batches', fn ($i) => $i->where('code', 'like', "%{$q}%")))
                 ->orderBy('name')->limit(self::FIND_LIMIT)->get();
@@ -103,10 +103,10 @@ class HpController extends Controller
     }
 
     // Stok satu barang per batch, urutan FEFO (kedaluwarsa paling awal dulu, tanpa tanggal terakhir). Nilai uang hanya untuk Supervisor.
-    public function product(Request $request, Product $product)
+    public function product(Request $request, Item $product)
     {
         abort_unless($product->is_active, 404);
-        $product = Product::query()->withAvailable()->findOrFail($product->id);
+        $product = Item::query()->withAvailable()->findOrFail($product->id);
         $batches = $product->batches()->where('is_active', true)->where('stock_qty', '>', 0)->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
 
         return view('hp.find-show', [

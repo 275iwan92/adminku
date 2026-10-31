@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Peringatan item yang stoknya menyentuh / di bawah Reorder Point: kartu alert + tabel ringkas (nama, jumlah pesan ulang, stok saat ini) di dashboard, tanpa popup.
- Sumber hulu  : HomeController ($below = Product::belowReorderPoint, stok tersedia = batch belum kedaluwarsa).
+ Sumber hulu  : HomeController ($below = Item::belowReorderPoint, stok tersedia = batch belum kedaluwarsa).
  Input        : below.
  Output       : x-dl::alert, x-dl::table (termasuk status pesanan + keterangan: jumlah, supplier, tanggal, ref, oleh, diterima sejak dipesan), x-dl::button menuju Receiving, modal catat pemesanan (supplier, jumlah, tanggal, ref, catatan), modal Tutup Pesanan per pesanan terbuka (alasan opsional).
  Dipakai oleh : home.blade.php (slot dashboard).
@@ -24,7 +24,7 @@
         <x-dl::modal id="reorder-modal" title="Record Order" icon="fa-cart-shopping" size="sm">
             <form id="reorder-form" method="POST" action="{{ route('reorder-orders.store') }}">
                 @csrf
-                <x-dl::field.select name="product_id" label="Item" :options="$orderable" required />
+                <x-dl::field.select name="item_id" label="Item" :options="$orderable" required />
                 <x-dl::field.select name="supplier_id" label="Supplier" :options="$suppliers" required :add="\App\Support\QuickAdd::for('supplier')" />
                 <x-dl::field.decimal name="qty" label="Jumlah Dipesan" :decimals="3" :value="0" required />
                 <p class="dl-note" data-reorder-unit>Satuan: satuan stok barang.</p>
@@ -39,7 +39,7 @@
             (() => {
                 // Dialog dipindah ke <body> (seperti popup tambah supplier): di dalam Layer Shell popup tambah supplier tertutup dialog ini.
                 document.body.append(document.querySelector('[data-dl-modal-id="reorder-modal"]'));
-                const units = @json($units), note = document.querySelector('[data-reorder-unit]'), pick = document.querySelector('#reorder-form [name="product_id"]');
+                const units = @json($units), note = document.querySelector('[data-reorder-unit]'), pick = document.querySelector('#reorder-form [name="item_id"]');
                 const show = () => { note.textContent = pick.value && units[pick.value] ? 'Satuan: ' + units[pick.value] + ' (satuan stok barang)' : 'Satuan: satuan stok barang.'; };
                 pick.addEventListener('change', show);
                 new MutationObserver(show).observe(pick, {attributes: true, attributeFilter: ['value']});

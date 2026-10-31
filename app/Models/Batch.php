@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['product_id', 'code', 'name', 'category_id', 'unit', 'location', 'expiry_date', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'is_active'])]
+#[Fillable(['item_id', 'code', 'name', 'category_id', 'unit', 'location', 'expiry_date', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'is_active'])]
 class Batch extends Model
 {
     protected $table = 'i_batch';
@@ -32,9 +32,9 @@ class Batch extends Model
         ];
     }
 
-    public function product(): BelongsTo
+    public function item(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Item::class);
     }
 
     public function category(): BelongsTo

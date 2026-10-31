@@ -60,12 +60,12 @@ class LeadTimeTest extends TestCase
     // Baris sintetis tanpa penerimaan nyata: close_reason 'manual' supaya ReorderOrders::reconcile (dijalankan tiap Penerimaan) tidak menghitung ulang dan membukanya.
     private function closedOrder(int $days, int $ago = 20): ReorderOrder
     {
-        return ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays($ago + $days), 'ref_no' => 'X', 'closed_at' => today()->subDays($ago)->setTime(23, 59), 'first_received_at' => today()->subDays($ago)->setTime(23, 59), 'close_reason' => 'manual']);
+        return ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays($ago + $days), 'ref_no' => 'X', 'closed_at' => today()->subDays($ago)->setTime(23, 59), 'first_received_at' => today()->subDays($ago)->setTime(23, 59), 'close_reason' => 'manual']);
     }
 
     private function lead(): \Devlib\Engine\LeadTime
     {
-        return LeadTimes::for($this->item->product->fresh());
+        return LeadTimes::for($this->item->item->fresh());
     }
 
     public function test_closed_orders_give_the_average_in_calendar_days_rounded_up(): void
@@ -86,7 +86,7 @@ class LeadTimeTest extends TestCase
         $this->closedOrder(6, 20);
         $this->assertSame(['none', null], [$this->lead()->source(), $this->lead()->effective()]);   // manual 0 = belum diisi
 
-        $this->item->product->update(['lead_time_days' => 7]);
+        $this->item->item->update(['lead_time_days' => 7]);
         $this->assertSame(['manual', 7], [$this->lead()->source(), $this->lead()->effective()]);
 
         $this->closedOrder(3, 10);
@@ -98,7 +98,7 @@ class LeadTimeTest extends TestCase
         $this->closedOrder(4, 30);
         $this->closedOrder(5, 20);
         $this->closedOrder(6, 10);
-        $order = ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays(3), 'ref_no' => 'P']);
+        $order = ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays(3), 'ref_no' => 'P']);
 
         $in = $this->receive(10);                       // menutup pesanan: ikut dihitung (3 hari)
         $this->assertNotNull($order->fresh()->closed_at);
@@ -117,7 +117,7 @@ class LeadTimeTest extends TestCase
         $in = $this->receive(3);     // 3 <= titik 5, diterima sebelum pesanan ini (dimundurkan) supaya pesanan belum menerima apa pun
         StockMovement::where('stock_document_id', $in->id)->update(['moved_at' => now()->subDays(20)]);
 
-        $late = ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays(9), 'ref_no' => 'P-LATE', 'supplier_id' => Supplier::first()->id, 'qty' => 25, 'created_by' => $this->sup->id]);
+        $late = ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays(9), 'ref_no' => 'P-LATE', 'supplier_id' => Supplier::first()->id, 'qty' => 25, 'created_by' => $this->sup->id]);
         $expected = (new \DateTimeImmutable('today'))->modify('-4 days');
         $note = $late->note();
         $this->assertStringContainsString('Perkiraan tiba', $note);
@@ -133,19 +133,19 @@ class LeadTimeTest extends TestCase
     public function test_without_any_lead_time_figure_the_note_adds_nothing_and_nothing_fails(): void
     {
         $this->receive(3);
-        $order = ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays(9), 'ref_no' => 'P', 'created_by' => $this->sup->id]);
+        $order = ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays(9), 'ref_no' => 'P', 'created_by' => $this->sup->id]);
 
         $this->assertStringEndsWith('Diterima sejak dipesan: 3 pcs.', $order->note());   // tanpa data dan tanpa manual: tidak ada kalimat tambahan
         $this->assertDoesNotMatchRegularExpression('/Perkiraan tiba \d{1,2}-/', $this->get(route('home'))->assertOk()->getContent());   // (kamus bahasa halaman memuat teks 'Perkiraan tiba {date}', jadi yang dicari kalimat bertanggal)
-        $this->get(route('products.show', $this->item->product))->assertOk()->assertDontSee('Lead time otomatis', false)->assertDontSee('Saran Titik Pesan Ulang', false);
+        $this->get(route('products.show', $this->item->item))->assertOk()->assertDontSee('Lead time otomatis', false)->assertDontSee('Saran Titik Pesan Ulang', false);
         $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk();
     }
 
     public function test_the_manual_lead_time_alone_still_gives_an_expected_date(): void
     {
-        $this->item->product->update(['lead_time_days' => 3]);
+        $this->item->item->update(['lead_time_days' => 3]);
         $this->receive(3);
-        $order = ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today(), 'ref_no' => 'P']);
+        $order = ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today(), 'ref_no' => 'P']);
 
         $this->assertStringContainsString('Perkiraan tiba', $order->fresh()->note());
         $this->assertStringNotContainsString('Periksa pesanan', $order->fresh()->note());
@@ -165,22 +165,22 @@ class LeadTimeTest extends TestCase
         StockMovement::where('stock_document_id', $old->id)->update(['moved_at' => now()->subDays(100)]);
 
         // dihitung: 45 + 9 (yang dibatalkan dan yang lama tidak) = 54 / 90 = 0,6 per hari x 5 = 3
-        $this->assertEqualsWithDelta(0.6, LeadTimes::dailyUsage($this->item->product), 1e-9);
-        $before = $this->item->product->fresh()->only(['reorder_point', 'lead_time_days']);
+        $this->assertEqualsWithDelta(0.6, LeadTimes::dailyUsage($this->item->item), 1e-9);
+        $before = $this->item->item->fresh()->only(['reorder_point', 'lead_time_days']);
 
-        $html = $this->get(route('products.show', $this->item->product))->assertOk()->getContent();
+        $html = $this->get(route('products.show', $this->item->item))->assertOk()->getContent();
         $this->assertStringContainsString('Lead time otomatis: 5 hari (rata-rata dari 3 pemesanan)', $html);
         $this->assertStringContainsString('pemakaian rata-rata 0,6 pcs/hari (90 hari terakhir) · lead time 5 hari', $html);
         $this->assertMatchesRegularExpression('/Titik Pesan Ulang: <strong><span data-advice-rop>8<\/span> pcs/', $html);   // 0,6 x (5 + 7 hari pengaman) = 7,2 -> 8
         $this->assertMatchesRegularExpression('/Jml Pesan Ulang: <strong><span data-advice-qty>18<\/span> pcs/', $html);   // 0,6 x 30 hari cakupan = 18
         $this->assertStringContainsString('data-advice-apply', $html);   // Supervisor boleh memakai saran
-        $this->assertSame($before, $this->item->product->fresh()->only(['reorder_point', 'lead_time_days']));   // hanya saran
+        $this->assertSame($before, $this->item->item->fresh()->only(['reorder_point', 'lead_time_days']));   // hanya saran
     }
 
     public function test_the_summary_report_shows_the_automatic_lead_time_next_to_the_manual_one(): void
     {
-        $this->item->product->update(['lead_time_days' => 3]);
-        $this->item->product->propagate();
+        $this->item->item->update(['lead_time_days' => 3]);
+        $this->item->item->propagate();
         $this->closedOrder(4, 30);
         $this->closedOrder(5, 20);
         $this->closedOrder(6, 10);
@@ -192,7 +192,7 @@ class LeadTimeTest extends TestCase
     public function test_the_service_loads_many_products_with_one_orders_query(): void
     {
         $other = $this->makeBatch(['code' => 'LT-2', 'name' => 'Pensil', 'category_id' => $this->item->category_id, 'unit' => 'pcs', 'unit_price' => 1]);
-        $products = [$this->item->product->fresh(), $other->product->fresh()];
+        $products = [$this->item->item->fresh(), $other->item->fresh()];
 
         \Illuminate\Support\Facades\DB::enableQueryLog();
         $all = LeadTimes::forMany($products);

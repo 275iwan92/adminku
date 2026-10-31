@@ -66,7 +66,7 @@ class ReorderOrderInfoTest extends TestCase
         $this->issue(11);
         $this->assertSame(2.0, $this->item->fresh()->stock_qty);
 
-        return ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today()->subDays(2), 'ref_no' => 'PO-77', 'created_by' => $this->sup->id]);
+        return ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays(2), 'ref_no' => 'PO-77', 'created_by' => $this->sup->id]);
     }
 
     public function test_the_note_shows_date_ref_who_and_what_was_received_since_ordering(): void
@@ -93,16 +93,16 @@ class ReorderOrderInfoTest extends TestCase
         $note = 'ref PO-77 oleh Sari Supervisor. Diterima sejak dipesan: 10 pcs.';
 
         $this->get(route('reports.summary', ['from' => today()->subDays(7)->toDateString(), 'to' => today()->toDateString()]))->assertOk()->assertSee($note, false)->assertSee('Info Pemesanan', false);
-        $this->get(route('products.show', $this->item->product))->assertOk()->assertSee($note, false);
+        $this->get(route('products.show', $this->item->item))->assertOk()->assertSee($note, false);
     }
 
     public function test_an_item_above_the_reorder_point_or_without_an_open_order_shows_no_note(): void
     {
         $this->receive(10);   // 10 > titik 5: tidak ada peringatan
-        ReorderOrder::create(['product_id' => $this->item->product_id, 'ordered_at' => today(), 'ref_no' => 'PO-1', 'created_by' => $this->sup->id]);
+        ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today(), 'ref_no' => 'PO-1', 'created_by' => $this->sup->id]);
 
         $this->get(route('home'))->assertOk()->assertDontSee('Sudah dicatat dipesan', false);
-        $this->get(route('products.show', $this->item->product))->assertOk()->assertDontSee('Sudah dicatat dipesan', false);
+        $this->get(route('products.show', $this->item->item))->assertOk()->assertDontSee('Sudah dicatat dipesan', false);
 
         $this->issue(8);   // sekarang 2 <= 5, tetapi pesanan di atas sudah ada (terbuka)
         $this->get(route('home'))->assertSee('Sudah dicatat dipesan', false);
@@ -118,6 +118,6 @@ class ReorderOrderInfoTest extends TestCase
         $this->receive(1);   // pesanan lama tanpa jumlah: penerimaan apa pun tetap menutupnya
         $this->assertNotNull($order->fresh()->closed_at);
         $this->assertSame(3.0, $this->item->fresh()->stock_qty);
-        $this->assertTrue($this->item->product->fresh()->isBelowReorderPoint());   // 3 <= 5: peringatan tetap menurut stok
+        $this->assertTrue($this->item->item->fresh()->isBelowReorderPoint());   // 3 <= 5: peringatan tetap menurut stok
     }
 }

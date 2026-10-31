@@ -6,12 +6,12 @@ use App\Enums\StockDocumentType;
 use App\Http\Requests\StockDocumentRequest;
 use App\Models\Department;
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\Recipient;
 use App\Models\StockDocument;
 use App\Models\Supplier;
 use App\Models\Unit;
-use App\Services\ProductUnits;
+use App\Services\ItemUnits;
 use App\Services\StockDocuments;
 use App\Support\Decimal;
 use App\Support\StockDocumentPrint;
@@ -82,16 +82,16 @@ class StockDocumentController extends Controller
         return redirect()->route('docs.show', [$t->slug(), $doc])->with('status', "{$doc->doc_no} disimpan sebagai draf. Belum diproses ke stok sebelum Confirm.");
     }
 
-    // Jendela "Belum ada faktor" di form Penerimaan: 1 {unit} = {factor} satuan stok, disimpan sebagai satuan masuk milik BARANG itu (bukan konversi global). Aturan siapa boleh mengubah: ProductUnits::save.
+    // Jendela "Belum ada faktor" di form Penerimaan: 1 {unit} = {factor} satuan stok, disimpan sebagai satuan masuk milik BARANG itu (bukan konversi global). Aturan siapa boleh mengubah: ItemUnits::save.
     public function conversion(Request $request, string $type)
     {
         abort_unless($this->type($request, $type) === StockDocumentType::Receiving, 404);
         $data = $request->validate([
-            'product_id' => ['required', 'exists:m_item,id'],
+            'item_id' => ['required', 'exists:m_item,id'],
             'unit' => ['required', 'exists:m_unit,code'],
             'factor' => ['required', 'numeric', 'gt:0', 'max:999999999'],
         ], ['factor.gt' => 'Faktor harus lebih dari 0.', 'factor.required' => 'Isi faktor satuan.']);
-        ProductUnits::save(Product::findOrFail($data['product_id']), $data['unit'], $data['factor'], $request->user());
+        ItemUnits::save(Item::findOrFail($data['item_id']), $data['unit'], $data['factor'], $request->user());
 
         return response()->json(['ok' => true]);
     }
@@ -125,7 +125,7 @@ class StockDocumentController extends Controller
 
         $redirect = ($action === 'delete' ? redirect()->route('docs.index', $type) : redirect()->route('docs.show', [$type, $document]))->with('status', $message);
         if ($reorder) {
-            $redirect->with('reorder', collect($reorder)->map(fn (Product $p) => "{$p->code} {$p->name} (stok tersedia ".Locale::number($p->available(), 2).', titik pesan ulang '.Locale::number($p->reorder_point, 2).')')->implode('; '));
+            $redirect->with('reorder', collect($reorder)->map(fn (Item $p) => "{$p->code} {$p->name} (stok tersedia ".Locale::number($p->available(), 2).', titik pesan ulang '.Locale::number($p->reorder_point, 2).')')->implode('; '));
         }
 
         return $redirect;
@@ -235,9 +235,9 @@ class StockDocumentController extends Controller
         $old = old('lines');
         if (is_array($old)) {
             $items = Batch::query()->whereIn('id', array_filter(array_column($old, 'batch_id')))->get()->keyBy('id');
-            $products = Product::query()->whereIn('id', array_filter(array_column($old, 'product_id')))->get()->keyBy('id');
+            $products = Item::query()->whereIn('id', array_filter(array_column($old, 'item_id')))->get()->keyBy('id');
 
-            return array_map(fn ($r) => $this->lineRow($r, $items[$r['batch_id'] ?? 0] ?? null, $products[$r['product_id'] ?? 0] ?? null, $t === StockDocumentType::Receiving), array_values($old));
+            return array_map(fn ($r) => $this->lineRow($r, $items[$r['batch_id'] ?? 0] ?? null, $products[$r['item_id'] ?? 0] ?? null, $t === StockDocumentType::Receiving), array_values($old));
         }
 
         // Dokumen baru: baris pertama sudah berisi jumlah bawaan 1 (bukan kosong); penyesuaian mengisi jumlah hitung sendiri.
@@ -249,20 +249,20 @@ class StockDocumentController extends Controller
         $entered = $t === StockDocumentType::Receiving;
 
         return $doc->exists ? $doc->lines->map(fn ($l) => $this->lineRow([
-            ($byProduct ? 'product_id' : 'batch_id') => $byProduct ? $l->batch->product_id : $l->batch_id,
+            ($byProduct ? 'item_id' : 'batch_id') => $byProduct ? $l->batch->item_id : $l->batch_id,
             'expiry_date' => $byProduct ? $l->batch->expiry_date?->format('Y-m-d') : null, 'qty' => $entered ? $l->entered_qty ?? $l->qty : $l->qty, 'unit' => $entered ? $l->entered_unit ?? $l->batch->unit : $l->batch->unit, 'unit_cost' => $l->entered_unit_cost ?? $l->unit_cost,
             'stock_qty' => $l->qty, 'system_qty' => $l->system_qty, 'counted_qty' => $l->counted_qty, 'note' => $l->note,
-        ], $l->batch, $byProduct ? $l->batch->product : null, $entered))->all() : [];
+        ], $l->batch, $byProduct ? $l->batch->item : null, $entered))->all() : [];
     }
 
     // $packs (Penerimaan): satuan stok + pilihan satuan masuk barang itu, dibaca form untuk menawarkan satuan dan menghitung hasil konversi.
-    private function lineRow(array $row, ?Batch $item, ?Product $product = null, bool $packs = false): array
+    private function lineRow(array $row, ?Batch $item, ?Item $product = null, bool $packs = false): array
     {
-        $own = $product ?? $item?->product;
+        $own = $product ?? $item?->item;
 
-        return ($packs && $own ? ['stock_unit' => $own->unit, 'packs' => json_encode(ProductUnits::options($own))] : []) + $row + [
+        return ($packs && $own ? ['stock_unit' => $own->unit, 'packs' => json_encode(ItemUnits::options($own))] : []) + $row + [
             'batch_id_label' => $item?->label() ?? '',
-            'product_id_label' => $product ? "{$product->code} · {$product->name}" : '',
+            'item_id_label' => $product ? "{$product->code} · {$product->name}" : '',
             'unit' => $item?->unit, 'available' => $item?->stock_qty, 'system_qty' => $item?->stock_qty,
         ];
     }

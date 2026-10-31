@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Enums\StockDocumentType;
 use App\Models\Department;
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\Recipient;
 use App\Models\StockCount;
 use App\Models\StockDocument;
@@ -56,7 +56,7 @@ final class StockDocuments
     /**
      * Confirm = diproses ke stok (saldo awal, masuk, keluar). Tanggal / jam dokumen = saat Confirm (saldo awal: tanggal yang dipilih).
      *
-     * @return array<int, Product> produk yang kini di/bawah Reorder Point
+     * @return array<int, Item> produk yang kini di/bawah Reorder Point
      */
     public function confirm(StockDocument $doc, User $user): array
     {
@@ -298,7 +298,7 @@ final class StockDocuments
             if (! $item->expiry_date) {
                 continue;
             }
-            $earlier = Batch::query()->where('product_id', $item->product_id)->where('id', '!=', $item->id)->where('stock_qty', '>', 0)
+            $earlier = Batch::query()->where('item_id', $item->item_id)->where('id', '!=', $item->id)->where('stock_qty', '>', 0)
                 ->whereNotNull('expiry_date')->where('expiry_date', '<', $item->expiry_date)->orderBy('expiry_date')->get()
                 ->first(fn (Batch $e) => $e->stock_qty - ($taken[$e->id] ?? 0) > 0.0005);
             if ($earlier) {
@@ -322,13 +322,13 @@ final class StockDocuments
         abort_unless(($only === null || $doc->type === $only) && in_array($doc->status, $allowed, true), 422, 'Aksi ini tidak diizinkan pada status sekarang.');
     }
 
-    // Baris menyebut batch langsung (batch_id) atau produk + tanggal kedaluwarsa (product_id, expiry_date: batch dibuat bila belum ada).
+    // Baris menyebut batch langsung (batch_id) atau produk + tanggal kedaluwarsa (item_id, expiry_date: batch dibuat bila belum ada).
     private function resolveItem(array $row): Batch
     {
         if (! empty($row['batch_id'])) {
             return Batch::query()->findOrFail($row['batch_id']);
         }
-        $product = Product::query()->findOrFail($row['product_id']);
+        $product = Item::query()->findOrFail($row['item_id']);
         if ($product->tracks_expiry && empty($row['expiry_date'])) {
             throw ValidationException::withMessages(['lines' => "Isi tanggal kedaluwarsa untuk {$product->name}."]);
         }
@@ -347,8 +347,8 @@ final class StockDocuments
         $take = min($qty, max($first->stock_qty, 0));
         $parts = $take > 0 ? [[$first, $take]] : [];
         $left = round($qty - $take, 3);
-        if ($left > 0 && $first->product_id) {
-            $others = Batch::query()->where('product_id', $first->product_id)->where('id', '!=', $first->id)->where('stock_qty', '>', 0)->usable()
+        if ($left > 0 && $first->item_id) {
+            $others = Batch::query()->where('item_id', $first->item_id)->where('id', '!=', $first->id)->where('stock_qty', '>', 0)->usable()
                 ->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
             foreach ($others as $o) {
                 $t = min($left, $o->stock_qty);
@@ -379,10 +379,10 @@ final class StockDocuments
         $missing = [];
         foreach ($lines as $row) {
             $from = $row['unit'] ?? null;
-            $stock = ! empty($row['batch_id']) ? Batch::query()->find($row['batch_id']) : (! empty($row['product_id']) ? Product::query()->find($row['product_id']) : null);
-            $productId = $stock instanceof Batch ? $stock->product_id : $stock?->id;
+            $stock = ! empty($row['batch_id']) ? Batch::query()->find($row['batch_id']) : (! empty($row['item_id']) ? Item::query()->find($row['item_id']) : null);
+            $productId = $stock instanceof Batch ? $stock->item_id : $stock?->id;
             if ($from && $stock && $from !== $stock->unit && UnitConverter::factor($from, $stock->unit, $productId) === null) {
-                $missing["{$productId}>{$from}"] = ['product_id' => $productId, 'from' => $from, 'to' => $stock->unit, 'items' => $productId ? Product::query()->whereKey($productId)->value('code') : $stock->code];
+                $missing["{$productId}>{$from}"] = ['item_id' => $productId, 'from' => $from, 'to' => $stock->unit, 'items' => $productId ? Item::query()->whereKey($productId)->value('code') : $stock->code];
             }
         }
         if ($missing) {
@@ -425,17 +425,17 @@ final class StockDocuments
     /** @return array{0: float, 1: ?float, 2: array<string, mixed>} qty dan biaya per satuan stok + data yang diketik */
     private function toStockUnit(Batch $item, array $row): array
     {
-        if (UnitConverter::factor($row['unit'], $item->unit, $item->product_id) === null) {
+        if (UnitConverter::factor($row['unit'], $item->unit, $item->item_id) === null) {
             throw ValidationException::withMessages(['lines' => "Belum ada faktor dari {$row['unit']} ke {$item->unit} untuk {$item->code}. Isi di bagian Satuan masuk pada barangnya."]);
         }
-        $qty = Decimal::round(UnitConverter::exact(Decimal::of($row['qty']), $row['unit'], $item->unit, false, $item->product_id), 3);
+        $qty = Decimal::round(UnitConverter::exact(Decimal::of($row['qty']), $row['unit'], $item->unit, false, $item->item_id), 3);
         if ($qty <= 0) {
             throw ValidationException::withMessages(['lines' => "Jumlah {$item->code} terlalu kecil untuk dikonversi ke {$item->unit}."]);
         }
 
         $cost = $row['unit_cost'] ?? null;
 
-        return [$qty, $cost === null ? null : Decimal::round(UnitConverter::exact(Decimal::of($cost), $row['unit'], $item->unit, true, $item->product_id), 4), ['entered_qty' => $row['qty'], 'entered_unit' => $row['unit'], 'entered_unit_cost' => $cost]];
+        return [$qty, $cost === null ? null : Decimal::round(UnitConverter::exact(Decimal::of($cost), $row['unit'], $item->unit, true, $item->item_id), 4), ['entered_qty' => $row['qty'], 'entered_unit' => $row['unit'], 'entered_unit_cost' => $cost]];
     }
 
     // Dua penyimpan bersamaan bisa membaca nomor terakhir yang sama: kolom unik menolak yang kalah, lalu nomor berikutnya diambil lagi.

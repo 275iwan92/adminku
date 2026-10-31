@@ -26,7 +26,7 @@ final class ReorderOrders
         return StockMovement::query()
             ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.batch_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
-            ->where('i_batch.product_id', $productId)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
+            ->where('i_batch.item_id', $productId)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])
             ->orderBy('rm_stockcard.moved_at')->orderBy('rm_stockcard.id')
             ->get(['rm_stockcard.id', 'rm_stockcard.stock_document_id', 'rm_stockcard.moved_at', 'rm_stockcard.qty']);
@@ -38,7 +38,7 @@ final class ReorderOrders
         if ($doc->type !== StockDocumentType::Receiving) {
             return;
         }
-        $products = Batch::query()->whereIn('id', $doc->lines()->pluck('batch_id'))->whereNotNull('product_id')->distinct()->pluck('product_id');
+        $products = Batch::query()->whereIn('id', $doc->lines()->pluck('batch_id'))->whereNotNull('item_id')->distinct()->pluck('item_id');
         foreach ($products as $productId) {
             $this->reconcile((int) $productId);
         }
@@ -48,7 +48,7 @@ final class ReorderOrders
     {
         DB::transaction(function () use ($productId) {
             $receipts = self::receipts($productId)->map(fn ($m) => ['at' => $m->moved_at, 'doc' => $m->stock_document_id, 'left' => (float) $m->qty])->all();
-            $orders = ReorderOrder::query()->where('product_id', $productId)->where(fn ($q) => $q->whereNull('close_reason')->orWhere('close_reason', '!=', 'manual'))
+            $orders = ReorderOrder::query()->where('item_id', $productId)->where(fn ($q) => $q->whereNull('close_reason')->orWhere('close_reason', '!=', 'manual'))
                 ->orderBy('ordered_at')->orderBy('id')->lockForUpdate()->get();
 
             foreach ($orders as $order) {
@@ -97,8 +97,8 @@ final class ReorderOrders
         if ($order->close_reason === 'manual') {
             return [];
         }
-        $receipts = self::receipts($order->product_id)->map(fn ($m) => ['at' => $m->moved_at, 'doc' => $m->stock_document_id, 'left' => (float) $m->qty])->all();
-        $orders = ReorderOrder::query()->where('product_id', $order->product_id)->where(fn ($q) => $q->whereNull('close_reason')->orWhere('close_reason', '!=', 'manual'))->orderBy('ordered_at')->orderBy('id')->get();
+        $receipts = self::receipts($order->item_id)->map(fn ($m) => ['at' => $m->moved_at, 'doc' => $m->stock_document_id, 'left' => (float) $m->qty])->all();
+        $orders = ReorderOrder::query()->where('item_id', $order->item_id)->where(fn ($q) => $q->whereNull('close_reason')->orWhere('close_reason', '!=', 'manual'))->orderBy('ordered_at')->orderBy('id')->get();
 
         $mine = [];
         foreach ($orders as $o) {

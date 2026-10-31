@@ -20,9 +20,9 @@ class Unit extends Model
         return ['is_active' => 'boolean'];
     }
 
-    public function products(): HasMany
+    public function items(): HasMany
     {
-        return $this->hasMany(Product::class, 'unit', 'code');
+        return $this->hasMany(Item::class, 'unit', 'code');
     }
 
     public function batches(): HasMany

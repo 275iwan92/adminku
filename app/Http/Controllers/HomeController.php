@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\StockDocumentType;
 use App\Models\Batch;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\StockDocument;
 use App\Models\Supplier;
 use App\Services\CountSchedule;
@@ -29,7 +29,7 @@ class HomeController extends Controller
             return app(HpController::class)->home($request);
         }
         $user = $request->user();
-        $below = Product::query()->belowReorderPoint()->withAvailable()->with('category', 'openOrder.creator', 'openOrder.supplier')->orderByRaw(Product::availableSql().' / m_item.reorder_point', [Batch::usableFrom()])->get();
+        $below = Item::query()->belowReorderPoint()->withAvailable()->with('category', 'openOrder.creator', 'openOrder.supplier')->orderByRaw(Item::availableSql().' / m_item.reorder_point', [Batch::usableFrom()])->get();
 
         return view('home', [
             'modules' => Menu::layers($user),
@@ -42,7 +42,7 @@ class HomeController extends Controller
             'leadTimes' => LeadTimes::forMany($below),
             'suppliers' => Supplier::query()->where('is_active', true)->forSelect()->pluck('name', 'id')->all(),
             'expiring' => Batch::query()->nearExpiry()->orderBy('expiry_date')->get(),
-            'itemCount' => Product::query()->where('is_active', true)->count(),
+            'itemCount' => Item::query()->where('is_active', true)->count(),
             'stockValue' => $user->isSupervisor() ? round(Batch::query()->selectRaw('SUM(stock_qty * avg_cost) v')->value('v') ?? 0, 2) : null,
             'receivingToday' => StockDocument::query()->where('type', StockDocumentType::Receiving)->whereIn('status', ['confirmed', 'cancel_pending'])->whereDate('doc_at', today())->count(),
             'issuanceToday' => StockDocument::query()->where('type', StockDocumentType::Issuance)->whereIn('status', ['confirmed', 'cancel_pending'])->whereDate('doc_at', today())->count(),
