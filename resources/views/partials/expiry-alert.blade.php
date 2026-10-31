@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Peringatan barang yang sudah kedaluwarsa atau hampir kedaluwarsa (stok masih ada): kartu alert + tabel ringkas di dashboard, tanpa popup.
- Sumber hulu  : HomeController ($expiring = Item::nearExpiry, urut tanggal kedaluwarsa).
+ Sumber hulu  : HomeController ($expiring = Batch::nearExpiry, urut tanggal kedaluwarsa).
  Input        : expiring.
  Output       : x-dl::alert (merah bila ada yang sudah kedaluwarsa, kuning bila hanya hampir), tabel, tombol ke Laporan Kedaluwarsa.
  Dipakai oleh : home.blade.php (slot dashboard).
@@ -10,8 +10,8 @@
     @php
         $expired = $expiring->filter(fn ($i) => $i->expiryState() === 'KEDALUWARSA')->count();
         $text = $expired
-            ? $expired.' barang sudah kedaluwarsa dan '.($expiring->count() - $expired).' barang hampir kedaluwarsa (kurang dari '.\App\Models\Item::EXPIRY_WARN_DAYS.' hari). Pisahkan dari rak dan keluarkan lewat Penyesuaian Stok.'
-            : $expiring->count().' barang akan kedaluwarsa dalam '.\App\Models\Item::EXPIRY_WARN_DAYS.' hari. Gunakan lebih dulu.';
+            ? $expired.' barang sudah kedaluwarsa dan '.($expiring->count() - $expired).' barang hampir kedaluwarsa (kurang dari '.\App\Models\Batch::EXPIRY_WARN_DAYS.' hari). Pisahkan dari rak dan keluarkan lewat Penyesuaian Stok.'
+            : $expiring->count().' barang akan kedaluwarsa dalam '.\App\Models\Batch::EXPIRY_WARN_DAYS.' hari. Gunakan lebih dulu.';
     @endphp
     <x-dl::alert :tone="$expired ? 'danger' : 'warn'" :message="$text">
         <x-dl::button variant="secondary" size="sm" icon="fa-hourglass-end" label="Expiry Report" href="#" data-open-tab="R-EXP" />

@@ -21,8 +21,8 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function items(): HasMany
+    public function batches(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Batch::class);
     }
 }

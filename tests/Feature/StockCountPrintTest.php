@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Location;
 use App\Models\StockCount;
 use App\Models\Supplier;
@@ -27,7 +27,7 @@ class StockCountPrintTest extends TestCase
 
     private User $entry;
 
-    /** @var array<string, Item> */
+    /** @var array<string, Batch> */
     private array $items = [];
 
     protected function setUp(): void
@@ -42,8 +42,8 @@ class StockCountPrintTest extends TestCase
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         // Urutan kode kebalikan dari urutan lokasi: Z1 di RAK-A harus tampil sebelum A1 di RAK-B.
         foreach ([['A1', 'RAK-B', 4321.5], ['Z1', 'RAK-A', 10], ['Y1', null, 3]] as [$code, $loc, $qty]) {
-            $item = $this->makeItem(['code' => $code, 'name' => "Barang {$code}", 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 1000, 'location' => $loc]);
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 1000]], $this->sup), $this->sup);
+            $item = $this->makeBatch(['code' => $code, 'name' => "Barang {$code}", 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 1000, 'location' => $loc]);
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 1000]], $this->sup), $this->sup);
             $this->items[$code] = $item;
         }
     }
@@ -55,7 +55,7 @@ class StockCountPrintTest extends TestCase
 
     private function lineId(StockCount $count, string $code): int
     {
-        return $count->lines()->where('item_id', $this->items[$code]->id)->value('id');
+        return $count->lines()->where('batch_id', $this->items[$code]->id)->value('id');
     }
 
     public function test_blind_sheet_has_no_system_stock_and_is_grouped_by_location_then_code(): void

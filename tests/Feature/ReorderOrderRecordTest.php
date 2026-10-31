@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -23,7 +23,7 @@ class ReorderOrderRecordTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     private Supplier $supplier;
 
@@ -33,13 +33,13 @@ class ReorderOrderRecordTest extends TestCase
         $this->sup = User::factory()->supervisor()->create(['name' => 'Sari Supervisor']);
         $this->actingAs($this->sup);
         $this->supplier = Supplier::create(['code' => 'S1', 'name' => 'Toko Maju']);
-        $this->item = $this->makeItem(['code' => 'RR-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'RR-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
         $this->receive(3);   // 3 <= titik 5: di bawah titik pesan ulang
     }
 
     private function receive(float $qty): void
     {
-        $payload = ['supplier_id' => $this->supplier->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => $this->supplier->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
         $this->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $this->put(route('docs.update', ['receiving', StockDocument::latest('id')->firstOrFail()]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
     }

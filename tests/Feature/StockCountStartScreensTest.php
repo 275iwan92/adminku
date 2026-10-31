@@ -34,9 +34,9 @@ class StockCountStartScreensTest extends TestCase
         $this->entry = User::factory()->create();
         $category = Category::create(['code' => 'ATK', 'name' => 'ATK']);
         Location::create(['code' => 'RAK-A', 'name' => 'Rak A']);
-        $item = $this->makeItem(['code' => 'A1', 'name' => 'Item A1', 'category_id' => $category->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => 'RAK-A']);
+        $item = $this->makeBatch(['code' => 'A1', 'name' => 'Item A1', 'category_id' => $category->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => 'RAK-A']);
         $docs = app(StockDocuments::class);
-        $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S'])->id], [['item_id' => $item->id, 'qty' => 10, 'unit_cost' => 100]], $this->sup), $this->sup);
+        $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S'])->id], [['batch_id' => $item->id, 'qty' => 10, 'unit_cost' => 100]], $this->sup), $this->sup);
     }
 
     private function payload(array $over = []): array

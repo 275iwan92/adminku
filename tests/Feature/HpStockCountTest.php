@@ -38,8 +38,8 @@ class HpStockCountTest extends TestCase
         $docs = app(StockDocuments::class);
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         foreach ([['A1', 'Pensil', 'RAK-A', 12345.5], ['B1', 'Penghapus', 'RAK-B', 7]] as $n => [$code, $name, $loc, $qty]) {
-            $item = $this->makeItem(['code' => $code, 'name' => $name, 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => $loc]);
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
+            $item = $this->makeBatch(['code' => $code, 'name' => $name, 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => $loc]);
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
             $n === 0 ? $this->a = $item->id : $this->b = $item->id;
         }
     }
@@ -51,7 +51,7 @@ class HpStockCountTest extends TestCase
 
     private function lineId(StockCount $c, int $itemId): int
     {
-        return $c->lines()->where('item_id', $itemId)->value('id');
+        return $c->lines()->where('batch_id', $itemId)->value('id');
     }
 
     public function test_list_shows_counts_as_cards_with_a_count_button_only_while_counting(): void

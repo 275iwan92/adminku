@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// Satuan barang. Item menyimpan kode satuan di i_batch.unit (foreign key ke m_unit.code); kode tidak diubah setelah disimpan.
+// Satuan barang. Batch menyimpan kode satuan di i_batch.unit (foreign key ke m_unit.code); kode tidak diubah setelah disimpan.
 #[Fillable(['code', 'name', 'kind', 'is_active'])]
 class Unit extends Model
 {
@@ -25,9 +25,9 @@ class Unit extends Model
         return $this->hasMany(Product::class, 'unit', 'code');
     }
 
-    public function items(): HasMany
+    public function batches(): HasMany
     {
-        return $this->hasMany(Item::class, 'unit', 'code');
+        return $this->hasMany(Batch::class, 'unit', 'code');
     }
 
     // Konversi keluar dari satuan ini: 1 {code} = factor {to_unit}.

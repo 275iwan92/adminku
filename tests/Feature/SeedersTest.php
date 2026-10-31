@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockDocument;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,16 +20,16 @@ class SeedersTest extends TestCase
     public function test_seeder_runs_twice_without_duplicates_and_stock_matches_ledger(): void
     {
         $this->seed(DatabaseSeeder::class);
-        $items = Item::count();
+        $items = Batch::count();
         $docs = StockDocument::count();
         $this->assertGreaterThan(0, $items);
         $this->assertGreaterThan(0, $docs);
 
         $this->seed(DatabaseSeeder::class);
-        $this->assertSame($items, Item::count());
+        $this->assertSame($items, Batch::count());
         $this->assertSame($docs, StockDocument::count());
 
-        foreach (Item::with('movements')->get() as $item) {
+        foreach (Batch::with('movements')->get() as $item) {
             $this->assertEqualsWithDelta($item->stock_qty, $item->movements->sum('qty'), 0.001, $item->code);
         }
     }

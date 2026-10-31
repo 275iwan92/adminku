@@ -51,7 +51,7 @@ final class LeadTimes
     public static function dailyUsage(Product $product): float
     {
         $out = StockMovement::query()
-            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.item_id')
+            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.batch_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
             ->where('i_batch.product_id', $product->id)->where('rm_stockcard.type', StockDocumentType::Issuance->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])->where('rm_stockcard.moved_at', '>=', now()->subDays(self::USAGE_DAYS))

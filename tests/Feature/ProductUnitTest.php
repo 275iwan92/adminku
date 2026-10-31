@@ -57,7 +57,7 @@ class ProductUnitTest extends TestCase
         $line = StockDocumentLine::firstOrFail();
         $this->assertSame([60.0, 100.0], [$line->qty, $line->unit_cost]);   // 1200 per dus = 100 per pcs
         $this->assertSame([5.0, 'dus', 1200.0], [$line->entered_qty, $line->entered_unit, $line->entered_unit_cost]);
-        $this->assertSame(60.0, $p->items()->firstOrFail()->stock_qty);
+        $this->assertSame(60.0, $p->batches()->firstOrFail()->stock_qty);
     }
 
     public function test_the_product_factor_wins_over_the_global_pair_and_the_global_pair_is_the_fallback(): void

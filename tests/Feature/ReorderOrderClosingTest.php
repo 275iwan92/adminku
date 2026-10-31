@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\StockMovement;
@@ -26,21 +26,21 @@ class ReorderOrderClosingTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->sup = User::factory()->supervisor()->create(['name' => 'Sari Supervisor']);
         $this->actingAs($this->sup);
-        $this->item = $this->makeItem(['code' => 'CL-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'CL-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
     }
 
     // Penerimaan terkonfirmasi; $daysAgo memundurkan waktu pergerakannya (pesanan dihitung ulang seperti setelah Confirm).
-    private function receive(float $qty, int $daysAgo = 0, ?Item $item = null): StockDocument
+    private function receive(float $qty, int $daysAgo = 0, ?Batch $item = null): StockDocument
     {
         $item ??= $this->item;
-        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'Toko Maju'])->id, 'lines' => [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'Toko Maju'])->id, 'lines' => [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 10]]];
         $this->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
@@ -151,7 +151,7 @@ class ReorderOrderClosingTest extends TestCase
 
     public function test_a_receiving_before_the_order_date_or_for_another_product_is_not_counted(): void
     {
-        $other = $this->makeItem(['code' => 'CL-2', 'name' => 'Pensil', 'category_id' => $this->item->category_id, 'unit' => 'pcs', 'unit_price' => 1]);
+        $other = $this->makeBatch(['code' => 'CL-2', 'name' => 'Pensil', 'category_id' => $this->item->category_id, 'unit' => 'pcs', 'unit_price' => 1]);
         $order = $this->order(5, 2);
 
         $this->receive(10, 5);          // sebelum tanggal pesan

@@ -43,7 +43,7 @@
         <form id="add-item-form" method="POST" action="{{ route('stock-counts.items', $count) }}">
             @csrf
             <p class="dl-note">Pilih barang / batch yang ditemukan fisik tetapi tidak ada di lembar. Stok sistemnya diambil saat ini.</p>
-            <x-dl::field.lookup name="item_id" lookup="item_count" label="Item" required />
+            <x-dl::field.lookup name="batch_id" lookup="item_count" label="Item" required />
         </form>
         <x-slot:footer><x-dl::button type="submit" form="add-item-form" icon="save" label="Add Item" /></x-slot:footer>
     </x-dl::modal>

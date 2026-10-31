@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// Lokasi rak / penyimpanan. Item menyimpan kodenya di i_batch.location; kode tidak diubah setelah disimpan.
+// Lokasi rak / penyimpanan. Batch menyimpan kodenya di i_batch.location; kode tidak diubah setelah disimpan.
 #[Fillable(['code', 'name', 'is_active'])]
 class Location extends Model
 {
@@ -22,9 +22,9 @@ class Location extends Model
         return $this->hasMany(Product::class, 'location', 'code');
     }
 
-    public function items(): HasMany
+    public function batches(): HasMany
     {
-        return $this->hasMany(Item::class, 'location', 'code');
+        return $this->hasMany(Batch::class, 'location', 'code');
     }
 
     // Teks pilihan: "A1-01" atau "A1-01 · Rak A1 level 1".

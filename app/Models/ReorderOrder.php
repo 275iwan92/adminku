@@ -42,7 +42,7 @@ class ReorderOrder extends Model
     public function receivedSince(): float
     {
         return round((float) StockMovement::query()
-            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.item_id')
+            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.batch_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
             ->where('i_batch.product_id', $this->product_id)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])->where('rm_stockcard.moved_at', '>=', $this->ordered_at->copy()->startOfDay())

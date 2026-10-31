@@ -14,14 +14,14 @@
     $edit = fn (array $c) => $c + ['readonly' => ! $editable];
 @endphp
 @if ($moved->isNotEmpty())
-    <x-dl::alert tone="danger" :message="raw('Stok bergeser sejak cut-off pada '.$moved->count().' baris selisih ('.$moved->take(8)->map(fn ($l) => $l->item->code.': sistem '.Locale::number($l->system_qty, 3).', kini '.Locale::number($l->item->stock_qty, 3))->implode('; ').($moved->count() > 8 ? '; ...' : '').'). Persetujuan akan ditolak sampai baris ini diperbarui dan dihitung ulang.')">
+    <x-dl::alert tone="danger" :message="raw('Stok bergeser sejak cut-off pada '.$moved->count().' baris selisih ('.$moved->take(8)->map(fn ($l) => $l->batch->code.': sistem '.Locale::number($l->system_qty, 3).', kini '.Locale::number($l->batch->stock_qty, 3))->implode('; ').($moved->count() > 8 ? '; ...' : '').'). Persetujuan akan ditolak sampai baris ini diperbarui dan dihitung ulang.')">
         <x-dl::action-form :action="route('stock-counts.refresh', $count)">
             <x-dl::button type="submit" size="sm" icon="fa-rotate" label="Refresh Moved Lines" data-dl-confirm="Perbarui baris yang bergeser? Stok sistemnya diganti stok sekarang dan barisnya dikosongkan untuk dihitung ulang; opname kembali ke Sedang dihitung." data-dl-confirm-tone="warn" />
         </x-dl::action-form>
         <x-dl::action-bar align="start">
             @foreach ($moved->take(12) as $l)
                 <x-dl::action-form :action="route('stock-counts.refresh-line', [$count, $l->id])">
-                    <x-dl::button type="submit" size="sm" variant="secondary" icon="fa-rotate" :label="'Perbarui '.$l->item->code" data-dl-confirm="Perbarui baris {{ $l->item->code }} saja? Stok sistemnya diganti stok sekarang dan barisnya dikosongkan untuk dihitung ulang; opname kembali ke Sedang dihitung." data-dl-confirm-tone="warn" />
+                    <x-dl::button type="submit" size="sm" variant="secondary" icon="fa-rotate" :label="'Perbarui '.$l->batch->code" data-dl-confirm="Perbarui baris {{ $l->batch->code }} saja? Stok sistemnya diganti stok sekarang dan barisnya dikosongkan untuk dihitung ulang; opname kembali ke Sedang dihitung." data-dl-confirm-tone="warn" />
                 </x-dl::action-form>
             @endforeach
         </x-dl::action-bar>

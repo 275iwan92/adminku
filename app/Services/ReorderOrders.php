@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enums\StockDocumentType;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\StockMovement;
@@ -24,7 +24,7 @@ final class ReorderOrders
     public static function receipts(int $productId)
     {
         return StockMovement::query()
-            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.item_id')
+            ->join('i_batch', 'i_batch.id', '=', 'rm_stockcard.batch_id')
             ->join('rm_stock', 'rm_stock.id', '=', 'rm_stockcard.stock_document_id')
             ->where('i_batch.product_id', $productId)->where('rm_stockcard.type', StockDocumentType::Receiving->value)->whereNull('rm_stockcard.reversal_of')
             ->whereIn('rm_stock.status', ['confirmed', 'cancel_pending'])
@@ -38,7 +38,7 @@ final class ReorderOrders
         if ($doc->type !== StockDocumentType::Receiving) {
             return;
         }
-        $products = Item::query()->whereIn('id', $doc->lines()->pluck('item_id'))->whereNotNull('product_id')->distinct()->pluck('product_id');
+        $products = Batch::query()->whereIn('id', $doc->lines()->pluck('batch_id'))->whereNotNull('product_id')->distinct()->pluck('product_id');
         foreach ($products as $productId) {
             $this->reconcile((int) $productId);
         }

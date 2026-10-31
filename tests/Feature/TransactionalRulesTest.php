@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Department;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Recipient;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -35,12 +35,12 @@ class TransactionalRulesTest extends TestCase
         $this->entry = User::factory()->create();
         $this->sup = User::factory()->supervisor()->create();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->itemId = $this->makeItem(['code' => 'T1', 'name' => 'Item T1', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 1, 'reorder_qty' => 5])->id;
+        $this->itemId = $this->makeBatch(['code' => 'T1', 'name' => 'Item T1', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 1, 'reorder_qty' => 5])->id;
     }
 
     private function receive(): StockDocument
     {
-        $payload = ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S'])->id, 'lines' => [['item_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S'])->id, 'lines' => [['batch_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]];
         $this->actingAs($this->entry)->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
 
         return StockDocument::latest('id')->firstOrFail();
@@ -53,7 +53,7 @@ class TransactionalRulesTest extends TestCase
 
     private function adjustment(): StockDocument
     {
-        $payload = ['reason' => 'Opname', 'lines' => [['item_id' => $this->itemId, 'counted_qty' => 4]]];
+        $payload = ['reason' => 'Opname', 'lines' => [['batch_id' => $this->itemId, 'counted_qty' => 4]]];
         $this->actingAs($this->sup)->post(route('docs.store', 'adjustment'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->act($doc, 'confirm', $this->sup, $payload);
@@ -64,7 +64,7 @@ class TransactionalRulesTest extends TestCase
     public function test_the_printout_carries_the_mode_in_every_status(): void
     {
         $doc = $this->receive();
-        $payload = ['supplier_id' => $doc->supplier_id, 'lines' => [['item_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => $doc->supplier_id, 'lines' => [['batch_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]];
 
         $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->assertSee(route('docs.print', ['receiving', $doc]), false);
         $this->get(route('docs.print', ['receiving', $doc]))->assertOk()->assertSee('DRAFT')->assertSee($doc->doc_no);
@@ -83,7 +83,7 @@ class TransactionalRulesTest extends TestCase
         $adj = $this->adjustment();
         $this->get(route('docs.print', ['adjustment', $adj]))->assertOk()->assertSee('WAITING APPROVAL');
 
-        $out = ['recipient_id' => Recipient::create(['name' => 'R', 'department_id' => Department::create(['code' => 'D', 'name' => 'D'])->id])->id, 'lines' => [['item_id' => $this->itemId, 'qty' => 1]]];
+        $out = ['recipient_id' => Recipient::create(['name' => 'R', 'department_id' => Department::create(['code' => 'D', 'name' => 'D'])->id])->id, 'lines' => [['batch_id' => $this->itemId, 'qty' => 1]]];
         $this->post(route('docs.store', 'issuance'), $out)->assertSessionHasNoErrors();
         $this->get(route('docs.print', ['issuance', StockDocument::latest('id')->firstOrFail()]))->assertOk()->assertSee('DRAFT');
         $this->get(route('docs.print', ['receiving', $adj]))->assertNotFound();
@@ -107,7 +107,7 @@ class TransactionalRulesTest extends TestCase
     public function test_cancelling_a_processed_document_auto_creates_a_reversing_adjustment_record(): void
     {
         $in = $this->receive();
-        $payload = ['supplier_id' => $in->supplier_id, 'lines' => [['item_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => $in->supplier_id, 'lines' => [['batch_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]];
         $this->act($in, 'confirm', $this->entry, $payload);
         $this->act($in, 'cancel', $this->sup);
 
@@ -127,7 +127,7 @@ class TransactionalRulesTest extends TestCase
         $doc = $this->receive();
         $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->assertSee('rowState&quot;:true', false)->assertSee('readonly&quot;:false', false);
 
-        $this->act($doc, 'confirm', $this->entry, ['supplier_id' => $doc->supplier_id, 'lines' => [['item_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]]);
+        $this->act($doc, 'confirm', $this->entry, ['supplier_id' => $doc->supplier_id, 'lines' => [['batch_id' => $this->itemId, 'qty' => 10, 'unit_cost' => 10]]]);
         $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->assertSee('readonly&quot;:true', false);   // Confirmed: tabel terkunci, tanpa tombol baris
     }
 
@@ -149,6 +149,6 @@ class TransactionalRulesTest extends TestCase
 
     private function item()
     {
-        return Item::findOrFail($this->itemId);
+        return Batch::findOrFail($this->itemId);
     }
 }

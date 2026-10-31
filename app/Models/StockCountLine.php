@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['stock_count_id', 'item_id', 'system_qty', 'unit_cost', 'counted_qty', 'recount_qty', 'counted_by', 'entered_by', 'entered_at', 'rev', 'skipped', 'reason', 'note', 'added_manually'])]
+#[Fillable(['stock_count_id', 'batch_id', 'system_qty', 'unit_cost', 'counted_qty', 'recount_qty', 'counted_by', 'entered_by', 'entered_at', 'rev', 'skipped', 'reason', 'note', 'added_manually'])]
 class StockCountLine extends Model
 {
     protected $table = 'i_count_line';
@@ -27,9 +27,9 @@ class StockCountLine extends Model
         return $this->belongsTo(User::class, 'entered_by');
     }
 
-    public function item(): BelongsTo
+    public function batch(): BelongsTo
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Batch::class);
     }
 
     // Hasil akhir: hitung ulang bila ada, selain itu hasil hitung; null = tidak ada hasil (belum diisi atau Tidak dihitung).

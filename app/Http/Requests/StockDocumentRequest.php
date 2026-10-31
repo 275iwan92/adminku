@@ -43,14 +43,14 @@ class StockDocumentRequest extends FormRequest
             'lines.*.note' => ['nullable', 'string', 'max:255'],
         ];
 
-        // Penerimaan / Saldo Awal: produk + tanggal kedaluwarsa (batch dibuat otomatis); batch langsung (item_id) tetap diterima untuk pemakaian lewat kode.
+        // Penerimaan / Saldo Awal: produk + tanggal kedaluwarsa (batch dibuat otomatis); batch langsung (batch_id) tetap diterima untuk pemakaian lewat kode.
         $byProduct = [
-            'lines.*.product_id' => ['nullable', 'required_without:lines.*.item_id', Rule::exists('m_item', 'id')->where('is_active', true)],
-            'lines.*.item_id' => ['nullable', 'required_without:lines.*.product_id', Rule::exists('i_batch', 'id')->where('is_active', true)],
+            'lines.*.product_id' => ['nullable', 'required_without:lines.*.batch_id', Rule::exists('m_item', 'id')->where('is_active', true)],
+            'lines.*.batch_id' => ['nullable', 'required_without:lines.*.product_id', Rule::exists('i_batch', 'id')->where('is_active', true)],
             'lines.*.expiry_date' => ['nullable', 'date'],
         ];
         // Pengeluaran / Penyesuaian: batch (barang) yang dipilih.
-        $byItem = ['lines.*.item_id' => ['required', 'distinct', Rule::exists('i_batch', 'id')->where('is_active', true)]];
+        $byItem = ['lines.*.batch_id' => ['required', 'distinct', Rule::exists('i_batch', 'id')->where('is_active', true)]];
 
         return $common + match ($this->type()) {
             StockDocumentType::Receiving => [
@@ -100,12 +100,12 @@ class StockDocumentRequest extends FormRequest
         return [
             'lines.required' => 'Tambahkan minimal satu baris barang.',
             'lines.min' => 'Tambahkan minimal satu baris barang.',
-            'lines.*.item_id.required' => 'Pilih barang di setiap baris.',
+            'lines.*.batch_id.required' => 'Pilih barang di setiap baris.',
             'lines.*.product_id.required_without' => 'Pilih barang di setiap baris.',
-            'lines.*.item_id.required_without' => 'Pilih barang di setiap baris.',
+            'lines.*.batch_id.required_without' => 'Pilih barang di setiap baris.',
             'lines.*.product_id.exists' => 'Barang yang dipilih tidak ada atau nonaktif.',
-            'lines.*.item_id.distinct' => 'Barang yang sama muncul di lebih dari satu baris.',
-            'lines.*.item_id.exists' => 'Barang yang dipilih tidak ada atau nonaktif.',
+            'lines.*.batch_id.distinct' => 'Barang yang sama muncul di lebih dari satu baris.',
+            'lines.*.batch_id.exists' => 'Barang yang dipilih tidak ada atau nonaktif.',
             'lines.*.qty.gt' => 'Jumlah harus lebih dari 0.',
         ];
     }

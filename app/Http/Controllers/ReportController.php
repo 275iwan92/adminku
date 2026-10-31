@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\ReorderOrder;
 use App\Models\StockDocumentLine;
 use App\Models\StockMovement;
@@ -31,14 +31,14 @@ class ReportController extends Controller
     {
         $sup = $request->user()->isSupervisor();
         [$from, $to] = $this->period($request);
-        $item = $request->filled('item_id') ? Item::with('category')->find($request->query('item_id')) : null;
+        $item = $request->filled('batch_id') ? Batch::with('category')->find($request->query('batch_id')) : null;
         $rows = [];
         $opening = 0.0;
 
         if ($item) {
-            $before = StockMovement::query()->where('item_id', $item->id)->where('moved_at', '<', $from)->orderByDesc('moved_at')->orderByDesc('id')->first();
+            $before = StockMovement::query()->where('batch_id', $item->id)->where('moved_at', '<', $from)->orderByDesc('moved_at')->orderByDesc('id')->first();
             $opening = $before?->balance_qty ?? 0.0;
-            $rows = StockMovement::query()->where('item_id', $item->id)->whereBetween('moved_at', [$from, $to])->with(['document.supplier', 'user'])
+            $rows = StockMovement::query()->where('batch_id', $item->id)->whereBetween('moved_at', [$from, $to])->with(['document.supplier', 'user'])
                 ->orderBy('moved_at')->orderBy('id')->get()->map(fn (StockMovement $m) => [
                     'date' => Locale::stamp($m->moved_at), 'month' => Locale::at($m->moved_at)->translatedFormat('F Y'),
                     'doc' => $m->document->doc_no, 'src' => $m->document->supplier?->name ?? $m->document->recipient ?? $m->document->reason,
@@ -50,7 +50,7 @@ class ReportController extends Controller
 
         return view('reports.stock-card', [
             'sup' => $sup, 'from' => $from, 'to' => $to, 'item' => $item, 'rows' => $rows, 'opening' => $opening,
-            'items' => Item::query()->orderBy('code')->get()->mapWithKeys(fn ($i) => [$i->id => $i->label()])->all(),
+            'items' => Batch::query()->orderBy('code')->get()->mapWithKeys(fn ($i) => [$i->id => $i->label()])->all(),
         ]);
     }
 
@@ -59,14 +59,14 @@ class ReportController extends Controller
         $sup = $request->user()->isSupervisor();
         [$from, $to] = $this->period($request);
 
-        $items = Item::query()->with('category', 'product')->orderBy('code')
+        $items = Batch::query()->with('category', 'product')->orderBy('code')
             ->when($request->filled('category_id'), fn ($q) => $q->where('category_id', $request->query('category_id')))
             ->when(! $request->boolean('inactive'), fn ($q) => $q->where('is_active', true))->get();
 
         // Saldo awal = saldo sesudah pergerakan terakhir sebelum periode; saldo akhir = sesudah pergerakan terakhir sampai akhir periode.
         $opening = $this->lastMovements('<', $from);
         $closing = $this->lastMovements('<=', $to);
-        $moves = StockMovement::query()->whereBetween('moved_at', [$from, $to])->selectRaw('item_id, type, sum(qty) as total')->groupBy('item_id', 'type')->get()->groupBy('item_id');
+        $moves = StockMovement::query()->whereBetween('moved_at', [$from, $to])->selectRaw('batch_id, type, sum(qty) as total')->groupBy('batch_id', 'type')->get()->groupBy('batch_id');
 
         // Titik pesan ulang per produk: stok akhir batch yang belum kedaluwarsa pada akhir periode dijumlahkan (batch tanpa produk berdiri sendiri).
         $available = [];
@@ -80,7 +80,7 @@ class ReportController extends Controller
         $orders = ReorderOrder::query()->whereNull('closed_at')->with('creator', 'product', 'supplier')->orderBy('id')->get()->keyBy('product_id');   // pesanan terbuka terbaru per produk
         $leadTimes = LeadTimes::forMany($items->pluck('product')->filter()->unique('id'));   // satu query untuk semua produk di laporan
 
-        $rows = $items->map(function (Item $i) use ($opening, $closing, $moves, $sup, $available, $orders, $leadTimes) {
+        $rows = $items->map(function (Batch $i) use ($opening, $closing, $moves, $sup, $available, $orders, $leadTimes) {
             $m = ($moves[$i->id] ?? collect())->pluck('total', 'type');
             $end = $closing[$i->id]->balance_qty ?? 0.0;
             $cost = $closing[$i->id]->balance_avg_cost ?? 0.0;
@@ -106,22 +106,22 @@ class ReportController extends Controller
         ]);
     }
 
-    /** @return Collection<int, StockMovement> pergerakan terakhir tiap item (kunci = item_id) pada batas waktu */
+    /** @return Collection<int, StockMovement> pergerakan terakhir tiap item (kunci = batch_id) pada batas waktu */
     private function lastMovements(string $operator, Carbon $at)
     {
-        $ids = StockMovement::query()->where('moved_at', $operator, $at)->selectRaw('max(id) as id')->groupBy('item_id')->pluck('id');
+        $ids = StockMovement::query()->where('moved_at', $operator, $at)->selectRaw('max(id) as id')->groupBy('batch_id')->pluck('id');
 
-        return StockMovement::query()->whereIn('id', $ids)->get()->keyBy('item_id');
+        return StockMovement::query()->whereIn('id', $ids)->get()->keyBy('batch_id');
     }
 
     // Barang bersisa stok yang sudah kedaluwarsa atau akan kedaluwarsa dalam N hari (bawaan 30), dari yang paling dulu.
     public function expiry(Request $request)
     {
         $sup = $request->user()->isSupervisor();
-        $days = min(max((int) $request->query('days', Item::EXPIRY_WARN_DAYS), 0), 365);
-        $rows = Item::query()->nearExpiry($days)->with('category')->orderBy('expiry_date')->orderBy('code')
+        $days = min(max((int) $request->query('days', Batch::EXPIRY_WARN_DAYS), 0), 365);
+        $rows = Batch::query()->nearExpiry($days)->with('category')->orderBy('expiry_date')->orderBy('code')
             ->when($request->filled('category_id'), fn ($q) => $q->where('category_id', $request->query('category_id')))->get()
-            ->map(fn (Item $i) => [
+            ->map(fn (Batch $i) => [
                 'code' => $i->code, 'name' => $i->name, 'loc' => $i->location, 'cat' => $i->category->name, 'unit' => $i->unit,
                 'expiry' => Locale::d($i->expiry_date), 'left' => today()->diffInDays($i->expiry_date, false), 'stock' => $i->stock_qty,
                 'value' => $sup ? $i->stockValue() : null, 'status' => $i->expiryState($days),
@@ -155,18 +155,18 @@ class ReportController extends Controller
         $sup = $request->user()->isSupervisor();
         [$from, $to] = $this->period($request);
 
-        $lines = StockDocumentLine::query()->with(['item', 'document.supplier', 'document.creator', 'document.approver'])
+        $lines = StockDocumentLine::query()->with(['batch', 'document.supplier', 'document.creator', 'document.approver'])
             ->whereHas('document', fn ($d) => $d->where('type', $type)->whereBetween('doc_at', [$from, $to])->when($type !== StockDocumentType::Adjustment, fn ($w) => $w->whereIn('status', ['confirmed', 'cancel_pending'])));   // masuk / keluar: yang sudah Confirm (pembatalan menunggu persetujuan masih berlaku)
         $lines = $filter($lines)->get()->sortBy([fn ($a, $b) => $a->document->doc_at <=> $b->document->doc_at, fn ($a, $b) => $a->id <=> $b->id]);
 
         $rows = $lines->map(function (StockDocumentLine $l) use ($sup) {
             $d = $l->document;
-            $cost = (float) ($l->unit_cost ?? $l->item->avg_cost);
+            $cost = (float) ($l->unit_cost ?? $l->batch->avg_cost);
 
             return [
                 'date' => Locale::stamp($d->doc_at), 'month' => Locale::at($d->doc_at)->translatedFormat('F Y'), 'doc' => $d->doc_no, 'status' => ['confirmed' => 'Terkonfirmasi', 'draft' => 'Draf', 'approval' => 'Menunggu Persetujuan', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'cancelled' => 'Dibatalkan', 'cancel_pending' => 'Pembatalan Menunggu Persetujuan'][$d->status] ?? $d->status,
                 'party' => $d->supplier?->name ?? $d->recipient ?? '', 'recipient' => $d->recipient ?? '', 'dept' => $d->department ?? '', 'ref' => $d->ref_no ?? '', 'reason' => $d->reason ?? '',
-                'code' => $l->item->code, 'item' => $l->item->name, 'unit' => $l->item->unit, 'qty' => $l->qty,
+                'code' => $l->batch->code, 'item' => $l->batch->name, 'unit' => $l->batch->unit, 'qty' => $l->qty,
                 'entered' => $l->entered_unit ? Locale::decimal($l->entered_qty, 3).' '.$l->entered_unit : '',
                 'system' => $l->system_qty, 'counted' => $l->counted_qty,
                 'cost' => $sup ? $cost : null, 'amount' => $sup ? Decimal::amount(abs($l->qty), $cost) : null, 'effect' => $sup ? Decimal::amount($l->qty, $cost) : null,

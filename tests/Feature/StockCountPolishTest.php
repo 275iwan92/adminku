@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockCount;
 use App\Models\Supplier;
 use App\Models\User;
@@ -28,9 +28,9 @@ class StockCountPolishTest extends TestCase
 
     private User $entry;
 
-    private Item $a;
+    private Batch $a;
 
-    private Item $b;
+    private Batch $b;
 
     protected function setUp(): void
     {
@@ -38,12 +38,12 @@ class StockCountPolishTest extends TestCase
         $this->sup = User::factory()->supervisor()->create();
         $this->entry = User::factory()->create();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->a = $this->makeItem(['code' => 'A1', 'name' => 'Pensil', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
-        $this->b = $this->makeItem(['code' => 'B1', 'name' => 'Penghapus', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
+        $this->a = $this->makeBatch(['code' => 'A1', 'name' => 'Pensil', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
+        $this->b = $this->makeBatch(['code' => 'B1', 'name' => 'Penghapus', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
         $docs = app(StockDocuments::class);
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         foreach ([[$this->a, 10], [$this->b, 20]] as [$item, $qty]) {
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
         }
     }
 
@@ -52,9 +52,9 @@ class StockCountPolishTest extends TestCase
         return app(StockCounts::class)->start($this->sup, ['count_date' => today()->toDateString(), 'scope_type' => 'all', 'blind' => $blind, 'lock_transactions' => $lock, 'threshold_pct' => 5]);
     }
 
-    private function lineId(StockCount $count, Item $item): int
+    private function lineId(StockCount $count, Batch $item): int
     {
-        return $count->lines()->where('item_id', $item->id)->value('id');
+        return $count->lines()->where('batch_id', $item->id)->value('id');
     }
 
     private function fill(StockCount $count, float $a, float $b): void
@@ -126,7 +126,7 @@ class StockCountPolishTest extends TestCase
         app(StockCounts::class)->finish($count, $this->entry);
         $docs = app(StockDocuments::class);
         foreach ([$this->a, $this->b] as $item) {
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::first()->id], [['item_id' => $item->id, 'qty' => 3, 'unit_cost' => 100]], $this->sup), $this->sup);   // keduanya bergeser
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::first()->id], [['batch_id' => $item->id, 'qty' => 3, 'unit_cost' => 100]], $this->sup), $this->sup);   // keduanya bergeser
         }
         $a = $this->lineId($count, $this->a);
         $b = $this->lineId($count, $this->b);

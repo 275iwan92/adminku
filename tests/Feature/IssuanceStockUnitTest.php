@@ -21,10 +21,10 @@ class IssuanceStockUnitTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function stocked(float $qty = 100): \App\Models\Item
+    private function stocked(float $qty = 100): \App\Models\Batch
     {
-        $item = $this->makeItem(['code' => 'K-1', 'name' => 'Kertas', 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 1, 'reorder_qty' => 5]);
-        $payload = ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S One'])->id, 'lines' => [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 10]]];
+        $item = $this->makeBatch(['code' => 'K-1', 'name' => 'Kertas', 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 1, 'reorder_qty' => 5]);
+        $payload = ['supplier_id' => Supplier::create(['code' => 'S1', 'name' => 'S One'])->id, 'lines' => [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 10]]];
         $this->post(route('docs.store', 'receiving'), $payload)->assertRedirect();
         $this->put(route('docs.update', ['receiving', StockDocument::latest('id')->firstOrFail()]), $payload + ['_action' => 'confirm'])->assertRedirect();
 
@@ -35,7 +35,7 @@ class IssuanceStockUnitTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
         $item = $this->stocked();
-        $payload = ['recipient_id' => Recipient::create(['name' => 'Budi'])->id, 'lines' => [['item_id' => $item->id, 'qty' => 2, 'unit' => 'box']]];
+        $payload = ['recipient_id' => Recipient::create(['name' => 'Budi'])->id, 'lines' => [['batch_id' => $item->id, 'qty' => 2, 'unit' => 'box']]];
 
         $this->post(route('docs.store', 'issuance'), $payload)->assertRedirect()->assertSessionMissing('missing_conversions');
         $doc = StockDocument::latest('id')->firstOrFail();
@@ -68,7 +68,7 @@ class IssuanceStockUnitTest extends TestCase
         $this->actingAs(User::factory()->supervisor()->create());
         $item = $this->stocked();
         UnitConversion::create(['from_unit' => 'box', 'to_unit' => 'pcs', 'factor' => 12]);
-        $payload = ['recipient_id' => Recipient::create(['name' => 'Budi'])->id, 'lines' => [['item_id' => $item->id, 'qty' => 24]]];
+        $payload = ['recipient_id' => Recipient::create(['name' => 'Budi'])->id, 'lines' => [['batch_id' => $item->id, 'qty' => 24]]];
         $this->post(route('docs.store', 'issuance'), $payload)->assertRedirect();
         $doc = StockDocument::latest('id')->firstOrFail();
         StockDocumentLine::where('stock_document_id', $doc->id)->update(['entered_qty' => 2, 'entered_unit' => 'box']);   // bentuk data lama

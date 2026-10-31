@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Department;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\Recipient;
 use App\Models\ReorderOrder;
@@ -45,11 +45,11 @@ class StockFlowTest extends TestCase
         $this->recipient = Recipient::create(['name' => 'Budi', 'department_id' => $this->department->id]);
     }
 
-    private function item(string $code = 'I1', float $rop = 0): Item
+    private function item(string $code = 'I1', float $rop = 0): Batch
     {
         $category = Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK']);
 
-        return $this->makeItem(['code' => $code, 'name' => "Item {$code}", 'category_id' => $category->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => $rop, 'reorder_qty' => 50, 'lead_time_days' => 3]);
+        return $this->makeBatch(['code' => $code, 'name' => "Item {$code}", 'category_id' => $category->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => $rop, 'reorder_qty' => 50, 'lead_time_days' => 3]);
     }
 
     // Simpan (draf) lalu Confirm: stok baru berubah sesudah Confirm. Mengembalikan respons langkah terakhir (galat validasi pada simpan menghentikan lebih awal).
@@ -63,18 +63,18 @@ class StockFlowTest extends TestCase
         return $this->put(route('docs.update', [$slug, StockDocument::latest('id')->firstOrFail()]), $payload + ['_action' => 'confirm']);
     }
 
-    private function receive(Item $item, float $qty, float $cost, ?User $by = null)
+    private function receive(Batch $item, float $qty, float $cost, ?User $by = null)
     {
         return $this->postDoc('receiving', [
             'supplier_id' => $this->supplier->id, 'ref_no' => 'SJ-1',
-            'lines' => [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost]],
+            'lines' => [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost]],
         ], $by ?? $this->entry);
     }
 
-    private function issue(Item $item, float $qty)
+    private function issue(Batch $item, float $qty)
     {
         return $this->postDoc('issuance', [
-            'recipient_id' => $this->recipient->id, 'department_id' => $this->department->id, 'lines' => [['item_id' => $item->id, 'qty' => $qty]],
+            'recipient_id' => $this->recipient->id, 'department_id' => $this->department->id, 'lines' => [['batch_id' => $item->id, 'qty' => $qty]],
         ], $this->entry);
     }
 
@@ -125,9 +125,9 @@ class StockFlowTest extends TestCase
     {
         $item = $this->item('I9');
         $this->receive($item, 1, 5);
-        $this->from(route('docs.create', 'issuance'))->post(route('docs.store', 'issuance'), ['lines' => [['item_id' => $item->id, 'qty' => 5]]])->assertSessionHasErrors('recipient_id');
+        $this->from(route('docs.create', 'issuance'))->post(route('docs.store', 'issuance'), ['lines' => [['batch_id' => $item->id, 'qty' => 5]]])->assertSessionHasErrors('recipient_id');
 
-        $this->get(route('docs.create', 'issuance'))->assertOk()->assertSee('item_id_label', false)->assertSee('Item I9', false);
+        $this->get(route('docs.create', 'issuance'))->assertOk()->assertSee('batch_id_label', false)->assertSee('Item I9', false);
     }
 
     public function test_issuance_reaching_reorder_point_flashes_a_warning(): void
@@ -154,7 +154,7 @@ class StockFlowTest extends TestCase
         $payload = ['name' => 'Pen', 'category_id' => $category->id, 'unit' => 'box', 'unit_price' => 1500, 'reorder_point' => 5, 'reorder_qty' => 20, 'lead_time_days' => 4];
         $this->actingAs($this->supervisor)->post(route('products.store'), $payload)->assertRedirect();
         $product = Product::where('code', 'ATK-0001')->firstOrFail();  // kode otomatis dari awalan kategori
-        $item = $product->items()->firstOrFail();                         // barang biasa: satu batch, kodenya sama
+        $item = $product->batches()->firstOrFail();                         // barang biasa: satu batch, kodenya sama
 
         $this->put(route('products.update', $product), ['_action' => 'save', ...$payload, 'reorder_point' => 9])->assertRedirect();
         $this->assertSame([9.0, 'ATK-0001'], [$product->fresh()->reorder_point, $item->fresh()->code]);
@@ -171,8 +171,8 @@ class StockFlowTest extends TestCase
         $used = $this->item('N2');
         $this->receive($used, 5, 1);
 
-        $this->postDoc('opening', ['doc_at' => today()->toDateString(), 'lines' => [['item_id' => $used->id, 'qty' => 3, 'unit_cost' => 2]]], $this->supervisor)->assertSessionHasErrors('lines');
-        $this->postDoc('opening', ['doc_at' => today()->toDateString(), 'lines' => [['item_id' => $fresh->id, 'qty' => 3, 'unit_cost' => 2]]], $this->supervisor)->assertRedirect();
+        $this->postDoc('opening', ['doc_at' => today()->toDateString(), 'lines' => [['batch_id' => $used->id, 'qty' => 3, 'unit_cost' => 2]]], $this->supervisor)->assertSessionHasErrors('lines');
+        $this->postDoc('opening', ['doc_at' => today()->toDateString(), 'lines' => [['batch_id' => $fresh->id, 'qty' => 3, 'unit_cost' => 2]]], $this->supervisor)->assertRedirect();
         $this->assertSame(3.0, $fresh->fresh()->stock_qty);
         $this->assertEqualsWithDelta(2.0, $fresh->fresh()->avg_cost, 0.0001);
     }
@@ -182,13 +182,13 @@ class StockFlowTest extends TestCase
         $item = $this->item();
         $this->receive($item, 100, 10);
 
-        $this->actingAs($this->supervisor)->post(route('docs.store', 'adjustment'), ['reason' => 'Opname', 'lines' => [['item_id' => $item->id, 'counted_qty' => 90]]])->assertRedirect();
+        $this->actingAs($this->supervisor)->post(route('docs.store', 'adjustment'), ['reason' => 'Opname', 'lines' => [['batch_id' => $item->id, 'counted_qty' => 90]]])->assertRedirect();
         $doc = StockDocument::where('type', 'ADJ')->firstOrFail();
         $this->assertSame('draft', $doc->status);
         $this->assertSame(-10.0, $doc->lines()->first()->qty);
         $this->assertSame(100.0, $item->fresh()->stock_qty);
 
-        $this->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'confirm', 'reason' => 'Opname', 'lines' => [['item_id' => $item->id, 'counted_qty' => 90]]]);
+        $this->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'confirm', 'reason' => 'Opname', 'lines' => [['batch_id' => $item->id, 'counted_qty' => 90]]]);
         $this->assertSame('approval', $doc->fresh()->status);
         $this->assertSame(100.0, $item->fresh()->stock_qty);
 
@@ -202,9 +202,9 @@ class StockFlowTest extends TestCase
     {
         $item = $this->item();
         $this->receive($item, 100, 10);
-        $this->actingAs($this->supervisor)->post(route('docs.store', 'adjustment'), ['reason' => 'Opname', 'lines' => [['item_id' => $item->id, 'counted_qty' => 95]]]);
+        $this->actingAs($this->supervisor)->post(route('docs.store', 'adjustment'), ['reason' => 'Opname', 'lines' => [['batch_id' => $item->id, 'counted_qty' => 95]]]);
         $doc = StockDocument::where('type', 'ADJ')->firstOrFail();
-        $this->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'confirm', 'reason' => 'Opname', 'lines' => [['item_id' => $item->id, 'counted_qty' => 95]]]);
+        $this->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'confirm', 'reason' => 'Opname', 'lines' => [['batch_id' => $item->id, 'counted_qty' => 95]]]);
 
         $this->issue($item, 5);
         $this->actingAs($this->supervisor)->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'approve'])->assertSessionHasErrors('lines');
@@ -301,13 +301,13 @@ class StockFlowTest extends TestCase
         $this->receive($item, 20, 10);
 
         // departemen dikosongkan -> ikut departemen bawaan penerima; nama disalin ke dokumen
-        $this->actingAs($this->entry)->post(route('docs.store', 'issuance'), ['recipient_id' => $this->recipient->id, 'lines' => [['item_id' => $item->id, 'qty' => 2]]])->assertSessionHasNoErrors();
+        $this->actingAs($this->entry)->post(route('docs.store', 'issuance'), ['recipient_id' => $this->recipient->id, 'lines' => [['batch_id' => $item->id, 'qty' => 2]]])->assertSessionHasNoErrors();
         $doc = StockDocument::where('type', 'OUT')->latest('id')->firstOrFail();
         $this->assertSame([$this->recipient->id, $this->department->id, 'Budi', 'Maintenance'], [$doc->recipient_id, $doc->department_id, $doc->recipient, $doc->department]);
 
-        $this->post(route('docs.store', 'issuance'), ['lines' => [['item_id' => $item->id, 'qty' => 1]]])->assertSessionHasErrors('recipient_id');   // penerima wajib dari master
+        $this->post(route('docs.store', 'issuance'), ['lines' => [['batch_id' => $item->id, 'qty' => 1]]])->assertSessionHasErrors('recipient_id');   // penerima wajib dari master
         $this->recipient->update(['is_active' => false]);
-        $this->post(route('docs.store', 'issuance'), ['recipient_id' => $this->recipient->id, 'lines' => [['item_id' => $item->id, 'qty' => 1]]])->assertSessionHasErrors('recipient_id');
+        $this->post(route('docs.store', 'issuance'), ['recipient_id' => $this->recipient->id, 'lines' => [['batch_id' => $item->id, 'qty' => 1]]])->assertSessionHasErrors('recipient_id');
     }
 
     public function test_receiving_and_adjustment_also_take_optional_recipient_and_department(): void
@@ -315,17 +315,17 @@ class StockFlowTest extends TestCase
         $item = $this->item('M2');
         $this->actingAs($this->entry)->post(route('docs.store', 'receiving'), [
             'supplier_id' => $this->supplier->id, 'recipient_id' => $this->recipient->id,
-            'lines' => [['item_id' => $item->id, 'qty' => 5, 'unit_cost' => 10]],
+            'lines' => [['batch_id' => $item->id, 'qty' => 5, 'unit_cost' => 10]],
         ])->assertSessionHasNoErrors();
         $in = StockDocument::where('type', 'IN')->firstOrFail();
         $this->assertSame(['Budi', $this->department->id, 'Maintenance'], [$in->recipient, $in->department_id, $in->department]);   // departemen ikut bawaan penerima
 
-        $this->actingAs($this->supervisor)->post(route('docs.store', 'adjustment'), ['reason' => 'Opname', 'department_id' => $this->department->id, 'lines' => [['item_id' => $item->id, 'counted_qty' => 4]]])->assertSessionHasNoErrors();
+        $this->actingAs($this->supervisor)->post(route('docs.store', 'adjustment'), ['reason' => 'Opname', 'department_id' => $this->department->id, 'lines' => [['batch_id' => $item->id, 'counted_qty' => 4]]])->assertSessionHasNoErrors();
         $adj = StockDocument::where('type', 'ADJ')->firstOrFail();
         $this->assertSame(['Maintenance', null], [$adj->department, $adj->recipient_id]);
 
         // keduanya tetap opsional di Receiving
-        $this->actingAs($this->entry)->post(route('docs.store', 'receiving'), ['supplier_id' => $this->supplier->id, 'lines' => [['item_id' => $item->id, 'qty' => 1, 'unit_cost' => 10]]])->assertSessionHasNoErrors();
+        $this->actingAs($this->entry)->post(route('docs.store', 'receiving'), ['supplier_id' => $this->supplier->id, 'lines' => [['batch_id' => $item->id, 'qty' => 1, 'unit_cost' => 10]]])->assertSessionHasNoErrors();
         $this->get(route('docs.create', 'receiving'))->assertOk()->assertSee('recipient_id', false);
     }
 
@@ -353,11 +353,11 @@ class StockFlowTest extends TestCase
         $this->receive($item, 10, 1234);
 
         foreach (['reports.summary', 'reports.receiving', 'reports.issuance', 'reports.stock-card'] as $route) {
-            $this->actingAs($this->entry)->get(route($route, ['item_id' => $item->id]))->assertOk()->assertDontSee('Nilai Stok')->assertDontSee('Harga Beli')->assertDontSee('1234');
+            $this->actingAs($this->entry)->get(route($route, ['batch_id' => $item->id]))->assertOk()->assertDontSee('Nilai Stok')->assertDontSee('Harga Beli')->assertDontSee('1234');
         }
         $this->actingAs($this->supervisor)->get(route('reports.summary'))->assertOk()->assertSee('Total Nilai Stok');
         $this->get(route('reports.receiving'))->assertOk()->assertSee('Harga Beli');
         $this->get(route('reports.adjustment'))->assertOk();
-        $this->get(route('reports.stock-card', ['item_id' => $item->id, 'from' => today()->subDay()->toDateString(), 'to' => today()->toDateString()]))->assertOk()->assertSee('Item I1');
+        $this->get(route('reports.stock-card', ['batch_id' => $item->id, 'from' => today()->subDay()->toDateString(), 'to' => today()->toDateString()]))->assertOk()->assertSee('Item I1');
     }
 }

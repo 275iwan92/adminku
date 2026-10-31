@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockDocument;
 use App\Models\StockMovement;
 use App\Models\Supplier;
@@ -28,7 +28,7 @@ class DoublePostingGuardTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     private StockDocuments $docs;
 
@@ -37,7 +37,7 @@ class DoublePostingGuardTest extends TestCase
         parent::setUp();
         $this->sup = User::factory()->supervisor()->create();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->item = $this->makeItem(['code' => 'G1', 'name' => 'Item G1', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'G1', 'name' => 'Item G1', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
         $this->docs = app(StockDocuments::class);
     }
 
@@ -45,7 +45,7 @@ class DoublePostingGuardTest extends TestCase
     {
         $supplier = Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S']);
 
-        return $this->docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]], $this->sup);
+        return $this->docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]], $this->sup);
     }
 
     private function confirmed(float $qty): StockDocument

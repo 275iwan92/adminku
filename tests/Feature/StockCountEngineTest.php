@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockCount;
 use App\Models\StockDocument;
 use App\Models\StockMovement;
@@ -42,9 +42,9 @@ class StockCountEngineTest extends TestCase
         $this->atk = Category::create(['code' => 'ATK', 'name' => 'ATK']);
     }
 
-    private function item(string $code, float $qty, float $cost = 100, array $extra = []): Item
+    private function item(string $code, float $qty, float $cost = 100, array $extra = []): Batch
     {
-        $item = $this->makeItem(['code' => $code, 'name' => "Item {$code}", 'category_id' => $extra['category_id'] ?? $this->atk->id, 'unit' => 'pcs', 'unit_price' => $cost, 'location' => $extra['location'] ?? null]);
+        $item = $this->makeBatch(['code' => $code, 'name' => "Item {$code}", 'category_id' => $extra['category_id'] ?? $this->atk->id, 'unit' => 'pcs', 'unit_price' => $cost, 'location' => $extra['location'] ?? null]);
         if ($qty > 0) {
             $this->receive($item, $qty, $cost);
         }
@@ -52,10 +52,10 @@ class StockCountEngineTest extends TestCase
         return $item->refresh();
     }
 
-    private function receive(Item $item, float $qty, float $cost): StockDocument
+    private function receive(Batch $item, float $qty, float $cost): StockDocument
     {
         $docs = app(StockDocuments::class);
-        $doc = $docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S1'])->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost]], $this->sup);
+        $doc = $docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S1'])->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost]], $this->sup);
         $docs->confirm($doc, $this->sup);
 
         return $doc;
@@ -66,14 +66,14 @@ class StockCountEngineTest extends TestCase
         return $this->counts->start($this->sup, $over + ['count_date' => today()->toDateString(), 'scope_type' => 'all', 'blind' => true, 'lock_transactions' => true, 'threshold_pct' => 5]);
     }
 
-    private function fill(StockCount $c, Item $item, mixed $qty, array $in = []): void
+    private function fill(StockCount $c, Batch $item, mixed $qty, array $in = []): void
     {
-        $this->counts->saveLine($c, $c->lines()->where('item_id', $item->id)->value('id'), ['counted_qty' => $qty] + $in);
+        $this->counts->saveLine($c, $c->lines()->where('batch_id', $item->id)->value('id'), ['counted_qty' => $qty] + $in);
     }
 
-    private function line(StockCount $c, Item $item)
+    private function line(StockCount $c, Batch $item)
     {
-        return $c->lines()->where('item_id', $item->id)->first();
+        return $c->lines()->where('batch_id', $item->id)->first();
     }
 
     public function test_snapshot_follows_scope_and_keeps_system_qty_and_average_cost(): void
@@ -88,7 +88,7 @@ class StockCountEngineTest extends TestCase
 
         $all = $this->start();
         $this->assertMatchesRegularExpression('/^SO-\d{4}-0001$/', $all->doc_no);
-        $this->assertEqualsCanonicalizing([$a->id, $b->id], $all->lines()->pluck('item_id')->all());   // stok 0 dan nonaktif tidak ikut
+        $this->assertEqualsCanonicalizing([$a->id, $b->id], $all->lines()->pluck('batch_id')->all());   // stok 0 dan nonaktif tidak ikut
         $line = $this->line($all, $a);
         $this->assertSame(20.0, $line->system_qty);
         $this->assertSame(2000.0, $line->unit_cost);
@@ -96,11 +96,11 @@ class StockCountEngineTest extends TestCase
         $this->counts->cancel($all, $this->sup);
 
         $byCategory = $this->start(['scope_type' => 'category', 'scope_value' => 'CLN']);
-        $this->assertSame([$b->id], $byCategory->lines()->pluck('item_id')->all());
+        $this->assertSame([$b->id], $byCategory->lines()->pluck('batch_id')->all());
         $this->counts->cancel($byCategory, $this->sup);
 
         $byLocation = $this->start(['scope_type' => 'location', 'scope_value' => 'RAK-A']);
-        $this->assertSame([$a->id], $byLocation->lines()->pluck('item_id')->all());
+        $this->assertSame([$a->id], $byLocation->lines()->pluck('batch_id')->all());
         $this->assertSame('RAK-A', $byLocation->scope_value);
         $this->assertSame(0.0, $empty->stock_qty);
     }
@@ -192,9 +192,9 @@ class StockCountEngineTest extends TestCase
         $a = $this->item('A1', 10);
         $docs = app(StockDocuments::class);
         $supplier = Supplier::first();
-        $draft = fn () => $docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $a->id, 'qty' => 1, 'unit_cost' => 100]], $this->sup);
-        $out = fn () => $docs->create(StockDocumentType::Issuance, ['recipient' => 'Budi'], [['item_id' => $a->id, 'qty' => 1]], $this->sup);
-        $adj = $docs->create(StockDocumentType::Adjustment, ['reason' => 'x'], [['item_id' => $a->id, 'counted_qty' => 9]], $this->sup);
+        $draft = fn () => $docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $a->id, 'qty' => 1, 'unit_cost' => 100]], $this->sup);
+        $out = fn () => $docs->create(StockDocumentType::Issuance, ['recipient' => 'Budi'], [['batch_id' => $a->id, 'qty' => 1]], $this->sup);
+        $adj = $docs->create(StockDocumentType::Adjustment, ['reason' => 'x'], [['batch_id' => $a->id, 'counted_qty' => 9]], $this->sup);
         $docs->submit($adj);
 
         $sheet = $this->start();
@@ -265,14 +265,14 @@ class StockCountEngineTest extends TestCase
         $this->assertSame(StockDocumentType::Adjustment, $adj->type);
         $this->assertSame('approved', $adj->status);
         $this->assertSame("Stok Opname {$sheet->doc_no}", $adj->reason);
-        $this->assertEqualsCanonicalizing([$a->id, $b->id], $adj->lines()->pluck('item_id')->all());   // hanya baris selisih
-        $lineA = $adj->lines()->where('item_id', $a->id)->first();
+        $this->assertEqualsCanonicalizing([$a->id, $b->id], $adj->lines()->pluck('batch_id')->all());   // hanya baris selisih
+        $lineA = $adj->lines()->where('batch_id', $a->id)->first();
         $this->assertSame([-2.0, 10.0, 8.0], [$lineA->qty, $lineA->system_qty, $lineA->counted_qty]);
         $this->assertSame([8.0, 5.5, 8.0, 3.0], [$a->fresh()->stock_qty, $b->fresh()->stock_qty, $c->fresh()->stock_qty, $d->fresh()->stock_qty]);
         $this->assertSame('done', $sheet->fresh()->status);
         $this->assertSame($adj->id, $sheet->fresh()->adjustment_document_id);
         $this->assertSame($this->sup->id, $sheet->fresh()->approved_by);
-        $this->assertSame(1, StockMovement::where('stock_document_id', $adj->id)->where('item_id', $a->id)->where('type', 'ADJ')->count());
+        $this->assertSame(1, StockMovement::where('stock_document_id', $adj->id)->where('batch_id', $a->id)->where('type', 'ADJ')->count());
         $this->assertNull(StockCount::lockingNow());
         $this->expectValidation(fn () => $this->counts->approve($sheet, $this->sup), 'tidak diizinkan');   // tidak bisa diposting dua kali
         $this->assertSame(8.0, $a->fresh()->stock_qty);

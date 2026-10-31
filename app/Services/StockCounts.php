@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\StockCountRowChanged;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockCount;
 use App\Models\StockCountLine;
 use App\Models\StockDocument;
@@ -43,7 +43,7 @@ final class StockCounts
             }
             $type = $data['scope_type'];
             $value = $type === 'all' ? null : ($data['scope_value'] ?? null);
-            $items = Item::query()->where('is_active', true)->where('stock_qty', '>', 0)
+            $items = Batch::query()->where('is_active', true)->where('stock_qty', '>', 0)
                 ->when($type === 'category', fn ($q) => $q->whereIn('category_id', Category::query()->where('code', $value)->select('id')))
                 ->when($type === 'location', fn ($q) => $q->where('location', $value))->get(['id', 'stock_qty', 'avg_cost']);
             if ($items->isEmpty()) {
@@ -55,8 +55,8 @@ final class StockCounts
                 'threshold_pct' => $data['threshold_pct'], 'cutoff_at' => now(), 'created_by' => $user->id, 'note' => $data['note'] ?? null,
             ]);
             foreach ($items->chunk(500) as $chunk) {
-                StockCountLine::query()->insert($chunk->map(fn (Item $i) => [
-                    'stock_count_id' => $count->id, 'item_id' => $i->id, 'system_qty' => $i->stock_qty, 'unit_cost' => $i->avg_cost, 'skipped' => false, 'added_manually' => false, 'created_at' => now(), 'updated_at' => now(),
+                StockCountLine::query()->insert($chunk->map(fn (Batch $i) => [
+                    'stock_count_id' => $count->id, 'batch_id' => $i->id, 'system_qty' => $i->stock_qty, 'unit_cost' => $i->avg_cost, 'skipped' => false, 'added_manually' => false, 'created_at' => now(), 'updated_at' => now(),
                 ])->all());
             }
 
@@ -76,9 +76,9 @@ final class StockCounts
     {
         return DB::transaction(function () use ($count, $lineId, $in, $rememberedCounter, $enteredBy, $overwrite) {
             $this->lockAndAssert($count, ['counting']);
-            $line = $count->lines()->with(['item', 'enteredBy'])->lockForUpdate()->findOrFail($lineId);
+            $line = $count->lines()->with(['batch', 'enteredBy'])->lockForUpdate()->findOrFail($lineId);
             if (! $overwrite && isset($in['rev']) && (int) $in['rev'] !== $line->rev) {
-                throw new StockCountRowChanged("Baris {$line->item->code} sudah diubah oleh ".($line->enteredBy?->name ?? 'pengguna lain').' pada '.($line->entered_at?->format('H:i') ?? '-').'. Isi alasan lalu Simpan untuk MENIMPA, atau Batal untuk membuang isian Anda.');
+                throw new StockCountRowChanged("Baris {$line->batch->code} sudah diubah oleh ".($line->enteredBy?->name ?? 'pengguna lain').' pada '.($line->entered_at?->format('H:i') ?? '-').'. Isi alasan lalu Simpan untuk MENIMPA, atau Batal untuk membuang isian Anda.');
             }
             $qty = $this->qty($in['counted_qty'] ?? null);
             $skip = filter_var($in['skipped'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -104,17 +104,17 @@ final class StockCounts
     }
 
     // Barang / batch yang ditemukan fisik tetapi tidak ada di lembar: stok sistem = stok batch saat ini.
-    public function addItem(StockCount $count, Item $item): StockCountLine
+    public function addItem(StockCount $count, Batch $item): StockCountLine
     {
         return DB::transaction(function () use ($count, $item) {
             $this->lockAndAssert($count, ['counting']);
             abort_unless($item->is_active, 422, "Barang {$item->code} tidak aktif.");
-            if ($count->lines()->where('item_id', $item->id)->exists()) {
-                throw ValidationException::withMessages(['item_id' => "{$item->code} sudah ada di lembar hitung."]);
+            if ($count->lines()->where('batch_id', $item->id)->exists()) {
+                throw ValidationException::withMessages(['batch_id' => "{$item->code} sudah ada di lembar hitung."]);
             }
-            $item = Item::query()->lockForUpdate()->findOrFail($item->id);
+            $item = Batch::query()->lockForUpdate()->findOrFail($item->id);
 
-            return $count->lines()->create(['item_id' => $item->id, 'system_qty' => $item->stock_qty, 'unit_cost' => $item->avg_cost, 'added_manually' => true]);
+            return $count->lines()->create(['batch_id' => $item->id, 'system_qty' => $item->stock_qty, 'unit_cost' => $item->avg_cost, 'added_manually' => true]);
         });
     }
 
@@ -123,7 +123,7 @@ final class StockCounts
     {
         DB::transaction(function () use ($count, $user) {
             $this->lockAndAssert($count, ['counting']);
-            $pending = $count->lines()->with('item')->get()->reject(fn (StockCountLine $l) => $l->isComplete());
+            $pending = $count->lines()->with('batch')->get()->reject(fn (StockCountLine $l) => $l->isComplete());
             if ($pending->isNotEmpty()) {
                 throw ValidationException::withMessages(['lines' => 'Belum bisa selesai hitung: '.$pending->count().' baris belum terisi / belum lengkap ('.$this->codes($pending).'). Isi hasil hitung, atau tandai Tidak dihitung dengan catatan.']);
             }
@@ -156,7 +156,7 @@ final class StockCounts
         DB::transaction(function () use ($count, $lineId) {
             $this->lockAndAssert($count, ['counting', 'review']);
             $line = $count->lines()->lockForUpdate()->findOrFail($lineId);
-            $item = Item::query()->lockForUpdate()->findOrFail($line->item_id);
+            $item = Batch::query()->lockForUpdate()->findOrFail($line->batch_id);
             $line->forceFill(['system_qty' => $item->stock_qty, 'unit_cost' => $item->avg_cost, 'counted_qty' => null, 'recount_qty' => null, 'skipped' => false, 'reason' => null])->save();
             if ($count->status === 'review') {
                 $count->update(['status' => 'counting', 'submitted_by' => null, 'submitted_at' => null]);
@@ -188,7 +188,7 @@ final class StockCounts
      */
     public function movedLines(StockCount $count): Collection
     {
-        return $count->lines()->with('item')->get()->filter(fn (StockCountLine $l) => $l->diff() != 0.0 && abs($l->item->stock_qty - $l->system_qty) > self::EPS)->values();
+        return $count->lines()->with('batch')->get()->filter(fn (StockCountLine $l) => $l->diff() != 0.0 && abs($l->batch->stock_qty - $l->system_qty) > self::EPS)->values();
     }
 
     // Baris yang sudah berisi hasil hitung atau ditandai Tidak dihitung, menurut database (tombol Simpan di lembar input membandingkannya dengan yang tampak di layar).
@@ -225,16 +225,16 @@ final class StockCounts
         return DB::transaction(function () use ($count, $approver) {
             $this->lockAndAssert($count, ['review']);
             $lines = $count->lines()->orderBy('id')->get();
-            $items = Item::query()->whereIn('id', $lines->pluck('item_id'))->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+            $items = Batch::query()->whereIn('id', $lines->pluck('batch_id'))->orderBy('id')->lockForUpdate()->get()->keyBy('id');
 
             $open = $lines->reject(fn (StockCountLine $l) => $l->isComplete());
             if ($open->isNotEmpty()) {
                 throw ValidationException::withMessages(['lines' => "Masih ada baris yang belum final: {$this->codes($open, $items)}."]);
             }
             $diffs = $lines->filter(fn (StockCountLine $l) => $l->diff() != 0.0);
-            $moved = $diffs->filter(fn (StockCountLine $l) => abs($items[$l->item_id]->stock_qty - $l->system_qty) > self::EPS);
+            $moved = $diffs->filter(fn (StockCountLine $l) => abs($items[$l->batch_id]->stock_qty - $l->system_qty) > self::EPS);
             if ($moved->isNotEmpty()) {
-                throw ValidationException::withMessages(['lines' => 'Stok bergeser sejak cut-off ('.$moved->map(fn (StockCountLine $l) => "{$items[$l->item_id]->code}: sistem {$this->fmt($l->system_qty)}, kini {$this->fmt($items[$l->item_id]->stock_qty)}")->implode('; ').'). Pakai Perbarui baris pada barang itu lalu hitung ulang.']);
+                throw ValidationException::withMessages(['lines' => 'Stok bergeser sejak cut-off ('.$moved->map(fn (StockCountLine $l) => "{$items[$l->batch_id]->code}: sistem {$this->fmt($l->system_qty)}, kini {$this->fmt($items[$l->batch_id]->stock_qty)}")->implode('; ').'). Pakai Perbarui baris pada barang itu lalu hitung ulang.']);
             }
 
             $needReason = $lines->filter(fn (StockCountLine $l) => $l->overThreshold($count->threshold_pct) && blank($l->reason));
@@ -246,7 +246,7 @@ final class StockCounts
                 return null;
             }
             $adj = $this->documents->recordCountAdjustment($count, $diffs->map(fn (StockCountLine $l) => [
-                'item_id' => $l->item_id, 'qty' => $l->diff(), 'system_qty' => $l->system_qty, 'counted_qty' => $l->finalQty(), 'unit_cost' => $l->unit_cost,
+                'batch_id' => $l->batch_id, 'qty' => $l->diff(), 'system_qty' => $l->system_qty, 'counted_qty' => $l->finalQty(), 'unit_cost' => $l->unit_cost,
             ])->values()->all(), $approver);
             $count->update(['adjustment_document_id' => $adj->id]);
 
@@ -292,7 +292,7 @@ final class StockCounts
     public function entryRows(StockCount $count, bool $trace = false): array
     {
         return $this->ordered($count)->map(fn (StockCountLine $l) => [
-            'id' => $l->id, 'code' => $l->item->code, 'name' => $l->item->name, 'batch' => $this->batch($l->item), 'location' => $l->item->location ?? '', 'unit' => $l->item->unit,
+            'id' => $l->id, 'code' => $l->batch->code, 'name' => $l->batch->name, 'batch' => $this->batch($l->batch), 'location' => $l->batch->location ?? '', 'unit' => $l->batch->unit,
             'counted_qty' => $l->counted_qty ?? '', 'counted_by' => $l->counted_by ?? '', 'skipped' => $l->skipped, 'note' => $l->note ?? '', 'filled' => $l->isComplete() ? 'yes' : 'no', 'rev' => $l->rev,
         ] + ($count->blind ? [] : ['system_qty' => $l->system_qty, 'diff' => $l->finalQty() === null ? '' : $l->diff(), 'tone' => $l->overThreshold($count->threshold_pct) ? 'danger' : ''])
             + ($trace ? ['by_id' => $l->entered_by, 'by' => $l->enteredBy?->name ?? '', 'at' => $l->entered_at?->format('H:i') ?? ''] : []))->values()->all();
@@ -306,7 +306,7 @@ final class StockCounts
     public function reviewRows(StockCount $count, bool $withValue): array
     {
         return $this->ordered($count)->map(fn (StockCountLine $l) => [
-            'id' => $l->id, 'code' => $l->item->code, 'name' => $l->item->name, 'batch' => $this->batch($l->item), 'unit' => $l->item->unit, 'system_qty' => $l->system_qty,
+            'id' => $l->id, 'code' => $l->batch->code, 'name' => $l->batch->name, 'batch' => $this->batch($l->batch), 'unit' => $l->batch->unit, 'system_qty' => $l->system_qty,
             'physical' => $l->finalQty() ?? '', 'diff' => $l->diff(), 'pct' => $l->pct() ?? '', 'recount_qty' => $l->recount_qty ?? '', 'reason' => $l->reason ?? '', 'entered_by' => $l->enteredBy?->name ?? '',
             'state' => $l->skipped && $l->recount_qty === null ? 'Tidak dihitung' : ($l->recount_qty !== null ? 'Dihitung ulang' : ($l->added_manually ? 'Ditambah manual' : '')),
             'flag' => $l->overThreshold($count->threshold_pct) ? 'Besar' : '', 'tone' => $l->overThreshold($count->threshold_pct) ? 'danger' : '', 'has_diff' => $l->diff() != 0.0 ? 'yes' : 'no', 'big' => $l->overThreshold($count->threshold_pct) ? 'yes' : 'no',
@@ -335,11 +335,11 @@ final class StockCounts
     /** @return Collection<int, StockCountLine> urut lokasi (tanpa lokasi di akhir) lalu kode batch */
     public function ordered(StockCount $count): Collection
     {
-        return $count->lines()->with(['item', 'enteredBy'])->get()
-            ->sortBy(fn (StockCountLine $l) => [$l->item->location === null || $l->item->location === '' ? 1 : 0, (string) $l->item->location, $l->item->code])->values();
+        return $count->lines()->with(['batch', 'enteredBy'])->get()
+            ->sortBy(fn (StockCountLine $l) => [$l->batch->location === null || $l->batch->location === '' ? 1 : 0, (string) $l->batch->location, $l->batch->code])->values();
     }
 
-    private function batch(Item $item): string
+    private function batch(Batch $item): string
     {
         return $item->expiry_date ? $item->expiry_date->format('d-m-Y') : '—';
     }
@@ -359,7 +359,7 @@ final class StockCounts
     // Daftar kode batch untuk pesan (maksimal 12, sisanya dihitung).
     private function codes(Collection $lines, ?Collection $items = null): string
     {
-        $codes = $lines->map(fn (StockCountLine $l) => $items ? $items[$l->item_id]->code : $l->item->code);
+        $codes = $lines->map(fn (StockCountLine $l) => $items ? $items[$l->batch_id]->code : $l->batch->code);
 
         return $codes->take(12)->implode(', ').($codes->count() > 12 ? ' dan '.($codes->count() - 12).' lainnya' : '');
     }

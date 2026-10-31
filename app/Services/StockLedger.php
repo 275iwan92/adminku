@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enums\StockDocumentType;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\StockCount;
 use App\Models\StockDocument;
@@ -36,7 +36,7 @@ final class StockLedger
             $this->assertNotLocked();
             $this->lockItems($doc);
             foreach ($doc->lines()->orderBy('id')->get() as $line) {
-                $item = Item::query()->lockForUpdate()->findOrFail($line->item_id);
+                $item = Batch::query()->lockForUpdate()->findOrFail($line->batch_id);
                 $signed = $doc->type->signed((float) $line->qty);
                 if (abs($signed) < self::EPS) {
                     continue;  // hasil opname sama dengan sistem: tidak ada pergerakan
@@ -59,10 +59,10 @@ final class StockLedger
                 $avg = $signed > 0 && $balance > 0 ? $this->movingAverage($item, $signed, $cost, $balance) : $item->avg_cost;
 
                 $line->update(['unit_cost' => $cost]);
-                // Saldo sengaja tidak mass-assignable di Item: hanya buku besar ini yang boleh mengubahnya.
+                // Saldo sengaja tidak mass-assignable di Batch: hanya buku besar ini yang boleh mengubahnya.
                 $item->forceFill(['stock_qty' => $balance, 'avg_cost' => $avg])->save();
                 StockMovement::create([
-                    'item_id' => $item->id,
+                    'batch_id' => $item->id,
                     'stock_document_id' => $doc->id,
                     'type' => $doc->type->value,
                     'moved_at' => $movedAt,
@@ -98,7 +98,7 @@ final class StockLedger
             $this->lockItems($doc);
             $moves = $this->unreversed($doc)->get();
             foreach ($moves as $m) {
-                $item = Item::query()->lockForUpdate()->findOrFail($m->item_id);
+                $item = Batch::query()->lockForUpdate()->findOrFail($m->batch_id);
                 $signed = -(float) $m->qty;
                 $balance = round($item->stock_qty + $signed, 3);
                 if ($balance < -self::EPS) {
@@ -112,7 +112,7 @@ final class StockLedger
                 };
                 $item->forceFill(['stock_qty' => $balance, 'avg_cost' => $avg])->save();
                 $made[] = StockMovement::create([
-                    'item_id' => $item->id, 'stock_document_id' => $doc->id, 'type' => $m->type, 'moved_at' => now(), 'qty' => $signed, 'unit_cost' => $cost,
+                    'batch_id' => $item->id, 'stock_document_id' => $doc->id, 'type' => $m->type, 'moved_at' => now(), 'qty' => $signed, 'unit_cost' => $cost,
                     'balance_qty' => $balance, 'balance_avg_cost' => $avg, 'user_id' => $user->id, 'reversal_of' => $m->id,
                 ]);
             }
@@ -126,7 +126,7 @@ final class StockLedger
     {
         $stock = [];
         foreach ($this->unreversed($doc)->get() as $m) {
-            $item = Item::query()->findOrFail($m->item_id);
+            $item = Batch::query()->findOrFail($m->batch_id);
             $signed = -(float) $m->qty;
             $stock[$item->id] = round(($stock[$item->id] ?? $item->stock_qty) + $signed, 3);
             if ($stock[$item->id] < -self::EPS) {
@@ -136,7 +136,7 @@ final class StockLedger
     }
 
     // Rata-rata bergerak = (nilai lama + nilai perubahan) / saldo baru, dihitung presisi dan dibulatkan sekali ke 4 desimal (skala kolom avg_cost). $signed negatif = nilai dikurangi.
-    private function movingAverage(Item $item, float $signed, float $cost, float $balance): float
+    private function movingAverage(Batch $item, float $signed, float $cost, float $balance): float
     {
         $value = Decimal::add(Decimal::mul(Decimal::of($item->stock_qty), Decimal::of($item->avg_cost)), Decimal::mul(Decimal::of($signed), Decimal::of($cost)));
 
@@ -162,10 +162,10 @@ final class StockLedger
     // Semua item dokumen dikunci sekaligus urut id: dokumen yang bersamaan memegang item yang sama dalam urutan sama, jadi tidak saling menunggu melingkar.
     private function lockItems(StockDocument $doc): void
     {
-        Item::query()->whereIn('id', $doc->lines()->pluck('item_id'))->orderBy('id')->lockForUpdate()->get();
+        Batch::query()->whereIn('id', $doc->lines()->pluck('batch_id'))->orderBy('id')->lockForUpdate()->get();
     }
 
-    private function shortage(Item $item, float $signed): ValidationException
+    private function shortage(Batch $item, float $signed): ValidationException
     {
         $fmt = fn (float $v) => rtrim(rtrim(number_format($v, 3, '.', ''), '0'), '.');
 

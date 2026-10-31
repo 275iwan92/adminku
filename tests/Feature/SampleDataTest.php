@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockDocument;
 use App\Models\User;
 use App\Services\SampleData;
@@ -35,7 +35,7 @@ class SampleDataTest extends TestCase
     public function test_refresh_needs_the_typed_confirmation(): void
     {
         $this->actingAs(User::factory()->administrator()->create());
-        Item::query()->count();
+        Batch::query()->count();
 
         $this->post(route('sample.refresh'), ['confirm' => 'segarkan'])->assertSessionHasErrors('confirm');
         $this->post(route('sample.refresh'))->assertSessionHasErrors('confirm');
@@ -52,7 +52,7 @@ class SampleDataTest extends TestCase
         $this->assertGuest();
         $this->assertSame(0, User::where('username', 'siapa-saja')->count());
         $this->assertSame(1, User::where('username', 'admin')->count());
-        $this->assertGreaterThan(20, Item::count());
+        $this->assertGreaterThan(20, Batch::count());
         $this->assertTrue(StockDocument::exists());
         $this->assertSame(1, DB::table('geo_country')->count());
         $this->assertNotNull(SampleData::last());

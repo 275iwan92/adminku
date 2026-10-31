@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\StockCountRowChanged;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Location;
 use App\Models\StockCount;
 use App\Services\CountSchedule;
@@ -165,10 +165,10 @@ class StockCountController extends Controller
     // Tambah barang / batch yang ditemukan fisik tetapi tidak ada di lembar.
     public function addItem(Request $request, StockCount $count): RedirectResponse
     {
-        $data = $request->validate(['item_id' => ['required', 'exists:i_batch,id']], ['item_id.required' => 'Pilih barang / batch yang ditemukan.'], ['item_id' => 'barang']);
-        $line = $this->counts->addItem($count, Item::query()->findOrFail($data['item_id']));
+        $data = $request->validate(['batch_id' => ['required', 'exists:i_batch,id']], ['batch_id.required' => 'Pilih barang / batch yang ditemukan.'], ['batch_id' => 'barang']);
+        $line = $this->counts->addItem($count, Batch::query()->findOrFail($data['batch_id']));
 
-        return redirect()->route('stock-counts.show', $count)->with('status', "{$line->item->code} ditambahkan ke lembar hitung (stok sistem saat ini). Isi hasil hitungnya.");
+        return redirect()->route('stock-counts.show', $count)->with('status', "{$line->batch->code} ditambahkan ke lembar hitung (stok sistem saat ini). Isi hasil hitungnya.");
     }
 
     // Cetak lembar hitung (A4): dipegang orang gudang di lapangan; stok sistem hanya tampil bila opname tidak buta.
@@ -205,7 +205,7 @@ class StockCountController extends Controller
     // Perbarui satu baris saja dari daftar baris bergeser di layar tinjau.
     public function refreshOne(StockCount $count, int $line): RedirectResponse
     {
-        $code = $count->lines()->with('item')->findOrFail($line)->item->code;
+        $code = $count->lines()->with('batch')->findOrFail($line)->batch->code;
         $this->counts->refreshOne($count, $line);
 
         return redirect()->route('stock-counts.show', $count)->with('status', "{$code} diperbarui ke stok sekarang dan dibuka untuk diisi ulang. Isi hasil hitungnya, lalu Selesai hitung lagi.");

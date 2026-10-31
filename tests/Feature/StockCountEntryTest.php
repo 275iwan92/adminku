@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockCount;
 use App\Models\Supplier;
 use App\Models\User;
@@ -28,9 +28,9 @@ class StockCountEntryTest extends TestCase
 
     private User $entry;
 
-    private Item $a;
+    private Batch $a;
 
-    private Item $b;
+    private Batch $b;
 
     protected function setUp(): void
     {
@@ -38,12 +38,12 @@ class StockCountEntryTest extends TestCase
         $this->sup = User::factory()->supervisor()->create();
         $this->entry = User::factory()->create();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->a = $this->makeItem(['code' => 'A1', 'name' => 'Pensil', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => 'RAK-A']);
-        $this->b = $this->makeItem(['code' => 'B1', 'name' => 'Penghapus', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => 'RAK-B']);
+        $this->a = $this->makeBatch(['code' => 'A1', 'name' => 'Pensil', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => 'RAK-A']);
+        $this->b = $this->makeBatch(['code' => 'B1', 'name' => 'Penghapus', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => 'RAK-B']);
         $docs = app(StockDocuments::class);
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         foreach ([[$this->a, 12345.5], [$this->b, 7]] as [$item, $qty]) {
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
         }
     }
 
@@ -52,9 +52,9 @@ class StockCountEntryTest extends TestCase
         return app(StockCounts::class)->start($this->sup, $over + ['count_date' => today()->toDateString(), 'scope_type' => 'all', 'blind' => true, 'lock_transactions' => false, 'threshold_pct' => 5]);
     }
 
-    private function lineId(StockCount $count, Item $item): int
+    private function lineId(StockCount $count, Batch $item): int
     {
-        return $count->lines()->where('item_id', $item->id)->value('id');
+        return $count->lines()->where('batch_id', $item->id)->value('id');
     }
 
     private function save(StockCount $count, array $rows)
@@ -151,12 +151,12 @@ class StockCountEntryTest extends TestCase
         $count = $this->start(['scope_type' => 'location', 'scope_value' => 'RAK-A']);
         $this->assertSame(1, $count->lines()->count());
 
-        $this->actingAs($this->entry)->post(route('stock-counts.items', $count), ['item_id' => $this->b->id])->assertRedirect();
-        $line = $count->lines()->where('item_id', $this->b->id)->firstOrFail();
+        $this->actingAs($this->entry)->post(route('stock-counts.items', $count), ['batch_id' => $this->b->id])->assertRedirect();
+        $line = $count->lines()->where('batch_id', $this->b->id)->firstOrFail();
         $this->assertSame([7.0, true], [$line->system_qty, $line->added_manually]);
 
-        $this->post(route('stock-counts.items', $count), ['item_id' => $this->b->id])->assertSessionHasErrors('item_id');   // sudah ada
-        $this->post(route('stock-counts.items', $count), [])->assertSessionHasErrors('item_id');
+        $this->post(route('stock-counts.items', $count), ['batch_id' => $this->b->id])->assertSessionHasErrors('batch_id');   // sudah ada
+        $this->post(route('stock-counts.items', $count), [])->assertSessionHasErrors('batch_id');
     }
 
     public function test_read_only_group_cannot_save_or_finish(): void

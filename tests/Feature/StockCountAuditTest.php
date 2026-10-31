@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockCount;
 use App\Models\Supplier;
 use App\Models\User;
@@ -31,7 +31,7 @@ class StockCountAuditTest extends TestCase
 
     private User $budi;
 
-    /** @var array<string, Item> */
+    /** @var array<string, Batch> */
     private array $items = [];
 
     protected function setUp(): void
@@ -44,8 +44,8 @@ class StockCountAuditTest extends TestCase
         $docs = app(StockDocuments::class);
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         foreach ([['A1', 'RAK-A', 10], ['B1', 'RAK-A', 20], ['C1', 'RAK-A', 5], ['D1', 'RAK-B', 8]] as [$code, $loc, $qty]) {
-            $item = $this->makeItem(['code' => $code, 'name' => "Barang {$code}", 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => $loc]);
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
+            $item = $this->makeBatch(['code' => $code, 'name' => "Barang {$code}", 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100, 'location' => $loc]);
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => 100]], $this->sup), $this->sup);
             $this->items[$code] = $item;
         }
     }
@@ -57,7 +57,7 @@ class StockCountAuditTest extends TestCase
 
     private function lineId(StockCount $count, string $code): int
     {
-        return $count->lines()->where('item_id', $this->items[$code]->id)->value('id');
+        return $count->lines()->where('batch_id', $this->items[$code]->id)->value('id');
     }
 
     private function save(StockCount $count, array $row, ?string $reason = null)
@@ -111,7 +111,7 @@ class StockCountAuditTest extends TestCase
     {
         $counts = app(StockCounts::class);
         $count = $this->start(['scope_type' => 'location', 'scope_value' => 'RAK-A']);   // D1 (RAK-B) tidak ada di lembar
-        $this->assertNull($count->lines()->where('item_id', $this->items['D1']->id)->first());
+        $this->assertNull($count->lines()->where('batch_id', $this->items['D1']->id)->first());
         $counts->saveLine($count, $this->lineId($count, 'A1'), ['counted_qty' => 8], null, $this->ana);   // selisih -2
         $counts->saveLine($count, $this->lineId($count, 'B1'), ['counted_qty' => 20], null, $this->ana);   // sama
         $counts->saveLine($count, $this->lineId($count, 'C1'), ['skipped' => true, 'note' => 'rak terkunci'], null, $this->ana);   // Tidak dihitung
@@ -120,7 +120,7 @@ class StockCountAuditTest extends TestCase
 
         $adj = $counts->approve($count, $this->sup);
 
-        $this->assertSame([$this->items['A1']->id], $adj->lines()->pluck('item_id')->all());   // hanya baris berselisih
+        $this->assertSame([$this->items['A1']->id], $adj->lines()->pluck('batch_id')->all());   // hanya baris berselisih
         $this->assertSame([8.0, 20.0, 5.0, 8.0], collect(['A1', 'B1', 'C1', 'D1'])->map(fn ($c) => $this->items[$c]->fresh()->stock_qty)->all());   // C1 (Tidak dihitung) dan D1 (di luar lembar) utuh
     }
 

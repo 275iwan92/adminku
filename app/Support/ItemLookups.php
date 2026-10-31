@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Services\ProductUnits;
 use Devlib\Locale;
@@ -40,19 +40,19 @@ final class ItemLookups
             Lookup::define($name, [
                 'key' => 'id', 'label' => 'label', 'source' => 'items (is_active = 1)', 'fill' => $fill,
                 'columns' => ['name' => 'Item', 'code' => 'Code', 'expiry' => 'Expiry', 'stock' => 'Stock'],
-                'search' => fn (string $q) => Item::query()->where('is_active', true)
+                'search' => fn (string $q) => Batch::query()->where('is_active', true)
                     ->when($out, fn ($w) => $w->where('stock_qty', '>', 0)->where(fn ($x) => $x->whereNull('expiry_date')->orWhere('expiry_date', '>=', today()->toDateString())))
                     ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
                     ->orderBy('name')->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->limit(50)->get()->map(self::itemRow(...)),
-                'find' => fn ($id) => ($i = Item::query()->find($id)) ? self::itemRow($i) : null,
+                'find' => fn ($id) => ($i = Batch::query()->find($id)) ? self::itemRow($i) : null,
             ]);
         }
         // Stok Opname "Tambah barang": batch aktif apa pun, TANPA stok sistem (hitung buta tidak boleh bocor lewat pilihan ini).
         Lookup::define('item_count', [
             'key' => 'id', 'label' => 'label', 'source' => 'items (is_active = 1)', 'columns' => ['name' => 'Item', 'code' => 'Code', 'expiry' => 'Expiry'],
-            'search' => fn (string $q) => Item::query()->where('is_active', true)->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
-                ->orderBy('name')->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->limit(50)->get()->map(fn (Item $i) => Arr::except(self::itemRow($i), 'stock')),
-            'find' => fn ($id) => ($i = Item::query()->find($id)) ? Arr::except(self::itemRow($i), 'stock') : null,
+            'search' => fn (string $q) => Batch::query()->where('is_active', true)->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
+                ->orderBy('name')->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->limit(50)->get()->map(fn (Batch $i) => Arr::except(self::itemRow($i), 'stock')),
+            'find' => fn ($id) => ($i = Batch::query()->find($id)) ? Arr::except(self::itemRow($i), 'stock') : null,
         ]);
     }
 
@@ -64,7 +64,7 @@ final class ItemLookups
         ] + ($withPacks ? ['packs' => json_encode(ProductUnits::options($p))] : []);
     }
 
-    private static function itemRow(Item $i): array
+    private static function itemRow(Batch $i): array
     {
         return [
             'id' => $i->id, 'label' => $i->label(), 'name' => $i->name, 'code' => $i->code, 'unit' => $i->unit,

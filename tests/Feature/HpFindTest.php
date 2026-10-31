@@ -27,7 +27,7 @@ class HpFindTest extends TestCase
         parent::setUp();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
         $this->pensil = Product::register(['name' => 'Pensil 2B', 'category_id' => $cat->id, 'unit' => 'pcs', 'location' => 'RAK-A1', 'unit_price' => 100, 'reorder_point' => 50]);
-        $this->pensil->items()->first()->forceFill(['stock_qty' => 40, 'avg_cost' => 100])->save();
+        $this->pensil->batches()->first()->forceFill(['stock_qty' => 40, 'avg_cost' => 100])->save();
         // Susu: tiga batch, sengaja dibuat TIDAK berurutan; satu sudah kedaluwarsa, satu hampir, satu aman.
         $this->susu = Product::register(['name' => 'Susu UHT', 'category_id' => $cat->id, 'unit' => 'liter', 'location' => 'KULKAS-1', 'unit_price' => 10, 'reorder_point' => 5, 'tracks_expiry' => true]);
         foreach ([[today()->addDays(200), 7], [today()->subDays(3), 2], [today()->addDays(10), 4]] as [$date, $qty]) {
@@ -49,7 +49,7 @@ class HpFindTest extends TestCase
     public function test_search_by_location_code_and_by_part_of_a_batch_code(): void
     {
         $user = User::factory()->create();
-        $batch = $this->susu->items()->whereDate('expiry_date', today()->addDays(10))->first();
+        $batch = $this->susu->batches()->whereDate('expiry_date', today()->addDays(10))->first();
 
         $this->actingAs($user)->get(route('hp.find', ['q' => 'kulkas']))->assertSee('Susu UHT')->assertDontSee('Pensil 2B');
         $this->actingAs($user)->get(route('hp.find', ['q' => substr($batch->code, -6)]))->assertSee('Susu UHT');
@@ -58,7 +58,7 @@ class HpFindTest extends TestCase
     public function test_a_full_product_or_batch_code_goes_straight_to_the_item(): void
     {
         $user = User::factory()->create();
-        $batch = $this->susu->items()->whereDate('expiry_date', today()->addDays(10))->first();
+        $batch = $this->susu->batches()->whereDate('expiry_date', today()->addDays(10))->first();
 
         $this->actingAs($user)->get(route('hp.find', ['q' => '  '.strtolower($this->pensil->code).' ']))->assertRedirect(route('hp.find.show', $this->pensil));
         $this->actingAs($user)->get(route('hp.find', ['q' => $batch->code]))->assertRedirect(route('hp.find.show', ['product' => $this->susu, 'b' => $batch->code]));
@@ -67,7 +67,7 @@ class HpFindTest extends TestCase
     public function test_the_item_page_lists_batches_in_fefo_order_with_expiry_badges(): void
     {
         $user = User::factory()->create();
-        $codes = $this->susu->items()->orderBy('expiry_date')->pluck('code')->all();   // kedaluwarsa -3 hari, +10, +200
+        $codes = $this->susu->batches()->orderBy('expiry_date')->pluck('code')->all();   // kedaluwarsa -3 hari, +10, +200
 
         $page = $this->actingAs($user)->get(route('hp.find.show', $this->susu))->assertOk()
             ->assertSeeInOrder($codes)->assertSee('KEDALUWARSA')->assertSee('HAMPIR')->assertSee('lewat 3 hari')->assertSee('sisa 10 hari');

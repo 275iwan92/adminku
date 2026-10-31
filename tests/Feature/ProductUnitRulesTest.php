@@ -129,7 +129,7 @@ class ProductUnitRulesTest extends TestCase
 
         $line = StockDocumentLine::where('stock_document_id', $doc->id)->firstOrFail();
         $this->assertSame([60.0, 5.0, 'dus'], [$line->qty, $line->entered_qty, $line->entered_unit]);   // 5 dus tetap 60 pcs
-        $this->assertSame(60.0, $this->product->items()->firstOrFail()->stock_qty);
+        $this->assertSame(60.0, $this->product->batches()->firstOrFail()->stock_qty);
         $html = str_replace('\\', '', $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->getContent());
         $this->assertStringContainsString('&quot;stock_qty&quot;:60', $html);   // dokumen terkunci menampilkan qty tersimpan
     }

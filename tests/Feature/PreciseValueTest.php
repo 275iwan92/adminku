@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Models\UnitConversion;
@@ -35,19 +35,19 @@ class PreciseValueTest extends TestCase
         $this->docs = app(StockDocuments::class);
     }
 
-    private function item(string $code = 'P1'): Item
+    private function item(string $code = 'P1'): Batch
     {
-        return $this->makeItem(['code' => $code, 'name' => 'Item '.$code, 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'reorder_point' => 0, 'reorder_qty' => 0]);
+        return $this->makeBatch(['code' => $code, 'name' => 'Item '.$code, 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'reorder_point' => 0, 'reorder_qty' => 0]);
     }
 
-    private function posted(StockDocumentType $type, Item $item, float $qty, ?float $cost = null, array $unit = []): void
+    private function posted(StockDocumentType $type, Batch $item, float $qty, ?float $cost = null, array $unit = []): void
     {
         $header = match ($type) {
             StockDocumentType::Receiving => ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id],
             StockDocumentType::Opening => ['doc_at' => now()->toDateTimeString()],
             default => [],
         };
-        $doc = $this->docs->create($type, $header, [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost] + $unit], $this->user);
+        $doc = $this->docs->create($type, $header, [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost] + $unit], $this->user);
         $this->docs->confirm($doc, $this->user);
     }
 
@@ -76,7 +76,7 @@ class PreciseValueTest extends TestCase
         $this->posted(StockDocumentType::Receiving, $b, 3, 33.3333);
         $this->posted(StockDocumentType::Issuance, $b, 1);
 
-        $inventory = Decimal::total(Item::all()->map(fn (Item $i) => [$i->stock_qty, $i->avg_cost]), 4);
+        $inventory = Decimal::total(Batch::all()->map(fn (Batch $i) => [$i->stock_qty, $i->avg_cost]), 4);
         $movements = Decimal::total(StockMovement::all()->map(fn (StockMovement $m) => [$m->qty, $m->unit_cost]), 4);
 
         $this->assertSame(30.0 + 66.6666, $inventory);

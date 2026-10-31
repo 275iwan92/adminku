@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\StockDocument;
 use App\Enums\StockDocumentType;
@@ -35,7 +35,7 @@ class HpController extends Controller
     {
         $user = $request->user();
         $below = Product::query()->belowReorderPoint()->withAvailable()->count();
-        $expiring = Item::query()->nearExpiry()->get();
+        $expiring = Batch::query()->nearExpiry()->get();
         $docs = fn (StockDocumentType $t) => StockDocument::query()->where('type', $t)->whereIn('status', ['confirmed', 'cancel_pending'])->whereDate('doc_at', today())->count();
         $cards = array_values(array_filter([
             ['label' => 'Barang aktif', 'value' => Product::query()->where('is_active', true)->count(), 'icon' => 'fa-solid fa-boxes-stacked', 'code' => 'ITM'],
@@ -89,13 +89,13 @@ class HpController extends Controller
         $products = null;
         if ($q !== '') {
             $exact = Product::query()->where('is_active', true)->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
-            $batch = $exact ? null : Item::query()->whereHas('product', fn ($w) => $w->where('is_active', true))->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
+            $batch = $exact ? null : Batch::query()->whereHas('product', fn ($w) => $w->where('is_active', true))->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();
             if ($exact || $batch) {
                 return redirect()->route('hp.find.show', ['product' => $exact?->id ?? $batch->product_id, 'b' => $batch?->code]);
             }
             $products = Product::query()->withAvailable()->where('is_active', true)
                 ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%")->orWhere('location', 'like', "%{$q}%")
-                    ->orWhereHas('items', fn ($i) => $i->where('code', 'like', "%{$q}%")))
+                    ->orWhereHas('batches', fn ($i) => $i->where('code', 'like', "%{$q}%")))
                 ->orderBy('name')->limit(self::FIND_LIMIT)->get();
         }
 
@@ -107,12 +107,12 @@ class HpController extends Controller
     {
         abort_unless($product->is_active, 404);
         $product = Product::query()->withAvailable()->findOrFail($product->id);
-        $batches = $product->items()->where('is_active', true)->where('stock_qty', '>', 0)->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
+        $batches = $product->batches()->where('is_active', true)->where('stock_qty', '>', 0)->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
 
         return view('hp.find-show', [
             'title' => $product->name, 'active' => 'stock', 'back' => route('hp.find'),
             'product' => $product, 'batches' => $batches, 'scanned' => $request->query('b'),
-            'value' => $request->user()->isSupervisor() ? $batches->sum(fn (Item $i) => $i->stockValue()) : null,
+            'value' => $request->user()->isSupervisor() ? $batches->sum(fn (Batch $i) => $i->stockValue()) : null,
         ]);
     }
 

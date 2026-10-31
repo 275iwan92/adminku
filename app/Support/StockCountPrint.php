@@ -41,10 +41,10 @@ final class StockCountPrint
         ]));
 
         $sections = [];
-        foreach ($this->counts->ordered($count)->groupBy(fn (StockCountLine $l) => (string) ($l->item->location ?? '')) as $location => $lines) {
+        foreach ($this->counts->ordered($count)->groupBy(fn (StockCountLine $l) => (string) ($l->batch->location ?? '')) as $location => $lines) {
             $rows = $lines->values()->map(fn (StockCountLine $l, int $i) => [
-                'no' => $i + 1, 'code' => $l->item->code, 'name' => $l->item->name, 'batch' => $l->item->expiry_date ? Locale::d($l->item->expiry_date) : '—',
-                'location' => $location === '' ? '—' : $location, 'unit' => $l->item->unit, 'system' => $this->qty($l->system_qty), 'counted' => self::BLANK, 'counter' => self::BLANK, 'note' => self::BLANK,
+                'no' => $i + 1, 'code' => $l->batch->code, 'name' => $l->batch->name, 'batch' => $l->batch->expiry_date ? Locale::d($l->batch->expiry_date) : '—',
+                'location' => $location === '' ? '—' : $location, 'unit' => $l->batch->unit, 'system' => $this->qty($l->system_qty), 'counted' => self::BLANK, 'counter' => self::BLANK, 'note' => self::BLANK,
             ])->all();
             $sections[] = ['title' => $location === '' ? 'Tanpa lokasi' : 'Lokasi '.$location.(isset($names[$location]) ? ' · '.$names[$location] : ''), 'blocks' => [['type' => 'table', 'columns' => $columns, 'rows' => $rows]]];
         }
@@ -81,7 +81,7 @@ final class StockCountPrint
             ['k' => 'Penyesuaian dibuat', 'v' => $count->adjustmentDocument?->doc_no ?? ($done ? 'Tidak ada (tidak ada selisih)' : '(dibuat saat disetujui)')],
         ];
         $diffRows = $diffs->values()->map(fn (StockCountLine $l, int $i) => [
-            'no' => $i + 1, 'item' => ['text' => $l->item->name, 'sub' => $l->item->code.($l->item->expiry_date ? ' · exp '.Locale::d($l->item->expiry_date) : '')], 'unit' => $l->item->unit,
+            'no' => $i + 1, 'item' => ['text' => $l->batch->name, 'sub' => $l->batch->code.($l->batch->expiry_date ? ' · exp '.Locale::d($l->batch->expiry_date) : '')], 'unit' => $l->batch->unit,
             'system' => $this->qty($l->system_qty), 'physical' => $this->qty($l->finalQty() ?? 0), 'diff' => $this->qty($l->diff()), 'pct' => $l->pct() === null ? '—' : Locale::number($l->pct(), 2).' %',
             'value' => $money($l->value()), 'reason' => $l->reason ?: '—', 'by' => $l->enteredBy?->name ?? '—',
         ])->all();

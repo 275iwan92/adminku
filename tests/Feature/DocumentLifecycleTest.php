@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Department;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Recipient;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
@@ -27,7 +27,7 @@ class DocumentLifecycleTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     protected function setUp(): void
     {
@@ -35,19 +35,19 @@ class DocumentLifecycleTest extends TestCase
         $this->entry = User::factory()->create();
         $this->sup = User::factory()->supervisor()->create();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->item = $this->makeItem(['code' => 'L1', 'name' => 'Item L1', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'L1', 'name' => 'Item L1', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
     }
 
     private function receivePayload(float $qty, float $cost = 10): array
     {
-        return ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => $cost]]];
+        return ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => $cost]]];
     }
 
     private function issuePayload(float $qty): array
     {
         $dept = Department::firstOrCreate(['code' => 'D1'], ['name' => 'Dept']);
 
-        return ['recipient_id' => Recipient::firstOrCreate(['name' => 'R'], ['department_id' => $dept->id])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty]]];
+        return ['recipient_id' => Recipient::firstOrCreate(['name' => 'R'], ['department_id' => $dept->id])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty]]];
     }
 
     private function draft(string $slug, array $payload, User $by): StockDocument
@@ -184,7 +184,7 @@ class DocumentLifecycleTest extends TestCase
         $this->act($in, 'cancel', [], $this->sup, 'barang tidak jadi datang');
         $this->assertNull($order->fresh()->closed_at);                                               // pemesanan terbuka lagi
         $this->actingAs($this->sup)->get(route('reports.receiving'))->assertOk()->assertDontSee($in->doc_no);
-        $this->get(route('reports.stock-card', ['item_id' => $item->id, 'from' => today()->subDay()->toDateString(), 'to' => today()->toDateString()]))->assertOk()->assertSee('(BATAL)');
+        $this->get(route('reports.stock-card', ['batch_id' => $item->id, 'from' => today()->subDay()->toDateString(), 'to' => today()->toDateString()]))->assertOk()->assertSee('(BATAL)');
         $this->get(route('home'))->assertOk();
     }
 
@@ -193,7 +193,7 @@ class DocumentLifecycleTest extends TestCase
         $in = $this->draft('receiving', $this->receivePayload(10), $this->entry);
         $this->act($in, 'confirm', $this->receivePayload(10));
 
-        $payload = ['reason' => 'Opname', 'lines' => [['item_id' => $this->item->id, 'counted_qty' => 7]]];
+        $payload = ['reason' => 'Opname', 'lines' => [['batch_id' => $this->item->id, 'counted_qty' => 7]]];
         $adj = $this->draft('adjustment', $payload, $this->sup);
         $this->act($adj, 'confirm', $payload, $this->sup);                                           // diajukan
         $this->assertSame('approval', $adj->fresh()->status);

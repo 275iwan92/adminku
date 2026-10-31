@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -27,7 +27,7 @@ class ReorderOrderHistoryTest extends TestCase
 
     private User $entry;
 
-    private Item $item;
+    private Batch $item;
 
     protected function setUp(): void
     {
@@ -35,7 +35,7 @@ class ReorderOrderHistoryTest extends TestCase
         $this->sup = User::factory()->supervisor()->create();
         $this->entry = User::factory()->create();
         $this->actingAs($this->sup);
-        $this->item = $this->makeItem(['code' => 'H-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5]);
+        $this->item = $this->makeBatch(['code' => 'H-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5]);
     }
 
     private function supplier(string $name = 'Toko Maju'): Supplier
@@ -50,7 +50,7 @@ class ReorderOrderHistoryTest extends TestCase
 
     private function receive(float $qty): StockDocument
     {
-        $payload = ['supplier_id' => $this->supplier()->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => $this->supplier()->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
         $this->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();

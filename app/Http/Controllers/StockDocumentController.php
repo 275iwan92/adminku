@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\StockDocumentType;
 use App\Http\Requests\StockDocumentRequest;
 use App\Models\Department;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\Recipient;
 use App\Models\StockDocument;
@@ -37,15 +37,15 @@ class StockDocumentController extends Controller
         $t = $this->type($request, $type);
         $sup = $request->user()->isSupervisor();
 
-        $rows = StockDocument::query()->where('type', $t)->with(['lines.item', 'supplier', 'creator'])->latest('doc_at')->latest('id')->limit(1000)->get()
+        $rows = StockDocument::query()->where('type', $t)->with(['lines.batch', 'supplier', 'creator'])->latest('doc_at')->latest('id')->limit(1000)->get()
             ->map(fn (StockDocument $d) => [
                 'id' => $d->id, 'doc_no' => $d->doc_no, 'doc_at' => $d->doc_at->format('Y-m-d H:i:s'),
                 'party' => $d->supplier?->name ?? $d->recipient ?? $d->reason ?? '—',
                 'ref' => $d->ref_no ?? $d->department ?? ($t === StockDocumentType::Adjustment ? $d->reason : null),
-                'value' => $sup ? Decimal::total($d->lines->map(fn ($l) => [abs($l->qty), $l->unit_cost ?? $l->item->avg_cost]), 2) : null,
+                'value' => $sup ? Decimal::total($d->lines->map(fn ($l) => [abs($l->qty), $l->unit_cost ?? $l->batch->avg_cost]), 2) : null,
                 'status' => self::STATUS[$d->status] ?? $d->status, 'user' => $d->creator->name, 'active' => true,
-                'lines' => $d->lines->map(fn ($l) => ['name' => $l->item->name, 'code' => $l->item->code, 'qty' => $l->qty, 'unit' => $l->item->unit,
-                    'cost' => $sup ? ($l->unit_cost ?? $l->item->avg_cost) : null])->all(),
+                'lines' => $d->lines->map(fn ($l) => ['name' => $l->batch->name, 'code' => $l->batch->code, 'qty' => $l->qty, 'unit' => $l->batch->unit,
+                    'cost' => $sup ? ($l->unit_cost ?? $l->batch->avg_cost) : null])->all(),
             ])->all();
 
         return view('docs.index', ['t' => $t, 'rows' => $rows, 'sup' => $sup]);
@@ -61,7 +61,7 @@ class StockDocumentController extends Controller
         $t = $this->type($request, $type);
         abort_unless($document->type === $t, 404);
 
-        return view('docs.form', $this->formData($t, $document->load(['lines.item', 'creator', 'approver', 'confirmer', 'canceller', 'cancelRequester'])));
+        return view('docs.form', $this->formData($t, $document->load(['lines.batch', 'creator', 'approver', 'confirmer', 'canceller', 'cancelRequester'])));
     }
 
     // Cetakan dokumen (semua mode, termasuk draf): membawa tulisan MODE dan tanda air bila belum / tidak sah.
@@ -228,16 +228,16 @@ class StockDocumentController extends Controller
         ];
     }
 
-    // Baris tabel item: dari input lama (validasi gagal) atau dari dokumen. Kolom pilihan item butuh label teksnya (item_id_label).
+    // Baris tabel item: dari input lama (validasi gagal) atau dari dokumen. Kolom pilihan item butuh label teksnya (batch_id_label).
     private function lineRows(StockDocument $doc, StockDocumentType $t): array
     {
         $byProduct = in_array($t, [StockDocumentType::Receiving, StockDocumentType::Opening], true);
         $old = old('lines');
         if (is_array($old)) {
-            $items = Item::query()->whereIn('id', array_filter(array_column($old, 'item_id')))->get()->keyBy('id');
+            $items = Batch::query()->whereIn('id', array_filter(array_column($old, 'batch_id')))->get()->keyBy('id');
             $products = Product::query()->whereIn('id', array_filter(array_column($old, 'product_id')))->get()->keyBy('id');
 
-            return array_map(fn ($r) => $this->lineRow($r, $items[$r['item_id'] ?? 0] ?? null, $products[$r['product_id'] ?? 0] ?? null, $t === StockDocumentType::Receiving), array_values($old));
+            return array_map(fn ($r) => $this->lineRow($r, $items[$r['batch_id'] ?? 0] ?? null, $products[$r['product_id'] ?? 0] ?? null, $t === StockDocumentType::Receiving), array_values($old));
         }
 
         // Dokumen baru: baris pertama sudah berisi jumlah bawaan 1 (bukan kosong); penyesuaian mengisi jumlah hitung sendiri.
@@ -249,19 +249,19 @@ class StockDocumentController extends Controller
         $entered = $t === StockDocumentType::Receiving;
 
         return $doc->exists ? $doc->lines->map(fn ($l) => $this->lineRow([
-            ($byProduct ? 'product_id' : 'item_id') => $byProduct ? $l->item->product_id : $l->item_id,
-            'expiry_date' => $byProduct ? $l->item->expiry_date?->format('Y-m-d') : null, 'qty' => $entered ? $l->entered_qty ?? $l->qty : $l->qty, 'unit' => $entered ? $l->entered_unit ?? $l->item->unit : $l->item->unit, 'unit_cost' => $l->entered_unit_cost ?? $l->unit_cost,
+            ($byProduct ? 'product_id' : 'batch_id') => $byProduct ? $l->batch->product_id : $l->batch_id,
+            'expiry_date' => $byProduct ? $l->batch->expiry_date?->format('Y-m-d') : null, 'qty' => $entered ? $l->entered_qty ?? $l->qty : $l->qty, 'unit' => $entered ? $l->entered_unit ?? $l->batch->unit : $l->batch->unit, 'unit_cost' => $l->entered_unit_cost ?? $l->unit_cost,
             'stock_qty' => $l->qty, 'system_qty' => $l->system_qty, 'counted_qty' => $l->counted_qty, 'note' => $l->note,
-        ], $l->item, $byProduct ? $l->item->product : null, $entered))->all() : [];
+        ], $l->batch, $byProduct ? $l->batch->product : null, $entered))->all() : [];
     }
 
     // $packs (Penerimaan): satuan stok + pilihan satuan masuk barang itu, dibaca form untuk menawarkan satuan dan menghitung hasil konversi.
-    private function lineRow(array $row, ?Item $item, ?Product $product = null, bool $packs = false): array
+    private function lineRow(array $row, ?Batch $item, ?Product $product = null, bool $packs = false): array
     {
         $own = $product ?? $item?->product;
 
         return ($packs && $own ? ['stock_unit' => $own->unit, 'packs' => json_encode(ProductUnits::options($own))] : []) + $row + [
-            'item_id_label' => $item?->label() ?? '',
+            'batch_id_label' => $item?->label() ?? '',
             'product_id_label' => $product ? "{$product->code} · {$product->name}" : '',
             'unit' => $item?->unit, 'available' => $item?->stock_qty, 'system_qty' => $item?->stock_qty,
         ];

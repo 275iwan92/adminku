@@ -6,7 +6,7 @@ namespace App\Support;
  * Tujuan       : Aritmetika presisi (bcmath) untuk NILAI uang / biaya / konversi: tanpa kesalahan float, dibulatkan setengah-menjauhi-nol hanya sekali di akhir, pada skala kolom database.
  *                Angka masuk berupa float/string dari kolom decimal (<= 10 desimal), perantara berupa string; hasil akhir float supaya tipe di layar dan laporan tetap sama.
  *                Kuantitas (qty) sengaja tetap memakai pembulatan 3 desimal dan toleransi lama.
- * Dipakai oleh : StockLedger, StockDocuments, UnitConverter, Item, ReportController, StockDocumentController, StockDocumentPrint, StockValuation.
+ * Dipakai oleh : StockLedger, StockDocuments, UnitConverter, Batch, ReportController, StockDocumentController, StockDocumentPrint, StockValuation.
  * Status       : Aktif.
  */
 final class Decimal

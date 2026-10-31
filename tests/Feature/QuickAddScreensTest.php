@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockDocument;
 use App\Models\Supplier;
 use App\Models\User;
@@ -25,14 +25,14 @@ class QuickAddScreensTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->entry = User::factory()->create();
         $this->sup = User::factory()->supervisor()->create();
-        $this->item = $this->makeItem(['code' => 'Q1', 'name' => 'Item Q1', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'Q1', 'name' => 'Item Q1', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
     }
 
     private function plus(string $html, string $path): int
@@ -73,7 +73,7 @@ class QuickAddScreensTest extends TestCase
 
     public function test_confirmed_documents_are_locked_without_plus_buttons(): void
     {
-        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => 5, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => 5, 'unit_cost' => 10]]];
         $this->actingAs($this->entry)->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->assertSee('data-dl-select-add', false);   // draf masih bisa diubah

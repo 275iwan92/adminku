@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Recipient;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
@@ -25,19 +25,19 @@ class ReorderOrderInfoTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->sup = User::factory()->supervisor()->create(['name' => 'Sari Supervisor']);
         $this->actingAs($this->sup);
-        $this->item = $this->makeItem(['code' => 'RO-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'RO-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
     }
 
     private function receive(float $qty): StockDocument
     {
-        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
         $this->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
@@ -47,7 +47,7 @@ class ReorderOrderInfoTest extends TestCase
 
     private function issue(float $qty): void
     {
-        $payload = ['recipient_id' => Recipient::firstOrCreate(['name' => 'Budi'])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty]]];
+        $payload = ['recipient_id' => Recipient::firstOrCreate(['name' => 'Budi'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty]]];
         $this->post(route('docs.store', 'issuance'), $payload)->assertSessionHasNoErrors();
         $this->put(route('docs.update', ['issuance', StockDocument::latest('id')->firstOrFail()]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
     }

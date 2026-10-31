@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['item_id', 'stock_document_id', 'type', 'moved_at', 'qty', 'unit_cost', 'balance_qty', 'balance_avg_cost', 'user_id', 'reversal_of'])]
+#[Fillable(['batch_id', 'stock_document_id', 'type', 'moved_at', 'qty', 'unit_cost', 'balance_qty', 'balance_avg_cost', 'user_id', 'reversal_of'])]
 class StockMovement extends Model
 {
     protected $table = 'rm_stockcard';
@@ -18,9 +18,9 @@ class StockMovement extends Model
         return ['moved_at' => 'datetime', 'qty' => 'float', 'unit_cost' => 'float', 'balance_qty' => 'float', 'balance_avg_cost' => 'float'];
     }
 
-    public function item(): BelongsTo
+    public function batch(): BelongsTo
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Batch::class);
     }
 
     public function document(): BelongsTo

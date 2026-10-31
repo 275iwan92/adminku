@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -28,9 +28,9 @@ class NumberingRaceTest extends TestCase
     private function receiving(): StockDocument
     {
         $user = User::factory()->create();
-        $item = $this->makeItem(['code' => 'R'.(Item::count() + 1), 'name' => 'Item R', 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 1, 'reorder_qty' => 5]);
+        $item = $this->makeBatch(['code' => 'R'.(Batch::count() + 1), 'name' => 'Item R', 'category_id' => Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 1, 'reorder_qty' => 5]);
 
-        return app(StockDocuments::class)->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id], [['item_id' => $item->id, 'qty' => 1, 'unit_cost' => 10]], $user);
+        return app(StockDocuments::class)->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id], [['batch_id' => $item->id, 'qty' => 1, 'unit_cost' => 10]], $user);
     }
 
     // Penyimpan lain menyelip tepat setelah SELECT kita (di luar savepoint kita, seperti transaksi lain yang sudah commit): $inject jalan sekali.
@@ -71,14 +71,14 @@ class NumberingRaceTest extends TestCase
     {
         $product = Product::register(['name' => 'Obat', 'category_id' => Category::create(['code' => 'OBT', 'name' => 'Obat'])->id, 'unit' => 'pcs', 'unit_price' => 1, 'tracks_expiry' => true], 'OBT-0001');
         $this->interloperAfterSelect('i_batch', function () use ($product) {
-            $row = $product->items()->make(['code' => 'OBT-0001-271231', 'expiry_date' => '2027-12-31'] + $product->only(Product::BATCH_COPY))->getAttributes();
+            $row = $product->batches()->make(['code' => 'OBT-0001-271231', 'expiry_date' => '2027-12-31'] + $product->only(Product::BATCH_COPY))->getAttributes();
             DB::table('i_batch')->insert($row + ['product_id' => $product->id, 'created_at' => now(), 'updated_at' => now()]);
         });
 
         $batch = $product->batchFor('2027-12-31');
 
         $this->assertSame('OBT-0001-271231', $batch->code);
-        $this->assertSame(1, Item::where('code', 'OBT-0001-271231')->count());
+        $this->assertSame(1, Batch::where('code', 'OBT-0001-271231')->count());
         $this->assertSame($batch->id, $product->batchFor('2027-12-31')->id);
     }
 }

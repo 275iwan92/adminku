@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 /* REMARK
  * Tujuan       : Barang (produk / group): data induk dan parameter pesan ulang. Stok ada di batch (items): satu batch untuk barang biasa, satu batch per tanggal untuk barang berkedaluwarsa.
  *                Kode produk {AWALAN KATEGORI}-{URUT 4 DIGIT} tidak memuat tanggal; kode batch = kode produk, atau {kode produk}-{YYMMDD kedaluwarsa}.
- *                Titik pesan ulang dihitung dari stok TERSEDIA produk = jumlah stok batch yang belum kedaluwarsa (Item::usable).
+ *                Titik pesan ulang dihitung dari stok TERSEDIA produk = jumlah stok batch yang belum kedaluwarsa (Batch::usable).
  * Dipakai oleh : ProductController, StockDocuments, StockLedger, HomeController, ReportController.
  * Status       : Aktif.
  */
@@ -23,7 +23,7 @@ class Product extends Model
 {
     protected $table = 'm_item';
 
-    // Kolom yang disalin ke setiap batch supaya dokumen dan laporan tetap membaca dari items.
+    // Kolom yang disalin ke setiap batch supaya dokumen dan laporan tetap membaca dari i_batch.
     public const BATCH_COPY = ['name', 'category_id', 'unit', 'location', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'is_active'];
 
     protected function casts(): array
@@ -39,9 +39,9 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function items(): HasMany
+    public function batches(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Batch::class);
     }
 
     // Satuan masuk (kemasan saat diterima) beserta faktornya ke satuan stok.
@@ -80,22 +80,22 @@ class Product extends Model
     }
 
     // Batch untuk tanggal kedaluwarsa itu (dibuat bila belum ada). Barang biasa selalu satu batch tanpa tanggal.
-    public function batchFor(Carbon|string|null $expiry): Item
+    public function batchFor(Carbon|string|null $expiry): Batch
     {
         $expiry = $this->tracks_expiry && $expiry ? Carbon::parse($expiry)->toDateString() : null;
         $code = $expiry ? $this->code.'-'.Carbon::parse($expiry)->format('ymd') : $this->code;
 
         // whereDate: tanggal tersimpan bisa berbentuk 'Y-m-d' atau 'Y-m-d 00:00:00' menurut basis data.
-        $batch = $this->items()->when($expiry, fn ($q) => $q->whereDate('expiry_date', $expiry), fn ($q) => $q->whereNull('expiry_date'))->first();
+        $batch = $this->batches()->when($expiry, fn ($q) => $q->whereDate('expiry_date', $expiry), fn ($q) => $q->whereNull('expiry_date'))->first();
 
         // createOrFirst: dua penyimpan bersamaan untuk batch baru yang sama -> yang kalah di kolom unik code mengambil batch yang sudah dibuat, bukan galat 500.
-        return $batch ?? $this->items()->createOrFirst(['code' => $code], $this->only(self::BATCH_COPY) + ['expiry_date' => $expiry]);
+        return $batch ?? $this->batches()->createOrFirst(['code' => $code], $this->only(self::BATCH_COPY) + ['expiry_date' => $expiry]);
     }
 
     // Parameter produk diteruskan ke semua batch-nya.
     public function propagate(): void
     {
-        $this->items()->update($this->only(self::BATCH_COPY));
+        $this->batches()->update($this->only(self::BATCH_COPY));
     }
 
     // Stok tersedia (batch yang belum kedaluwarsa) sebagai potongan SQL; dipakai scope dan urutan.
@@ -106,18 +106,18 @@ class Product extends Model
 
     public function scopeWithAvailable(Builder $query): Builder
     {
-        return $query->select('m_item.*')->selectRaw(self::availableSql().' as available_qty', [Item::usableFrom()]);
+        return $query->select('m_item.*')->selectRaw(self::availableSql().' as available_qty', [Batch::usableFrom()]);
     }
 
     // Produk aktif yang stok tersedianya menyentuh atau di bawah titik pesan ulang (titik 0 = belum diisi, tidak dihitung).
     public function scopeBelowReorderPoint(Builder $query): Builder
     {
-        return $query->where('is_active', true)->where('reorder_point', '>', 0)->whereRaw(self::availableSql().' <= m_item.reorder_point', [Item::usableFrom()]);
+        return $query->where('is_active', true)->where('reorder_point', '>', 0)->whereRaw(self::availableSql().' <= m_item.reorder_point', [Batch::usableFrom()]);
     }
 
     public function available(): float
     {
-        return (float) $this->items()->usable()->sum('stock_qty');
+        return (float) $this->batches()->usable()->sum('stock_qty');
     }
 
     public function isBelowReorderPoint(): bool

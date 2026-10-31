@@ -61,7 +61,7 @@ class ProductController extends Controller
     public function show(Request $request, Product $product)
     {
         return view('products.form', [
-            'product' => $product, 'batches' => $product->items()->orderByRaw('expiry_date is null')->orderBy('expiry_date')->get(), 'categories' => $this->categories(false),
+            'product' => $product, 'batches' => $product->batches()->orderByRaw('expiry_date is null')->orderBy('expiry_date')->get(), 'categories' => $this->categories(false),
             'units' => $this->units($product->unit), 'locations' => $this->locations($product->location), 'nextCodes' => [],
             'leadTime' => LeadTimes::for($product), 'dailyUsage' => LeadTimes::dailyUsage($product),
         ] + $this->packUnitData($product, $request->user()));

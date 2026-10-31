@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\Recipient;
@@ -59,7 +59,7 @@ class ItemCodeTest extends TestCase
 
         $this->assertEqualsCanonicalizing(['ATK-0001', 'ATK-0002', 'TLS-0001'], Product::pluck('code')->all());
         // Barang biasa langsung punya satu batch berkode sama; barang berkedaluwarsa belum punya batch sampai ada penerimaan bertanggal.
-        $this->assertEqualsCanonicalizing(['ATK-0001', 'TLS-0001'], Item::pluck('code')->all());
+        $this->assertEqualsCanonicalizing(['ATK-0001', 'TLS-0001'], Batch::pluck('code')->all());
     }
 
     public function test_data_entry_can_add_an_item_but_only_the_supervisor_completes_its_parameters(): void
@@ -134,8 +134,8 @@ class ItemCodeTest extends TestCase
         $this->receive([[$lem, 10, '2026-03-15']]);
         $this->receive([[$lem, 5, '2026-03-15'], [$lem, 20, '2026-06-20']]);
 
-        $this->assertEqualsCanonicalizing(['ATK-0001-260315' => 15.0, 'ATK-0001-260620' => 20.0], $lem->items()->pluck('stock_qty', 'code')->all());
-        $this->assertSame(35.0, (float) $lem->items()->sum('stock_qty'));
+        $this->assertEqualsCanonicalizing(['ATK-0001-260315' => 15.0, 'ATK-0001-260620' => 20.0], $lem->batches()->pluck('stock_qty', 'code')->all());
+        $this->assertSame(35.0, (float) $lem->batches()->sum('stock_qty'));
     }
 
     public function test_an_expiring_product_needs_a_date_on_every_receiving_line_and_unused_batches_are_removed(): void
@@ -149,10 +149,10 @@ class ItemCodeTest extends TestCase
 
         $this->post(route('docs.store', 'receiving'), ['supplier_id' => $sup->id, 'lines' => [$line + ['expiry_date' => '2026-03-15']]])->assertRedirect();
         $doc = StockDocument::firstOrFail();
-        $this->assertSame(1, $lem->items()->count());                                       // batch dibuat oleh draf
+        $this->assertSame(1, $lem->batches()->count());                                       // batch dibuat oleh draf
 
         $this->put(route('docs.update', ['receiving', $doc]), ['_action' => 'delete'])->assertRedirect();
-        $this->assertSame(0, $lem->items()->count());                                       // draf dihapus: batch yang tidak terpakai ikut hilang
+        $this->assertSame(0, $lem->batches()->count());                                       // draf dihapus: batch yang tidak terpakai ikut hilang
     }
 
     public function test_issuance_spills_over_to_the_next_batch_in_fefo_order_and_warns_about_a_later_pick(): void
@@ -167,8 +167,8 @@ class ItemCodeTest extends TestCase
         $recipient = Recipient::create(['name' => 'Budi']);
 
         // Mengeluarkan 15 dengan memilih batch pertama (stok 10): 10 darinya, sisa 5 dari batch berikutnya.
-        $doc = $docs->create(StockDocumentType::Issuance, ['recipient_id' => $recipient->id], [['item_id' => $first->id, 'qty' => 15]], $user);
-        $this->assertEqualsCanonicalizing([[$first->id, 10.0], [$second->id, 5.0]], $doc->lines->map(fn ($l) => [$l->item_id, $l->qty])->all());
+        $doc = $docs->create(StockDocumentType::Issuance, ['recipient_id' => $recipient->id], [['batch_id' => $first->id, 'qty' => 15]], $user);
+        $this->assertEqualsCanonicalizing([[$first->id, 10.0], [$second->id, 5.0]], $doc->lines->map(fn ($l) => [$l->batch_id, $l->qty])->all());
         $this->assertSame([], $docs->fefoWarnings($doc));            // draf: batch pertama habis diambil dokumen yang sama, jadi sambungan ke batch kedua bukan pelanggaran FEFO
         $docs->confirm($doc, $user);
         $this->assertSame([0.0, 25.0], [$first->fresh()->stock_qty, $second->fresh()->stock_qty]);
@@ -176,7 +176,7 @@ class ItemCodeTest extends TestCase
 
         // Memilih batch yang kedaluwarsanya lebih jauh padahal yang lebih cepat masih ada stok: hanya peringatan.
         $this->receive([[$lem, 4, $future->toDateString()]]);
-        $later = $docs->create(StockDocumentType::Issuance, ['recipient_id' => $recipient->id], [['item_id' => $second->id, 'qty' => 1]], $user);
+        $later = $docs->create(StockDocumentType::Issuance, ['recipient_id' => $recipient->id], [['batch_id' => $second->id, 'qty' => 1]], $user);
         $this->assertStringContainsString('Keluarkan yang kedaluwarsa lebih dulu', implode(' ', $docs->fefoWarnings($later)));
     }
 
@@ -209,7 +209,7 @@ class ItemCodeTest extends TestCase
         $mk('Uji Nonaktif', -3, 5, false);   // nonaktif
 
         $this->assertSame(['KEDALUWARSA', 'HAMPIR'], [$expired->expiryState(), $soon->expiryState()]);
-        $this->assertSame(['Uji Lama', 'Uji Sebentar'], Item::nearExpiry()->orderBy('expiry_date')->pluck('name')->all());
+        $this->assertSame(['Uji Lama', 'Uji Sebentar'], Batch::nearExpiry()->orderBy('expiry_date')->pluck('name')->all());
 
         $this->actingAs(User::factory()->supervisor()->create());
         $this->get(route('home'))->assertOk()->assertSee('Pisahkan dari rak');
@@ -222,11 +222,11 @@ class ItemCodeTest extends TestCase
     {
         $this->seed();
 
-        $this->assertSame(0, Item::whereNull('location')->count());
-        $this->assertSame(0, Item::whereNull('product_id')->count());
-        $this->assertSame(Location::count(), Location::whereIn('code', Item::pluck('location'))->count());
-        $this->assertSame(2, Item::nearExpiry()->count());  // satu sudah lewat, satu hampir; dua batch lain masih lama
-        $this->assertSame(2, Product::where('name', 'Lem Kayu Fox 100 ml')->firstOrFail()->items()->count());   // satu produk, dua batch
+        $this->assertSame(0, Batch::whereNull('location')->count());
+        $this->assertSame(0, Batch::whereNull('product_id')->count());
+        $this->assertSame(Location::count(), Location::whereIn('code', Batch::pluck('location'))->count());
+        $this->assertSame(2, Batch::nearExpiry()->count());  // satu sudah lewat, satu hampir; dua batch lain masih lama
+        $this->assertSame(2, Product::where('name', 'Lem Kayu Fox 100 ml')->firstOrFail()->batches()->count());   // satu produk, dua batch
         $this->actingAs(User::where('username', 'supervisor')->firstOrFail())->get(route('home'))->assertOk()->assertSee('Lem Kayu Fox 100 ml');
     }
 }

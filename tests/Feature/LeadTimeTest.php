@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Recipient;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
@@ -26,19 +26,19 @@ class LeadTimeTest extends TestCase
 
     private User $sup;
 
-    private Item $item;
+    private Batch $item;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->sup = User::factory()->supervisor()->create(['name' => 'Sari Supervisor']);
         $this->actingAs($this->sup);
-        $this->item = $this->makeItem(['code' => 'LT-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
+        $this->item = $this->makeBatch(['code' => 'LT-1', 'name' => 'Kertas HVS', 'category_id' => Category::create(['code' => 'ATK', 'name' => 'ATK'])->id, 'unit' => 'pcs', 'unit_price' => 10, 'reorder_point' => 5, 'reorder_qty' => 20]);
     }
 
     private function receive(float $qty): StockDocument
     {
-        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
+        $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty, 'unit_cost' => 10]]];
         $this->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
@@ -48,7 +48,7 @@ class LeadTimeTest extends TestCase
 
     private function issue(float $qty): StockDocument
     {
-        $payload = ['recipient_id' => Recipient::firstOrCreate(['name' => 'Budi'])->id, 'lines' => [['item_id' => $this->item->id, 'qty' => $qty]]];
+        $payload = ['recipient_id' => Recipient::firstOrCreate(['name' => 'Budi'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => $qty]]];
         $this->post(route('docs.store', 'issuance'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
         $this->put(route('docs.update', ['issuance', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
@@ -191,7 +191,7 @@ class LeadTimeTest extends TestCase
 
     public function test_the_service_loads_many_products_with_one_orders_query(): void
     {
-        $other = $this->makeItem(['code' => 'LT-2', 'name' => 'Pensil', 'category_id' => $this->item->category_id, 'unit' => 'pcs', 'unit_price' => 1]);
+        $other = $this->makeBatch(['code' => 'LT-2', 'name' => 'Pensil', 'category_id' => $this->item->category_id, 'unit' => 'pcs', 'unit_price' => 1]);
         $products = [$this->item->product->fresh(), $other->product->fresh()];
 
         \Illuminate\Support\Facades\DB::enableQueryLog();

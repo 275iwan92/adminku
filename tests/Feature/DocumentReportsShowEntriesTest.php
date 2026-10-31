@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Department;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Recipient;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -21,11 +21,11 @@ class DocumentReportsShowEntriesTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function item(): Item
+    private function item(): Batch
     {
         $category = Category::firstOrCreate(['code' => 'ATK'], ['name' => 'ATK']);
 
-        return $this->makeItem(['code' => 'LP1', 'name' => 'Barang Laporan', 'category_id' => $category->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 0, 'reorder_qty' => 50, 'lead_time_days' => 3]);
+        return $this->makeBatch(['code' => 'LP1', 'name' => 'Barang Laporan', 'category_id' => $category->id, 'unit' => 'pcs', 'unit_price' => 100, 'reorder_point' => 0, 'reorder_qty' => 50, 'lead_time_days' => 3]);
     }
 
     private function postDoc(string $slug, array $payload, User $by): void
@@ -43,8 +43,8 @@ class DocumentReportsShowEntriesTest extends TestCase
         $recipient = Recipient::create(['name' => 'Penerima Uji', 'department_id' => $dept->id]);
         $item = $this->item();
 
-        $this->postDoc('receiving', ['supplier_id' => $supplier->id, 'ref_no' => 'SJ-1', 'lines' => [['item_id' => $item->id, 'qty' => 100, 'unit_cost' => 10]]], $entry);
-        $this->postDoc('issuance', ['recipient_id' => $recipient->id, 'department_id' => $dept->id, 'lines' => [['item_id' => $item->id, 'qty' => 30]]], $entry);
+        $this->postDoc('receiving', ['supplier_id' => $supplier->id, 'ref_no' => 'SJ-1', 'lines' => [['batch_id' => $item->id, 'qty' => 100, 'unit_cost' => 10]]], $entry);
+        $this->postDoc('issuance', ['recipient_id' => $recipient->id, 'department_id' => $dept->id, 'lines' => [['batch_id' => $item->id, 'qty' => 30]]], $entry);
 
         $this->assertSame(['confirmed', 'confirmed'], StockDocument::orderBy('id')->pluck('status')->all());
 

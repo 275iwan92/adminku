@@ -29,7 +29,7 @@ final class StockValuation
         $end = $start->copy()->endOfMonth()->min($today);
 
         $cutoffs = collect([7, 14, 21, 28])->map(fn ($d) => $start->copy()->day($d)->endOfDay())->filter(fn ($c) => $c < $end->copy()->startOfDay())->push($end)->values();
-        $moves = StockMovement::query()->where('moved_at', '<=', $end)->orderBy('moved_at')->orderBy('id')->get(['item_id', 'moved_at', 'balance_qty', 'balance_avg_cost']);
+        $moves = StockMovement::query()->where('moved_at', '<=', $end)->orderBy('moved_at')->orderBy('id')->get(['batch_id', 'moved_at', 'balance_qty', 'balance_avg_cost']);
 
         $value = [];
         $i = 0;
@@ -37,7 +37,7 @@ final class StockValuation
         $values = [];
         foreach ($cutoffs as $cutoff) {
             while ($i < $moves->count() && $moves[$i]->moved_at <= $cutoff) {
-                $value[$moves[$i]->item_id] = [$moves[$i]->balance_qty, $moves[$i]->balance_avg_cost];
+                $value[$moves[$i]->batch_id] = [$moves[$i]->balance_qty, $moves[$i]->balance_avg_cost];
                 $i++;
             }
             $labels[] = Locale::at($cutoff)->translatedFormat('\s/\d d M');

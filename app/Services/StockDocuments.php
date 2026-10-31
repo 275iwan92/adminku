@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\StockDocumentType;
 use App\Models\Department;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\Product;
 use App\Models\Recipient;
 use App\Models\StockCount;
@@ -33,7 +33,7 @@ final class StockDocuments
      * Dokumen baru SELALU berstatus draf dan belum menyentuh stok; stok baru diproses saat Confirm (penyesuaian: saat Approve).
      *
      * @param  array<string, mixed>  $header  supplier_id, ref_no, recipient, department, reason, note, doc_at (hanya saldo awal)
-     * @param  array<int, array<string, mixed>>  $lines  item_id, qty, unit_cost, counted_qty, note
+     * @param  array<int, array<string, mixed>>  $lines  batch_id, qty, unit_cost, counted_qty, note
      */
     public function create(StockDocumentType $type, array $header, array $lines, User $user): StockDocument
     {
@@ -181,7 +181,7 @@ final class StockDocuments
             'approved_by' => $by->id, 'approved_at' => now(), 'reversal_of_document_id' => $original->id,
         ]);
         foreach ($moves as $m) {
-            $adj->lines()->create(['item_id' => $m->item_id, 'qty' => $m->qty, 'unit_cost' => $m->unit_cost, 'system_qty' => round($m->balance_qty - $m->qty, 3), 'counted_qty' => $m->balance_qty]);
+            $adj->lines()->create(['batch_id' => $m->batch_id, 'qty' => $m->qty, 'unit_cost' => $m->unit_cost, 'system_qty' => round($m->balance_qty - $m->qty, 3), 'counted_qty' => $m->balance_qty]);
         }
     }
 
@@ -189,7 +189,7 @@ final class StockDocuments
      * Penyesuaian OTOMATIS hasil Stok Opname: satu dokumen ADJUSTMENT langsung berstatus approved (reason "Stok Opname SO-..."), diposting lewat buku besar yang sama
      * (kunci baris item dan pemeriksaan saldo ikut). Dipanggil dalam transaksi persetujuan opname; kegagalan posting membatalkan seluruh persetujuan.
      *
-     * @param  array<int, array{item_id: int, qty: float, system_qty: float, counted_qty: float, unit_cost: float}>  $rows  hanya baris selisih
+     * @param  array<int, array{batch_id: int, qty: float, system_qty: float, counted_qty: float, unit_cost: float}>  $rows  hanya baris selisih
      */
     public function recordCountAdjustment(StockCount $count, array $rows, User $by): StockDocument
     {
@@ -224,7 +224,7 @@ final class StockDocuments
         $header = $this->withNames($doc->type, $header);
         DB::transaction(function () use ($doc, $header, $lines) {
             $this->lockAndAssert($doc, ['draft']);
-            $old = $doc->lines()->pluck('item_id')->all();
+            $old = $doc->lines()->pluck('batch_id')->all();
             $doc->update($header);
             $doc->lines()->delete();
             $this->writeLines($doc, $lines);
@@ -245,9 +245,9 @@ final class StockDocuments
     {
         DB::transaction(function () use ($doc, $approver) {
             $this->lockAndAssert($doc, ['approval'], StockDocumentType::Adjustment);
-            foreach ($doc->lines()->with('item')->get() as $line) {
-                if (abs($line->item->stock_qty - (float) $line->system_qty) > 0.0005) {
-                    throw ValidationException::withMessages(['lines' => "Stok {$line->item->code} berubah sejak penghitungan (sistem {$line->system_qty}, sekarang {$line->item->stock_qty}). Tolak dokumen ini lalu hitung ulang."]);
+            foreach ($doc->lines()->with('batch')->get() as $line) {
+                if (abs($line->batch->stock_qty - (float) $line->system_qty) > 0.0005) {
+                    throw ValidationException::withMessages(['lines' => "Stok {$line->batch->code} berubah sejak penghitungan (sistem {$line->system_qty}, sekarang {$line->batch->stock_qty}). Tolak dokumen ini lalu hitung ulang."]);
                 }
             }
             $this->ledger->post($doc, $approver, now());
@@ -267,7 +267,7 @@ final class StockDocuments
     {
         DB::transaction(function () use ($doc) {
             $this->lockAndAssert($doc, ['draft']);
-            $old = $doc->lines()->pluck('item_id')->all();
+            $old = $doc->lines()->pluck('batch_id')->all();
             $doc->delete();
             $this->purgeUnusedBatches($old);
         });
@@ -276,7 +276,7 @@ final class StockDocuments
     // Batch berkedaluwarsa yang dibuat oleh draf lalu tidak jadi dipakai (tanpa stok, baris, atau pergerakan) dibuang supaya daftar batch tidak berisi sisa.
     private function purgeUnusedBatches(array $itemIds): void
     {
-        Item::query()->whereIn('id', $itemIds)->whereNotNull('expiry_date')->where('stock_qty', 0)
+        Batch::query()->whereIn('id', $itemIds)->whereNotNull('expiry_date')->where('stock_qty', 0)
             ->whereDoesntHave('lines')->whereDoesntHave('movements')->delete();
     }
 
@@ -291,16 +291,16 @@ final class StockDocuments
             return [];
         }
         $out = [];
-        $lines = $doc->lines()->with('item')->get();
-        $taken = $lines->groupBy('item_id')->map(fn ($l) => (float) $l->sum('qty'));  // yang diambil dokumen ini sendiri (termasuk sambungan otomatis antar batch)
+        $lines = $doc->lines()->with('batch')->get();
+        $taken = $lines->groupBy('batch_id')->map(fn ($l) => (float) $l->sum('qty'));  // yang diambil dokumen ini sendiri (termasuk sambungan otomatis antar batch)
         foreach ($lines as $line) {
-            $item = $line->item;
+            $item = $line->batch;
             if (! $item->expiry_date) {
                 continue;
             }
-            $earlier = Item::query()->where('product_id', $item->product_id)->where('id', '!=', $item->id)->where('stock_qty', '>', 0)
+            $earlier = Batch::query()->where('product_id', $item->product_id)->where('id', '!=', $item->id)->where('stock_qty', '>', 0)
                 ->whereNotNull('expiry_date')->where('expiry_date', '<', $item->expiry_date)->orderBy('expiry_date')->get()
-                ->first(fn (Item $e) => $e->stock_qty - ($taken[$e->id] ?? 0) > 0.0005);
+                ->first(fn (Batch $e) => $e->stock_qty - ($taken[$e->id] ?? 0) > 0.0005);
             if ($earlier) {
                 $left = $earlier->stock_qty - ($taken[$earlier->id] ?? 0);
                 $out[] = "{$item->name}: batch {$item->code} (kedaluwarsa ".$item->expiry_date->format('d-m-Y').") dipilih, padahal batch {$earlier->code} (kedaluwarsa ".$earlier->expiry_date->format('d-m-Y').') masih ada stok '.rtrim(rtrim(number_format($left, 3, ',', '.'), '0'), ',').'. Keluarkan yang kedaluwarsa lebih dulu.';
@@ -322,11 +322,11 @@ final class StockDocuments
         abort_unless(($only === null || $doc->type === $only) && in_array($doc->status, $allowed, true), 422, 'Aksi ini tidak diizinkan pada status sekarang.');
     }
 
-    // Baris menyebut batch langsung (item_id) atau produk + tanggal kedaluwarsa (product_id, expiry_date: batch dibuat bila belum ada).
-    private function resolveItem(array $row): Item
+    // Baris menyebut batch langsung (batch_id) atau produk + tanggal kedaluwarsa (product_id, expiry_date: batch dibuat bila belum ada).
+    private function resolveItem(array $row): Batch
     {
-        if (! empty($row['item_id'])) {
-            return Item::query()->findOrFail($row['item_id']);
+        if (! empty($row['batch_id'])) {
+            return Batch::query()->findOrFail($row['batch_id']);
         }
         $product = Product::query()->findOrFail($row['product_id']);
         if ($product->tracks_expiry && empty($row['expiry_date'])) {
@@ -340,15 +340,15 @@ final class StockDocuments
      * Pengeluaran: jumlah melebihi stok batch yang dipilih disambung ke batch lain produk yang sama menurut FEFO (kedaluwarsa paling cepat dulu, lalu yang paling lama masuk).
      * Sisa yang tetap tidak tercukupi dibiarkan di batch pilihan sehingga Confirm menolaknya dengan pesan stok tidak cukup.
      *
-     * @return array<int, array{0: Item, 1: float}>
+     * @return array<int, array{0: Batch, 1: float}>
      */
-    private function allocate(Item $first, float $qty): array
+    private function allocate(Batch $first, float $qty): array
     {
         $take = min($qty, max($first->stock_qty, 0));
         $parts = $take > 0 ? [[$first, $take]] : [];
         $left = round($qty - $take, 3);
         if ($left > 0 && $first->product_id) {
-            $others = Item::query()->where('product_id', $first->product_id)->where('id', '!=', $first->id)->where('stock_qty', '>', 0)->usable()
+            $others = Batch::query()->where('product_id', $first->product_id)->where('id', '!=', $first->id)->where('stock_qty', '>', 0)->usable()
                 ->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
             foreach ($others as $o) {
                 $t = min($left, $o->stock_qty);
@@ -379,8 +379,8 @@ final class StockDocuments
         $missing = [];
         foreach ($lines as $row) {
             $from = $row['unit'] ?? null;
-            $stock = ! empty($row['item_id']) ? Item::query()->find($row['item_id']) : (! empty($row['product_id']) ? Product::query()->find($row['product_id']) : null);
-            $productId = $stock instanceof Item ? $stock->product_id : $stock?->id;
+            $stock = ! empty($row['batch_id']) ? Batch::query()->find($row['batch_id']) : (! empty($row['product_id']) ? Product::query()->find($row['product_id']) : null);
+            $productId = $stock instanceof Batch ? $stock->product_id : $stock?->id;
             if ($from && $stock && $from !== $stock->unit && UnitConverter::factor($from, $stock->unit, $productId) === null) {
                 $missing["{$productId}>{$from}"] = ['product_id' => $productId, 'from' => $from, 'to' => $stock->unit, 'items' => $productId ? Product::query()->whereKey($productId)->value('code') : $stock->code];
             }
@@ -411,7 +411,7 @@ final class StockDocuments
             $parts = $doc->type === StockDocumentType::Issuance ? $this->allocate($item, (float) $qty) : [[$item, $qty]];
             foreach ($parts as [$target, $partQty]) {
                 $doc->lines()->create([
-                    'item_id' => $target->id,
+                    'batch_id' => $target->id,
                     'qty' => $partQty,
                     'unit_cost' => $cost,
                     'system_qty' => $isAdjustment ? $target->stock_qty : null,
@@ -423,7 +423,7 @@ final class StockDocuments
     }
 
     /** @return array{0: float, 1: ?float, 2: array<string, mixed>} qty dan biaya per satuan stok + data yang diketik */
-    private function toStockUnit(Item $item, array $row): array
+    private function toStockUnit(Batch $item, array $row): array
     {
         if (UnitConverter::factor($row['unit'], $item->unit, $item->product_id) === null) {
             throw ValidationException::withMessages(['lines' => "Belum ada faktor dari {$row['unit']} ke {$item->unit} untuk {$item->code}. Isi di bagian Satuan masuk pada barangnya."]);

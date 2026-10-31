@@ -49,7 +49,7 @@ final class StockDocumentPrint extends Document
 
     public static function load(StockDocument $doc, ?string $printedBy): self
     {
-        $doc->loadMissing(['lines.item', 'supplier', 'creator', 'approver', 'confirmer']);
+        $doc->loadMissing(['lines.batch', 'supplier', 'creator', 'approver', 'confirmer']);
         $t = $doc->type;
         Document::labels(self::LABELS);
 
@@ -58,9 +58,9 @@ final class StockDocumentPrint extends Document
             $price = $l->entered_unit_cost ?? $l->unit_cost;
 
             return [
-                'name' => $l->item->name, 'sub' => $l->item->code, 'sub2' => $t === StockDocumentType::Issuance ? null : $l->note,
-                'qty' => $t === StockDocumentType::Adjustment ? $l->qty : $qty, 'unit' => $l->entered_unit ?? $l->item->unit,
-                'expiry' => $l->item->expiry_date?->toDateString(), 'note' => $l->note,
+                'name' => $l->batch->name, 'sub' => $l->batch->code, 'sub2' => $t === StockDocumentType::Issuance ? null : $l->note,
+                'qty' => $t === StockDocumentType::Adjustment ? $l->qty : $qty, 'unit' => $l->entered_unit ?? $l->batch->unit,
+                'expiry' => $l->batch->expiry_date?->toDateString(), 'note' => $l->note,
                 'system' => $l->system_qty, 'counted' => $l->counted_qty,
                 'price' => $price, 'subtotal' => Decimal::amount($qty, $price),
             ];

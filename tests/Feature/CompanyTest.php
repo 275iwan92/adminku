@@ -61,11 +61,11 @@ class CompanyTest extends TestCase
     {
         $sup = $this->sup();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $item = $this->makeItem(['code' => 'A1', 'name' => 'Kertas', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 1000]);
+        $item = $this->makeBatch(['code' => 'A1', 'name' => 'Kertas', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 1000]);
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         $docs = app(StockDocuments::class);
 
-        return $docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => 2, 'unit_cost' => 1000]], $sup);
+        return $docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => 2, 'unit_cost' => 1000]], $sup);
     }
 
     public function test_only_supervisors_open_and_save_the_company_screen_and_it_is_in_the_menu(): void
@@ -201,7 +201,7 @@ class CompanyTest extends TestCase
         $doc = $this->doc();
         $docs->confirm($doc, $sup);
         foreach (['stock-card', 'summary', 'expiry', 'receiving', 'issuance', 'adjustment'] as $report) {
-            $this->get(route('reports.'.$report, ['item_id' => $doc->lines()->value('item_id')]))->assertOk()->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertSee('dl-print__brand', false)->assertSee('Jl. Mawar 1, Jakarta')->assertSee('Telp. 021-555');
+            $this->get(route('reports.'.$report, ['batch_id' => $doc->lines()->value('batch_id')]))->assertOk()->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertSee('dl-print__brand', false)->assertSee('Jl. Mawar 1, Jakarta')->assertSee('Telp. 021-555');
         }
 
         $this->save(['kop_style' => 'name'], $sup);

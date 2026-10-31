@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\StockDocumentType;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Batch;
 use App\Models\StockCount;
 use App\Models\StockDocument;
 use App\Models\Supplier;
@@ -28,9 +28,9 @@ class StockCountReviewTest extends TestCase
 
     private User $entry;
 
-    private Item $a;
+    private Batch $a;
 
-    private Item $b;
+    private Batch $b;
 
     protected function setUp(): void
     {
@@ -38,12 +38,12 @@ class StockCountReviewTest extends TestCase
         $this->sup = User::factory()->supervisor()->create();
         $this->entry = User::factory()->create();
         $cat = Category::create(['code' => 'ATK', 'name' => 'ATK']);
-        $this->a = $this->makeItem(['code' => 'A1', 'name' => 'Pensil', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
-        $this->b = $this->makeItem(['code' => 'B1', 'name' => 'Penghapus', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
+        $this->a = $this->makeBatch(['code' => 'A1', 'name' => 'Pensil', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
+        $this->b = $this->makeBatch(['code' => 'B1', 'name' => 'Penghapus', 'category_id' => $cat->id, 'unit' => 'pcs', 'unit_price' => 100]);
         $docs = app(StockDocuments::class);
         $supplier = Supplier::create(['code' => 'S1', 'name' => 'S']);
         foreach ([[$this->a, 10, 1500], [$this->b, 20, 200]] as [$item, $qty, $cost]) {
-            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['item_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost]], $this->sup), $this->sup);
+            $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => $qty, 'unit_cost' => $cost]], $this->sup), $this->sup);
         }
     }
 
@@ -59,12 +59,12 @@ class StockCountReviewTest extends TestCase
         return $count->fresh();
     }
 
-    private function lineId(StockCount $count, Item $item): int
+    private function lineId(StockCount $count, Batch $item): int
     {
-        return $count->lines()->where('item_id', $item->id)->value('id');
+        return $count->lines()->where('batch_id', $item->id)->value('id');
     }
 
-    private function annotate(StockCount $count, Item $item, array $in)
+    private function annotate(StockCount $count, Batch $item, array $in)
     {
         return $this->actingAs($this->sup)->postJson(route('stock-counts.review', $count), ['changed' => [['id' => $this->lineId($count, $item)] + $in]]);
     }
@@ -106,7 +106,7 @@ class StockCountReviewTest extends TestCase
         $this->assertSame([8.0, 20.0], [$this->a->fresh()->stock_qty, $this->b->fresh()->stock_qty]);
         $this->assertSame($adj->id, $count->fresh()->adjustment_document_id);
 
-        $this->get(route('reports.stock-card', ['item_id' => $this->a->id]))->assertOk()->assertSee("Stok Opname {$count->doc_no}")->assertSee('Penyesuaian');   // butir 8: kartu stok memuat referensi SO
+        $this->get(route('reports.stock-card', ['batch_id' => $this->a->id]))->assertOk()->assertSee("Stok Opname {$count->doc_no}")->assertSee('Penyesuaian');   // butir 8: kartu stok memuat referensi SO
         $this->get(route('stock-counts.show', $count))->assertOk()->assertSee($adj->doc_no)->assertDontSee('Setujui Opname');
         $this->postJson(route('stock-counts.review', $count), ['changed' => [['id' => $this->lineId($count, $this->a), 'reason' => 'x']]])->assertStatus(422);   // layar hasil hanya baca
         $this->post(route('stock-counts.approve', $count))->assertStatus(422);
@@ -130,7 +130,7 @@ class StockCountReviewTest extends TestCase
     {
         $count = $this->review(lock: false);
         $docs = app(StockDocuments::class);
-        $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::first()->id], [['item_id' => $this->a->id, 'qty' => 5, 'unit_cost' => 1500]], $this->sup), $this->sup);   // A1 menjadi 15
+        $docs->confirm($docs->create(StockDocumentType::Receiving, ['supplier_id' => Supplier::first()->id], [['batch_id' => $this->a->id, 'qty' => 5, 'unit_cost' => 1500]], $this->sup), $this->sup);   // A1 menjadi 15
         $this->annotate($count, $this->a, ['reason' => 'Rusak']);
 
         $this->get(route('stock-counts.show', $count))->assertOk()->assertSee('Stok bergeser sejak cut-off')->assertSee('Perbarui Baris Bergeser');
@@ -164,10 +164,10 @@ class StockCountReviewTest extends TestCase
     {
         $count = $this->review();
         $this->actingAs($this->sup);
-        $this->post(route('docs.store', 'receiving'), ['supplier_id' => Supplier::first()->id, 'lines' => [['item_id' => $this->a->id, 'qty' => 1, 'unit_cost' => 100]]])->assertRedirect();   // draf boleh
+        $this->post(route('docs.store', 'receiving'), ['supplier_id' => Supplier::first()->id, 'lines' => [['batch_id' => $this->a->id, 'qty' => 1, 'unit_cost' => 100]]])->assertRedirect();   // draf boleh
         $draft = StockDocument::latest('id')->firstOrFail();
 
-        $this->put(route('docs.update', ['receiving', $draft]), ['supplier_id' => Supplier::first()->id, 'lines' => [['item_id' => $this->a->id, 'qty' => 1, 'unit_cost' => 100]], '_action' => 'confirm'])->assertSessionHasErrors('lines');
+        $this->put(route('docs.update', ['receiving', $draft]), ['supplier_id' => Supplier::first()->id, 'lines' => [['batch_id' => $this->a->id, 'qty' => 1, 'unit_cost' => 100]], '_action' => 'confirm'])->assertSessionHasErrors('lines');
         $this->assertStringContainsString("Stok Opname {$count->doc_no} sedang berjalan, transaksi dikunci. Hubungi Supervisor.", session('errors')->first('lines'));
         $this->assertSame('draft', $draft->fresh()->status);
     }
