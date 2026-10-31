@@ -21,7 +21,8 @@ class MenuLayersTest extends TestCase
     {
         $layers = collect(Menu::layers(User::factory()->administrator()->create()));
 
-        $this->assertSame(['MST', 'STK', 'SEC'], $layers->pluck('code')->all());
+        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'SEC'], $layers->pluck('code')->all());
+        $this->assertSame(['Employee', 'Recruitment'], collect($layers->firstWhere('code', 'HR')['children'])->pluck('label')->all());
         $stok = $layers->firstWhere('code', 'STK');
         $this->assertSame(['Transaksi', 'Laporan'], collect($stok['children'])->pluck('label')->all());
         $this->assertContains('RCV', collect($stok['children'][0]['items'])->pluck('code')->all());

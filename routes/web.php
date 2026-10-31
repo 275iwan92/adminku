@@ -54,6 +54,8 @@ Route::get('company/logo', [CompanyController::class, 'logo'])->name('company.lo
 
 Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
+    // Layar sementara modul Jays yang belum dibuat (menu GA, HR: Employee dan Recruitment, Purchase).
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['ga', 'employee', 'recruitment', 'purchase'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
