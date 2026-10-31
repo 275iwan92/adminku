@@ -3,7 +3,7 @@
 <desc id="tg-product-batch-d">A product row holds the item code, parameters and the tracks_expiry flag. Each product has one batch row in items per expiry date (a single batch without a date when it does not expire). Documents and the stock ledger work on batches. Reorder is evaluated per product on the sum of non-expired batch stock; Issuance allocates across batches in FEFO order.</desc>
 <defs><marker id="m-tg-product-batch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <rect class="n n-in" x="20" y="24" width="230" height="110" rx="9"/>
-<text class="t b" x="135" y="46" text-anchor="middle">products</text>
+<text class="t b" x="135" y="46" text-anchor="middle">m_item</text>
 <text class="t m" x="135" y="64" text-anchor="middle">code ATK-0008 (stable)</text>
 <text class="t s" x="135" y="82" text-anchor="middle">name, category, unit, location</text>
 <text class="t s" x="135" y="98" text-anchor="middle">unit_price, reorder_point/qty,</text>

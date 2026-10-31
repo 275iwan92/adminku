@@ -24,8 +24,8 @@ class LocationRequest extends FormRequest
         }
 
         return [
-            'code' => ['required', 'string', 'max:50', Rule::unique('locations', 'code')->ignore($this->route('location'))],
-            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('locations', 'name')] : [])],
+            'code' => ['required', 'string', 'max:50', Rule::unique('m_location', 'code')->ignore($this->route('location'))],
+            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('m_location', 'name')] : [])],
         ];
     }
 

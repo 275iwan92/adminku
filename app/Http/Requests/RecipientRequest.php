@@ -25,7 +25,7 @@ class RecipientRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:100'],
-            'department_id' => ['nullable', Rule::exists('departments', 'id')->where('is_active', true)],
+            'department_id' => ['nullable', Rule::exists('m_department', 'id')->where('is_active', true)],
         ];
     }
 }

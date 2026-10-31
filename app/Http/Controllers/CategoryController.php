@@ -11,7 +11,7 @@ use Illuminate\Http\RedirectResponse;
 /* REMARK
  * Tujuan       : Master Kategori barang. Awalan 3 karakter kategori menjadi dasar kode barang otomatis (Product::nextCode). Hanya Supervisor.
  *                Awalan tidak berubah setelah disimpan (kode barang lama memakainya); kategori tidak dihapus, hanya dinonaktifkan.
- * Sumber hulu  : categories (+ jumlah barang).
+ * Sumber hulu  : m_category (+ jumlah barang).
  * Output       : grid Kategori, form Kategori.
  * Dipakai oleh : routes/web.php (categories.*, grup supervisor).
  * Status       : Aktif.

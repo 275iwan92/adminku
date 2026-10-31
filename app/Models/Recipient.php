@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['name', 'department_id', 'is_active'])]
 class Recipient extends Model
 {
+    protected $table = 'm_recipient';
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];

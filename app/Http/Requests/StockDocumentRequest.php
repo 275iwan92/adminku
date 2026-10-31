@@ -34,8 +34,8 @@ class StockDocumentRequest extends FormRequest
             return [];
         }
 
-        $recipient = ['nullable', Rule::exists('recipients', 'id')->where('is_active', true)];
-        $department = ['nullable', Rule::exists('departments', 'id')->where('is_active', true)];
+        $recipient = ['nullable', Rule::exists('m_recipient', 'id')->where('is_active', true)];
+        $department = ['nullable', Rule::exists('m_department', 'id')->where('is_active', true)];
         $qty = ['required', 'numeric', 'gt:0', 'max:999999999'];
         $common = [
             'note' => ['nullable', 'string', 'max:1000'],
@@ -45,7 +45,7 @@ class StockDocumentRequest extends FormRequest
 
         // Penerimaan / Saldo Awal: produk + tanggal kedaluwarsa (batch dibuat otomatis); batch langsung (item_id) tetap diterima untuk pemakaian lewat kode.
         $byProduct = [
-            'lines.*.product_id' => ['nullable', 'required_without:lines.*.item_id', Rule::exists('products', 'id')->where('is_active', true)],
+            'lines.*.product_id' => ['nullable', 'required_without:lines.*.item_id', Rule::exists('m_item', 'id')->where('is_active', true)],
             'lines.*.item_id' => ['nullable', 'required_without:lines.*.product_id', Rule::exists('items', 'id')->where('is_active', true)],
             'lines.*.expiry_date' => ['nullable', 'date'],
         ];
@@ -54,16 +54,16 @@ class StockDocumentRequest extends FormRequest
 
         return $common + match ($this->type()) {
             StockDocumentType::Receiving => [
-                'supplier_id' => ['required', Rule::exists('suppliers', 'id')->where('is_active', true)],
+                'supplier_id' => ['required', Rule::exists('m_supplier', 'id')->where('is_active', true)],
                 'ref_no' => ['nullable', 'string', 'max:60'],
                 'department_id' => $department,
                 'recipient_id' => $recipient,
                 'lines.*.qty' => $qty,
-                'lines.*.unit' => ['nullable', Rule::exists('units', 'code')->where('is_active', true)],
+                'lines.*.unit' => ['nullable', Rule::exists('m_unit', 'code')->where('is_active', true)],
                 'lines.*.unit_cost' => ['required', 'numeric', 'min:0', 'max:999999999999'],
             ] + $byProduct,
             StockDocumentType::Issuance => [
-                'recipient_id' => ['required', Rule::exists('recipients', 'id')->where('is_active', true)],
+                'recipient_id' => ['required', Rule::exists('m_recipient', 'id')->where('is_active', true)],
                 'department_id' => $department,
                 'reason' => ['nullable', 'string', 'max:255'],
                 'lines.*.qty' => $qty,

@@ -13,7 +13,7 @@ use Illuminate\Support\Arr;
  * Tujuan       : Pilihan barang di baris dokumen (x-dl::lines) dicari ke server; memilih mengisi kolom satuan, stok tersedia, selisih sistem, dan harga acuan di baris itu.
  *                Penerimaan dan Saldo Awal memilih PRODUK (batch menurut tanggal kedaluwarsa dibuat otomatis). Pengeluaran dan Penyesuaian memilih BATCH (barang):
  *                daftar Pengeluaran hanya batch ber-stok yang belum kedaluwarsa, dengan kedaluwarsa paling cepat di atas (FEFO).
- * Sumber hulu  : products, items (hanya yang aktif). Harga acuan hanya untuk Supervisor.
+ * Sumber hulu  : m_item, items (hanya yang aktif). Harga acuan hanya untuk Supervisor.
  * Output       : Lookup product_in (Receiving), product_opn (Opening Balance), item_out (Issuance), item_adj (Stock Adjustment), item_count (Stok Opname: tambah barang, tanpa stok).
  * Dipakai oleh : AppServiceProvider::boot; rute /_devlib-lookup/{name} milik DevLib.
  * Status       : Aktif.
@@ -26,7 +26,7 @@ final class ItemLookups
             // Penerimaan: pilihan satuan baris (packs) ikut diisi menurut barangnya; Saldo Awal selalu satuan stok.
             $receiving = $name === 'product_in';
             Lookup::define($name, [
-                'key' => 'id', 'label' => 'label', 'source' => 'products (is_active = 1)', 'fill' => ['unit' => 'unit', 'unit_cost' => 'price'] + ($receiving ? ['stock_unit' => 'unit', 'packs' => 'packs'] : []),
+                'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', 'unit_cost' => 'price'] + ($receiving ? ['stock_unit' => 'unit', 'packs' => 'packs'] : []),
                 'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'expiry' => 'Expiry'],
                 'search' => fn (string $q) => Product::query()->with('packUnits')->where('is_active', true)
                     ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))

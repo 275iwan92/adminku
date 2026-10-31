@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 #[Fillable(['code', 'name', 'is_active'])]
 class Department extends Model
 {
+    protected $table = 'm_department';
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];

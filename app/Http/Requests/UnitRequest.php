@@ -26,11 +26,11 @@ class UnitRequest extends FormRequest
         $own = $this->route('unit')?->code ?? $this->input('code');
 
         return [
-            'code' => ['required', 'string', 'max:20', 'regex:/^[a-z0-9._\/-]+$/', Rule::unique('units', 'code')->ignore($this->route('unit'))],
-            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('units', 'name')] : [])],
+            'code' => ['required', 'string', 'max:20', 'regex:/^[a-z0-9._\/-]+$/', Rule::unique('m_unit', 'code')->ignore($this->route('unit'))],
+            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('m_unit', 'name')] : [])],
             'kind' => ['nullable', Rule::in(array_keys(Unit::KINDS))],
             'conversions' => ['nullable', 'array', 'max:50'],
-            'conversions.*.to_unit' => ['required', 'distinct', Rule::notIn([$own]), Rule::exists('units', 'code')],
+            'conversions.*.to_unit' => ['required', 'distinct', Rule::notIn([$own]), Rule::exists('m_unit', 'code')],
             'conversions.*.factor' => ['required', 'numeric', 'gt:0', 'max:999999999'],
         ];
     }

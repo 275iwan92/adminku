@@ -154,7 +154,7 @@ class HelpTest extends TestCase
     {
         $tg = $this->guide(User::factory()->administrator()->create(), 'help.technical-guide');
 
-        foreach (['lockAndAssert', 'createNumbered', 'unreversed()', 'bcmath', 'FEFO', 'product_units', 'ReorderOrders::reconcile', 'Devlib\Engine\LeadTime', 'App\Support\QuickAdd', 'x-dl::field.select', 'x-dl::idle-logout', 'SESSION_LIFETIME', 'App\Support\Constants', 'stock_counts', 'StockLedger::assertNotLocked()', 'Install steps', 'id="testing"', 'composer setup', 'php artisan test'] as $needle) {
+        foreach (['lockAndAssert', 'createNumbered', 'unreversed()', 'bcmath', 'FEFO', 'm_item_unit', 'ReorderOrders::reconcile', 'Devlib\Engine\LeadTime', 'App\Support\QuickAdd', 'x-dl::field.select', 'x-dl::idle-logout', 'SESSION_LIFETIME', 'App\Support\Constants', 'stock_counts', 'StockLedger::assertNotLocked()', 'Install steps', 'id="testing"', 'composer setup', 'php artisan test'] as $needle) {
             $this->assertStringContainsString($needle, $tg, "TG tidak memuat {$needle}");
         }
     }
@@ -192,7 +192,7 @@ class HelpTest extends TestCase
             ->assertSee('Faktor ini sudah dipakai di dokumen; hubungi Supervisor untuk mengubahnya.', false);
 
         $this->actingAs(User::factory()->administrator()->create())->get(route('help.technical-guide'))->assertOk()
-            ->assertSee('product_units', false)->assertSee('ProductUnits::save', false)->assertSee('ReorderOrder::note()', false)->assertSee('add_supplier_qty_note_to_reorder_orders', false)->assertSee('App\Services\LeadTimes', false)->assertSee('Devlib\Engine\LeadTime', false);
+            ->assertSee('m_item_unit', false)->assertSee('ProductUnits::save', false)->assertSee('ReorderOrder::note()', false)->assertSee('add_supplier_qty_note_to_reorder_orders', false)->assertSee('App\Services\LeadTimes', false)->assertSee('Devlib\Engine\LeadTime', false);
     }
 
     public function test_only_administrators_open_the_technical_guide(): void

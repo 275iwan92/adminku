@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['from_unit', 'to_unit', 'factor', 'created_by', 'updated_by'])]
 class UnitConversion extends Model
 {
+    protected $table = 'm_unit_conversion';
+
     protected function casts(): array
     {
         return ['factor' => 'float'];

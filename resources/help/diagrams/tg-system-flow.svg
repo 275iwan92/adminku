@@ -17,7 +17,7 @@
 <text class="t s" x="32" y="129">User input: master data and stock documents</text>
 <rect class="n n-teal"  x="34" y="150" width="128" height="62" rx="9"/>
 <text class="t b" x="98" y="177" text-anchor="middle">Master data</text>
-<text class="t s" x="98" y="193" text-anchor="middle">products, units ...</text>
+<text class="t s" x="98" y="193" text-anchor="middle">m_item, m_unit ...</text>
 <rect class="n n-teal"  x="174" y="150" width="128" height="62" rx="9"/>
 <text class="t b" x="238" y="177" text-anchor="middle">Opening Balance</text>
 <text class="t s" x="238" y="193" text-anchor="middle">Supervisor only</text>

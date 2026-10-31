@@ -65,8 +65,8 @@ class StockCountController extends Controller
         $data = $request->validate([
             'count_date' => ['required', 'date'],
             'scope_type' => ['required', Rule::in(array_keys(StockCount::SCOPE))],
-            'category_code' => ['nullable', 'required_if:scope_type,category', 'exists:categories,code'],
-            'location_code' => ['nullable', 'required_if:scope_type,location', 'exists:locations,code'],
+            'category_code' => ['nullable', 'required_if:scope_type,category', 'exists:m_category,code'],
+            'location_code' => ['nullable', 'required_if:scope_type,location', 'exists:m_location,code'],
             'threshold_pct' => ['required', 'numeric', 'min:0', 'max:100'],
             'note' => ['nullable', 'string', 'max:1000'],
         ], ['category_code.required_if' => 'Pilih kategori untuk cakupan per Kategori.', 'location_code.required_if' => 'Pilih lokasi untuk cakupan per Lokasi.'], ['category_code' => 'kategori', 'location_code' => 'lokasi', 'count_date' => 'tanggal', 'scope_type' => 'cakupan', 'threshold_pct' => 'ambang selisih']);

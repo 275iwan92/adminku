@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 /* REMARK
  * Tujuan       : Master Satuan (pcs, box, set, ...) beserta konversinya (1 box = 12 pcs, berlaku untuk semua item). Hanya Supervisor.
  *                Satuan yang dinonaktifkan tidak muncul di pilihan item baru; satuan tidak dihapus (item memakainya).
- * Sumber hulu  : units, unit_conversions, jumlah item pemakai (items.unit).
+ * Sumber hulu  : m_unit, m_unit_conversion, jumlah item pemakai (items.unit).
  * Output       : grid Units, form Unit dengan tabel konversi.
  * Dipakai oleh : routes/web.php (units.*, grup supervisor).
  * Status       : Aktif.

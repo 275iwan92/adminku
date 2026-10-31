@@ -33,12 +33,12 @@ class ProductRequest extends FormRequest
             'name' => ['required', 'string', 'max:150'],
             // Kode otomatis; kategori dan tanda kedaluwarsa (bagian dari identitas barang) hanya diisi saat barang baru.
             ...($new ? [
-                'category_id' => ['required', Rule::exists('categories', 'id')->where('is_active', true)],
+                'category_id' => ['required', Rule::exists('m_category', 'id')->where('is_active', true)],
                 'tracks_expiry' => ['nullable', 'boolean'],
             ] : []),
             // Satuan dan lokasi dari master yang aktif (nilai lama barang yang sudah nonaktif tetap boleh dipertahankan).
-            'unit' => ['required', Rule::exists('units', 'code')->where(fn ($q) => $q->where('is_active', true)->orWhere('code', $own?->unit))],
-            'location' => ['nullable', Rule::exists('locations', 'code')->where(fn ($q) => $q->where('is_active', true)->orWhere('code', $own?->location))],
+            'unit' => ['required', Rule::exists('m_unit', 'code')->where(fn ($q) => $q->where('is_active', true)->orWhere('code', $own?->unit))],
+            'location' => ['nullable', Rule::exists('m_location', 'code')->where(fn ($q) => $q->where('is_active', true)->orWhere('code', $own?->location))],
             'unit_price' => [$sup ? 'required' : 'nullable', 'numeric', 'min:0', 'max:999999999999'],
             'reorder_point' => [$sup ? 'required' : 'nullable', 'numeric', 'min:0', 'max:999999999'],
             'reorder_qty' => [$sup ? 'required' : 'nullable', 'numeric', 'min:0', 'max:999999999'],

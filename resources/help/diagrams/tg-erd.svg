@@ -1,24 +1,24 @@
 <svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1260" role="img" aria-labelledby="tg-erd-t tg-erd-d">
 <title id="tg-erd-t">Database relations (ERD)</title>
-<desc id="tg-erd-d">Master tables (categories, locations, units, suppliers, departments, recipients) feed products. A product has batches in items. stock_documents have stock_document_lines that point at items, and every posting writes stock_movements. reorder_orders belong to a product and a supplier and are closed by confirmed Receiving quantities. product_units hold the incoming units of a product. stock_counts and stock_count_lines hold a Stok Opname and end in one ADJ document. users belong to user_groups, which grant modules in user_group_modules. constants holds small shared settings.</desc>
+<desc id="tg-erd-d">Master tables (m_category, m_location, m_unit, m_supplier, m_department, m_recipient) feed m_item. A product has batches in items. stock_documents have stock_document_lines that point at items, and every posting writes stock_movements. reorder_orders belong to a product (m_item) and a supplier (m_supplier) and are closed by confirmed Receiving quantities. m_item_unit holds the incoming units of a product. stock_counts and stock_count_lines hold a Stok Opname and end in one ADJ document. users belong to user_groups, which grant modules in user_group_modules. constants holds small shared settings.</desc>
 <defs><marker id="m-tg-erd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <rect class="n n-gray" x="20" y="20" width="190" height="92" rx="7"/>
 <line class="n-rule" x1="20" y1="44" x2="210" y2="44"/>
-<text class="t b" x="28" y="36">categories</text>
+<text class="t b" x="28" y="36">m_category</text>
 <text class="t m" x="28" y="58">id PK</text>
 <text class="t m" x="28" y="73">code (3 chars, unique)</text>
 <text class="t m" x="28" y="88">name</text>
 <text class="t m" x="28" y="103">is_active</text>
 <rect class="n n-gray" x="20" y="140" width="190" height="92" rx="7"/>
 <line class="n-rule" x1="20" y1="164" x2="210" y2="164"/>
-<text class="t b" x="28" y="156">locations</text>
+<text class="t b" x="28" y="156">m_location</text>
 <text class="t m" x="28" y="178">id PK</text>
 <text class="t m" x="28" y="193">code (unique)</text>
 <text class="t m" x="28" y="208">name</text>
 <text class="t m" x="28" y="223">is_active</text>
 <rect class="n n-gray" x="20" y="260" width="190" height="107" rx="7"/>
 <line class="n-rule" x1="20" y1="284" x2="210" y2="284"/>
-<text class="t b" x="28" y="276">units</text>
+<text class="t b" x="28" y="276">m_unit</text>
 <text class="t m" x="28" y="298">id PK</text>
 <text class="t m" x="28" y="313">code (unique)</text>
 <text class="t m" x="28" y="328">name</text>
@@ -26,24 +26,24 @@
 <text class="t m" x="28" y="358">is_active</text>
 <rect class="n n-gray" x="20" y="390" width="190" height="92" rx="7"/>
 <line class="n-rule" x1="20" y1="414" x2="210" y2="414"/>
-<text class="t b" x="28" y="406">unit_conversions</text>
+<text class="t b" x="28" y="406">m_unit_conversion</text>
 <text class="t m" x="28" y="428">id PK</text>
 <text class="t m" x="28" y="443">from_unit</text>
 <text class="t m" x="28" y="458">to_unit</text>
 <text class="t m" x="28" y="473">factor</text>
 <path class="e noarrow dash" d="M115,367 L115,390"/>
 <text class="t s" x="20" y="500" text-anchor="start">units and locations are referenced by CODE</text>
-<text class="t s" x="20" y="515" text-anchor="start">(products.unit, products.location,</text>
-<text class="t s" x="20" y="530" text-anchor="start">unit_conversions.*_unit): soft links, no FK.</text>
+<text class="t s" x="20" y="515" text-anchor="start">(m_item.unit, m_item.location,</text>
+<text class="t s" x="20" y="530" text-anchor="start">m_unit_conversion.*_unit): soft links, no FK.</text>
 <rect class="n n-in" x="270" y="20" width="250" height="197" rx="7"/>
 <line class="n-rule" x1="270" y1="44" x2="520" y2="44"/>
-<text class="t b" x="278" y="36">products</text>
+<text class="t b" x="278" y="36">m_item</text>
 <text class="t m" x="278" y="58">id PK</text>
 <text class="t m" x="278" y="73">code (unique)</text>
 <text class="t m" x="278" y="88">name</text>
 <text class="t m" x="278" y="103">category_id FK</text>
-<text class="t m" x="278" y="118">unit (units.code)</text>
-<text class="t m" x="278" y="133">location (locations.code)</text>
+<text class="t m" x="278" y="118">unit (m_unit.code)</text>
+<text class="t m" x="278" y="133">location (m_location.code)</text>
 <text class="t m" x="278" y="148">unit_price</text>
 <text class="t m" x="278" y="163">reorder_point, reorder_qty</text>
 <text class="t m" x="278" y="178">lead_time_days</text>
@@ -112,7 +112,7 @@
 <text class="t s" x="912" y="27">Parties (ids + copied names)</text>
 <rect class="n n-gray" x="910" y="40" width="170" height="122" rx="7"/>
 <line class="n-rule" x1="910" y1="64" x2="1080" y2="64"/>
-<text class="t b" x="918" y="56">suppliers</text>
+<text class="t b" x="918" y="56">m_supplier</text>
 <text class="t m" x="918" y="78">id PK</text>
 <text class="t m" x="918" y="93">code (unique)</text>
 <text class="t m" x="918" y="108">name, is_system</text>
@@ -121,14 +121,14 @@
 <text class="t m" x="918" y="153">area_level, area_id</text>
 <rect class="n n-gray" x="910" y="190" width="170" height="92" rx="7"/>
 <line class="n-rule" x1="910" y1="214" x2="1080" y2="214"/>
-<text class="t b" x="918" y="206">departments</text>
+<text class="t b" x="918" y="206">m_department</text>
 <text class="t m" x="918" y="228">id PK</text>
 <text class="t m" x="918" y="243">code (unique)</text>
 <text class="t m" x="918" y="258">name</text>
 <text class="t m" x="918" y="273">is_active</text>
 <rect class="n n-gray" x="910" y="310" width="170" height="92" rx="7"/>
 <line class="n-rule" x1="910" y1="334" x2="1080" y2="334"/>
-<text class="t b" x="918" y="326">recipients</text>
+<text class="t b" x="918" y="326">m_recipient</text>
 <text class="t m" x="918" y="348">id PK</text>
 <text class="t m" x="918" y="363">name</text>
 <text class="t m" x="918" y="378">department_id FK</text>
@@ -186,10 +186,10 @@
 <text class="t s" x="32" y="887">Incoming units, Stok Opname and settings</text>
 <rect class="n n-gray" x="40" y="905" width="230" height="152" rx="7"/>
 <line class="n-rule" x1="40" y1="929" x2="270" y2="929"/>
-<text class="t b" x="48" y="921">product_units</text>
+<text class="t b" x="48" y="921">m_item_unit</text>
 <text class="t m" x="48" y="943">id PK</text>
 <text class="t m" x="48" y="958">product_id FK</text>
-<text class="t m" x="48" y="973">unit (units.code)</text>
+<text class="t m" x="48" y="973">unit (m_unit.code)</text>
 <text class="t m" x="48" y="988">factor (1 unit = N stock units)</text>
 <text class="t m" x="48" y="1003">unique (product_id, unit)</text>
 <text class="t m" x="48" y="1018">created_by, updated_by FK</text>
@@ -229,8 +229,8 @@
 <path class="e noarrow" d="M590,980 L620,980"/>
 <text class="t m" x="594" y="974" text-anchor="start">1</text>
 <text class="t m" x="606" y="974" text-anchor="start">N</text>
-<text class="t s" x="20" y="1195" text-anchor="start">FK = foreign key. Solid lines are 1:N relations; dashed lines are soft links (receiving_id on reorder_orders, codes of units/locations).</text>
+<text class="t s" x="20" y="1195" text-anchor="start">FK = foreign key. Solid lines are 1:N relations; dashed lines are soft links (receiving_id on reorder_orders, codes of m_unit/m_location).</text>
 <text class="t s" x="20" y="1210" text-anchor="start">users.id is also referenced by created_by, confirmed_by, approved_by, cancelled_by (stock_documents), user_id (stock_movements) and created_by (reorder_orders); those lines are not drawn.</text>
-<text class="t s" x="20" y="1225" text-anchor="start">Region tables geo_country, geo_region, geo_city, geo_district, geo_village are copied from tmerp and referenced by suppliers.area_id.</text>
-<text class="t s" x="20" y="1240" text-anchor="start">Lines not drawn: product_units.product_id to products; stock_count_lines.item_id to items; stock_counts.adjustment_document_id to the ADJ document that approval creates.</text>
+<text class="t s" x="20" y="1225" text-anchor="start">Region tables geo_country, geo_region, geo_city, geo_district, geo_village are copied from tmerp and referenced by m_supplier.area_id.</text>
+<text class="t s" x="20" y="1240" text-anchor="start">Lines not drawn: m_item_unit.product_id to m_item; stock_count_lines.item_id to items; stock_counts.adjustment_document_id to the ADJ document that approval creates.</text>
 </svg>

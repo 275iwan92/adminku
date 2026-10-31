@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 /* REMARK
  * Tujuan       : Layar utama setelah login: Layer Shell (menu per peran) dengan dashboard KPI dan peringatan Reorder Point.
- * Sumber hulu  : products + items (stok tersedia per produk, batch hampir kedaluwarsa), stock_documents (hari ini, menunggu persetujuan).
+ * Sumber hulu  : m_item + items (stok tersedia per produk, batch hampir kedaluwarsa), stock_documents (hari ini, menunggu persetujuan).
  * Output       : view home; peringatan item bawah ROP tampil sebagai kartu alert di dashboard (tanpa popup).
  * Dipakai oleh : route home (tujuan redirect login).
  * Status       : Aktif.
@@ -29,7 +29,7 @@ class HomeController extends Controller
             return app(HpController::class)->home($request);
         }
         $user = $request->user();
-        $below = Product::query()->belowReorderPoint()->withAvailable()->with('category', 'openOrder.creator', 'openOrder.supplier')->orderByRaw(Product::availableSql().' / products.reorder_point', [Item::usableFrom()])->get();
+        $below = Product::query()->belowReorderPoint()->withAvailable()->with('category', 'openOrder.creator', 'openOrder.supplier')->orderByRaw(Product::availableSql().' / m_item.reorder_point', [Item::usableFrom()])->get();
 
         return view('home', [
             'modules' => Menu::layers($user),

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['code', 'name', 'is_active'])]
 class Location extends Model
 {
+    protected $table = 'm_location';
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];

@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 
 /* REMARK
  * Tujuan       : Departemen dan Penerima barang contoh untuk transaksi Issuance.
- * Output       : tabel departments, recipients.
+ * Output       : tabel m_department, m_recipient.
  * Dipakai oleh : DatabaseSeeder (sebelum SampleTransactionSeeder).
  * Status       : Aktif (data contoh).
  */

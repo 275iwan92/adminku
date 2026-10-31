@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 
 /* REMARK
  * Tujuan       : Kategori barang gudang: ATK, Sparepart Maintenance, Tools/Peralatan.
- * Output       : tabel categories.
+ * Output       : tabel m_category.
  * Dipakai oleh : DatabaseSeeder.
  * Status       : Aktif.
  */

@@ -7,6 +7,7 @@ use App\Models\User;
 use Database\Seeders\SupplierSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use LogicException;
 use Tests\TestCase;
 
@@ -39,10 +40,12 @@ class KontanSupplierTest extends TestCase
 
     public function test_migration_marks_an_existing_kontan_without_touching_other_data(): void
     {
-        DB::table('suppliers')->where('code', 'KONTAN')->update(['is_system' => false, 'name' => 'Kontan Lama']);
+        DB::table('m_supplier')->where('code', 'KONTAN')->update(['is_system' => false, 'name' => 'Kontan Lama']);
         Supplier::create(['code' => 'S1', 'name' => 'Lain']);
 
+        Schema::rename('m_supplier', 'suppliers');   // migrasi lama berjalan sebelum rename m_, jadi memakai nama lama
         (require base_path('database/migrations/2026_11_13_100000_add_system_supplier_kontan.php'))->up();
+        Schema::rename('suppliers', 'm_supplier');
 
         $this->assertTrue($this->kontan()->is_system);
         $this->assertSame('Kontan Lama', $this->kontan()->name);

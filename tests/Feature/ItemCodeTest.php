@@ -94,7 +94,7 @@ class ItemCodeTest extends TestCase
         $this->post(route('categories.store'), ['code' => 'ab', 'name' => 'Pendek'])->assertSessionHasErrors('code');
         $this->post(route('categories.store'), ['code' => 'abcd', 'name' => 'Panjang'])->assertSessionHasErrors('code');
         $this->post(route('categories.store'), ['code' => 'abc', 'name' => 'Boleh'])->assertRedirect();
-        $this->assertDatabaseHas('categories', ['code' => 'ABC']);
+        $this->assertDatabaseHas('m_category', ['code' => 'ABC']);
         $this->post(route('categories.store'), ['code' => 'ABC', 'name' => 'Kembar'])->assertSessionHasErrors('code');
     }
 

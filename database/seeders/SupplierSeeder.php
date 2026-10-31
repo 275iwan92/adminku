@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 
 /* REMARK
  * Tujuan       : Supplier contoh untuk transaksi Receiving, lengkap dengan kontak dan wilayah (kota dicari di data wilayah; kosong bila data wilayah belum disalin).
- * Output       : tabel suppliers.
+ * Output       : tabel m_supplier.
  * Dipakai oleh : DatabaseSeeder.
  * Status       : Aktif (data contoh).
  */

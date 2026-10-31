@@ -5,7 +5,7 @@ namespace App\Support;
 /* REMARK
  * Tujuan       : Sudut warna (hue 0-359) untuk kotak identitas di grid master supaya mudah dikenali: kategori ATK = hijau, Sparepart = biru, Tools = ungu (tiap item bervariasi sedikit di dalam keluarga warnanya);
  *                satuan menurut jenisnya (berat = oranye, panjang = toska, volume = biru langit, hitungan = indigo, luas = magenta, lainnya = merah muda).
- * Sumber hulu  : kode kategori items, kolom units.kind.
+ * Sumber hulu  : kode kategori items, kolom m_unit.kind.
  * Output       : int hue untuk kolom 'hue' pada x-dl::grid (identity).
  * Dipakai oleh : ItemController@index, UnitController@index.
  * Status       : Aktif.

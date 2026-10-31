@@ -14,6 +14,8 @@ use LogicException;
 #[Fillable(['code', 'name', 'phone', 'contact_name', 'contact_mobile', 'address', 'area_level', 'area_id', 'postal_code', 'is_active'])]
 class Supplier extends Model
 {
+    protected $table = 'm_supplier';
+
     public const SYSTEM_MESSAGE = 'Kontan adalah supplier sistem: tidak bisa dinonaktifkan, diganti nama, atau dihapus.';
 
     protected static function booted(): void

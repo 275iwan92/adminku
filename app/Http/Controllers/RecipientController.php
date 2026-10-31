@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 
 /* REMARK
  * Tujuan       : Master Penerima barang (dipilih di Issuance; dasar analisis pengeluaran per penerima). Data Entry dan Supervisor sama-sama boleh mengelola.
- * Sumber hulu  : recipients (+ departemen bawaan, jumlah dokumen).
+ * Sumber hulu  : m_recipient (+ departemen bawaan, jumlah dokumen).
  * Output       : grid Penerima, form Penerima.
  * Dipakai oleh : routes/web.php (recipients.*).
  * Status       : Aktif.

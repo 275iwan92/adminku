@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 
 /* REMARK
  * Tujuan       : Master Departemen (dipilih di Issuance; dasar analisis pengeluaran per departemen). Data Entry dan Supervisor sama-sama boleh mengelola.
- * Sumber hulu  : departments (+ jumlah penerima dan dokumen).
+ * Sumber hulu  : m_department (+ jumlah penerima dan dokumen).
  * Output       : grid Departemen, form Departemen.
  * Dipakai oleh : routes/web.php (departments.*).
  * Status       : Aktif.

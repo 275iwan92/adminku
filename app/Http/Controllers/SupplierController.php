@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 
 /* REMARK
  * Tujuan       : Master Supplier (dipilih di transaksi Receiving). Data Entry dan Supervisor sama-sama boleh mengelola.
- * Sumber hulu  : suppliers, GeoArea (kota + negara di grid).
+ * Sumber hulu  : m_supplier, GeoArea (kota + negara di grid).
  * Output       : grid Suppliers, form Supplier.
  * Dipakai oleh : routes/web.php (suppliers.*).
  * Status       : Aktif.

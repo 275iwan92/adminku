@@ -87,8 +87,8 @@ class StockDocumentController extends Controller
     {
         abort_unless($this->type($request, $type) === StockDocumentType::Receiving, 404);
         $data = $request->validate([
-            'product_id' => ['required', 'exists:products,id'],
-            'unit' => ['required', 'exists:units,code'],
+            'product_id' => ['required', 'exists:m_item,id'],
+            'unit' => ['required', 'exists:m_unit,code'],
             'factor' => ['required', 'numeric', 'gt:0', 'max:999999999'],
         ], ['factor.gt' => 'Faktor harus lebih dari 0.', 'factor.required' => 'Isi faktor satuan.']);
         ProductUnits::save(Product::findOrFail($data['product_id']), $data['unit'], $data['factor'], $request->user());

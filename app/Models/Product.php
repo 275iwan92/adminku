@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\DB;
 #[Fillable(['code', 'name', 'category_id', 'unit', 'location', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'tracks_expiry', 'is_active'])]
 class Product extends Model
 {
+    protected $table = 'm_item';
+
     // Kolom yang disalin ke setiap batch supaya dokumen dan laporan tetap membaca dari items.
     public const BATCH_COPY = ['name', 'category_id', 'unit', 'location', 'unit_price', 'reorder_point', 'reorder_qty', 'lead_time_days', 'is_active'];
 
@@ -99,18 +101,18 @@ class Product extends Model
     // Stok tersedia (batch yang belum kedaluwarsa) sebagai potongan SQL; dipakai scope dan urutan.
     public static function availableSql(): string
     {
-        return '(select coalesce(sum(i.stock_qty), 0) from items i where i.product_id = products.id and (i.expiry_date is null or i.expiry_date >= ?))';
+        return '(select coalesce(sum(i.stock_qty), 0) from items i where i.product_id = m_item.id and (i.expiry_date is null or i.expiry_date >= ?))';
     }
 
     public function scopeWithAvailable(Builder $query): Builder
     {
-        return $query->select('products.*')->selectRaw(self::availableSql().' as available_qty', [Item::usableFrom()]);
+        return $query->select('m_item.*')->selectRaw(self::availableSql().' as available_qty', [Item::usableFrom()]);
     }
 
     // Produk aktif yang stok tersedianya menyentuh atau di bawah titik pesan ulang (titik 0 = belum diisi, tidak dihitung).
     public function scopeBelowReorderPoint(Builder $query): Builder
     {
-        return $query->where('is_active', true)->where('reorder_point', '>', 0)->whereRaw(self::availableSql().' <= products.reorder_point', [Item::usableFrom()]);
+        return $query->where('is_active', true)->where('reorder_point', '>', 0)->whereRaw(self::availableSql().' <= m_item.reorder_point', [Item::usableFrom()]);
     }
 
     public function available(): float

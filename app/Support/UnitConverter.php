@@ -6,8 +6,8 @@ use App\Models\ProductUnit;
 use App\Models\UnitConversion;
 
 /* REMARK
- * Tujuan       : Mengubah jumlah antar satuan: faktor satuan masuk milik BARANG lebih dulu (product_units, hanya ke satuan stok barang itu), lalu master konversi global: langsung (1 box = 12 pcs), kebalikannya (1 / faktor), atau satuan yang sama (faktor 1). Tanpa rantai (box > pcs > gram tidak dihitung otomatis).
- * Sumber hulu  : product_units, unit_conversions.
+ * Tujuan       : Mengubah jumlah antar satuan: faktor satuan masuk milik BARANG lebih dulu (m_item_unit, hanya ke satuan stok barang itu), lalu master konversi global: langsung (1 box = 12 pcs), kebalikannya (1 / faktor), atau satuan yang sama (faktor 1). Tanpa rantai (box > pcs > gram tidak dihitung otomatis).
+ * Sumber hulu  : m_item_unit, m_unit_conversion.
  * Output       : factor(from, to, productId) atau null bila tidak ada aturannya; convert(qty, from, to); exact(...).
  * Dipakai oleh : StockDocuments (Penerimaan dan Pengeluaran: satuan baris dikonversi ke satuan stok barang).
  * Status       : Aktif.

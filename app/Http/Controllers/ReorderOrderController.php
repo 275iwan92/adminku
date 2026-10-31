@@ -51,8 +51,8 @@ class ReorderOrderController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'product_id' => ['required', 'integer', 'exists:products,id'],
-            'supplier_id' => ['required', Rule::exists('suppliers', 'id')->where('is_active', true)],
+            'product_id' => ['required', 'integer', 'exists:m_item,id'],
+            'supplier_id' => ['required', Rule::exists('m_supplier', 'id')->where('is_active', true)],
             'qty' => ['required', 'numeric', 'gt:0', 'max:999999999999'],
             'ordered_at' => ['required', 'date', 'before_or_equal:today'],
             'ref_no' => ['nullable', 'string', 'max:60'],

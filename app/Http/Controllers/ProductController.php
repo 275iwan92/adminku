@@ -23,7 +23,7 @@ use Illuminate\Validation\ValidationException;
  * Tujuan       : Master Barang (produk / group). Semua pengguna boleh melihat dan menambah barang baru; hanya Supervisor mengubah parameter (harga, titik pesan ulang, lead time) dan mengaktifkan / menonaktifkan.
  *                Kode otomatis {AWALAN KATEGORI}-{URUT}. Stok ada di batch (items): barang biasa satu batch, barang berkedaluwarsa satu batch per tanggal (dibuat otomatis oleh Penerimaan / Saldo Awal).
  *                Parameter yang diubah diteruskan ke semua batch (Product::propagate).
- * Sumber hulu  : products, items (stok, biaya rata-rata, kedaluwarsa), categories. Harga & nilai stok disembunyikan dari Data Entry.
+ * Sumber hulu  : m_item, items (stok, biaya rata-rata, kedaluwarsa), m_category. Harga & nilai stok disembunyikan dari Data Entry.
  * Output       : grid Barang, form Barang (x-dl::form panel) dengan daftar batch.
  * Dipakai oleh : routes/web.php (products.*).
  * Status       : Aktif.
@@ -34,10 +34,10 @@ class ProductController extends Controller
     {
         $sup = $request->user()->isSupervisor();
         $rows = Product::query()->with('category')->withAvailable()
-            ->selectRaw('(select coalesce(sum(stock_qty), 0) from items where items.product_id = products.id) as stock_total')
-            ->selectRaw('(select coalesce(sum(stock_qty * avg_cost), 0) from items where items.product_id = products.id) as stock_value')
-            ->selectRaw('(select min(expiry_date) from items where items.product_id = products.id and stock_qty > 0) as next_expiry')
-            ->selectRaw('(select count(*) from items where items.product_id = products.id) as batch_count')
+            ->selectRaw('(select coalesce(sum(stock_qty), 0) from items where items.product_id = m_item.id) as stock_total')
+            ->selectRaw('(select coalesce(sum(stock_qty * avg_cost), 0) from items where items.product_id = m_item.id) as stock_value')
+            ->selectRaw('(select min(expiry_date) from items where items.product_id = m_item.id and stock_qty > 0) as next_expiry')
+            ->selectRaw('(select count(*) from items where items.product_id = m_item.id) as batch_count')
             ->orderBy('code')->get()->map(function (Product $p) use ($sup) {
                 $below = $p->is_active && $p->reorder_point > 0 && (float) $p->available_qty <= $p->reorder_point;
 
@@ -71,7 +71,7 @@ class ProductController extends Controller
     public function saveUnit(Request $request, Product $product): JsonResponse
     {
         $data = $request->validate([
-            'unit' => ['required', 'exists:units,code'],
+            'unit' => ['required', 'exists:m_unit,code'],
             'factor' => ['required', 'numeric', 'gt:0', 'max:999999999'],
         ], ['factor.gt' => 'Faktor harus lebih dari 0.', 'factor.required' => 'Isi faktor satuan.']);
         ProductUnits::save($product, $data['unit'], $data['factor'], $request->user());

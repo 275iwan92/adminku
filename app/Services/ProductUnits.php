@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /* REMARK
- * Tujuan       : Satuan masuk per barang (product_units): daftar kemasan yang sah saat barang diterima beserta faktornya ke satuan stok, dan aturan siapa boleh mengubah faktornya.
+ * Tujuan       : Satuan masuk per barang (m_item_unit): daftar kemasan yang sah saat barang diterima beserta faktornya ke satuan stok, dan aturan siapa boleh mengubah faktornya.
  *                Siapa pun boleh MEMBUAT faktor baru dan MEMPERBAIKI faktor yang belum pernah dipakai di dokumen terkonfirmasi; faktor yang sudah dipakai hanya boleh diubah pemegang hak tulis modul Satuan (UOM, Supervisor).
  *                Dokumen lama tidak pernah berubah: baris dokumen menyimpan qty yang sudah dikonversi dan yang diketik (entered_*).
- * Sumber hulu  : product_units, unit_conversions (cadangan global), stock_document_lines (pemakaian).
+ * Sumber hulu  : m_item_unit, m_unit_conversion (cadangan global), stock_document_lines (pemakaian).
  * Output       : options(product) untuk pilihan satuan di baris Penerimaan; usage(product); save(product, unit, factor, user).
  * Dipakai oleh : ItemLookups, StockDocumentController (baris form + jendela konversi), ProductController (bagian Satuan masuk).
  * Status       : Aktif.
