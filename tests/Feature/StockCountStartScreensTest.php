@@ -166,9 +166,8 @@ class StockCountStartScreensTest extends TestCase
         $none = UserGroup::create(['code' => 'D', 'name' => 'D']);
         $none->syncAccess(['ISS' => 'rw']);
 
-        $migration = require database_path('migrations/2026_11_14_110000_give_stock_count_to_groups.php');
-        $migration->up();
-        $migration->up();   // aman diulang
+        $this->runLegacyGroupMigration('2026_11_14_110000_give_stock_count_to_groups.php');
+        $this->runLegacyGroupMigration('2026_11_14_110000_give_stock_count_to_groups.php');   // aman diulang
 
         $this->assertSame('rw', $adj->moduleAccess()['SO']);
         $this->assertSame('rw', $rcv->moduleAccess()['SO']);

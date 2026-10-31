@@ -238,7 +238,7 @@ class ReorderOrderHistoryTest extends TestCase
         $other = UserGroup::create(['code' => 'O', 'name' => 'Lain']);
         $other->syncAccess(['ISS' => 'rw']);
 
-        (require base_path('database/migrations/2026_11_16_100000_give_order_history_to_groups.php'))->up();
+        $this->runLegacyGroupMigration('2026_11_16_100000_give_order_history_to_groups.php');
 
         $this->assertSame('rw', $writer->fresh()->moduleAccess()['ORD'] ?? null);
         $this->assertSame('ro', $reader->fresh()->moduleAccess()['ORD'] ?? null);

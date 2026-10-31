@@ -7,7 +7,7 @@ use App\Support\Modules;
 
 /* REMARK
  * Tujuan       : Menu Keamanan > Daftar Modul: semua modul (layar menu) aplikasi, peran minimalnya, dan grup mana yang boleh membukanya. Hanya baca; pengaturannya ada di menu Grup.
- * Sumber hulu  : Modules::all, user_group_modules.
+ * Sumber hulu  : Modules::all, sys_user_group_module.
  * Output       : grid Daftar Modul.
  * Dipakai oleh : routes/web.php (modules.index, middleware administrator).
  * Status       : Aktif.

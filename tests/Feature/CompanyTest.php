@@ -226,7 +226,7 @@ class CompanyTest extends TestCase
         $entry = UserGroup::create(['code' => 'DE', 'name' => 'Data Entry']);
         $entry->syncAccess(['RCV' => 'rw']);
 
-        (require base_path('database/migrations/2026_11_15_100000_give_company_to_groups.php'))->up();
+        $this->runLegacyGroupMigration('2026_11_15_100000_give_company_to_groups.php');
 
         $this->assertSame('rw', $sup->fresh()->moduleAccess()['CMP'] ?? null);
         $this->assertArrayNotHasKey('CMP', $entry->fresh()->moduleAccess());

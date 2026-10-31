@@ -30,7 +30,7 @@ class UserRequest extends FormRequest
             'username' => ['required', 'string', 'max:50', 'regex:/^[a-z0-9._-]+$/', Rule::unique('users', 'username')->ignore($this->route('user'))],
             'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($this->route('user'))],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
-            'group_id' => ['nullable', Rule::exists('user_groups', 'id')],
+            'group_id' => ['nullable', Rule::exists('sys_user_group', 'id')],
             'password' => [$isNew ? 'required' : 'nullable', 'string', 'min:8', 'max:100'],
         ];
     }

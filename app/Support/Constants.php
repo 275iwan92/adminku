@@ -6,7 +6,7 @@ use App\Models\Constant;
 use Illuminate\Support\Facades\Schema;
 
 /* REMARK
- * Tujuan       : Pengaturan aplikasi kecil key / value (tabel constants): jadwal Stok Opname (opname.frequency, opname.weekday, opname.day_of_month, opname.schedule_set_at); modul Perusahaan memakai tabel yang sama.
+ * Tujuan       : Pengaturan aplikasi kecil key / value (tabel sys_constant): jadwal Stok Opname (opname.frequency, opname.weekday, opname.day_of_month, opname.schedule_set_at); modul Perusahaan memakai tabel yang sama.
  *                Dibaca sekali per permintaan (cache statis); aman bila tabel belum ada atau kosong (mengembalikan bawaan).
  * Output       : get($key, $default), set($key, $value, $group), forget() (untuk tes).
  * Dipakai oleh : App\Services\CountSchedule.
@@ -37,7 +37,7 @@ final class Constants
     private static function all(): array
     {
         if (self::$cache === null) {
-            self::$cache = Schema::hasTable('constants') ? Constant::query()->pluck('value', 'key')->all() : [];
+            self::$cache = Schema::hasTable('sys_constant') ? Constant::query()->pluck('value', 'key')->all() : [];
         }
 
         return self::$cache;

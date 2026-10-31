@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 #[Fillable(['code', 'name', 'is_active'])]
 class UserGroup extends Model
 {
+    protected $table = 'sys_user_group';
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];
@@ -24,14 +26,14 @@ class UserGroup extends Model
     /** @return array<string, string> kode modul => 'rw'|'ro' */
     public function moduleAccess(): array
     {
-        return DB::table('user_group_modules')->where('group_id', $this->id)->pluck('access', 'module')->all();
+        return DB::table('sys_user_group_module')->where('group_id', $this->id)->pluck('access', 'module')->all();
     }
 
     /** Hak semua grup dengan satu kueri (untuk daftar), agar tidak satu kueri per grup. @return array<int, array<string, string>> id grup => (kode modul => 'rw'|'ro') */
     public static function accessByGroup(): array
     {
         $map = [];
-        foreach (DB::table('user_group_modules')->get(['group_id', 'module', 'access']) as $r) {
+        foreach (DB::table('sys_user_group_module')->get(['group_id', 'module', 'access']) as $r) {
             $map[$r->group_id][$r->module] = $r->access;
         }
 
@@ -41,7 +43,7 @@ class UserGroup extends Model
     /** @param  array<string, string>  $access  kode modul => 'rw'|'ro' (modul yang tidak ada = tanpa akses) */
     public function syncAccess(array $access): void
     {
-        DB::table('user_group_modules')->where('group_id', $this->id)->delete();
-        DB::table('user_group_modules')->insert(array_map(fn ($m, $a) => ['group_id' => $this->id, 'module' => $m, 'access' => $a], array_keys($access), $access));
+        DB::table('sys_user_group_module')->where('group_id', $this->id)->delete();
+        DB::table('sys_user_group_module')->insert(array_map(fn ($m, $a) => ['group_id' => $this->id, 'module' => $m, 'access' => $a], array_keys($access), $access));
     }
 }

@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 /* REMARK
- * Tujuan       : Jadwal Stok Opname rutin dan pengingatnya di Beranda. Jadwal (Mingguan: hari; Bulanan: tanggal atau akhir bulan; bawaan Bulanan akhir bulan) disimpan di tabel constants (opname.*).
+ * Tujuan       : Jadwal Stok Opname rutin dan pengingatnya di Beranda. Jadwal (Mingguan: hari; Bulanan: tanggal atau akhir bulan; bawaan Bulanan akhir bulan) disimpan di tabel sys_constant (opname.*).
  *                "Berikutnya" dihitung dari tanggal Stok Opname SELESAI terakhir (dibatalkan tidak dihitung), atau dari tanggal jadwal disimpan bila belum pernah ada, atau hari ini bila jadwal belum pernah disimpan.
  *                Status: biasa (masih jauh), peringatan (H-3 sampai hari H), terlambat. Hanya tampilan Beranda; tanpa notifikasi e-mail / WhatsApp.
- * Sumber hulu  : constants, i_count.
+ * Sumber hulu  : sys_constant, i_count.
  * Output       : config(), save(), next(), state() untuk Beranda, daftar Stok Opname, dan lencana menu.
  * Dipakai oleh : StockCountController (jadwal), HomeController, Menu.
  * Status       : Aktif.

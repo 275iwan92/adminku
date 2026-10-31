@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 /* REMARK
  * Tujuan       : Layar Master Data > Perusahaan: satu formulir (nama, nama PT / CV, NPWP, telepon, e-mail, alamat, logo, tampilan kop) yang menjadi SATU sumber kop semua cetakan. Hanya Supervisor.
  *                Rute company.logo menyajikan logo TANPA login (cetakan tautan publik doc-share memuatnya), dengan tipe isi benar dan cache; nama berkas tidak pernah dari pengguna.
- * Sumber hulu  : App\Support\Company (tabel constants, storage/app/company/logo.png).
+ * Sumber hulu  : App\Support\Company (tabel sys_constant, storage/app/company/logo.png).
  * Output       : view company.form; berkas logo.
  * Dipakai oleh : routes/web.php (company.edit, company.update di grup supervisor; company.logo publik).
  * Status       : Aktif.

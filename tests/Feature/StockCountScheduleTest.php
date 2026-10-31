@@ -15,7 +15,7 @@ use Tests\TestCase;
 
 /* REMARK
  * Tujuan       : Menjaga jadwal Stok Opname dan pengingat Beranda: hitungan tanggal berikutnya (mingguan, tanggal, akhir bulan termasuk Februari), status warna (jauh, H-3, hari H, terlambat),
- *                tampil hanya untuk yang punya modul SO, tombol Mulai hanya Supervisor, opname berjalan, belum pernah ada, ubah jadwal hanya Supervisor, lencana menu, tabel constants aman bila kosong.
+ *                tampil hanya untuk yang punya modul SO, tombol Mulai hanya Supervisor, opname berjalan, belum pernah ada, ubah jadwal hanya Supervisor, lencana menu, tabel sys_constant aman bila kosong.
  * Dipakai oleh : php artisan test.
  * Status       : Aktif.
  */

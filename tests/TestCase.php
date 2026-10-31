@@ -8,6 +8,7 @@ use App\Support\Constants;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -25,6 +26,17 @@ abstract class TestCase extends BaseTestCase
     {
         File::deleteDirectory(config('sstock.activity_dir'));
         parent::tearDown();
+    }
+
+    // Migrasi hak akses lama menyebut user_group_modules; selama dijalankan, sys_user_group_module dinamai sementara itu.
+    protected function runLegacyGroupMigration(string $file): void
+    {
+        Schema::rename('sys_user_group_module', 'user_group_modules');
+        try {
+            (require database_path('migrations/'.$file))->up();
+        } finally {
+            Schema::rename('user_group_modules', 'sys_user_group_module');
+        }
     }
 
     // Barang uji: produk baru (kode tetap) beserta batch tunggalnya; mengembalikan batch (Item) yang dipakai dokumen.

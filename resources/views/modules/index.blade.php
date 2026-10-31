@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Daftar semua modul (layar menu) aplikasi: kode, nama, induk menu, peran minimal, dan grup yang boleh membukanya. Hanya baca.
- Sumber hulu  : ModuleController@index (Modules::all + user_group_modules).
+ Sumber hulu  : ModuleController@index (Modules::all + sys_user_group_module).
  Input        : rows.
  Output       : x-dl::grid tanpa aksi; pengaturan akses ada di menu Grup.
  Dipakai oleh : route modules.index (menu Keamanan > Daftar Modul).

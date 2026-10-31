@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
 /* REMARK
  * Tujuan       : Menu Keamanan > Grup: daftar grup pengguna dan pengaturan modul apa saja yang boleh dibuka tiap grup (tabel hak akses per modul: Tidak ada / RO / RW). Hanya Administrator.
  *                Akses nyata = modul dicentang di grup DAN peran pengguna cukup (lihat Modules / User::canAccess); Administrator selalu penuh.
- * Sumber hulu  : user_groups, user_group_modules, Modules::all.
+ * Sumber hulu  : sys_user_group, sys_user_group_module, Modules::all.
  * Output       : grid Grup, form Grup dengan centang modul per induk menu.
  * Dipakai oleh : routes/web.php (groups.*, middleware administrator).
  * Status       : Aktif.
@@ -76,7 +76,7 @@ class GroupController extends Controller
         $request->merge(['code' => strtoupper(trim((string) $request->input('code', $group?->code)))]);
 
         return $request->validate([
-            'code' => ['required', 'string', 'max:20', Rule::unique('user_groups', 'code')->ignore($group)],
+            'code' => ['required', 'string', 'max:20', Rule::unique('sys_user_group', 'code')->ignore($group)],
             'name' => ['required', 'string', 'max:100'],
             'modules' => ['nullable', 'array'],
             'modules.*.access' => ['nullable', Rule::in(['none', 'ro', 'rw'])],
