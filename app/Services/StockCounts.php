@@ -382,7 +382,7 @@ final class StockCounts
     private function createNumbered(array $attributes): StockCount
     {
         for ($try = 1; ; $try++) {
-            $number = $this->nextNumber();
+            $number = $this->nextNumber($try > 1);
             try {
                 return DB::transaction(fn () => StockCount::create($attributes + ['doc_no' => $number]));
             } catch (UniqueConstraintViolationException $e) {
@@ -394,10 +394,10 @@ final class StockCounts
     }
 
     // SO-YYMM-NNNN, urut per bulan.
-    private function nextNumber(): string
+    private function nextNumber(bool $fresh = false): string   // $fresh: ulangan sesudah tabrakan, baca terkunci (lihat StockDocuments::nextNumber)
     {
         $stem = 'SO-'.now()->format('ym').'-';
-        $last = StockCount::query()->where('doc_no', 'like', $stem.'%')->orderByDesc('doc_no')->value('doc_no');
+        $last = StockCount::query()->where('doc_no', 'like', $stem.'%')->orderByDesc('doc_no')->when($fresh, fn ($q) => $q->lockForUpdate())->value('doc_no');
 
         return $stem.str_pad((string) ($last ? (int) substr($last, -4) + 1 : 1), 4, '0', STR_PAD_LEFT);
     }

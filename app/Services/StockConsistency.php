@@ -30,8 +30,13 @@ final class StockConsistency
         $sum = [];
         $rows = 0;
 
+        $history = [];   // baris batch yang sedang diperiksa menurut id: [id => [saldo, biaya rata-rata]], untuk pembalikan yang mengembalikan biaya persis
+        $historyBatch = null;
         foreach (StockMovement::query()->orderBy('batch_id')->orderBy('id')->cursor() as $m) {
             $rows++;
+            if ($historyBatch !== $m->batch_id) {
+                [$history, $historyBatch] = [[], $m->batch_id];
+            }
             $code = $batches[$m->batch_id]->code ?? "batch #{$m->batch_id}";
             [$prevQty, $prevAvg] = $last[$m->batch_id] ?? [0.0, 0.0];
             $sum[$m->batch_id] = round(($sum[$m->batch_id] ?? 0.0) + $m->qty, Decimal::QTY_SCALE);
@@ -42,11 +47,16 @@ final class StockConsistency
             if (abs(round($prevQty + $m->qty, Decimal::QTY_SCALE) - $m->balance_qty) > Decimal::QTY_EPS) {
                 $problems['rantai'][] = "{$code} baris #{$m->id}: saldo sebelumnya {$prevQty} + qty {$m->qty} seharusnya ".round($prevQty + $m->qty, Decimal::QTY_SCALE).", tercatat {$m->balance_qty}.";
             }
-            $expected = self::expectedAverage($m, $prevQty, $prevAvg);
+            $x = end($history) ?: null;   // baris persis sebelumnya
+            $b = count($history) > 1 ? $history[count($history) - 2] : null;   // baris sebelum itu
+            $restored = $m->reversal_of !== null && $x && $x[0] === (int) $m->reversal_of && $b && abs($b[1] - $m->balance_qty) <= Decimal::QTY_EPS ? $b[2] : null;   // membatalkan pergerakan terakhir = kembali ke biaya sebelumnya
+            $expected = $restored !== null && $m->balance_qty > Decimal::QTY_EPS ? $restored : self::expectedAverage($m, $prevQty, $prevAvg);
             if (abs($expected - $m->balance_avg_cost) > self::AVG_TOLERANCE) {
                 $problems['biaya'][] = "{$code} baris #{$m->id}: biaya rata-rata seharusnya {$expected}, tercatat {$m->balance_avg_cost}.";
             }
             $last[$m->batch_id] = [$m->balance_qty, $m->balance_avg_cost];
+            $history[] = [(int) $m->id, $m->balance_qty, $m->balance_avg_cost];
+            $history = array_slice($history, -2);
         }
 
         $pairs = [];

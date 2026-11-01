@@ -245,8 +245,11 @@ final class StockDocuments
     {
         DB::transaction(function () use ($doc, $approver) {
             $this->lockAndAssert($doc, ['approval'], StockDocumentType::Adjustment);
-            foreach ($doc->lines()->with('batch')->get() as $line) {
-                if (abs($line->batch->stock_qty - (float) $line->system_qty) > 0.0005) {
+            // Batch dikunci DULU, baru dibandingkan: stok tidak bisa berubah antara pemeriksaan dan posting.
+            $locked = Batch::query()->whereIn('id', $doc->lines()->pluck('batch_id'))->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+            foreach ($doc->lines()->get() as $line) {
+                $line->setRelation('batch', $locked[$line->batch_id]);
+                if (abs($line->batch->stock_qty - (float) $line->system_qty) > Decimal::QTY_EPS) {
                     throw ValidationException::withMessages(['lines' => "Stok {$line->batch->code} berubah sejak penghitungan (sistem {$line->system_qty}, sekarang {$line->batch->stock_qty}). Tolak dokumen ini lalu hitung ulang."]);
                 }
             }
@@ -293,14 +296,15 @@ final class StockDocuments
         $out = [];
         $lines = $doc->lines()->with('batch')->get();
         $taken = $lines->groupBy('batch_id')->map(fn ($l) => (float) $l->sum('qty'));  // yang diambil dokumen ini sendiri (termasuk sambungan otomatis antar batch)
+        // Batch saudara (barang sama, ada stok, berkedaluwarsa) dimuat sekali untuk semua baris, bukan satu query per baris.
+        $siblings = Batch::query()->whereIn('item_id', $lines->pluck('batch.item_id')->filter()->unique())->where('stock_qty', '>', 0)->whereNotNull('expiry_date')->orderBy('expiry_date')->get()->groupBy('item_id');
         foreach ($lines as $line) {
             $item = $line->batch;
             if (! $item->expiry_date) {
                 continue;
             }
-            $earlier = Batch::query()->where('item_id', $item->item_id)->where('id', '!=', $item->id)->where('stock_qty', '>', 0)
-                ->whereNotNull('expiry_date')->where('expiry_date', '<', $item->expiry_date)->orderBy('expiry_date')->get()
-                ->first(fn (Batch $e) => $e->stock_qty - ($taken[$e->id] ?? 0) > 0.0005);
+            $earlier = ($siblings[$item->item_id] ?? collect())->filter(fn (Batch $e) => $e->id !== $item->id && $e->expiry_date < $item->expiry_date)
+                ->first(fn (Batch $e) => $e->stock_qty - ($taken[$e->id] ?? 0) > Decimal::QTY_EPS);
             if ($earlier) {
                 $left = $earlier->stock_qty - ($taken[$earlier->id] ?? 0);
                 $out[] = "{$item->name}: batch {$item->code} (kedaluwarsa ".$item->expiry_date->format('d-m-Y').") dipilih, padahal batch {$earlier->code} (kedaluwarsa ".$earlier->expiry_date->format('d-m-Y').') masih ada stok '.rtrim(rtrim(number_format($left, 3, ',', '.'), '0'), ',').'. Keluarkan yang kedaluwarsa lebih dulu.';
@@ -447,7 +451,7 @@ final class StockDocuments
     private function createNumbered(StockDocumentType $type, array $attributes): StockDocument
     {
         for ($try = 1; ; $try++) {
-            $number = $this->nextNumber($type);
+            $number = $this->nextNumber($type, $try > 1);
             try {
                 return DB::transaction(fn () => StockDocument::create($attributes + ['doc_no' => $number]));
             } catch (UniqueConstraintViolationException $e) {
@@ -459,10 +463,11 @@ final class StockDocuments
     }
 
     // PREFIX-YYMM-NNNN, urut per jenis per bulan; kolom doc_no unik menjaga dari nomor ganda.
-    private function nextNumber(StockDocumentType $type): string
+    // $fresh (ulangan sesudah tabrakan): baca terkunci supaya yang terbaca nomor yang sudah di-commit penyimpan lain; bacaan biasa di MySQL (REPEATABLE READ) memakai snapshot lama sehingga nomor yang sama terulang.
+    private function nextNumber(StockDocumentType $type, bool $fresh = false): string
     {
         $stem = $type->prefix().'-'.now()->format('ym').'-';
-        $last = StockDocument::query()->where('doc_no', 'like', $stem.'%')->orderByDesc('doc_no')->value('doc_no');
+        $last = StockDocument::query()->where('doc_no', 'like', $stem.'%')->orderByDesc('doc_no')->when($fresh, fn ($q) => $q->lockForUpdate())->value('doc_no');
 
         return $stem.str_pad((string) ($last ? (int) substr($last, -4) + 1 : 1), 4, '0', STR_PAD_LEFT);
     }

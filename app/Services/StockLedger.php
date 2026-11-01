@@ -105,8 +105,12 @@ final class StockLedger
                     throw $this->shortage($item, $signed);
                 }
                 $cost = (float) $m->unit_cost;
+                // Membatalkan pergerakan TERAKHIR batch ini mengembalikan biaya rata-rata persis seperti sebelum pergerakan itu (hitung balik dari rata-rata yang dibulatkan 4 desimal bisa meleset 0,0001).
+                $before = StockMovement::query()->where('batch_id', $item->id)->where('id', '<', $m->id)->orderByDesc('id')->first();
+                $isLast = ! StockMovement::query()->where('batch_id', $item->id)->where('id', '>', $m->id)->exists();
                 $avg = match (true) {
                     $balance <= self::EPS => $item->avg_cost,
+                    $isLast && $before && abs($before->balance_qty - $balance) <= self::EPS => $before->balance_avg_cost,
                     $signed > 0 => $this->movingAverage($item, $signed, $cost, $balance),
                     default => max(0, $this->movingAverage($item, $signed, $cost, $balance)),
                 };
@@ -125,8 +129,10 @@ final class StockLedger
     public function assertReversible(StockDocument $doc): void
     {
         $stock = [];
-        foreach ($this->unreversed($doc)->get() as $m) {
-            $item = Batch::query()->findOrFail($m->batch_id);
+        $moves = $this->unreversed($doc)->get();
+        $batches = Batch::query()->whereIn('id', $moves->pluck('batch_id'))->get()->keyBy('id');   // satu query, bukan satu per baris
+        foreach ($moves as $m) {
+            $item = $batches->get($m->batch_id) ?? throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(Batch::class, [$m->batch_id]);
             $signed = -(float) $m->qty;
             $stock[$item->id] = round(($stock[$item->id] ?? $item->stock_qty) + $signed, 3);
             if ($stock[$item->id] < -self::EPS) {
