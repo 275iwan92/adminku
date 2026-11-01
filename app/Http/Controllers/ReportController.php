@@ -40,7 +40,7 @@ class ReportController extends Controller
             $opening = $before?->balance_qty ?? 0.0;
             $rows = StockMovement::query()->where('batch_id', $item->id)->whereBetween('moved_at', [$from, $to])->with(['document.supplier', 'user'])
                 ->orderBy('moved_at')->orderBy('id')->get()->map(fn (StockMovement $m) => [
-                    'date' => Locale::stamp($m->moved_at), 'month' => Locale::at($m->moved_at)->translatedFormat('F Y'),
+                    'date' => Locale::stamp($m->moved_at), 'month' => self::monthLabel($m->moved_at),
                     'doc' => $m->document->doc_no, 'src' => $m->document->supplier?->name ?? $m->document->recipient ?? $m->document->reason,
                     'type' => self::TYPE_LABEL[$m->type].($m->reversal_of ? ' (BATAL)' : ''), 'ref' => $m->document->ref_no ?? $m->document->department ?? $m->document->reason ?? '', 'user' => $m->user->name,
                     'in' => $m->type !== 'ADJ' ? max($m->qty, 0) : 0, 'out' => $m->type !== 'ADJ' ? max(-$m->qty, 0) : 0, 'adj' => $m->type === 'ADJ' ? $m->qty : 0,
@@ -111,7 +111,7 @@ class ReportController extends Controller
     {
         $ids = StockMovement::query()->where('moved_at', $operator, $at)->selectRaw('max(id) as id')->groupBy('batch_id')->pluck('id');
 
-        return StockMovement::query()->whereIn('id', $ids)->get()->keyBy('batch_id');
+        return StockMovement::query()->whereIn('id', $ids)->get(['id', 'batch_id', 'balance_qty', 'balance_avg_cost'])->keyBy('batch_id');   // hanya kolom yang dipakai
     }
 
     // Barang bersisa stok yang sudah kedaluwarsa atau akan kedaluwarsa dalam N hari (bawaan 30), dari yang paling dulu.
@@ -164,7 +164,7 @@ class ReportController extends Controller
             $cost = (float) ($l->unit_cost ?? $l->batch->avg_cost);
 
             return [
-                'date' => Locale::stamp($d->doc_at), 'month' => Locale::at($d->doc_at)->translatedFormat('F Y'), 'doc' => $d->doc_no, 'status' => ['confirmed' => 'Terkonfirmasi', 'draft' => 'Draf', 'approval' => 'Menunggu Persetujuan', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'cancelled' => 'Dibatalkan', 'cancel_pending' => 'Pembatalan Menunggu Persetujuan'][$d->status] ?? $d->status,
+                'date' => Locale::stamp($d->doc_at), 'month' => self::monthLabel($d->doc_at), 'doc' => $d->doc_no, 'status' => ['confirmed' => 'Terkonfirmasi', 'draft' => 'Draf', 'approval' => 'Menunggu Persetujuan', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'cancelled' => 'Dibatalkan', 'cancel_pending' => 'Pembatalan Menunggu Persetujuan'][$d->status] ?? $d->status,
                 'party' => $d->supplier?->name ?? $d->recipient ?? '', 'recipient' => $d->recipient ?? '', 'dept' => $d->department ?? '', 'ref' => $d->ref_no ?? '', 'reason' => $d->reason ?? '',
                 'code' => $l->batch->code, 'item' => $l->batch->name, 'unit' => $l->batch->unit, 'qty' => $l->qty,
                 'entered' => $l->entered_unit ? Locale::decimal($l->entered_qty, 3).' '.$l->entered_unit : '',
@@ -175,6 +175,14 @@ class ReportController extends Controller
         })->values()->all();
 
         return view($view, ['sup' => $sup, 'from' => $from, 'to' => $to, 'rows' => $rows] + $extra);
+    }
+
+    // Nama bulan untuk pengelompokan: dihitung sekali per bulan (Carbon + terjemahan per baris mahal pada ribuan baris).
+    private static function monthLabel(\Carbon\CarbonInterface $at): string
+    {
+        static $cache = [];
+
+        return $cache[Locale::lang().'|'.$at->copy()->setTimezone(Locale::timezone())->format('Y-m')] ??= Locale::at($at)->translatedFormat('F Y');
     }
 
     // Periode laporan dari query from / to (Y-m-d); bawaan awal bulan ini s.d. hari ini.

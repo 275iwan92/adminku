@@ -6,6 +6,7 @@ use App\Models\StockMovement;
 use App\Support\Decimal;
 use Devlib\Locale;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /* REMARK
  * Tujuan       : Deret nilai persediaan (saldo x biaya rata-rata semua barang) untuk grafik di opening screen: satu bulan per tampilan,
@@ -17,7 +18,6 @@ use Illuminate\Support\Carbon;
  */
 final class StockValuation
 {
-    // shortcut: memuat seluruh pergerakan sampai akhir bulan ke memori, cukup untuk puluhan ribu baris; upgrade ke tabel ringkasan harian bila lebih besar.
     public static function series(?string $month = null, ?Carbon $today = null): array
     {
         $today = ($today ?? now())->copy()->endOfDay();
@@ -29,19 +29,14 @@ final class StockValuation
         $end = $start->copy()->endOfMonth()->min($today);
 
         $cutoffs = collect([7, 14, 21, 28])->map(fn ($d) => $start->copy()->day($d)->endOfDay())->filter(fn ($c) => $c < $end->copy()->startOfDay())->push($end)->values();
-        $moves = StockMovement::query()->where('moved_at', '<=', $end)->orderBy('moved_at')->orderBy('id')->get(['batch_id', 'moved_at', 'balance_qty', 'balance_avg_cost']);
-
-        $value = [];
-        $i = 0;
+        // Nilai tiap titik = jumlah (saldo x biaya rata-rata) dari pergerakan terakhir tiap batch sampai titik itu, dihitung di database (tanpa memuat seluruh buku besar ke memori); SUM di MySQL desimal persis, dibulatkan sekali.
         $labels = [];
         $values = [];
         foreach ($cutoffs as $cutoff) {
-            while ($i < $moves->count() && $moves[$i]->moved_at <= $cutoff) {
-                $value[$moves[$i]->batch_id] = [$moves[$i]->balance_qty, $moves[$i]->balance_avg_cost];
-                $i++;
-            }
+            $last = DB::table('rm_stockcard')->where('moved_at', '<=', $cutoff)->selectRaw('max(id) as id')->groupBy('batch_id');
+            $sum = DB::table('rm_stockcard as r')->joinSub($last, 'm', 'm.id', '=', 'r.id')->selectRaw('sum(r.balance_qty * r.balance_avg_cost) as v')->value('v');
             $labels[] = Locale::at($cutoff)->translatedFormat('\s/\d d M');
-            $values[] = Decimal::total($value, 0);
+            $values[] = Decimal::round(Decimal::of($sum ?? 0), 0);
         }
 
         return [

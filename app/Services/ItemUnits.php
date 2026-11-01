@@ -32,11 +32,11 @@ final class ItemUnits
      *
      * @return array{stock: string, own: array<string, string>, global: array<string, string>}
      */
-    public static function options(Item $product): array
+    public static function options(Item $product, ?iterable $conversions = null): array   // $conversions: master konversi yang sudah dimuat (satu query untuk banyak barang)
     {
         $own = $product->packUnits->mapWithKeys(fn (ItemUnit $u) => [$u->unit => $u->factor])->all();
         $global = [];
-        foreach (UnitConversion::query()->get() as $c) {
+        foreach ($conversions ?? UnitConversion::query()->get() as $c) {
             if ($c->to_unit === $product->unit) {
                 $global[$c->from_unit] = Decimal::of($c->factor);
             } elseif ($c->from_unit === $product->unit) {

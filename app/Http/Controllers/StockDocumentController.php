@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\Recipient;
 use App\Models\StockDocument;
 use App\Models\Supplier;
+use App\Models\UnitConversion;
 use App\Models\Unit;
 use App\Services\ItemUnits;
 use App\Services\StockDocuments;
@@ -19,6 +20,7 @@ use Devlib\Locale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\Text;
 
 /* REMARK
  * Tujuan       : Satu pengendali untuk empat jenis dokumen stok (rute docs/{type}): daftar, buat, lihat, simpan, dan siklus persetujuan penyesuaian.
@@ -38,7 +40,7 @@ class StockDocumentController extends Controller
         $t = $this->type($request, $type);
         $sup = $request->user()->isSupervisor();
 
-        $rows = StockDocument::query()->where('type', $t)->with(['lines.batch', 'supplier', 'creator'])->latest('doc_at')->latest('id')->limit(1000)->get()
+        $rows = StockDocument::query()->where('type', $t)->with(['lines:id,stock_document_id,batch_id,qty,unit_cost', 'lines.batch:id,code,name,unit,avg_cost', 'supplier:id,name', 'creator:id,name'])->latest('doc_at')->latest('id')->limit(1000)->get()
             ->map(fn (StockDocument $d) => [
                 'id' => $d->id, 'doc_no' => $d->doc_no, 'doc_at' => $d->doc_at->format('Y-m-d H:i:s'),
                 'party' => $d->supplier?->name ?? $d->recipient ?? $d->reason ?? '—',
@@ -62,7 +64,7 @@ class StockDocumentController extends Controller
         $t = $this->type($request, $type);
         abort_unless($document->type === $t, 404);
 
-        return view('docs.form', $this->formData($t, $document->load(['lines.batch', 'creator', 'approver', 'confirmer', 'canceller', 'cancelRequester'])));
+        return view('docs.form', $this->formData($t, $document->load(['lines.batch.item' . ($t === StockDocumentType::Receiving ? '.packUnits' : ''), 'creator', 'approver', 'confirmer', 'canceller', 'cancelRequester'])));
     }
 
     // Cetakan dokumen (semua mode, termasuk draf): membawa tulisan MODE dan tanda air bila belum / tidak sah.
@@ -145,7 +147,7 @@ class StockDocumentController extends Controller
 
     private function cancel(StockDocument $document, Request $request): string
     {
-        return match ($this->documents->cancel($document, $request->user(), (string) $request->input('_reason'))) {
+        return match ($this->documents->cancel($document, $request->user(), Text::of($request->input('_reason')))) {
             'requested' => "Pembatalan {$document->doc_no} diajukan dan menunggu persetujuan Supervisor. Stok belum berubah.",
             'withdrawn' => "Pengajuan pembatalan {$document->doc_no} ditarik.",
             default => "{$document->doc_no} dibatalkan; stok dikembalikan.",
@@ -237,12 +239,13 @@ class StockDocumentController extends Controller
     private function lineRows(StockDocument $doc, StockDocumentType $t): array
     {
         $byProduct = in_array($t, [StockDocumentType::Receiving, StockDocumentType::Opening], true);
+        $conversions = $t === StockDocumentType::Receiving ? UnitConversion::query()->get() : null;   // sekali untuk semua baris
         $old = old('lines');
         if (is_array($old)) {
-            $items = Batch::query()->whereIn('id', array_filter(array_column($old, 'batch_id')))->get()->keyBy('id');
-            $products = Item::query()->whereIn('id', array_filter(array_column($old, 'item_id')))->get()->keyBy('id');
+            $items = Batch::query()->whereIn('id', array_filter(array_column($old, 'batch_id')))->with('item.packUnits')->get()->keyBy('id');
+            $products = Item::query()->whereIn('id', array_filter(array_column($old, 'item_id')))->with('packUnits')->get()->keyBy('id');
 
-            return array_map(fn ($r) => $this->lineRow($r, $items[$r['batch_id'] ?? 0] ?? null, $products[$r['item_id'] ?? 0] ?? null, $t === StockDocumentType::Receiving), array_values($old));
+            return array_map(fn ($r) => $this->lineRow($r, $items[$r['batch_id'] ?? 0] ?? null, $products[$r['item_id'] ?? 0] ?? null, $t === StockDocumentType::Receiving, $conversions), array_values($old));
         }
 
         // Dokumen baru: baris pertama sudah berisi jumlah bawaan 1 (bukan kosong); penyesuaian mengisi jumlah hitung sendiri.
@@ -257,15 +260,15 @@ class StockDocumentController extends Controller
             ($byProduct ? 'item_id' : 'batch_id') => $byProduct ? $l->batch->item_id : $l->batch_id,
             'expiry_date' => $byProduct ? $l->batch->expiry_date?->format('Y-m-d') : null, 'qty' => $entered ? $l->entered_qty ?? $l->qty : $l->qty, 'unit' => $entered ? $l->entered_unit ?? $l->batch->unit : $l->batch->unit, 'unit_cost' => $l->entered_unit_cost ?? $l->unit_cost,
             'stock_qty' => $l->qty, 'system_qty' => $l->system_qty, 'counted_qty' => $l->counted_qty, 'note' => $l->note,
-        ], $l->batch, $byProduct ? $l->batch->item : null, $entered))->all() : [];
+        ], $l->batch, $byProduct ? $l->batch->item : null, $entered, $conversions))->all() : [];
     }
 
     // $packs (Penerimaan): satuan stok + pilihan satuan masuk barang itu, dibaca form untuk menawarkan satuan dan menghitung hasil konversi.
-    private function lineRow(array $row, ?Batch $item, ?Item $product = null, bool $packs = false): array
+    private function lineRow(array $row, ?Batch $item, ?Item $product = null, bool $packs = false, ?iterable $conversions = null): array
     {
         $own = $product ?? $item?->item;
 
-        return ($packs && $own ? ['stock_unit' => $own->unit, 'packs' => json_encode(ItemUnits::options($own))] : []) + $row + [
+        return ($packs && $own ? ['stock_unit' => $own->unit, 'packs' => json_encode(ItemUnits::options($own, $conversions))] : []) + $row + [
             'batch_id_label' => $item?->label() ?? '',
             'item_id_label' => $product ? "{$product->code} · {$product->name}" : '',
             'unit' => $item?->unit, 'available' => $item?->stock_qty, 'system_qty' => $item?->stock_qty,

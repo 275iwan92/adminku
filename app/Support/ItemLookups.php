@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Batch;
 use App\Models\Item;
+use App\Models\UnitConversion;
 use App\Services\ItemUnits;
 use Devlib\Locale;
 use Devlib\Lookup;
@@ -28,8 +29,12 @@ final class ItemLookups
             Lookup::define($name, [
                 'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', 'unit_cost' => 'price'] + ($receiving ? ['stock_unit' => 'unit', 'packs' => 'packs'] : []),
                 'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'expiry' => 'Expiry'],
-                'search' => fn (string $q) => Search::apply(Item::query()->with('packUnits')->where('is_active', true), $q, ['name', 'location'])
-                    ->orderBy('name')->limit(50)->get()->map(fn (Item $p) => self::productRow($p, $receiving)),
+                'search' => function (string $q) use ($receiving) {
+                    $rows = Search::apply(Item::query()->with('packUnits')->where('is_active', true), $q, ['name', 'location'])->orderBy('name')->limit(50)->get();
+                    $conv = $receiving && $rows->isNotEmpty() ? UnitConversion::query()->get() : null;   // master konversi sekali per pencarian
+
+                    return $rows->map(fn (Item $p) => self::productRow($p, $receiving, $conv));
+                },
                 'find' => fn ($id) => ($p = Item::query()->find($id)) ? self::productRow($p, $receiving) : null,
             ]);
         }
@@ -55,12 +60,12 @@ final class ItemLookups
         ]);
     }
 
-    private static function productRow(Item $p, bool $withPacks = false): array
+    private static function productRow(Item $p, bool $withPacks = false, ?iterable $conversions = null): array
     {
         return [
             'id' => $p->id, 'label' => "{$p->code} · {$p->name}", 'name' => $p->name, 'code' => $p->code, 'unit' => $p->unit,
             'expiry' => $p->tracks_expiry ? 'Wajib diisi' : '—', 'price' => auth()->user()?->isSupervisor() ? $p->unit_price : null,
-        ] + ($withPacks ? ['packs' => json_encode(ItemUnits::options($p))] : []);
+        ] + ($withPacks ? ['packs' => json_encode(ItemUnits::options($p, $conversions))] : []);
     }
 
     private static function itemRow(Batch $i): array
