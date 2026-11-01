@@ -1,5 +1,7 @@
 // Hitung Stok Opname tampilan HP: satu barang per kartu. Isian = kolom teks standar (keyboard HP, pen, pemindai Bluetooth/USB yang bertingkah seperti keyboard + Enter).
 // Simpan per barang lewat endpoint yang sama dengan layar desktop (stock-counts.lines); isian yang belum terkirim tertahan (antrean + localStorage) dan dicoba lagi sampai berhasil.
+import { canon, validQty } from './hp-number';
+
 const root = document.querySelector('[data-hp-count]');
 if (root) {
     const $ = (s) => root.querySelector(s);
@@ -13,8 +15,7 @@ if (root) {
     let i = 0, busy = false, retry = null, saved = '';
 
     const show = (v) => (v === '' || v === null || v === undefined ? '' : String(v).replace('.', ','));
-    const norm = (s) => String(s).trim().replace(',', '.');
-    const validQty = (s) => norm(s) === '' || /^(\d+\.?\d*|\.\d+)$/.test(norm(s));
+    const norm = canon;   // angka Indonesia (sama dengan DevLib numStr): ketikan -> kanonik "1234.5" yang dikirim ke server; tampilan (show) tetap koma
     const snap = (r) => ({ qty: show(r.counted_qty), skipped: !!r.skipped, note: r.note || '', by: r.counted_by || '' });
     const sig = (o) => [norm(o.qty), o.skipped, o.note.trim(), o.by.trim()].join('|');
     const dirty = (r) => sig(r.d) !== sig(r.s);
@@ -133,7 +134,7 @@ if (root) {
         const r = rows[i], skipNow = ui.skip.checked;
         if (skipNow && !r.d.skipped) ui.qty.value = '';
         Object.assign(r.d, { qty: ui.qty.value, skipped: skipNow, note: ui.note.value, by: ui.by.value });
-        r.bad = validQty(r.d.qty) ? null : 'Isi angka 0 atau lebih; desimal pakai koma (kosong = belum dihitung).';
+        r.bad = validQty(r.d.qty) ? null : 'Isi angka 0 atau lebih, paling banyak 3 desimal; desimal pakai koma (kosong = belum dihitung).';
         ui.qty.disabled = skipNow;
         $('[data-err]').hidden = !r.bad; $('[data-err]').textContent = r.bad || '';
         if (skipNow) ui.more.open = true;
