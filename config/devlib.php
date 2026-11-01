@@ -9,7 +9,7 @@ return [
     'brand' => ['name' => 'STOKU', 'tagline' => 'STOK SEDERHANA', 'logo' => '/media/brand/stoku.svg'],
 
     // Kop laporan cetak.
-    'company' => ['name' => 'Stoku', 'initials' => 'ST', 'tagline' => 'Gudang Maintenance & ATK', 'address' => '', 'contact' => ''],
+    'company' => ['name' => 'Stoku', 'tagline' => 'Gudang Maintenance & ATK'],
 
     'lang' => env('DEVLIB_LANG', 'id'),
 
