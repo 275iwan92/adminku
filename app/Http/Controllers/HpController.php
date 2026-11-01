@@ -9,6 +9,7 @@ use App\Enums\StockDocumentType;
 use App\Services\CountSchedule;
 use App\Support\HpShell;
 use App\Support\Modules;
+use App\Support\Search;
 use Devlib\Device;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -93,9 +94,7 @@ class HpController extends Controller
             if ($exact || $batch) {
                 return redirect()->route('hp.find.show', ['product' => $exact?->id ?? $batch->item_id, 'b' => $batch?->code]);
             }
-            $products = Item::query()->withAvailable()->where('is_active', true)
-                ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%")->orWhere('location', 'like', "%{$q}%")
-                    ->orWhereHas('batches', fn ($i) => $i->where('code', 'like', "%{$q}%")))
+            $products = Search::apply(Item::query()->withAvailable()->where('is_active', true), $q, ['name', 'location'], ['code'], fn ($w, $like) => $w->orWhereHas('batches', fn ($i) => $i->whereRaw("code like ? escape '!'", [$like])))
                 ->orderBy('name')->limit(self::FIND_LIMIT)->get();
         }
 

@@ -28,8 +28,7 @@ final class ItemLookups
             Lookup::define($name, [
                 'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', 'unit_cost' => 'price'] + ($receiving ? ['stock_unit' => 'unit', 'packs' => 'packs'] : []),
                 'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'expiry' => 'Expiry'],
-                'search' => fn (string $q) => Item::query()->with('packUnits')->where('is_active', true)
-                    ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
+                'search' => fn (string $q) => Search::apply(Item::query()->with('packUnits')->where('is_active', true), $q, ['name', 'location'])
                     ->orderBy('name')->limit(50)->get()->map(fn (Item $p) => self::productRow($p, $receiving)),
                 'find' => fn ($id) => ($p = Item::query()->find($id)) ? self::productRow($p, $receiving) : null,
             ]);
@@ -42,7 +41,7 @@ final class ItemLookups
                 'columns' => ['name' => 'Item', 'code' => 'Code', 'expiry' => 'Expiry', 'stock' => 'Stock'],
                 'search' => fn (string $q) => Batch::query()->where('is_active', true)
                     ->when($out, fn ($w) => $w->where('stock_qty', '>', 0)->where(fn ($x) => $x->whereNull('expiry_date')->orWhere('expiry_date', '>=', today()->toDateString())))
-                    ->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
+                    ->tap(fn ($w) => Search::apply($w, $q, ['name', 'location']))
                     ->orderBy('name')->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->limit(50)->get()->map(self::itemRow(...)),
                 'find' => fn ($id) => ($i = Batch::query()->find($id)) ? self::itemRow($i) : null,
             ]);
@@ -50,7 +49,7 @@ final class ItemLookups
         // Stok Opname "Tambah barang": batch aktif apa pun, TANPA stok sistem (hitung buta tidak boleh bocor lewat pilihan ini).
         Lookup::define('item_count', [
             'key' => 'id', 'label' => 'label', 'source' => 'items (is_active = 1)', 'columns' => ['name' => 'Item', 'code' => 'Code', 'expiry' => 'Expiry'],
-            'search' => fn (string $q) => Batch::query()->where('is_active', true)->where(fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('code', 'like', "%{$q}%"))
+            'search' => fn (string $q) => Search::apply(Batch::query()->where('is_active', true), $q, ['name', 'location'])
                 ->orderBy('name')->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->limit(50)->get()->map(fn (Batch $i) => Arr::except(self::itemRow($i), 'stock')),
             'find' => fn ($id) => ($i = Batch::query()->find($id)) ? Arr::except(self::itemRow($i), 'stock') : null,
         ]);
