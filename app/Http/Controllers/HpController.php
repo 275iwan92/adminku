@@ -10,6 +10,7 @@ use App\Services\CountSchedule;
 use App\Support\HpShell;
 use App\Support\Modules;
 use App\Support\Search;
+use App\Support\Text;
 use Devlib\Device;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -86,7 +87,7 @@ class HpController extends Controller
     // Cari Barang: kode produk / kode batch / nama / kode lokasi. Kode lengkap (produk atau batch) langsung membuka barangnya, selain itu kartu hasil. Pemindai barcode = keyboard + Enter.
     public function find(Request $request)
     {
-        $q = trim((string) $request->query('q', ''));
+        $q = Text::of($request->query('q'));
         $products = null;
         if ($q !== '') {
             $exact = Item::query()->where('is_active', true)->whereRaw('lower(code) = ?', [mb_strtolower($q)])->first();

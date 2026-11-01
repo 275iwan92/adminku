@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Support\Text;
 
 /* REMARK
  * Tujuan       : Layar Stok Opname (penghitungan fisik rutin): daftar, mulai, lembar input hasil hitung, tinjau selisih, setujui, cetak lembar hitung dan Berita Acara.
@@ -222,7 +223,7 @@ class StockCountController extends Controller
 
     public function reject(Request $request, StockCount $count): RedirectResponse
     {
-        $this->counts->reject($count, (string) $request->input('note'));
+        $this->counts->reject($count, Text::of($request->input('note')));
 
         return redirect()->route('stock-counts.show', $count)->with('status', "{$count->doc_no} dikembalikan ke penghitungan. Perbaiki isian lalu Selesai hitung lagi.");
     }

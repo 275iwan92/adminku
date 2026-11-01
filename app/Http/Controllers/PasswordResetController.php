@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Throwable;
+use App\Support\Text;
 
 /* REMARK
  * Tujuan       : Lupa password dari layar login: minta tautan reset lewat e-mail (broker password Laravel, token berlaku sesuai config auth.passwords.users.expire), lalu atur password baru.
@@ -56,7 +57,7 @@ class PasswordResetController extends Controller
     {
         defer(fn () => Wallpapers::sync());   // sesudah respons terkirim: login tidak menunggu konversi
 
-        return view('auth.reset-password', ['token' => $token, 'email' => (string) $request->query('email')]);
+        return view('auth.reset-password', ['token' => $token, 'email' => Text::of($request->query('email'))]);
     }
 
     public function update(Request $request): RedirectResponse

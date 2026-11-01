@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\UniqueName;
+use App\Support\Text;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,6 +33,6 @@ class RecipientRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['name' => trim((string) $this->input('name'))]);
+        $this->merge(['name' => Text::of($this->input('name'))]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Unit;
 use App\Rules\UniqueName;
+use App\Support\Text;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -50,6 +51,6 @@ class UnitRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['code' => strtolower(trim((string) $this->input('code'))), 'name' => trim((string) $this->input('name'))]);
+        $this->merge(['code' => strtolower(Text::of($this->input('code'))), 'name' => Text::of($this->input('name'))]);
     }
 }

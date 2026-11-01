@@ -9,6 +9,7 @@ use Database\Seeders\UserSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Support\Text;
 
 /* REMARK
  * Tujuan       : Layar khusus super admin (SSTOCK_SUPER_ADMIN, mis. johiwan): (1) Log Aktivitas: siapa, IP, kapan, buka / input / ubah / hapus apa, per bulan, bisa diunduh sebagai CSV;
@@ -36,7 +37,7 @@ class SuperAdminController extends Controller
 
     public function download(Request $request)
     {
-        $month = (string) $request->query('month');
+        $month = Text::of($request->query('month'));
         abort_unless(in_array($month, ActivityLog::months(), true), 404);
 
         return response()->download(ActivityLog::file($month), "aktivitas-{$month}.csv", ['Content-Type' => 'text/csv']);

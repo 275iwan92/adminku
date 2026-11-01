@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\User;
+use App\Support\Text;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -42,6 +43,6 @@ class UserRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['username' => strtolower(trim((string) $this->input('username')))]);
+        $this->merge(['username' => strtolower(Text::of($this->input('username')))]);
     }
 }

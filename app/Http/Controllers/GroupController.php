@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Support\Text;
 
 /* REMARK
  * Tujuan       : Menu Keamanan > Grup: daftar grup pengguna dan pengaturan modul apa saja yang boleh dibuka tiap grup (tabel hak akses per modul: Tidak ada / RO / RW). Hanya Administrator.
@@ -73,7 +74,7 @@ class GroupController extends Controller
 
     private function validated(Request $request, ?UserGroup $group = null): array
     {
-        $request->merge(['code' => strtoupper(trim((string) $request->input('code', $group?->code)))]);
+        $request->merge(['code' => strtoupper(Text::of($request->input('code', $group?->code)))]);
 
         return $request->validate([
             'code' => ['required', 'string', 'max:20', Rule::unique('sys_user_group', 'code')->ignore($group)],
