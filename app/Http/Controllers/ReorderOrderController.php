@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\ReorderOrder;
+use App\Rules\Quantity;
 use App\Models\Supplier;
 use App\Services\ReorderOrders;
 use Devlib\Locale;
@@ -53,7 +54,7 @@ class ReorderOrderController extends Controller
         $data = $request->validate([
             'item_id' => ['required', 'integer', 'exists:m_item,id'],
             'supplier_id' => ['required', Rule::exists('m_supplier', 'id')->where('is_active', true)],
-            'qty' => ['required', 'numeric', 'gt:0', 'max:999999999999'],
+            'qty' => ['bail', 'required', 'numeric', 'gt:0', 'max:999999999999', new Quantity],
             'ordered_at' => ['required', 'date', 'before_or_equal:today'],
             'ref_no' => ['nullable', 'string', 'max:60'],
             'note' => ['nullable', 'string', 'max:255'],
