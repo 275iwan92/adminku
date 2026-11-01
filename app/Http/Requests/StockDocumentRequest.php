@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\StockDocumentType;
 use App\Models\Item;
+use App\Rules\Quantity;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -36,7 +37,7 @@ class StockDocumentRequest extends FormRequest
 
         $recipient = ['nullable', Rule::exists('m_recipient', 'id')->where('is_active', true)];
         $department = ['nullable', Rule::exists('m_department', 'id')->where('is_active', true)];
-        $qty = ['required', 'numeric', 'gt:0', 'max:999999999'];
+        $qty = ['bail', 'required', 'numeric', 'gt:0', 'max:999999999', new Quantity];
         $common = [
             'note' => ['nullable', 'string', 'max:1000'],
             'lines' => ['required', 'array', 'min:1'],
@@ -44,10 +45,11 @@ class StockDocumentRequest extends FormRequest
         ];
 
         // Penerimaan / Saldo Awal: produk + tanggal kedaluwarsa (batch dibuat otomatis); batch langsung (batch_id) tetap diterima untuk pemakaian lewat kode.
+        // Kedaluwarsa: tahun tak wajar (> 50 tahun ke depan, 9999-12-31) ditolak; Penerimaan juga menolak tanggal lampau, Saldo Awal boleh lampau (stok lama yang sudah kedaluwarsa).
         $byProduct = [
             'lines.*.item_id' => ['nullable', 'required_without:lines.*.batch_id', Rule::exists('m_item', 'id')->where('is_active', true)],
             'lines.*.batch_id' => ['nullable', 'required_without:lines.*.item_id', Rule::exists('i_batch', 'id')->where('is_active', true)],
-            'lines.*.expiry_date' => ['nullable', 'date'],
+            'lines.*.expiry_date' => ['nullable', 'date', 'before_or_equal:+50 years', $this->type() === StockDocumentType::Receiving ? 'after_or_equal:today' : 'after_or_equal:2000-01-01'],
         ];
         // Pengeluaran / Penyesuaian: batch (barang) yang dipilih.
         $byItem = ['lines.*.batch_id' => ['required', 'distinct', Rule::exists('i_batch', 'id')->where('is_active', true)]];
@@ -77,7 +79,7 @@ class StockDocumentRequest extends FormRequest
                 'department_id' => $department,
                 'recipient_id' => $recipient,
                 'reason' => ['required', 'string', 'max:255'],
-                'lines.*.counted_qty' => ['required', 'numeric', 'min:0', 'max:999999999'],
+                'lines.*.counted_qty' => ['bail', 'required', 'numeric', 'min:0', 'max:999999999', new Quantity],
             ] + $byItem,
         };
     }
@@ -107,6 +109,9 @@ class StockDocumentRequest extends FormRequest
             'lines.*.batch_id.distinct' => 'Barang yang sama muncul di lebih dari satu baris.',
             'lines.*.batch_id.exists' => 'Barang yang dipilih tidak ada atau nonaktif.',
             'lines.*.qty.gt' => 'Jumlah harus lebih dari 0.',
+            'lines.*.expiry_date.after_or_equal' => $this->type() === StockDocumentType::Receiving ? 'Tanggal kedaluwarsa tidak boleh sebelum hari ini (barang yang sudah kedaluwarsa tidak diterima).' : 'Tanggal kedaluwarsa tidak wajar (sebelum tahun 2000).',
+            'lines.*.expiry_date.before_or_equal' => 'Tanggal kedaluwarsa tidak wajar (lebih dari 50 tahun ke depan).',
+            'doc_at.before_or_equal' => 'Tanggal saldo awal tidak boleh setelah hari ini.',
         ];
     }
 }

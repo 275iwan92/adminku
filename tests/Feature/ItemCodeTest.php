@@ -147,7 +147,7 @@ class ItemCodeTest extends TestCase
         $line = ['item_id' => $lem->id, 'qty' => 5, 'unit_cost' => 10];
         $this->post(route('docs.store', 'receiving'), ['supplier_id' => $sup->id, 'lines' => [$line]])->assertSessionHasErrors('lines.0.expiry_date');
 
-        $this->post(route('docs.store', 'receiving'), ['supplier_id' => $sup->id, 'lines' => [$line + ['expiry_date' => '2026-03-15']]])->assertRedirect();
+        $this->post(route('docs.store', 'receiving'), ['supplier_id' => $sup->id, 'lines' => [$line + ['expiry_date' => today()->addMonths(6)->toDateString()]]])->assertRedirect();   // tanggal lampau ditolak di Penerimaan
         $doc = StockDocument::firstOrFail();
         $this->assertSame(1, $lem->batches()->count());                                       // batch dibuat oleh draf
 

@@ -33,6 +33,7 @@ return [
     'required' => ':attribute wajib diisi.',
     'string' => ':attribute harus berupa teks.',
     'unique' => ':attribute sudah dipakai.',
+    'qty_scale' => ':Attribute paling banyak 3 angka desimal (mis. 1,125); tidak dibulatkan otomatis.',
 
     'attributes' => [
         'login' => 'username / e-mail', 'password' => 'password',

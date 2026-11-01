@@ -352,8 +352,11 @@ final class StockCounts
         if (! is_numeric($v) || (float) $v < 0 || (float) $v > 999999999999.999) {
             throw ValidationException::withMessages(['counted_qty' => 'Isi angka 0 atau lebih (kosong = belum dihitung).']);
         }
+        if (Decimal::decimals($v) > Decimal::QTY_SCALE) {   // tidak dibulatkan diam-diam: 0,0004 bukan 0
+            throw ValidationException::withMessages(['counted_qty' => 'Jumlah hitung paling banyak '.Decimal::QTY_SCALE.' angka desimal (mis. 1,125).']);
+        }
 
-        return round((float) $v, 3);
+        return round((float) $v, Decimal::QTY_SCALE);
     }
 
     // Daftar kode batch untuk pesan (maksimal 12, sisanya dihitung).

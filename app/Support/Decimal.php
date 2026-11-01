@@ -13,6 +13,23 @@ final class Decimal
 {
     private const SCALE = 20;   // skala perantara; pembagian dipotong di sini, lalu dibulatkan sekali oleh round()
 
+    /** Satu-satunya sumber presisi qty (kolom decimal(15,3)): validasi, pembulatan buku besar, dan toleransi saldo mengikuti ini. */
+    public const QTY_SCALE = 3;
+
+    public const QTY_EPS = 0.0005;
+
+    /** Jumlah desimal bermakna (tanpa nol di ujung) pada angka / teks numerik. */
+    public static function decimals(float|int|string $v): int
+    {
+        return strlen(substr(rtrim(self::of($v), '0'), strpos(self::of($v), '.') + 1));   // of() selalu memuat titik
+    }
+
+    /** Qty untuk pesan ke pengguna: format Indonesia (koma desimal), tanpa nol di ujung. */
+    public static function fmtQty(float|int|string|null $v): string
+    {
+        return rtrim(rtrim(number_format((float) $v, self::QTY_SCALE, ',', '.'), '0'), ',');
+    }
+
     public static function of(float|int|string|null $v): string
     {
         return number_format((float) $v, 10, '.', '');

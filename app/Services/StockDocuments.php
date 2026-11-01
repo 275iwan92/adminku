@@ -338,29 +338,31 @@ final class StockDocuments
 
     /**
      * Pengeluaran: jumlah melebihi stok batch yang dipilih disambung ke batch lain produk yang sama menurut FEFO (kedaluwarsa paling cepat dulu, lalu yang paling lama masuk).
-     * Sisa yang tetap tidak tercukupi dibiarkan di batch pilihan sehingga Confirm menolaknya dengan pesan stok tidak cukup.
+     * Bila seluruh stok layak barang itu pun tidak cukup, baris TIDAK dipecah: tetap satu baris sesuai ketikan pengguna di batch pilihan (draf tidak ditulis ulang),
+     * dan Confirm menolaknya dengan pesan "tersedia X, dibutuhkan Y".
      *
      * @return array<int, array{0: Batch, 1: float}>
      */
     private function allocate(Batch $first, float $qty): array
     {
         $take = min($qty, max($first->stock_qty, 0));
-        $parts = $take > 0 ? [[$first, $take]] : [];
-        $left = round($qty - $take, 3);
-        if ($left > 0 && $first->item_id) {
-            $others = Batch::query()->where('item_id', $first->item_id)->where('id', '!=', $first->id)->where('stock_qty', '>', 0)->usable()
-                ->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
-            foreach ($others as $o) {
-                $t = min($left, $o->stock_qty);
-                $parts[] = [$o, $t];
-                $left = round($left - $t, 3);
-                if ($left <= 0) {
-                    break;
-                }
-            }
+        $left = round($qty - $take, Decimal::QTY_SCALE);
+        if ($left <= 0 || ! $first->item_id) {
+            return [[$first, $left > 0 ? $qty : $take]];
         }
-        if ($left > 0) {
-            $parts[] = [$first, $left];
+        $others = Batch::query()->where('item_id', $first->item_id)->where('id', '!=', $first->id)->where('stock_qty', '>', 0)->usable()
+            ->orderByRaw('expiry_date is null')->orderBy('expiry_date')->orderBy('id')->get();
+        if ($others->sum('stock_qty') + Decimal::QTY_EPS < $left) {
+            return [[$first, $qty]];
+        }
+        $parts = $take > 0 ? [[$first, $take]] : [];
+        foreach ($others as $o) {
+            $t = min($left, $o->stock_qty);
+            $parts[] = [$o, $t];
+            $left = round($left - $t, Decimal::QTY_SCALE);
+            if ($left <= 0) {
+                break;
+            }
         }
 
         return $parts;
@@ -399,7 +401,10 @@ final class StockDocuments
         foreach ($lines as $row) {
             $item = $this->resolveItem($row);
             $isAdjustment = $doc->type === StockDocumentType::Adjustment;
-            $qty = $isAdjustment ? round((float) $row['counted_qty'] - $item->stock_qty, 3) : $row['qty'];
+            $qty = $isAdjustment ? round((float) $row['counted_qty'] - $item->stock_qty, Decimal::QTY_SCALE) : $row['qty'];
+            if ($isAdjustment && abs($qty) < Decimal::QTY_EPS) {
+                throw ValidationException::withMessages(['lines' => "Jumlah hitung {$item->code} sama dengan stok sistem (".Decimal::fmtQty($item->stock_qty).'): tidak ada yang disesuaikan. Ubah jumlah hitungnya atau hapus barang itu dari baris.']);
+            }
             $cost = $row['unit_cost'] ?? null;
             $entered = [];
 

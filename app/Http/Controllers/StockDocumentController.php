@@ -18,6 +18,7 @@ use App\Support\StockDocumentPrint;
 use Devlib\Locale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /* REMARK
  * Tujuan       : Satu pengendali untuk empat jenis dokumen stok (rute docs/{type}): daftar, buat, lihat, simpan, dan siklus persetujuan penyesuaian.
@@ -109,19 +110,23 @@ class StockDocumentController extends Controller
         abort_if($action === 'cancel' && ! $sup && in_array($document->status, ['approval', 'cancel_pending'], true) && ! in_array($me, [$document->created_by, $document->cancel_requested_by], true), 403, 'Hanya pengaju atau Supervisor.');
 
         $header = $isAdj ? ['reason', 'note', 'recipient_id', 'department_id'] : ['supplier_id', 'ref_no', 'recipient_id', 'department_id', 'reason', 'note', 'doc_at'];
-        if (in_array($action, ['save', 'confirm'], true)) {
-            $this->documents->update($document, $request->safe()->only($header), array_values($request->validated('lines')));
-        }
         $reorder = null;
-        $message = match ($action) {
-            'save' => 'Draf disimpan.',
-            'confirm' => $isAdj ? $this->submit($document) : $this->confirm($document, $request, $reorder),
-            'approve' => $document->status === 'cancel_pending' ? $this->approveCancel($document, $request) : $this->approve($document, $request),
-            'reject' => $document->status === 'cancel_pending' ? $this->rejectCancel($document) : $this->reject($document, $request),
-            'cancel' => $this->cancel($document, $request),
-            'delete' => $this->delete($document),
-            default => abort(422, 'Aksi tidak dikenal.'),
-        };
+        // Simpan + Confirm satu transaksi: Confirm yang ditolak (mis. stok kurang) tidak meninggalkan draf yang sudah ditulis ulang.
+        $message = DB::transaction(function () use ($action, $document, $request, $header, $isAdj, &$reorder) {
+            if (in_array($action, ['save', 'confirm'], true)) {
+                $this->documents->update($document, $request->safe()->only($header), array_values($request->validated('lines')));
+            }
+
+            return match ($action) {
+                'save' => 'Draf disimpan.',
+                'confirm' => $isAdj ? $this->submit($document) : $this->confirm($document, $request, $reorder),
+                'approve' => $document->status === 'cancel_pending' ? $this->approveCancel($document, $request) : $this->approve($document, $request),
+                'reject' => $document->status === 'cancel_pending' ? $this->rejectCancel($document) : $this->reject($document, $request),
+                'cancel' => $this->cancel($document, $request),
+                'delete' => $this->delete($document),
+                default => abort(422, 'Aksi tidak dikenal.'),
+            };
+        });
 
         $redirect = ($action === 'delete' ? redirect()->route('docs.index', $type) : redirect()->route('docs.show', [$type, $document]))->with('status', $message);
         if ($reorder) {

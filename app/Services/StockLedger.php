@@ -22,7 +22,7 @@ use Illuminate\Validation\ValidationException;
  */
 final class StockLedger
 {
-    private const EPS = 0.0005;
+    private const EPS = Decimal::QTY_EPS;
 
     /**
      * @return array<int, Item> produk yang SESUDAH posting berada di/bawah Reorder Point
@@ -44,7 +44,7 @@ final class StockLedger
                 $balance = round($item->stock_qty + $signed, 3);
 
                 if ($balance < -self::EPS) {
-                    throw ValidationException::withMessages(['lines' => "Stok {$item->code} {$item->name} tidak cukup: tersedia ".rtrim(rtrim(number_format($item->stock_qty, 3, '.', ''), '0'), '.').', dibutuhkan '.rtrim(rtrim(number_format(abs($signed), 3, '.', ''), '0'), '.').'.']);
+                    throw $this->insufficient($item, $doc, abs($signed));
                 }
                 if ($doc->type === StockDocumentType::Opening && $item->movements()->exists()) {
                     throw ValidationException::withMessages(['lines' => "{$item->code} sudah punya pergerakan stok; pakai Penyesuaian Stok, bukan Saldo Awal."]);
@@ -167,8 +167,17 @@ final class StockLedger
 
     private function shortage(Batch $item, float $signed): ValidationException
     {
-        $fmt = fn (float $v) => rtrim(rtrim(number_format($v, 3, '.', ''), '0'), '.');
+        return ValidationException::withMessages(['lines' => "Pembatalan tidak bisa dilakukan: stok {$item->code} {$item->name} tinggal ".Decimal::fmtQty($item->stock_qty).', tidak cukup untuk menarik kembali '.Decimal::fmtQty(abs($signed)).'. Koreksi stok lewat Stock Adjustment.']);
+    }
 
-        return ValidationException::withMessages(['lines' => "Pembatalan tidak bisa dilakukan: stok {$item->code} {$item->name} tinggal {$fmt($item->stock_qty)}, tidak cukup untuk menarik kembali {$fmt(abs($signed))}. Koreksi stok lewat Stock Adjustment."]);
+    // Pengeluaran melebihi stok: yang dilaporkan jumlah yang benar-benar ada (seluruh batch layak barang itu bila memang itu yang kurang) dan jumlah yang diminta.
+    private function insufficient(Batch $item, StockDocument $doc, float $need): ValidationException
+    {
+        $have = $item->stock_qty;
+        if ($doc->type === StockDocumentType::Issuance && $item->item && ($total = $item->item->available()) < $need) {
+            $have = max($have, $total);
+        }
+
+        return ValidationException::withMessages(['lines' => "Stok {$item->code} {$item->name} tidak cukup: tersedia ".Decimal::fmtQty($have).', dibutuhkan '.Decimal::fmtQty($need).'.']);
     }
 }
