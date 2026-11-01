@@ -25,11 +25,6 @@ class Unit extends Model
         return $this->hasMany(Item::class, 'unit', 'code');
     }
 
-    public function batches(): HasMany
-    {
-        return $this->hasMany(Batch::class, 'unit', 'code');
-    }
-
     // Konversi keluar dari satuan ini: 1 {code} = factor {to_unit}.
     public function conversions(): HasMany
     {

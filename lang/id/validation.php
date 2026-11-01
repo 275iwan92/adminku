@@ -19,24 +19,17 @@ return [
     'boolean' => ':Attribute harus berupa ya atau tidak.',
     'confirmed' => 'Konfirmasi :attribute tidak sama.',
     'date' => ':Attribute bukan tanggal yang valid.',
-    'decimal' => ':Attribute harus memiliki :decimal angka desimal.',
     'dimensions' => 'Ukuran gambar :attribute tidak sesuai.',
     'distinct' => ':Attribute berisi nilai ganda.',
     'email' => ':Attribute harus berupa alamat e-mail yang valid.',
     'exists' => ':Attribute yang dipilih tidak valid.',
     'file' => ':Attribute harus berupa berkas.',
-    'filled' => ':Attribute wajib diisi.',
     'gt' => [
         'numeric' => ':Attribute harus lebih dari :value.',
         'string' => ':Attribute harus lebih dari :value karakter.',
     ],
-    'gte' => [
-        'numeric' => ':Attribute minimal :value.',
-        'string' => ':Attribute minimal :value karakter.',
-    ],
     'in' => ':Attribute yang dipilih tidak valid.',
     'integer' => ':Attribute harus berupa bilangan bulat.',
-    'ip' => ':Attribute harus berupa alamat IP yang valid.',
     'max' => [
         'array' => ':Attribute tidak boleh lebih dari :max item.',
         'file' => ':Attribute tidak boleh lebih dari :max kilobita.',
@@ -60,7 +53,6 @@ return [
     'required_without' => ':Attribute wajib diisi bila :values tidak diisi.',
     'string' => ':Attribute harus berupa teks.',
     'unique' => ':Attribute sudah dipakai.',
-    'url' => ':Attribute harus berupa tautan yang valid.',
 
     'attributes' => [
         'login' => 'username / e-mail', 'password' => 'password', 'password_confirmation' => 'konfirmasi password',

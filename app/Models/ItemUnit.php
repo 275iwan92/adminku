@@ -17,19 +17,9 @@ class ItemUnit extends Model
         return ['factor' => 'decimal:6'];
     }
 
-    public function item(): BelongsTo
-    {
-        return $this->belongsTo(Item::class);
-    }
-
     public function unitMaster(): BelongsTo
     {
         return $this->belongsTo(Unit::class, 'unit', 'code');
-    }
-
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function updater(): BelongsTo

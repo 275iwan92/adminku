@@ -115,7 +115,6 @@ final class Indonesian
         'Access per module' => 'Akses per modul',
 
         // Catatan form
-        "The department chosen in this form becomes the recipient's default department." => 'Departemen yang dipilih di form ini menjadi departemen bawaan penerima.',
         'RO opens the screen but blocks saving or changing anything. A user also needs a high enough role: Supervisor-only and Administrator-only modules stay closed to lower roles even when granted. Administrators always have full access.' => 'RO membuka layar tetapi menolak menyimpan atau mengubah apa pun. Pengguna juga harus berperan cukup tinggi: modul khusus Supervisor atau Administrator tetap tertutup bagi peran di bawahnya walau diberikan. Administrator selalu punya akses penuh.',
 
         // Tambah cepat dari dropdown (x-dl::field.select add)

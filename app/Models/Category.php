@@ -20,9 +20,4 @@ class Category extends Model
     {
         return $this->hasMany(Item::class);
     }
-
-    public function batches(): HasMany
-    {
-        return $this->hasMany(Batch::class);
-    }
 }

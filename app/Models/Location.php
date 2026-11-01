@@ -22,11 +22,6 @@ class Location extends Model
         return $this->hasMany(Item::class, 'location', 'code');
     }
 
-    public function batches(): HasMany
-    {
-        return $this->hasMany(Batch::class, 'location', 'code');
-    }
-
     // Teks pilihan: "A1-01" atau "A1-01 · Rak A1 level 1".
     public function label(): string
     {

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use LogicException;
 
 // is_system = supplier bawaan (Kontan): tak bisa dinonaktifkan, diganti nama / kodenya, atau dihapus; selalu pertama di dropdown. Hanya diisi migrasi / seeder (tidak mass-assignable).
@@ -54,11 +53,6 @@ class Supplier extends Model
     protected function casts(): array
     {
         return ['is_active' => 'boolean', 'is_system' => 'boolean', 'area_id' => 'integer'];
-    }
-
-    public function documents(): HasMany
-    {
-        return $this->hasMany(StockDocument::class);
     }
 
     // Kunci wilayah "LEVEL:id" untuk GeoArea / kotak cari.
