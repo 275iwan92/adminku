@@ -7,6 +7,7 @@ use App\Models\Supplier;
 use App\Support\GeoArea;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 
 /* REMARK
  * Tujuan       : Master Supplier (dipilih di transaksi Receiving). Data Entry dan Supervisor sama-sama boleh mengelola.
@@ -31,7 +32,7 @@ class SupplierController extends Controller
 
     public function create()
     {
-        return view('suppliers.form', ['supplier' => new Supplier]);
+        return view('suppliers.form', ['supplier' => new Supplier(['code' => Supplier::nextCode()])]);   // kode bawaan, boleh diubah
     }
 
     public function show(Supplier $supplier)
@@ -45,7 +46,8 @@ class SupplierController extends Controller
             return response()->json(Supplier::createQuick($request->validated())->only(['id', 'name']), 201);
         }
 
-        $supplier = Supplier::create($request->validated());
+        $data = $request->validated();   // kode kosong -> otomatis (SUP-nnn), sama dengan tambah-cepat; kode yang diketik dipakai apa adanya
+        $supplier = blank($data['code'] ?? null) ? Supplier::createQuick(Arr::except($data, 'code')) : Supplier::create($data);
 
         return redirect()->route('suppliers.show', $supplier)->with('status', 'Supplier disimpan.');
     }

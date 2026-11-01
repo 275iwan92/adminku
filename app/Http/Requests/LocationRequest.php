@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniqueName;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,13 +25,18 @@ class LocationRequest extends FormRequest
         }
 
         return [
-            'code' => ['required', 'string', 'max:50', Rule::unique('m_location', 'code')->ignore($this->route('location'))],
-            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('m_location', 'name')] : [])],
+            'code' => ['required', 'string', 'max:50', 'regex:/^\S+$/', Rule::unique('m_location', 'code')->ignore($this->route('location'))],
+            'name' => ['required', 'string', 'max:100', new UniqueName('m_location', $this->route('location'))],
         ];
+    }
+
+    public function messages(): array
+    {
+        return ['code.regex' => 'Kode lokasi tidak boleh berisi spasi (pakai strip, mis. A1-01).'];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['code' => strtoupper(trim((string) $this->input('code')))]);
+        $this->merge(['code' => strtoupper(trim((string) $this->input('code'))), 'name' => trim((string) $this->input('name'))]);
     }
 }

@@ -51,7 +51,7 @@ class QuickAddEndpointsTest extends TestCase
 
     public function test_the_normal_supplier_form_still_requires_its_fields(): void
     {
-        $this->actingAs(User::factory()->create())->post(route('suppliers.store'), ['code' => '', 'name' => ''])->assertSessionHasErrors(['code', 'name']);
+        $this->actingAs(User::factory()->create())->post(route('suppliers.store'), ['code' => '', 'name' => ''])->assertSessionHasErrors(['name'])->assertSessionDoesntHaveErrors('code');   // kode kosong terisi otomatis
     }
 
     public function test_department_and_recipient_reply_with_id_and_name(): void
@@ -68,7 +68,7 @@ class QuickAddEndpointsTest extends TestCase
         $this->postJson(route('departments.store'), ['name' => 'Gudang Utama'])->assertUnprocessable()->assertJsonValidationErrors('name');
         $this->postJson(route('departments.store'), ['name' => ''])->assertUnprocessable();
         $this->postJson(route('recipients.store'), ['name' => ''])->assertUnprocessable();
-        $this->postJson(route('recipients.store'), ['name' => 'Rina'])->assertCreated();   // dua orang boleh bernama sama
+        $this->postJson(route('recipients.store'), ['name' => 'rina '])->assertUnprocessable()->assertJsonValidationErrors('name');   // nama penerima unik (tanpa beda huruf besar / spasi ujung)
     }
 
     public function test_supervisor_adds_category_location_and_unit(): void

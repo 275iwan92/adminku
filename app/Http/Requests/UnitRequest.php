@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Unit;
+use App\Rules\UniqueName;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,7 +28,7 @@ class UnitRequest extends FormRequest
 
         return [
             'code' => ['required', 'string', 'max:20', 'regex:/^[a-z0-9._\/-]+$/', Rule::unique('m_unit', 'code')->ignore($this->route('unit'))],
-            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('m_unit', 'name')] : [])],
+            'name' => ['required', 'string', 'max:100', new UniqueName('m_unit', $this->route('unit'))],
             'kind' => ['nullable', Rule::in(array_keys(Unit::KINDS))],
             'conversions' => ['nullable', 'array', 'max:50'],
             'conversions.*.to_unit' => ['required', 'distinct', Rule::notIn([$own]), Rule::exists('m_unit', 'code')],
@@ -49,6 +50,6 @@ class UnitRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['code' => strtolower(trim((string) $this->input('code')))]);
+        $this->merge(['code' => strtolower(trim((string) $this->input('code'))), 'name' => trim((string) $this->input('name'))]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Supplier;
+use App\Rules\UniqueName;
 use App\Support\GeoArea;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class SupplierRequest extends FormRequest
     {
         if ($this->expectsJson()) {   // tambah cepat dari dropdown: kode otomatis, alamat / wilayah tidak ditanyakan
             return [
-                'name' => ['required', 'string', 'max:150', Rule::unique('m_supplier', 'name')],
+                'name' => ['required', 'string', 'max:150', new UniqueName('m_supplier')],
                 'phone' => ['nullable', 'string', 'max:40'],
                 'contact_name' => ['nullable', 'string', 'max:100'],
             ];
@@ -38,8 +39,8 @@ class SupplierRequest extends FormRequest
         }
 
         return [
-            'code' => ['required', 'string', 'max:20', Rule::unique('m_supplier', 'code')->ignore($this->route('supplier')), $locked('code')],
-            'name' => ['required', 'string', 'max:150', $locked('name')],
+            'code' => [$this->route('supplier') ? 'required' : 'nullable', 'string', 'max:20', Rule::unique('m_supplier', 'code')->ignore($this->route('supplier')), $locked('code')],
+            'name' => ['required', 'string', 'max:150', new UniqueName('m_supplier', $this->route('supplier')), $locked('name')],
             'phone' => ['nullable', 'string', 'max:40'],
             'contact_name' => ['nullable', 'string', 'max:100'],
             'contact_mobile' => ['nullable', 'string', 'max:40'],
@@ -67,6 +68,6 @@ class SupplierRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['code' => strtoupper(trim((string) $this->input('code')))]);
+        $this->merge(['code' => strtoupper(trim((string) $this->input('code'))), 'name' => trim((string) $this->input('name'))]);
     }
 }

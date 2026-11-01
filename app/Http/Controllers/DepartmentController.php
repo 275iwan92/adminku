@@ -27,7 +27,7 @@ class DepartmentController extends Controller
 
     public function create()
     {
-        return view('departments.form', ['department' => new Department]);
+        return view('departments.form', ['department' => new Department(['code' => Department::nextCode()])]);   // kode bawaan, boleh diubah
     }
 
     public function show(Department $department)
@@ -41,7 +41,7 @@ class DepartmentController extends Controller
         if ($request->expectsJson()) {
             return response()->json(Department::create(array_merge($data, ['code' => $data['code'] ?: Department::codeFor($data['name'])]))->only(['id', 'name']), 201);
         }
-        $department = Department::create($data);
+        $department = Department::create(array_merge($data, ['code' => $data['code'] ?: Department::codeFor($data['name'])]));
 
         return redirect()->route('departments.show', $department)->with('status', 'Departemen disimpan.');
     }

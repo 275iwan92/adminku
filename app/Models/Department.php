@@ -17,6 +17,14 @@ class Department extends Model
         return ['is_active' => 'boolean'];
     }
 
+    // Kode bawaan form baru: DEP-001, DEP-002, ... (kode lain yang tidak berpola diabaikan).
+    public static function nextCode(): string
+    {
+        $max = static::query()->where('code', 'like', 'DEP-%')->pluck('code')->map(fn ($c) => ctype_digit(substr($c, 4)) ? (int) substr($c, 4) : 0)->max() ?? 0;
+
+        return sprintf('DEP-%03d', $max + 1);
+    }
+
     // Kode otomatis dari nama (tambah cepat dari form Issuance): huruf besar tanpa spasi, angka di belakang bila kembar.
     public static function codeFor(string $name): string
     {

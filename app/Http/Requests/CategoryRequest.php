@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\UniqueName;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,7 @@ class CategoryRequest extends FormRequest
 
         return [
             'code' => ['required', 'regex:/^[A-Z0-9]{3}$/', Rule::unique('m_category', 'code')->ignore($this->route('category'))],
-            'name' => ['required', 'string', 'max:100', ...($this->expectsJson() ? [Rule::unique('m_category', 'name')] : [])],
+            'name' => ['required', 'string', 'max:100', new UniqueName('m_category', $this->route('category'))],
         ];
     }
 
@@ -36,6 +37,6 @@ class CategoryRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['code' => strtoupper(trim((string) $this->input('code')))]);
+        $this->merge(['code' => strtoupper(trim((string) $this->input('code'))), 'name' => trim((string) $this->input('name'))]);
     }
 }
