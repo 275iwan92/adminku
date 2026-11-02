@@ -16,7 +16,12 @@ final class Indonesian
 {
     public static function register(): void
     {
-        Lang::extend(['pr_printed_from' => ['Dicetak dari AdminKU', 'Printed from AdminKU']]);
+        // net_*: keterangan di bawah baris IP panel kiri (x-dl::net-line); DevLib bawaannya "Server tidak terjangkau" / "Perangkat offline".
+        Lang::extend([
+            'pr_printed_from' => ['Dicetak dari AdminKU', 'Printed from AdminKU'],
+            'net_server_down' => ['Server tidak menjawab', 'Server not responding'],
+            'net_offline' => ['Perangkat ini offline', 'This device is offline'],
+        ]);
         Lang::translateUsing(fn (string $en, string $lang) => $lang === 'id' ? (self::WORDS[$en] ?? null) : null);
     }
 

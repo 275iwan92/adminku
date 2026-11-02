@@ -344,3 +344,22 @@ body.dl-on-phone .sstock-plan__dot { width: 28px; height: 28px; margin: -14px 0 
     .sstock-hero__stat { min-width: 0; }
     .sstock-hero__btn { width: 100%; justify-content: center; }
 }
+
+/* REMARK
+ * Tujuan       : Blok pengguna di footer panel kiri (x-dl::layer-menu): avatar toska 42 px dengan inisial, nama dan peran, baris "IP klien → IP server" (x-dl::net-line), di atas latar tembus pandang bersudut 12 px.
+ *                Keadaan jaringan (data-state dari JS DevLib): server tidak menjawab = IP server berkedip MERAH dan keterangannya merah; perangkat offline = IP klien berkedip KUNING dan keterangannya kuning.
+ * Sumber hulu  : markup DevLib (.dl-lm__foot, .dl-lm__userbtn, .dl-lm__avatar, .dl-lm__user, .dl-netline*); token --dl-net-bad / --dl-net-warn ditimpa hanya dalam lingkup .dl-lm. Warna literal di blok ini identitas merek (serasi dengan blok panel kiri AdminKU).
+ * Output       : panel kiri desktop; diciutkan (.is-mini) hanya avatar yang tampil (blok pengguna dan teks disembunyikan DevLib). HP memakai tampilan bawaan.
+ * Status       : Aktif.
+ */
+.dl-lm { --dl-net-bad: #ff5d5d; --dl-net-warn: #ffc34d; }
+.dl-lm__foot { padding: 10px; }
+.dl-lm__foot .dl-lm__userbtn { padding: 8px 10px; border-radius: 12px; background: #ffffff12; }
+.dl-lm__foot .dl-lm__avatar { width: 42px; height: 42px; background: #14a796; color: #fff; font-size: 15px; font-weight: 500; }
+.dl-lm__foot .dl-lm__user { gap: 1px; }
+.dl-lm__foot .dl-lm__user b { font-size: 15px; font-weight: 500; color: #fff; }
+.dl-lm__foot .dl-lm__user small { font-size: 13px; color: #bfd6da; }
+.dl-lm__foot .dl-netline { font-size: 12px; color: #9fb6bb; }
+.dl-lm__foot .dl-netline__row { opacity: 1; }
+.dl-lm.is-mini:not(.is-peek) .dl-lm__foot { padding: 10px 0; }
+.dl-lm.is-mini:not(.is-peek) .dl-lm__foot .dl-lm__userbtn { flex: none; padding: 0; background: none; }
