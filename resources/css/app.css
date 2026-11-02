@@ -62,12 +62,6 @@ body.dl-phone-shelled .sstock-pagetitle { display: none; }
 .sstock-link:hover, .sstock-link:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15, 23, 42, .12); outline: none; }
 
 /* Opening screen: peringatan pesan ulang (tabel ringkas, huruf besar) di kiri, grafik nilai stok di kanan; menumpuk di layar sempit. */
-/* Sapaan Beranda: satu baris sapaan + tanggal dan jam kecil, cuaca di ruang kosong kanan (desktop) atau chip kecil di samping tanggal (HP). */
-.sstock-hello { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 12px; }
-.sstock-hello .dl-greeting { font-size: 22px; line-height: 1.2; color: var(--dl-ink-strong); text-shadow: none; }
-.sstock-hello__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.sstock-hello--hp { flex-direction: column; align-items: flex-start; gap: 4px; margin: 2px 0 14px; }
-.sstock-hello--hp .dl-greeting { font-size: 20px; }
 .sstock-split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 12px; }
 .sstock-split > :only-child { grid-column: 1 / -1; }
 .sstock-box { background: var(--dl-surface); border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md, 12px); padding: 14px 16px; }
@@ -108,20 +102,6 @@ body.dl-phone-shelled .sstock-pagetitle { display: none; }
 .sstock-guide .g-red { background: color-mix(in srgb, var(--dl-danger) 16%, transparent); color: var(--dl-danger); }
 .sstock-guide .g-yellow { background: color-mix(in srgb, #f59e0b 22%, transparent); color: #b45309; }
 .sstock-guide .g-grey { background: var(--dl-surface); border: 1px solid var(--dl-border); }
-.sstock-guide .g-flow { display: flex; flex-direction: column; align-items: stretch; gap: 0; background: var(--dl-surface); border: 1px solid var(--dl-border); border-radius: 12px; padding: 16px; }
-.sstock-guide .g-row { display: grid; gap: 10px; }
-.sstock-guide .g-row-2 { grid-template-columns: repeat(2, 1fr); }
-.sstock-guide .g-row-3 { grid-template-columns: repeat(3, 1fr); }
-.sstock-guide .g-row-5 { grid-template-columns: repeat(5, 1fr); }
-.sstock-guide .g-group { border: 1px dashed var(--dl-border); border-radius: 12px; padding: 10px; }
-.sstock-guide .g-cap { font-size: 12px; opacity: .7; margin-bottom: 8px; }
-.sstock-guide .g-arrow { text-align: center; font-size: 18px; opacity: .6; line-height: 1.6; }
-.sstock-guide .g-box { border: 1px solid var(--dl-border); border-radius: 8px; padding: 9px 12px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
-.sstock-guide .g-box b { font-size: 14px; }
-.sstock-guide .g-box small { font-size: 12px; opacity: .8; }
-.sstock-guide .g-gray { background: color-mix(in srgb, var(--dl-border) 35%, transparent); }
-.sstock-guide .g-teal { background: color-mix(in srgb, #14b8a6 16%, transparent); border-color: #14b8a6; }
-.sstock-guide .g-purple { background: var(--dl-accent-soft); border-color: var(--dl-accent); }
 @media (max-width: 860px) {
     .sstock-guide { grid-template-columns: minmax(0, 1fr); }
     .sstock-guide .g-table { display: block; overflow-x: auto; }
@@ -130,7 +110,6 @@ body.dl-phone-shelled .sstock-pagetitle { display: none; }
     .g-tabs { padding: 10px 12px 0; }
     .sstock-guide .g-toc { position: static; }
     .sstock-guide .g-toc a { display: flex; align-items: center; min-height: 44px; }
-    .sstock-guide .g-row-3, .sstock-guide .g-row-5 { grid-template-columns: 1fr 1fr; }
 }
 
 /* DevLib mengunci body.dl-body (height 100vh, overflow hidden) karena layar DevLib punya wadah scroll sendiri; halaman HELP (UG dan TG) tidak, jadi body-nya yang menggulir. */
