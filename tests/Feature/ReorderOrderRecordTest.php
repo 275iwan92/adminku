@@ -88,7 +88,7 @@ class ReorderOrderRecordTest extends TestCase
         $this->get(route('stock.home'))->assertOk()->assertSee($expected, false)->assertSee('Catatan: kirim pagi', false);
         $this->get(route('products.show', $this->item->item))->assertOk()->assertSee($expected, false);
         $html = $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk()->getContent();
-        foreach (['Supplier Pesanan', 'Jumlah Dipesan', 'Toko Maju', '25 pcs'] as $text) {
+        foreach (['Pemasok Pesanan', 'Jumlah Dipesan', 'Toko Maju', '25 pcs'] as $text) {
             $this->assertStringContainsString($text, $html);
         }
     }

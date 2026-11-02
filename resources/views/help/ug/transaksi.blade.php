@@ -12,11 +12,11 @@
     <thead><tr><th>Modul</th><th>Dipakai untuk</th><th>Siapa</th></tr></thead>
     <tbody>
         @if ($can('OPN'))<tr><td><a href="#t-opn">Saldo Awal</a></td><td>Memasukkan stok yang sudah ada saat mulai memakai Stoku</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
-        @if ($can('RCV'))<tr><td><a href="#t-rcv">Penerimaan Barang</a></td><td>Barang masuk dari supplier</td><td>Data Entry, Supervisor</td></tr>@endif
+        @if ($can('RCV'))<tr><td><a href="#t-rcv">Penerimaan Barang</a></td><td>Barang masuk dari pemasok</td><td>Data Entry, Supervisor</td></tr>@endif
         @if ($can('ISS'))<tr><td><a href="#t-iss">Pengeluaran Barang</a></td><td>Barang keluar ke penerima</td><td>Data Entry, Supervisor</td></tr>@endif
         @if ($can('ADJ'))<tr><td><a href="#t-adj">Penyesuaian Stok</a></td><td>Mengoreksi stok barang per barang, untuk temuan di luar jadwal</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
         @if ($can('SO'))<tr><td><a href="#t-so">Stok Opname</a></td><td>Hitung fisik rutin untuk banyak barang sekaligus</td><td>Data Entry (mengisi hasil), Supervisor (memulai, menyetujui)</td></tr>@endif
-        @if ($can('ORD'))<tr><td><a href="#t-ord">Riwayat Pemesanan</a></td><td>Daftar semua catatan pesanan ke supplier, termasuk yang sudah tertutup</td><td>Data Entry, Supervisor</td></tr>@endif
+        @if ($can('ORD'))<tr><td><a href="#t-ord">Riwayat Pemesanan</a></td><td>Daftar semua catatan pesanan ke pemasok, termasuk yang sudah tertutup</td><td>Data Entry, Supervisor</td></tr>@endif
     </tbody>
 </table>
 <p class="g-note">Sebuah Stok Opname yang berjalan dengan kunci transaksi menolak Konfirmasi dan Setujui.@if ($can('SO')) Lihat <a href="#t-so">Stok Opname</a>.@endif</p>
@@ -54,13 +54,13 @@
 @if ($can('RCV'))
 <h3 id="t-rcv">Penerimaan Barang</h3>
 <h4>Untuk apa</h4>
-<p>Mencatat barang yang datang dari supplier. Stok bertambah setelah Konfirmasi.</p>
+<p>Mencatat barang yang datang dari pemasok. Stok bertambah setelah Konfirmasi.</p>
 <h4>Siapa yang bisa</h4>
 <p>Data Entry dan Supervisor.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>Buka <b>Penerimaan Barang</b>, tekan <b>+ Data Baru</b>.</li>
-    <li>Pilih <b>Supplier</b>. Supplier wajib. Pembelian tunai? Pilih <b>Kontan</b>. Supplier belum ada? Tekan tombol <b>+</b>. Isi <b>No. Referensi (surat jalan / PO / faktur)</b> bila ada. <b>Penerima</b> dan <b>Departemen</b> boleh kosong.</li>
+    <li>Pilih <b>Pemasok</b>. Pemasok wajib. Pembelian tunai? Pilih <b>Kontan</b>. Pemasok belum ada? Tekan tombol <b>+</b>. Isi <b>No. Referensi (surat jalan / PO / faktur)</b> bila ada. <b>Penerima</b> dan <b>Departemen</b> boleh kosong.</li>
     <li>Tekan <b>+ Tambah Barang</b> dan pilih barang.</li>
     <li>Barangnya berkedaluwarsa? Isi <b>Tanggal Kedaluwarsa</b>. Isian ini wajib untuk barang berkedaluwarsa. Barang lain mengabaikannya. Satu kedatangan biasanya satu tanggal, jadi cukup satu baris.</li>
     <li>Isi <b>Jml</b>, <b>Satuan</b>, dan <b>Harga Beli / Satuan</b>. Kolom <b>Satuan</b> menawarkan satuan stok barang itu dan <b>Satuan masuk</b>-nya (mis. dus). Satuan lain ada di grup <b>Satuan lain</b>.</li>
@@ -79,10 +79,10 @@
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">
-    <li><b>Supplier tidak ada di pilihan.</b> Supplier nonaktif atau belum ada. Tambahkan dengan tombol <b>+</b>, atau pilih <b>Kontan</b>.</li>
+    <li><b>Pemasok tidak ada di pilihan.</b> Pemasok nonaktif atau belum ada. Tambahkan dengan tombol <b>+</b>, atau pilih <b>Kontan</b>.</li>
     <li><b>Pesan &quot;Isi tanggal kedaluwarsa&quot;.</b> Barang itu berkedaluwarsa. Isi Tanggal Kedaluwarsa di barisnya.</li>
     <li><b>Jendela &quot;Faktor satuan belum ada&quot;.</b> Isi faktornya, lalu Simpan lagi.</li>
-    <li><b>Salah supplier atau jumlah.</b> Dokumen Terkonfirmasi terkunci. Batalkan lalu buat dokumen baru.</li>
+    <li><b>Salah pemasok atau jumlah.</b> Dokumen Terkonfirmasi terkunci. Batalkan lalu buat dokumen baru.</li>
     <li><b>Pembatalan ditolak.</b> Sebagian barangnya sudah keluar. Lihat <a href="#t-batal">Membatalkan dokumen</a>.</li>
 </ul>
 @endif
@@ -276,14 +276,14 @@
 <ol class="g-steps">
     <li>Buka <b>Transaksi</b>, lalu <b>Riwayat Pemesanan</b>.</li>
     <li>Pilih kotak status di atas grid: <b>Semua</b>, <b>Terbuka</b> (Dipesan dan Diterima sebagian), <b>Selesai</b>, atau <b>Ditutup manual</b>.</li>
-    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b> (tanggal pesan), lalu tekan <b>Terapkan</b>. Kosong berarti semua tanggal. Pakai <b>Saring</b> untuk memilih satu <b>Supplier</b>, dan kotak <b>Cari</b> untuk barang, supplier, atau referensi.</li>
+    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b> (tanggal pesan), lalu tekan <b>Terapkan</b>. Kosong berarti semua tanggal. Pakai <b>Saring</b> untuk memilih satu <b>Pemasok</b>, dan kotak <b>Cari</b> untuk barang, pemasok, atau referensi.</li>
     <li>Klik 2x pada baris, atau tekan ikon <b>Buka</b>, untuk melihat detail pesanan.</li>
     <li>Di detail, lihat tabel <b>Penerimaan yang dialokasikan</b>: nomor dokumen Penerimaan, tanggal, dan jumlahnya.</li>
-    <li>Pesanan masih terbuka dan supplier tidak akan mengirim sisanya? Tekan <b>Tutup Pesanan</b>, isi alasan bila perlu, lalu tekan <b>Tutup Pesanan</b> di jendela itu.</li>
+    <li>Pesanan masih terbuka dan pemasok tidak akan mengirim sisanya? Tekan <b>Tutup Pesanan</b>, isi alasan bila perlu, lalu tekan <b>Tutup Pesanan</b> di jendela itu.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
-    <li>Kolom grid: <b>Tanggal Pesan</b>, <b>No. Referensi Pemesanan</b>, <b>Barang</b>, <b>Supplier</b>, <b>Jumlah Dipesan</b> (satuan stok), <b>Diterima</b>, <b>Sisa</b>, <b>Status</b>, <b>Pertama Diterima</b>, <b>Lead Time (hari)</b>, <b>Dicatat oleh</b>, dan <b>Ditutup</b>.</li>
+    <li>Kolom grid: <b>Tanggal Pesan</b>, <b>No. Referensi Pemesanan</b>, <b>Barang</b>, <b>Pemasok</b>, <b>Jumlah Dipesan</b> (satuan stok), <b>Diterima</b>, <b>Sisa</b>, <b>Status</b>, <b>Pertama Diterima</b>, <b>Lead Time (hari)</b>, <b>Dicatat oleh</b>, dan <b>Ditutup</b>.</li>
     <li><b>Status</b> berwarna sama dengan Beranda: hijau <b>Dipesan</b>, kuning <b>Diterima sebagian</b>. Ditambah biru <b>Selesai</b> (jumlah dipesan sudah terpenuhi) dan abu-abu <b>Ditutup manual</b>.</li>
     <li><b>Lead Time (hari)</b> adalah lama dari tanggal pesan sampai penerimaan pertama. Kolomnya kosong bila belum ada penerimaan.</li>
     <li>Kolom <b>Ditutup</b> memuat tanggal penutupan. Pesanan yang ditutup manual juga memuat alasannya.</li>

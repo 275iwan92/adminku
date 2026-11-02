@@ -8,7 +8,7 @@
 --}}
 @if ($below->isNotEmpty())
     @php
-        $text = $below->count().' barang berada di atau di bawah titik pesan ulang. Segera pesan ke supplier.';
+        $text = $below->count().' barang berada di atau di bawah titik pesan ulang. Segera pesan ke pemasok.';
         $cols = ['Item', 'Reorder Qty', 'Available Stock', 'Order Status'];
         $canOrder = auth()->user()->canWrite('ORD');   // Catat Pemesanan / Tutup Pesanan = tulis modul ORD (server menolak yang lain dengan 403)
         $orderable = $below->filter(fn ($i) => ! $i->openOrder)->mapWithKeys(fn ($i) => [$i->id => $i->name])->all();

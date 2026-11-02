@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 6 Data Master: Barang (produk, batch, FEFO, kode otomatis, titik pesan ulang, lead time, Satuan masuk), Suppliers (termasuk Kontan), Departemen, Penerima, Satuan, Kategori, Lokasi Penyimpanan.
+ Tujuan       : Panduan Pengguna bagian 6 Data Master: Barang (produk, batch, FEFO, kode otomatis, titik pesan ulang, lead time, Satuan masuk), Pemasok (termasuk Kontan), Departemen, Penerima, Satuan, Kategori, Lokasi Penyimpanan.
                 Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum.
  Sumber hulu  : ProductController / products/form, ProductUnits, Product / Item, LeadTimes, SupplierController / Supplier, DepartmentController, RecipientController, UnitController, CategoryController, LocationController, Modules (peran minimal).
  Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya salah satu modul master; tiap bagian bergantung $can).
@@ -12,7 +12,7 @@
     <thead><tr><th>Modul</th><th>Isi singkat</th><th>Siapa yang boleh mengubah</th></tr></thead>
     <tbody>
         @if ($can('ITM'))<tr><td><a href="#m-itm">Barang</a></td><td>Data barang, stok, titik pesan ulang, harga</td><td>Menambah: Data Entry dan Supervisor. Mengubah: Supervisor.</td></tr>@endif
-        @if ($can('SUP'))<tr><td><a href="#m-sup">Suppliers</a></td><td>Pemasok barang</td><td>Data Entry dan Supervisor</td></tr>@endif
+        @if ($can('SUP'))<tr><td><a href="#m-sup">Pemasok</a></td><td>Pemasok barang</td><td>Data Entry dan Supervisor</td></tr>@endif
         @if ($can('DEP'))<tr><td><a href="#m-dep">Departemen</a></td><td>Bagian atau unit penerima barang</td><td>Data Entry dan Supervisor</td></tr>@endif
         @if ($can('RCP'))<tr><td><a href="#m-rcp">Penerima</a></td><td>Orang yang menerima barang keluar</td><td>Data Entry dan Supervisor</td></tr>@endif
         @if ($can('UOM'))<tr><td><a href="#m-uom">Satuan</a></td><td>pcs, box, kg, dan hitungan antar satuan</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
@@ -21,7 +21,7 @@
         @if ($can('CMP'))<tr><td><a href="#m-cmp">Perusahaan</a></td><td>Nama, alamat, dan logo untuk kop semua cetakan</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
     </tbody>
 </table>
-<div class="g-tip"><b>Urutan menyiapkan data baru:</b> Kategori, Lokasi Penyimpanan, Satuan, Supplier, Departemen, Penerima, lalu Barang. Barang butuh kategori, satuan, dan (bila ada) lokasi yang sudah ada. Datanya belum ada? Pakai <a href="#tombol-plus">tombol plus</a> di samping pilihan.</div>
+<div class="g-tip"><b>Urutan menyiapkan data baru:</b> Kategori, Lokasi Penyimpanan, Satuan, Pemasok, Departemen, Penerima, lalu Barang. Barang butuh kategori, satuan, dan (bila ada) lokasi yang sudah ada. Datanya belum ada? Pakai <a href="#tombol-plus">tombol plus</a> di samping pilihan.</div>
 
 @if ($can('ITM'))
 <h3 id="m-itm">Barang</h3>
@@ -83,7 +83,7 @@
 @endif
 
 @if ($can('SUP'))
-<h3 id="m-sup">Suppliers</h3>
+<h3 id="m-sup">Pemasok</h3>
 <h4>Untuk apa</h4>
 <p>Daftar pemasok yang dipilih di Penerimaan Barang dan Catat Pemesanan.</p>
 <h4>Siapa yang bisa</h4>
@@ -91,21 +91,21 @@
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>Tekan <b>+ Data Baru</b>.</li>
-    <li>Isi <b>Kode Supplier</b> (unik, tidak bisa diubah setelah disimpan) dan <b>Nama Supplier</b>.</li>
+    <li>Isi <b>Kode Pemasok</b> (unik, tidak bisa diubah setelah disimpan) dan <b>Nama Pemasok</b>.</li>
     <li>Isi kontak bila ada: <b>Telepon Kantor (PSTN)</b>, <b>Nama Kontak</b>, <b>HP Kontak (smartphone)</b> (juga dipakai untuk WhatsApp), dan <b>Alamat Jalan</b>.</li>
     <li>Pada <b>Kecamatan, Kota / Kabupaten, Provinsi, Negara</b>, ketik kecamatan, kota, atau kode pos, lalu pilih dari daftar. Satu pilihan mengisi kecamatan, kota, provinsi, negara, dan kode pos.</li>
     <li>Tekan <b>Simpan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
-    <li><b>Kontan</b> adalah supplier sistem untuk pembelian tunai atau tanpa supplier tetap. Kontan selalu ada di urutan pertama pilihan Supplier. Kontan tidak bisa dinonaktifkan, diganti nama, atau dihapus.</li>
+    <li><b>Kontan</b> adalah pemasok sistem untuk pembelian tunai atau tanpa pemasok tetap. Kontan selalu ada di urutan pertama pilihan Pemasok. Kontan tidak bisa dinonaktifkan, diganti nama, atau dihapus.</li>
     <li>Wilayah wajib dipilih dari daftar (minimal sampai kota) bila data wilayah sudah ada. Bila daftar wilayah masih kosong, isian ini boleh dikosongkan.</li>
-    <li>Dari pilihan Supplier di Penerimaan Barang atau Catat Pemesanan, tombol <b>+</b> menambah supplier baru hanya dengan nama. Kodenya dibuat otomatis (SUP-001, SUP-002, ...). Alamat dan wilayah bisa dilengkapi nanti di menu ini.</li>
-    <li>Supplier yang dinonaktifkan tidak muncul di pilihan dokumen baru.</li>
+    <li>Dari pilihan Pemasok di Penerimaan Barang atau Catat Pemesanan, tombol <b>+</b> menambah pemasok baru hanya dengan nama. Kodenya dibuat otomatis (SUP-001, SUP-002, ...). Alamat dan wilayah bisa dilengkapi nanti di menu ini.</li>
+    <li>Pemasok yang dinonaktifkan tidak muncul di pilihan dokumen baru.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">
-    <li><b>Kode supplier ditolak.</b> Kode itu sudah dipakai. Pilih kode lain.</li>
+    <li><b>Kode pemasok ditolak.</b> Kode itu sudah dipakai. Pilih kode lain.</li>
     <li><b>Wilayah wajib diisi.</b> Cari dan pilih minimal sampai kota.</li>
     <li><b>Kontan tidak bisa dinonaktifkan.</b> Memang begitu aturannya.</li>
 </ul>

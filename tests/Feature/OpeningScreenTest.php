@@ -47,7 +47,7 @@ class OpeningScreenTest extends TestCase
     public function test_tiles_follow_the_rights_and_show_write_or_read(): void
     {
         $entry = User::factory()->create();
-        $this->assertSame(['Barang', 'Suppliers', 'Departemen', 'Penerima'], $this->tiles($entry, 'master'));   // Satuan, Kategori, Lokasi, Perusahaan hanya Supervisor
+        $this->assertSame(['Barang', 'Pemasok', 'Departemen', 'Penerima'], $this->tiles($entry, 'master'));   // Satuan, Kategori, Lokasi, Perusahaan hanya Supervisor
         $this->assertContains('Satuan', $this->tiles(User::factory()->supervisor()->create(), 'master'));
         $this->assertNotContains('Saldo Awal', $this->tiles($entry, 'transaksi'));
         $this->assertNotContains('Beranda Stok', $this->tiles($entry, 'laporan'));
@@ -56,7 +56,7 @@ class OpeningScreenTest extends TestCase
         $html = $this->actingAs($ro)->get(route('opening', 'master'))->assertOk()->getContent();
         $this->assertStringContainsString('Hak Anda: Tulis', $html);
         $this->assertSame(1, preg_match('/Barang<em class="">Baca<\/em>/', $html));
-        $this->assertSame(1, preg_match('/Suppliers<em class="is-w">Tulis<\/em>/', $html));
+        $this->assertSame(1, preg_match('/Pemasok<em class="is-w">Tulis<\/em>/', $html));
     }
 
     public function test_sections_without_any_allowed_item_are_forbidden(): void

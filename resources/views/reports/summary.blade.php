@@ -41,7 +41,7 @@
             $sup ? ['key' => 'cost', 'label' => 'Avg Cost', 'type' => 'money'] : null,
             $sup ? ['key' => 'value', 'label' => 'Stock Value', 'type' => 'money', 'sum' => true, 'bold' => true] : null,
             ['key' => 'status', 'label' => 'Status', 'type' => 'badge', 'tones' => ['AMAN' => 'success', 'PESAN ULANG' => 'danger'], 'rowTones' => ['PESAN ULANG' => 'danger']],
-            ['key' => 'order_supplier', 'label' => 'Supplier Pesanan', 'wrap' => true],
+            ['key' => 'order_supplier', 'label' => 'Pemasok Pesanan', 'wrap' => true],
             ['key' => 'order_qty', 'label' => 'Jumlah Dipesan', 'wrap' => true],
             ['key' => 'order', 'label' => 'Info Pemesanan', 'wrap' => true],
         ]))"

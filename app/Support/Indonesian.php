@@ -37,10 +37,10 @@ final class Indonesian
         'Last updated by' => 'Terakhir diubah oleh', 'Last updated at' => 'Terakhir diubah pada', 'History' => 'Riwayat',
 
         // Judul halaman
-        'Home' => 'Beranda', 'Sign in' => 'Masuk', 'Items' => 'Barang', 'Item' => 'Barang', 'Suppliers' => 'Supplier', 'Supplier' => 'Supplier', 'Units' => 'Satuan', 'Unit' => 'Satuan',
+        'Home' => 'Beranda', 'Sign in' => 'Masuk', 'Items' => 'Barang', 'Item' => 'Barang', 'Suppliers' => 'Pemasok', 'Supplier' => 'Pemasok', 'Units' => 'Satuan', 'Unit' => 'Satuan',
         'Stock Card' => 'Kartu Stok', 'Summary Stock' => 'Ringkasan Stok', 'Receiving Report' => 'Laporan Penerimaan', 'Issuance Report' => 'Laporan Pengeluaran',
         'Opname & Adjustment Report' => 'Laporan Opname & Penyesuaian', 'AdminKU' => 'AdminKU',
-        'Supplier · ' => 'Supplier · ',
+        'Supplier · ' => 'Pemasok · ',
 
         // Beranda
         'Active items' => 'Barang aktif', 'At / below reorder point' => 'Di / bawah titik pesan ulang', 'Receiving today' => 'Penerimaan hari ini', 'Issuance today' => 'Pengeluaran hari ini',
@@ -50,7 +50,7 @@ final class Indonesian
         // Grid master
         'All items' => 'Semua barang', 'Reorder' => 'Pesan ulang', 'Search code, name, location...' => 'Cari kode, nama, lokasi...', 'Level' => 'Status stok',
         'Lead Time (days)' => 'Lead Time (hari)', 'Unit Price' => 'Harga Satuan', 'Stock Value' => 'Nilai Stok',
-        'All suppliers' => 'Semua supplier', 'Search code, name, contact, city...' => 'Cari kode, nama, kontak, kota...', 'Company Phone' => 'Telepon Kantor', 'Contact' => 'Kontak',
+        'All suppliers' => 'Semua pemasok', 'Search code, name, contact, city...' => 'Cari kode, nama, kontak, kota...', 'Company Phone' => 'Telepon Kantor', 'Contact' => 'Kontak',
         'Contact Mobile' => 'HP Kontak', 'City, Country' => 'Kota, Negara', 'Street Address' => 'Alamat Jalan',
         'All units' => 'Semua satuan', 'Search code or name...' => 'Cari kode atau nama...', 'Type' => 'Jenis', 'Conversions' => 'Konversi', 'Items using it' => 'Barang pemakai',
 
@@ -58,11 +58,11 @@ final class Indonesian
         'Stock on hand' => 'Stok saat ini',
         'Reorder and Price' => 'Pesan Ulang dan Harga', 'Item Name' => 'Nama Barang', 'Item Code' => 'Kode Barang', 'Rack / Storage Location' => 'Lokasi Rak / Penyimpanan',
         'Unique. Cannot be changed after saving.' => 'Unik. Tidak bisa diubah setelah disimpan.', 'Unit Price (IDR)' => 'Harga Satuan (Rp)',
-        'Suggested quantity to order.' => 'Jumlah pesanan yang disarankan.', 'Days from placing the order until the supplier delivers.' => 'Hari sejak pesanan dibuat sampai supplier mengirim.',
+        'Suggested quantity to order.' => 'Jumlah pesanan yang disarankan.', 'Days from placing the order until the supplier delivers.' => 'Hari sejak pesanan dibuat sampai pemasok mengirim.',
         'Reference price. Stock valuation uses the moving average of purchase prices.' => 'Harga acuan. Valuasi stok memakai rata-rata bergerak harga pembelian.',
 
         // Form Supplier
-        'Supplier Code' => 'Kode Supplier', 'Supplier Name' => 'Nama Supplier', 'Company Phone (PSTN)' => 'Telepon Kantor (PSTN)', 'Landline, with area code.' => 'Telepon kabel, dengan kode area.',
+        'Supplier Code' => 'Kode Pemasok', 'Supplier Name' => 'Nama Pemasok', 'Company Phone (PSTN)' => 'Telepon Kantor (PSTN)', 'Landline, with area code.' => 'Telepon kabel, dengan kode area.',
         'Contact Name' => 'Nama Kontak', 'Contact Mobile (smartphone)' => 'HP Kontak (smartphone)', 'Also used for WhatsApp.' => 'Juga dipakai untuk WhatsApp.',
         'District, City / Regency, Province, Country' => 'Kecamatan, Kota / Kabupaten, Provinsi, Negara', 'Search district / city / postcode...' => 'Cari kecamatan / kota / kode pos...',
         'One choice gives district, city / regency, province, country, and the postal code.' => 'Satu pilihan mengisi kecamatan, kota / kabupaten, provinsi, negara, dan kode pos.',
@@ -106,13 +106,13 @@ final class Indonesian
         'Only items at / below reorder point' => 'Hanya barang di / bawah titik pesan ulang', 'Include inactive items' => 'Termasuk barang nonaktif',
         'Recipient / Department' => 'Penerima / Departemen', 'Choose an item' => 'Pilih barang', 'Select an item and a period, then press Apply to see its stock card.' => 'Pilih barang dan periode, lalu tekan Terapkan untuk melihat kartu stoknya.',
         'Stock movement history per item' => 'Riwayat pergerakan stok per barang', 'Stock position and movement per period' => 'Posisi dan pergerakan stok per periode',
-        'Goods received from suppliers' => 'Barang diterima dari supplier', 'Goods issued for maintenance / ATK' => 'Barang keluar untuk maintenance / ATK', 'Physical count vs system stock' => 'Hitung fisik dibanding stok sistem',
+        'Goods received from suppliers' => 'Barang diterima dari pemasok', 'Goods issued for maintenance / ATK' => 'Barang keluar untuk maintenance / ATK', 'Physical count vs system stock' => 'Hitung fisik dibanding stok sistem',
         'Period' => 'Periode', 'Scope' => 'Cakupan',
         'Opening' => 'Awal', 'In' => 'Masuk', 'Out' => 'Keluar', 'Adjustment' => 'Penyesuaian', 'Balance' => 'Saldo', 'Closing' => 'Akhir', 'Unit Cost' => 'Biaya Satuan', 'Balance Value' => 'Nilai Saldo',
         'Reference / Note' => 'Referensi / Catatan', 'User' => 'User', 'Lead Time (d)' => 'Lead Time (hari)', 'Avg Cost' => 'Biaya Rata-rata',
         'Qty (stock unit)' => 'Jml (satuan stok)', 'Received as' => 'Diterima sebagai', 'Purchase Price' => 'Harga Beli', 'Amount' => 'Jumlah', 'Cost' => 'Biaya', 'Counted Qty' => 'Jml Hitung',
         'Value Effect' => 'Dampak Nilai', 'Counted by' => 'Dihitung oleh', 'Approved / Rejected by' => 'Disetujui / Ditolak oleh',
-        'Per Month' => 'Per Bulan', 'Per Category' => 'Per Kategori', 'Per Status' => 'Per Status', 'Per Supplier' => 'Per Supplier', 'Per Department' => 'Per Departemen',
+        'Per Month' => 'Per Bulan', 'Per Category' => 'Per Kategori', 'Per Status' => 'Per Status', 'Per Supplier' => 'Per Pemasok', 'Per Department' => 'Per Departemen',
         'Per Recipient' => 'Per Penerima', 'Per Document' => 'Per Dokumen',
         'Prepared by' => 'Dibuat oleh', 'Warehouse' => 'Gudang', 'Checked by' => 'Diperiksa oleh', 'Received by' => 'Diterima oleh', 'Approved by' => 'Disetujui oleh', 'Supervisor' => 'Supervisor',
 
@@ -123,9 +123,9 @@ final class Indonesian
         'RO opens the screen but blocks saving or changing anything. A user also needs a high enough role: Supervisor-only and Administrator-only modules stay closed to lower roles even when granted. Administrators always have full access.' => 'RO membuka layar tetapi menolak menyimpan atau mengubah apa pun. Pengguna juga harus berperan cukup tinggi: modul khusus Supervisor atau Administrator tetap tertutup bagi peran di bawahnya walau diberikan. Administrator selalu punya akses penuh.',
 
         // Tambah cepat dari dropdown (x-dl::field.select add)
-        'Add Supplier' => 'Tambah Supplier', 'Add Recipient' => 'Tambah Penerima', 'Add Department' => 'Tambah Departemen', 'Add Category' => 'Tambah Kategori', 'Add Location' => 'Tambah Lokasi', 'Add Unit' => 'Tambah Satuan',
+        'Add Supplier' => 'Tambah Pemasok', 'Add Recipient' => 'Tambah Penerima', 'Add Department' => 'Tambah Departemen', 'Add Category' => 'Tambah Kategori', 'Add Location' => 'Tambah Lokasi', 'Add Unit' => 'Tambah Satuan',
         'Recipient Name' => 'Nama Penerima', 'Department Name' => 'Nama Departemen',
-        'The supplier code is created automatically. Address and region can be completed later in Suppliers.' => 'Kode supplier dibuat otomatis. Alamat dan wilayah bisa dilengkapi nanti di menu Suppliers.',
+        'The supplier code is created automatically. Address and region can be completed later in Suppliers.' => 'Kode pemasok dibuat otomatis. Alamat dan wilayah bisa dilengkapi nanti di menu Pemasok.',
         'The department code is created automatically.' => 'Kode departemen dibuat otomatis.',
         'Short, lowercase (pcs, box, kg). Cannot be changed after saving.' => 'Singkat, huruf kecil (pcs, box, kg). Tidak bisa diubah setelah disimpan.',
 
@@ -153,7 +153,7 @@ final class Indonesian
 
         // Riwayat Pemesanan
         'Order History' => 'Riwayat Pemesanan', 'Ordered Qty' => 'Jumlah Dipesan', 'Received' => 'Diterima', 'Remaining' => 'Sisa', 'First Received' => 'Pertama Diterima', 'Recorded by' => 'Dicatat oleh',
-        'Open' => 'Terbuka', 'Closed manually' => 'Ditutup manual', 'Search item, supplier, reference...' => 'Cari barang, supplier, referensi...',
+        'Open' => 'Terbuka', 'Closed manually' => 'Ditutup manual', 'Search item, supplier, reference...' => 'Cari barang, pemasok, referensi...',
 
         // Perusahaan (kop cetakan)
         'Company' => 'Perusahaan', 'Company Name' => 'Nama Perusahaan', 'Weather City' => 'Kota untuk cuaca', 'Latitude' => 'Lintang', 'Longitude' => 'Bujur', 'Legal Entity Name' => 'Nama PT / CV', 'Tax ID (NPWP)' => 'NPWP', 'Phone' => 'Telepon', 'Company Address' => 'Alamat', 'Print Header Style' => 'Tampilan kop',

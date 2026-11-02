@@ -15,7 +15,7 @@
     <thead><tr><th>Menu</th><th>Untuk apa</th><th>Kapan Anda memakainya</th></tr></thead>
     <tbody>
         @if ($can('ITM'))<tr><td><a href="#m-itm">Barang</a></td><td>Daftar semua barang dan stoknya</td><td>Ada barang baru, atau Anda ingin melihat stok</td></tr>@endif
-        @if ($can('SUP'))<tr><td><a href="#m-sup">Suppliers</a></td><td>Daftar pemasok (penjual barang)</td><td>Ada pemasok baru</td></tr>@endif
+        @if ($can('SUP'))<tr><td><a href="#m-sup">Pemasok</a></td><td>Daftar pemasok (penjual barang)</td><td>Ada pemasok baru</td></tr>@endif
         @if ($can('DEP'))<tr><td><a href="#m-dep">Departemen</a></td><td>Bagian atau unit penerima barang</td><td>Ada bagian baru</td></tr>@endif
         @if ($can('RCP'))<tr><td><a href="#m-rcp">Penerima</a></td><td>Orang yang menerima barang keluar</td><td>Ada penerima baru</td></tr>@endif
         @if ($can('UOM'))<tr><td><a href="#m-uom">Satuan</a></td><td>pcs, box, kg, dan hitungan antar satuan</td><td>Perlu satuan baru</td></tr>@endif
@@ -23,11 +23,11 @@
         @if ($can('CMP'))<tr><td><a href="#m-cmp">Perusahaan</a></td><td>Nama, alamat, dan logo untuk kop semua cetakan</td><td>Sekali di awal, lalu bila datanya berubah</td></tr>@endif
         @if ($can('LOC'))<tr><td><a href="#m-loc">Lokasi Penyimpanan</a></td><td>Rak atau gudang tempat barang disimpan</td><td>Ada rak atau gudang baru</td></tr>@endif
         @if ($can('OPN'))<tr><td><a href="#t-opn">Saldo Awal</a></td><td>Memasukkan stok yang sudah ada saat mulai memakai Stoku</td><td>Sekali di awal, bila Anda memerlukannya</td></tr>@endif
-        @if ($can('RCV'))<tr><td><a href="#t-rcv">Penerimaan Barang</a></td><td>Mencatat barang yang datang dari supplier</td><td>Setiap barang datang</td></tr>@endif
+        @if ($can('RCV'))<tr><td><a href="#t-rcv">Penerimaan Barang</a></td><td>Mencatat barang yang datang dari pemasok</td><td>Setiap barang datang</td></tr>@endif
         @if ($can('ISS'))<tr><td><a href="#t-iss">Pengeluaran Barang</a></td><td>Mencatat barang yang keluar ke penerima</td><td>Setiap barang keluar</td></tr>@endif
         @if ($can('ADJ'))<tr><td><a href="#t-adj">Penyesuaian Stok</a></td><td>Mencocokkan stok sistem dengan hitungan fisik, satu per satu</td><td>Ada temuan di luar jadwal, misalnya salah catat</td></tr>@endif
         @if ($can('SO'))<tr><td><a href="#t-so">Stok Opname</a></td><td>Menghitung fisik banyak barang sekaligus</td><td>Rutin, mingguan atau bulanan</td></tr>@endif
-        @if ($can('ORD'))<tr><td><a href="#t-ord">Riwayat Pemesanan</a></td><td>Melihat semua catatan pesanan ke supplier, termasuk yang tertutup</td><td>Memeriksa pesanan yang belum datang, atau menutup pesanan</td></tr>@endif
+        @if ($can('ORD'))<tr><td><a href="#t-ord">Riwayat Pemesanan</a></td><td>Melihat semua catatan pesanan ke pemasok, termasuk yang tertutup</td><td>Memeriksa pesanan yang belum datang, atau menutup pesanan</td></tr>@endif
         @if ($can('R-CARD') || $can('R-SUM') || $can('R-IN') || $can('R-OUT') || $can('R-EXP') || $can('R-ADJ'))<tr><td><a href="#laporan">Laporan</a></td><td>Membaca stok, riwayat, penerimaan, pengeluaran, dan barang hampir kedaluwarsa</td><td>Kapan saja Anda ingin tahu keadaan stok</td></tr>@endif
         <tr><td><a href="#beranda">Beranda</a></td><td>Peringatan stok menipis, barang hampir kedaluwarsa, dan jadwal Stok Opname</td><td>Setiap kali Anda masuk</td></tr>
     </tbody>
@@ -38,8 +38,8 @@
 @include('help.diagram', ['name' => 'ug-hari-pertama', 'caption' => 'Urutan hari pertama: masuk, Data Master, stok awal, Pengeluaran, Laporan, Stok Opname.'])
 <ol class="g-steps">
     <li><b>Masuk.</b> Buka alamat Stoku di browser. Isi username atau e-mail dan password. Data Entry langsung melihat tab Penerimaan Barang. <a href="#masuk">Lihat Masuk</a>.</li>
-    <li><b>Siapkan Data Master.</b> Data Master adalah data acuan yang dipilih di dokumen. Isi dengan urutan ini: Kategori, Lokasi Penyimpanan, Satuan, Supplier, Departemen, Penerima, lalu Barang. Data Entry bisa menambah Supplier, Departemen, Penerima, dan Barang. Kategori, Lokasi Penyimpanan, dan Satuan diisi Supervisor. Supervisor juga mengisi data Perusahaan agar kop cetakan benar.@if ($anyMaster) Lihat <a href="#master">Data Master</a>.@endif</li>
-    <li><b>Isi stok awal.</b> Ada dua cara untuk satu barang. Stok yang sudah ada di rak dan belum pernah dicatat: Supervisor membuat <b>Saldo Awal</b>. Barang yang baru datang dari supplier: buat <b>Penerimaan Barang</b>. Saldo Awal tidak wajib. Penerimaan pertama <b>tidak</b> otomatis menjadi Saldo Awal. Lihat penjelasannya di bawah.</li>
+    <li><b>Siapkan Data Master.</b> Data Master adalah data acuan yang dipilih di dokumen. Isi dengan urutan ini: Kategori, Lokasi Penyimpanan, Satuan, Pemasok, Departemen, Penerima, lalu Barang. Data Entry bisa menambah Pemasok, Departemen, Penerima, dan Barang. Kategori, Lokasi Penyimpanan, dan Satuan diisi Supervisor. Supervisor juga mengisi data Perusahaan agar kop cetakan benar.@if ($anyMaster) Lihat <a href="#master">Data Master</a>.@endif</li>
+    <li><b>Isi stok awal.</b> Ada dua cara untuk satu barang. Stok yang sudah ada di rak dan belum pernah dicatat: Supervisor membuat <b>Saldo Awal</b>. Barang yang baru datang dari pemasok: buat <b>Penerimaan Barang</b>. Saldo Awal tidak wajib. Penerimaan pertama <b>tidak</b> otomatis menjadi Saldo Awal. Lihat penjelasannya di bawah.</li>
     <li><b>Catat Pengeluaran Barang</b> setiap barang keluar ke penerima. Stok tidak boleh menjadi minus.</li>
     <li><b>Periksa Laporan.</b> Ringkasan Stok menunjukkan sisa semua barang. Kartu Stok menunjukkan riwayat satu barang. Laporan kosong? Mungkin dokumennya masih Draf.</li>
     <li><b>Jadwalkan Stok Opname.</b> Stok Opname adalah hitung fisik rutin untuk mencocokkan stok di Stoku dengan stok di rak.</li>
@@ -74,7 +74,7 @@
                     <li>Mengajukan pembatalan dokumen.</li>
                     <li>Mengisi hasil hitung Stok Opname dan mencetak Lembar Hitung.</li>
                     <li>Melihat Barang, menambah barang baru, dan menambah Satuan masuk.</li>
-                    <li>Mengelola Suppliers, Departemen, dan Penerima.</li>
+                    <li>Mengelola Pemasok, Departemen, dan Penerima.</li>
                     <li>Membaca Kartu Stok, Ringkasan Stok, Laporan Penerimaan, Laporan Pengeluaran, dan Laporan Kedaluwarsa.</li>
                 </ul>
             </td>

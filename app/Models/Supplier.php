@@ -15,7 +15,7 @@ class Supplier extends Model
 {
     protected $table = 'm_supplier';
 
-    public const SYSTEM_MESSAGE = 'Kontan adalah supplier sistem: tidak bisa dinonaktifkan, diganti nama, atau dihapus.';
+    public const SYSTEM_MESSAGE = 'Kontan adalah pemasok sistem: tidak bisa dinonaktifkan, diganti nama, atau dihapus.';
 
     protected static function booted(): void
     {
@@ -44,7 +44,7 @@ class Supplier extends Model
         }
     }
 
-    // Urutan semua dropdown supplier: supplier sistem (Kontan) dulu, lalu nama.
+    // Urutan semua dropdown supplier: pemasok sistem (Kontan) dulu, lalu nama.
     public function scopeForSelect(Builder $query): Builder
     {
         return $query->orderByDesc('is_system')->orderBy('name');

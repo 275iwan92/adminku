@@ -100,7 +100,7 @@
     <li>Anda keluar otomatis. Masuk lagi dengan akun contoh (<code>admin</code>, <code>supervisor</code>, <code>entry</code>).</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
-<div class="g-warn"><b>Seluruh data saat ini hilang</b> (barang, transaksi, supplier, akun, grup) dan tidak bisa dikembalikan. Data wilayah dan gambar latar login dipertahankan. Jangan pakai di server yang berisi data sungguhan.</div>
+<div class="g-warn"><b>Seluruh data saat ini hilang</b> (barang, transaksi, pemasok, akun, grup) dan tidak bisa dikembalikan. Data wilayah dan gambar latar login dipertahankan. Jangan pakai di server yang berisi data sungguhan.</div>
 <h4>Masalah umum</h4>
 <ul class="g-list">
     <li><b>Tombol Segarkan tidak ada.</b> Fitur dimatikan di lingkungan ini.</li>

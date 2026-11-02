@@ -42,7 +42,7 @@
         @if ($anyMaster)
             <a href="#master">6. Data Master</a>
             @if ($can('ITM'))<a class="g-toc-sub" href="#m-itm">Barang</a>@endif
-            @if ($can('SUP'))<a class="g-toc-sub" href="#m-sup">Suppliers</a>@endif
+            @if ($can('SUP'))<a class="g-toc-sub" href="#m-sup">Pemasok</a>@endif
             @if ($can('DEP'))<a class="g-toc-sub" href="#m-dep">Departemen</a>@endif
             @if ($can('RCP'))<a class="g-toc-sub" href="#m-rcp">Penerima</a>@endif
             @if ($can('UOM'))<a class="g-toc-sub" href="#m-uom">Satuan</a>@endif

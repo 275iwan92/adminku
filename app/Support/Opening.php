@@ -152,7 +152,7 @@ final class Opening
     private static function shortcuts(string $section, User $user): array
     {
         $all = $section === 'master'
-            ? [['ITM', 'fa-plus', 'Barang baru', 'products.create', []], ['SUP', 'fa-plus', 'Supplier baru', 'suppliers.create', []]]
+            ? [['ITM', 'fa-plus', 'Barang baru', 'products.create', []], ['SUP', 'fa-plus', 'Pemasok baru', 'suppliers.create', []]]
             : [['RCV', 'fa-truck-ramp-box', 'Penerimaan baru', 'docs.create', ['receiving']], ['ISS', 'fa-dolly', 'Pengeluaran baru', 'docs.create', ['issuance']]];
 
         return array_values(array_map(fn ($s) => ['code' => $s[0], 'icon' => 'fa-solid '.$s[1], 'label' => $s[2], 'url' => route($s[3], $s[4])], array_filter($all, fn ($s) => $user->canWrite($s[0]))));

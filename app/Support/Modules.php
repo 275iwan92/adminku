@@ -39,7 +39,7 @@ final class Modules
     {
         return [
             'ITM' => ['MST', 'Barang', 'fa-solid fa-box', 'grid', 'products.index', 'entry', ['products.', 'hp.find']],
-            'SUP' => ['MST', 'Suppliers', 'fa-solid fa-truck', 'grid', 'suppliers.index', 'entry', ['suppliers.']],
+            'SUP' => ['MST', 'Pemasok', 'fa-solid fa-truck', 'grid', 'suppliers.index', 'entry', ['suppliers.']],
             'DEP' => ['MST', 'Departemen', 'fa-solid fa-building', 'grid', 'departments.index', 'entry', ['departments.']],
             'RCP' => ['MST', 'Penerima', 'fa-solid fa-user-tag', 'grid', 'recipients.index', 'entry', ['recipients.']],
             'UOM' => ['MST', 'Satuan', 'fa-solid fa-ruler', 'grid', 'units.index', 'supervisor', ['units.']],

@@ -6,7 +6,7 @@
  Dipakai oleh : route suppliers.index (menu Master Data > Suppliers).
  Status       : Aktif.
 --}}
-@extends('layout', ['title' => 'Suppliers'])
+@extends('layout', ['title' => 'Pemasok'])
 @section('body')
     @include('partials.flash')
     <x-dl::grid id="suppliers" :rows="$rows" actions="edit" :new-url="route('suppliers.create')" :open-url="url('suppliers/{id}')" :toggle-url="url('suppliers/{id}/toggle')"

@@ -19,7 +19,7 @@ final class StockDocumentPrint extends Document
 {
     private const LABELS = [
         'Reference No.' => 'No. Referensi', 'Recipient' => 'Penerima', 'Department' => 'Departemen', 'Purpose' => 'Keperluan', 'Reason' => 'Alasan', 'Entered By' => 'Diinput oleh',
-        'Supplier' => 'Supplier', 'Expiry' => 'Kedaluwarsa', 'System' => 'Sistem', 'Counted' => 'Hitung', 'Notes' => 'Catatan', 'Cancel Reason' => 'Alasan Pembatalan',
+        'Supplier' => 'Pemasok', 'Expiry' => 'Kedaluwarsa', 'System' => 'Sistem', 'Counted' => 'Hitung', 'Notes' => 'Catatan', 'Cancel Reason' => 'Alasan Pembatalan',
         'Line Note' => 'Catatan Baris', 'Item Name' => 'Nama Barang',
     ];
 

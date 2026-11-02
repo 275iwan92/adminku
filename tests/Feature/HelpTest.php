@@ -299,7 +299,7 @@ class HelpTest extends TestCase
     public function test_help_covers_quick_add_and_the_kontan_supplier(): void
     {
         $ug = $this->actingAs(User::factory()->administrator()->create())->get(route('help.user-guide'))->assertOk();
-        $ug->assertSee('Tombol plus (Tambah baru)')->assertSee('Kontan')->assertSee('supplier sistem')->assertDontSee('Penerima baru</b>', false);
+        $ug->assertSee('Tombol plus (Tambah baru)')->assertSee('Kontan')->assertSee('pemasok sistem')->assertDontSee('Penerima baru</b>', false);
 
         $this->get(route('help.technical-guide'))->assertOk()->assertSee('QuickAdd')->assertSee('is_system')->assertSee('add_system_supplier_kontan');
     }

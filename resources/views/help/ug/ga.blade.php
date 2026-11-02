@@ -496,7 +496,7 @@
 @if ($can('GAE'))
 <h3 id="ga-gae">Vendor AC</h3>
 <h4>Untuk apa</h4>
-<p>Daftar vendor jasa perawatan AC beserta nomor WhatsApp dan e-mail yang dipakai untuk pemberitahuan kunjungan. Vendor AC berdiri sendiri dan tidak bercampur dengan Suppliers barang.</p>
+<p>Daftar vendor jasa perawatan AC beserta nomor WhatsApp dan e-mail yang dipakai untuk pemberitahuan kunjungan. Vendor AC berdiri sendiri dan tidak bercampur dengan Pemasok barang.</p>
 <h4>Siapa yang bisa</h4>
 <p>Pengguna yang Grup-nya punya modul <b>Vendor AC</b>: RO untuk melihat, RW untuk menambah, mengubah, dan menonaktifkan.</p>
 <h4>Langkah: menambah vendor</h4>

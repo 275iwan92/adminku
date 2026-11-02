@@ -16,22 +16,22 @@
         <tr><td>Biaya rata-rata</td><td>Harga per satuan stok, dirata-rata dari harga beli setiap kali barang masuk. Dipakai untuk menghitung nilai stok. Hanya terlihat oleh Supervisor.</td></tr>
         <tr><td>Cuci rutin</td><td>Pembersihan AC berkala oleh vendor (bawaan tiap 3 bulan). Servis besar sudah mencakup cuci.</td></tr>
         <tr><td>Cut-off (titik acuan stok)</td><td>Saat Stok Opname dimulai. Stoku mencatat stok sistem pada saat itu sebagai pembanding. Selisih dihitung terhadap catatan itu.</td></tr>
-        <tr><td>Data Master</td><td>Data acuan yang dipilih di dokumen: barang, supplier, satuan, kategori, lokasi, departemen, penerima.</td></tr>
+        <tr><td>Data Master</td><td>Data acuan yang dipilih di dokumen: barang, pemasok, satuan, kategori, lokasi, departemen, penerima.</td></tr>
         <tr><td>Draf</td><td>Dokumen yang sudah disimpan tetapi belum dikonfirmasi. Stok belum berubah. Draf boleh diubah dan dihapus.</td></tr>
         <tr><td>Faktor</td><td>Berapa satuan stok dalam 1 satuan masuk. Contoh: 1 dus = 12 pcs, faktornya 12.</td></tr>
         <tr><td>FEFO</td><td>First Expired, First Out. Barang yang paling cepat kedaluwarsa dikeluarkan lebih dulu.</td></tr>
         <tr><td>Hitung buta</td><td>Stok Opname yang menyembunyikan stok sistem dari penghitung, supaya hasil hitungnya objektif.</td></tr>
         <tr><td>Konfirmasi, Terkonfirmasi</td><td>Konfirmasi adalah tombol yang memproses dokumen ke stok. Setelah itu dokumen berstatus Terkonfirmasi dan terkunci.</td></tr>
-        <tr><td>Kontan</td><td>Supplier sistem untuk pembelian tunai atau tanpa supplier tetap. Tidak bisa dinonaktifkan, diganti nama, atau dihapus.</td></tr>
+        <tr><td>Kontan</td><td>Pemasok sistem untuk pembelian tunai atau tanpa pemasok tetap. Tidak bisa dinonaktifkan, diganti nama, atau dihapus.</td></tr>
         <tr><td>Kunci transaksi</td><td>Pengaturan Stok Opname. Selama opname berjalan, Konfirmasi dan Setujui transaksi stok ditolak.</td></tr>
         <tr><td>Kop</td><td>Bagian paling atas kertas cetakan yang memuat nama perusahaan, logo, dan alamat. Diatur di menu Perusahaan.</td></tr>
         <tr><td>Lead time</td><td>Lama dari barang dipesan sampai barang datang, dalam hari.</td></tr>
         <tr><td>Lembar Hitung</td><td>Kertas cetak untuk dibawa menghitung barang di gudang saat Stok Opname.</td></tr>
-        <tr><td>Penerimaan</td><td>Dokumen yang mencatat barang datang dari supplier. Stok bertambah.</td></tr>
+        <tr><td>Penerimaan</td><td>Dokumen yang mencatat barang datang dari pemasok. Stok bertambah.</td></tr>
         <tr><td>Pengeluaran</td><td>Dokumen yang mencatat barang keluar ke penerima. Stok berkurang.</td></tr>
         <tr><td>Penyesuaian</td><td>Dokumen yang mengoreksi stok agar sama dengan hitungan fisik. Harus disetujui Supervisor. Stoku juga membuatnya otomatis dari Stok Opname dan dari pembatalan dokumen.</td></tr>
         <tr><td>Pergerakan stok</td><td>Satu catatan stok masuk, keluar, atau disesuaikan. Riwayatnya ada di Kartu Stok.</td></tr>
-        <tr><td>PO</td><td>Surat pesanan resmi ke supplier. Catat Pemesanan di Stoku bukan PO.</td></tr>
+        <tr><td>PO</td><td>Surat pesanan resmi ke pemasok. Catat Pemesanan di Stoku bukan PO.</td></tr>
         <tr><td>Kode aset, kode ruang</td><td>Kode aset adalah kode permanen sebuah AC (mis. AC-0004) yang ditempel sebagai stiker dan tidak berubah. Kode ruang milik ruangnya (mis. MTG); AC ditulis MTG · AC-0004. Dipindah ke ruang lain, kode ruangnya berubah, kode asetnya tetap.</td></tr>
         <tr><td>Odometer</td><td>Kilometer yang tertera di panel kendaraan. Hanya naik, tidak boleh lebih kecil dari catatan terakhir.</td></tr>
         <tr><td>PIC</td><td>Penanggung jawab sebuah ruang AC. Menerima salinan pemberitahuan kunjungan dan menandatangani Berita Acara.</td></tr>

@@ -43,7 +43,7 @@ class QuickAddScreensTest extends TestCase
     public function test_receiving_form_has_a_supplier_plus_and_the_popup_posts_to_the_supplier_endpoint(): void
     {
         $html = $this->actingAs($this->entry)->get(route('docs.create', 'receiving'))->assertOk()
-            ->assertSee('data-dl-sa-modal', false)->assertSee('Tambah Supplier')->assertSee('name="contact_name"', false)->getContent();
+            ->assertSee('data-dl-sa-modal', false)->assertSee('Tambah Pemasok')->assertSee('name="contact_name"', false)->getContent();
 
         $this->assertSame(1, $this->plus($html, '/suppliers'));
         $this->assertSame(1, $this->plus($html, '/recipients'));

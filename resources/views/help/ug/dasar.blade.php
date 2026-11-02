@@ -71,15 +71,15 @@
 
 <h3 id="catat-pemesanan">Catat Pemesanan</h3>
 <h4>Untuk apa</h4>
-<p>Mencatat bahwa barang yang stoknya menipis sudah Anda pesan ke supplier. Catatan ini sederhana. Ini bukan dokumen PO (surat pesanan resmi): tidak ada harga, persetujuan, atau cetakan. Fungsinya agar rekan Anda tahu pesanan ke mana, berapa, dan kapan.</p>
+<p>Mencatat bahwa barang yang stoknya menipis sudah Anda pesan ke pemasok. Catatan ini sederhana. Ini bukan dokumen PO (surat pesanan resmi): tidak ada harga, persetujuan, atau cetakan. Fungsinya agar rekan Anda tahu pesanan ke mana, berapa, dan kapan.</p>
 <h4>Siapa yang bisa</h4>
 <p>Data Entry dan Supervisor. Grup yang diatur Administrator perlu hak <b>Baca &amp; tulis (RW)</b> untuk modul <b>Riwayat Pemesanan</b>. Tanpa hak itu, tombol <b>Catat Pemesanan</b> dan <b>Tutup Pesanan</b> tidak tampil dan Stoku menolak simpanannya.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Pesan barang ke supplier lebih dulu. Pemesanan dilakukan di luar Stoku.</li>
+    <li>Pesan barang ke pemasok lebih dulu. Pemesanan dilakukan di luar Stoku.</li>
     <li>Di Beranda, tekan <b>Catat Pemesanan</b>.</li>
     <li>Pilih <b>Barang</b>. Daftarnya hanya berisi barang yang stoknya menipis dan belum punya pesanan terbuka.</li>
-    <li>Pilih <b>Supplier</b>. Pembelian tunai? Pilih <b>Kontan</b>. Supplier belum ada? Tekan tombol <b>+</b> di samping pilihan (lihat <a href="#tombol-plus">Tombol plus</a>).</li>
+    <li>Pilih <b>Pemasok</b>. Pembelian tunai? Pilih <b>Kontan</b>. Pemasok belum ada? Tekan tombol <b>+</b> di samping pilihan (lihat <a href="#tombol-plus">Tombol plus</a>).</li>
     <li>Isi <b>Jumlah Dipesan</b>. Jumlahnya harus lebih dari 0 dan memakai satuan stok barang. Satuannya tampil di bawah isian.</li>
     <li>Isi <b>Tanggal Pesan</b>. Bawaannya hari ini. Tanggal tidak boleh lebih dari hari ini.</li>
     <li><b>No. Referensi Pemesanan</b> dan <b>Catatan</b> boleh kosong.</li>
@@ -98,12 +98,12 @@
     <li>Di bawah label status ada keterangan. Contohnya: <i>Sudah dipesan 24 pcs ke Kontan pada 05/11/2026, ref PO-12 oleh Sari. Diterima sejak dipesan: 0 dari 24 pcs.</i></li>
     <li>Angka <b>Diterima sejak dipesan</b> adalah jumlah Penerimaan Barang yang sudah Terkonfirmasi untuk barang itu sejak Tanggal Pesan. Penerimaan yang dibatalkan tidak dihitung.</li>
     <li>Pesanan <b>tertutup sendiri</b> bila jumlah yang diterima sudah memenuhi jumlah dipesan. Bila baru sebagian, statusnya <b>Diterima sebagian</b> dan pesanan tetap terbuka. Catatan lama yang tidak punya jumlah tertutup oleh penerimaan pertama.</li>
-    <li>Supplier tidak akan mengirim sisanya? Tekan <b>Tutup Pesanan</b> di samping label status. Isi alasan bila perlu, lalu tekan <b>Tutup Pesanan</b> di jendela itu. Pesanan menjadi <b>Ditutup manual</b>. Tidak ada yang dihapus. Pesanan tidak bisa dibuka lagi, tetapi Anda bisa mencatat pesanan baru.</li>
+    <li>Pemasok tidak akan mengirim sisanya? Tekan <b>Tutup Pesanan</b> di samping label status. Isi alasan bila perlu, lalu tekan <b>Tutup Pesanan</b> di jendela itu. Pesanan menjadi <b>Ditutup manual</b>. Tidak ada yang dihapus. Pesanan tidak bisa dibuka lagi, tetapi Anda bisa mencatat pesanan baru.</li>
     <li>Pesanan yang sudah tertutup (selesai atau ditutup manual) hilang dari peringatan Beranda. @if ($can('ORD')) Lihat semuanya di <a href="#t-ord">Riwayat Pemesanan</a>.@else Supervisor dan Data Entry yang punya menu <b>Riwayat Pemesanan</b> bisa melihatnya.@endif</li>
     <li><b>Perkiraan tiba.</b> Untuk pesanan yang belum menerima apa pun, keterangan ditambah <i>Perkiraan tiba {tanggal}.</i> Tanggalnya adalah Tanggal Pesan ditambah lead time. Lead time adalah lama dari pesan sampai barang datang.</li>
     <li>Pesanan lebih lama dari biasanya? Keterangan ditambah <i>Sudah {n} hari, biasanya {m}. Periksa pesanan.</i> Setelah ada penerimaan pertama, pesanan tidak ditandai terlambat lagi.</li>
     <li>Dari mana lead time? Stoku menghitung rata-rata sampai 5 pesanan terakhir barang itu, dibulatkan ke atas, dari Tanggal Pesan sampai Penerimaan <b>pertama</b>. Pesanan yang ditutup manual tanpa penerimaan tidak dihitung. Datanya kurang dari 3 pesanan? Stoku memakai isian <b>Lead Time (hari)</b> di form Barang. Keduanya kosong? Tidak ada kalimat tambahan.</li>
-    <li>Keterangan yang sama tampil di laporan <b>Ringkasan Stok</b> (kolom <b>Supplier Pesanan</b>, <b>Jumlah Dipesan</b>, <b>Info Pemesanan</b>, dan <b>Lead Time Otomatis (d)</b>) dan di form Barang.</li>
+    <li>Keterangan yang sama tampil di laporan <b>Ringkasan Stok</b> (kolom <b>Pemasok Pesanan</b>, <b>Jumlah Dipesan</b>, <b>Info Pemesanan</b>, dan <b>Lead Time Otomatis (d)</b>) dan di form Barang.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">
@@ -142,8 +142,8 @@
 <h3 id="hp-layar">Daftar, formulir, dan laporan di HP</h3>
 <p>Semua layar sudah disesuaikan untuk layar kecil: tidak ada tabel yang harus digeser ke samping untuk membaca atau mengisi.</p>
 <ul class="g-list">
-    <li><b>Daftar</b> (Barang, Penerimaan, Pengeluaran, Saldo Awal, Penyesuaian, Riwayat Pemesanan, Stok Opname, Supplier, Satuan, Kategori, Lokasi, Departemen, Penerima, Pengguna, Grup, Modul) tampil sebagai <b>kartu</b>: judul, lencana status, dan beberapa isian penting. Ketuk kartu untuk membukanya. Cari, Saring, Kolom, dan Ekspor ada di bilah atas.</li>
-    <li><b>Formulir data master</b> (Barang, Supplier, Satuan, Kategori, Lokasi, Departemen, Penerima, Perusahaan, Pengguna, Grup) berupa <b>satu kolom</b>: nama isian di atas isiannya, huruf isian besar, pilihan dropdown dan pilihan radio mudah diketuk, pesan salah terbaca jelas. Simpan, Urungkan, dan Kembali ada di bilah atas. Tabel kecil di formulir Barang (Batch dan Satuan masuk) tampil sebagai kartu. Lupa password dan Atur ulang password memakai tampilan masuk HP.</li>
+    <li><b>Daftar</b> (Barang, Penerimaan, Pengeluaran, Saldo Awal, Penyesuaian, Riwayat Pemesanan, Stok Opname, Pemasok, Satuan, Kategori, Lokasi, Departemen, Penerima, Pengguna, Grup, Modul) tampil sebagai <b>kartu</b>: judul, lencana status, dan beberapa isian penting. Ketuk kartu untuk membukanya. Cari, Saring, Kolom, dan Ekspor ada di bilah atas.</li>
+    <li><b>Formulir data master</b> (Barang, Pemasok, Satuan, Kategori, Lokasi, Departemen, Penerima, Perusahaan, Pengguna, Grup) berupa <b>satu kolom</b>: nama isian di atas isiannya, huruf isian besar, pilihan dropdown dan pilihan radio mudah diketuk, pesan salah terbaca jelas. Simpan, Urungkan, dan Kembali ada di bilah atas. Tabel kecil di formulir Barang (Batch dan Satuan masuk) tampil sebagai kartu. Lupa password dan Atur ulang password memakai tampilan masuk HP.</li>
     <li><b>Formulir dokumen</b> (Penerimaan, Pengeluaran, Saldo Awal, Penyesuaian): setiap barang berupa <b>satu kartu</b>. Nomor baris dan tombol Simpan / Urungkan baris ada di atas kartu; Barang selebar layar; isian pendek (Tanggal Kedaluwarsa, Jml, Satuan, Harga) berdampingan dua atau tiga per baris; Catatan Baris di bawahnya. Baris jumlah di bawah tabel disembunyikan di HP; ringkasan total tetap tampil.</li>
     <li><b>Laporan</b> (Ringkasan Stok, Kartu Stok, Kedaluwarsa, Penerimaan, Pengeluaran, Opname &amp; Penyesuaian) tampil sebagai <b>daftar kartu yang terbaca</b>: kotak kriteria dan ringkasan di atas, lalu satu kartu per baris (kolom pertama sebagai judul, kolom lain berpasangan label dan nilai), dikelompokkan bila Anda memilih <b>Grup</b>; barang kedaluwarsa bermerah. Tombol <b>Cetak</b> tetap mencetak lembar kertas yang sama dengan di komputer.</li>
     <li><b>Layar yang dibuat khusus untuk HP:</b> Beranda (kartu ringkasan), <b>Cari Barang</b> (bagian berikut), dan <b>Hitung Stok Opname</b> satu barang per kartu (lihat bagian Stok Opname).</li>
@@ -170,7 +170,7 @@
 <p>Halaman <b>/ukur</b> (mis. <code>http://alamat-server/ukur</code>, tanpa masuk) menampilkan ukuran layar yang sebenarnya dilihat browser: lebar x tinggi, kepadatan piksel, arah layar, area aman, dan tampilan yang dipakai (HP atau Desktop). Kegunaannya untuk menyetel tampilan HP. Buka di HP yang mau diukur, ketuk <b>Salin hasil</b>, lalu tempel ke chat. Bila tombol tidak bisa menyalin (alamat tanpa https), teks hasil tampil di bawah dan sudah terpilih: tekan lama lalu pilih Salin. Tidak ada yang dikirim atau disimpan di server. Angkanya ikut berubah bila layar diputar, keyboard muncul, atau layar dizoom.</p>
 
 <h2 id="grid">4. Cara memakai Grid</h2>
-<p><b>Grid</b> adalah daftar data: barang, supplier, dokumen, dan seterusnya. Semua grid bekerja dengan cara yang sama.</p>
+<p><b>Grid</b> adalah daftar data: barang, pemasok, dokumen, dan seterusnya. Semua grid bekerja dengan cara yang sama.</p>
 <table class="g-table">
     <thead><tr><th>Bagian</th><th>Fungsi</th></tr></thead>
     <tbody>
@@ -205,11 +205,11 @@
         </table>
     </li>
     <li>Di grid <b>Barang</b>, baris merah muda berstatus <b>PESAN ULANG</b> berarti stok sudah di atau di bawah Titik Pesan Ulang. <b>AMAN</b> hijau berarti stok cukup.</li>
-    <li>Di grid dokumen, tanda panah <b>&gt;</b> di awal baris membuka daftar <b>Barang</b> di dokumen itu tanpa membuka form. Di bawah nomor dokumen tertulis pihaknya (supplier, penerima, atau alasan).</li>
+    <li>Di grid dokumen, tanda panah <b>&gt;</b> di awal baris membuka daftar <b>Barang</b> di dokumen itu tanpa membuka form. Di bawah nomor dokumen tertulis pihaknya (pemasok, penerima, atau alasan).</li>
 </ul>
 
 <h2 id="form">5. Cara memakai Form</h2>
-<p>Form dipakai untuk menambah atau mengubah data. Ada dua jenis: <b>form master</b> (barang, supplier, dan seterusnya) dan <b>form dokumen</b> (transaksi stok).</p>
+<p>Form dipakai untuk menambah atau mengubah data. Ada dua jenis: <b>form master</b> (barang, pemasok, dan seterusnya) dan <b>form dokumen</b> (transaksi stok).</p>
 <h3>Tombol umum</h3>
 <table class="g-table">
     <thead><tr><th>Tombol</th><th>Fungsi</th></tr></thead>
@@ -231,26 +231,26 @@
 </ol>
 
 <h3 id="tombol-plus">Tombol plus (Tambah baru)</h3>
-<p>Datanya belum ada di pilihan? Anda tidak perlu keluar dari layar. Pilihan <b>Supplier</b>, <b>Penerima</b>, <b>Departemen</b>, <b>Kategori</b>, <b>Satuan</b>, dan <b>Lokasi</b> punya tombol <b>+</b> di sebelah kanan. Tulisan bantuannya <b>Tambah baru</b>.</p>
+<p>Datanya belum ada di pilihan? Anda tidak perlu keluar dari layar. Pilihan <b>Pemasok</b>, <b>Penerima</b>, <b>Departemen</b>, <b>Kategori</b>, <b>Satuan</b>, dan <b>Lokasi</b> punya tombol <b>+</b> di sebelah kanan. Tulisan bantuannya <b>Tambah baru</b>.</p>
 <ol class="g-steps">
     <li>Tekan tombol <b>+</b> di samping pilihan.</li>
-    <li>Isi kotak kecil yang terbuka. Judulnya mis. <b>Tambah Supplier</b>.</li>
+    <li>Isi kotak kecil yang terbuka. Judulnya mis. <b>Tambah Pemasok</b>.</li>
     <li>Tekan <b>Simpan</b>. Datanya masuk ke master dan <b>langsung terpilih</b> di isian Anda.</li>
 </ol>
 <ul class="g-list">
     <li><b>Tempatnya:</b>
         <ul class="g-list">
-            <li>Penerimaan Barang: Supplier, Penerima, Departemen.</li>
-            <li>Catat Pemesanan: Supplier.</li>
+            <li>Penerimaan Barang: Pemasok, Penerima, Departemen.</li>
+            <li>Catat Pemesanan: Pemasok.</li>
             <li>Pengeluaran Barang dan Penyesuaian Stok: Penerima, Departemen.</li>
             <li>Form Penerima: Departemen.</li>
             <li>Form Barang: Kategori, Satuan, Lokasi. Jendela Satuan masuk: Satuan.</li>
         </ul>
     </li>
-    <li><b>Siapa yang boleh:</b> hanya yang boleh mengelola master itu. Supplier, Penerima, dan Departemen: Data Entry dan Supervisor. Kategori, Satuan, dan Lokasi: Supervisor. Bila Anda tidak berhak, tombolnya tidak tampil.</li>
+    <li><b>Siapa yang boleh:</b> hanya yang boleh mengelola master itu. Pemasok, Penerima, dan Departemen: Data Entry dan Supervisor. Kategori, Satuan, dan Lokasi: Supervisor. Bila Anda tidak berhak, tombolnya tidak tampil.</li>
     <li><b>Isiannya:</b>
         <ul class="g-list">
-            <li>Supplier: Nama Supplier (wajib), Telepon Kantor, dan Nama Kontak. Kodenya otomatis, mis. SUP-001.</li>
+            <li>Pemasok: Nama Pemasok (wajib), Telepon Kantor, dan Nama Kontak. Kodenya otomatis, mis. SUP-001.</li>
             <li>Penerima: Nama Penerima.</li>
             <li>Departemen: Nama Departemen. Kodenya otomatis.</li>
             <li>Kategori: Awalan Kode (3 huruf atau angka) dan Nama Kategori.</li>
@@ -260,7 +260,7 @@
     </li>
     <li><b>Nama yang sudah ada ditolak</b> dengan pesan merah di kotak kecil itu. Pengecualiannya Penerima, karena dua orang boleh bernama sama.</li>
     <li>Tombol tidak tampil di dokumen yang sudah Terkonfirmasi, karena dokumennya terkunci.</li>
-    <li>Alamat dan wilayah supplier bisa dilengkapi nanti di menu Suppliers.</li>
+    <li>Alamat dan wilayah pemasok bisa dilengkapi nanti di menu Pemasok.</li>
 </ul>
 
 <h3>Baris detail (tabel Barang di form dokumen)</h3>

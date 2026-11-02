@@ -49,7 +49,7 @@ class SupplierController extends Controller
         $data = $request->validated();   // kode kosong -> otomatis (SUP-nnn), sama dengan tambah-cepat; kode yang diketik dipakai apa adanya
         $supplier = blank($data['code'] ?? null) ? Supplier::createQuick(Arr::except($data, 'code')) : Supplier::create($data);
 
-        return redirect()->route('suppliers.show', $supplier)->with('status', 'Supplier disimpan.');
+        return redirect()->route('suppliers.show', $supplier)->with('status', 'Pemasok disimpan.');
     }
 
     public function update(SupplierRequest $request, Supplier $supplier): RedirectResponse
@@ -58,12 +58,12 @@ class SupplierController extends Controller
         if (in_array($action, ['activate', 'deactivate'], true)) {
             $supplier->update(['is_active' => $action === 'activate']);
 
-            return redirect()->route('suppliers.show', $supplier)->with('status', $action === 'activate' ? 'Supplier diaktifkan.' : 'Supplier dinonaktifkan.');
+            return redirect()->route('suppliers.show', $supplier)->with('status', $action === 'activate' ? 'Pemasok diaktifkan.' : 'Pemasok dinonaktifkan.');
         }
 
         $supplier->update($request->validated());
 
-        return redirect()->route('suppliers.show', $supplier)->with('status', 'Supplier disimpan.');
+        return redirect()->route('suppliers.show', $supplier)->with('status', 'Pemasok disimpan.');
     }
 
     public function toggle(Supplier $supplier): JsonResponse

@@ -6,7 +6,7 @@
  Dipakai oleh : routes suppliers.create, suppliers.show.
  Status       : Aktif.
 --}}
-@extends('layout', ['title' => 'Supplier'])
+@extends('layout', ['title' => 'Pemasok'])
 @section('body')
     @php
         $isNew = ! $supplier->exists;
@@ -14,7 +14,7 @@
         $e = fn (string $k) => $errors->first($k) ?: null;
     @endphp
     @include('partials.flash')
-    <x-dl::form :title="$isNew ? 'Supplier · Baru' : 'Supplier · '.raw($supplier->code)" :subtitle="$isNew ? null : raw($supplier->name)" panel="top" kind="master"
+    <x-dl::form :title="$isNew ? 'Pemasok · Baru' : 'Pemasok · '.raw($supplier->code)" :subtitle="$isNew ? null : raw($supplier->name)" panel="top" kind="master"
         :status="$isNew ? 'new' : ($supplier->is_active ? 'active' : 'inactive')" :back="route('suppliers.index')" :new-url="route('suppliers.create')"
         :action="$isNew ? route('suppliers.store') : route('suppliers.update', $supplier)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :hide="$supplier->is_system ? ['deactivate', 'activate'] : []" :created-at="$supplier->created_at?->format('Y-m-d H:i:s')" :updated-at="$supplier->updated_at?->format('Y-m-d H:i:s')">

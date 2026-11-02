@@ -94,7 +94,7 @@
 <ul class="g-list">
     <li>Kolom <b>Masuk</b> menjumlahkan Penerimaan dan Saldo Awal pada periode itu.</li>
     <li>Kolom <b>Status</b> (<b>AMAN</b> atau <b>PESAN ULANG</b>) dihitung per barang dari saldo akhir semua batch yang belum kedaluwarsa pada akhir periode.</li>
-    <li>Kolom <b>Supplier Pesanan</b>, <b>Jumlah Dipesan</b>, dan <b>Info Pemesanan</b> terisi untuk barang berstatus PESAN ULANG yang punya pesanan terbuka. Kolom <b>Lead Time Otomatis (d)</b> ada di samping Lead Time manual.</li>
+    <li>Kolom <b>Pemasok Pesanan</b>, <b>Jumlah Dipesan</b>, dan <b>Info Pemesanan</b> terisi untuk barang berstatus PESAN ULANG yang punya pesanan terbuka. Kolom <b>Lead Time Otomatis (d)</b> ada di samping Lead Time manual.</li>
     <li>Supervisor juga melihat <b>Biaya Rata-rata</b>, <b>Nilai Stok</b>, dan total nilai stok.</li>
 </ul>
 <h4>Masalah umum</h4>
@@ -107,13 +107,13 @@
 @if ($can('R-IN'))
 <h3 id="r-in">Laporan Penerimaan</h3>
 <h4>Untuk apa</h4>
-<p>Barang yang masuk dalam satu periode: tanggal, jam, supplier, nomor referensi, barang, jumlah, dan siapa yang menginput.</p>
+<p>Barang yang masuk dalam satu periode: tanggal, jam, pemasok, nomor referensi, barang, jumlah, dan siapa yang menginput.</p>
 <h4>Siapa yang bisa</h4>
 <p>Data Entry dan Supervisor. Harga beli dan jumlah nilai hanya untuk Supervisor.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>Buka <b>Laporan Penerimaan</b>.</li>
-    <li>Atur periode. Pilih <b>Supplier</b> bila ingin satu supplier saja.</li>
+    <li>Atur periode. Pilih <b>Pemasok</b> bila ingin satu pemasok saja.</li>
     <li>Tekan <b>Terapkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
