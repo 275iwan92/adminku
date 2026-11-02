@@ -23,13 +23,13 @@
     @if ($u->canWrite('GVD') || $u->canWrite('GVS') || $u->canWrite('GVO'))
         <x-dl::action-bar align="start">
         @if ($u->canWrite('GVD'))
-            <x-dl::button variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create')" />
+            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create')" />
         @endif
         @if ($u->canWrite('GVS'))
-            <x-dl::button variant="secondary" icon="fa-screwdriver-wrench" label="Catat Servis" :href="route('vehicle-services.create')" />
+            <x-dl::button class="sstock-btn-coral" variant="secondary" icon="fa-screwdriver-wrench" label="Catat Servis" :href="route('vehicle-services.create')" />
         @endif
         @if ($u->canWrite('GVO'))
-            <x-dl::button variant="secondary" icon="fa-gauge-high" label="Catat Odometer" :href="route('vehicle-odometers.create')" />
+            <x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-gauge-high" label="Catat Odometer" :href="route('vehicle-odometers.create')" />
         @endif
         </x-dl::action-bar>
     @endif

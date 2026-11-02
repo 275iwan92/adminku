@@ -48,25 +48,25 @@
     @endif
 
     <x-dl::action-bar align="start">
-        <x-dl::button variant="secondary" icon="back" label="Kembali" :href="route('ac-visits.index')" />
+        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="back" label="Kembali" :href="route('ac-visits.index')" />
         @if ($canWrite)
             @if (in_array($st, ['draft', 'rescheduled', 'sent'], true))
-                <x-dl::button icon="fa-paper-plane" :label="$st === 'sent' ? 'Kirim ulang' : 'Kirim'" data-dl-open="send-modal" />
+                <x-dl::button class="sstock-btn-teal" icon="fa-paper-plane" :label="$st === 'sent' ? 'Kirim ulang' : 'Kirim'" data-dl-open="send-modal" />
             @endif
             @if ($st === 'sent')
                 <x-dl::action-form :action="route('ac-visits.confirm', $order)" style="display: inline">
-                    <x-dl::button type="submit" variant="secondary" icon="fa-circle-check" label="Tandai dikonfirmasi vendor" />
+                    <x-dl::button class="sstock-btn-teal" type="submit" variant="secondary" icon="fa-circle-check" label="Tandai dikonfirmasi vendor" />
                 </x-dl::action-form>
             @endif
             @if ($st === 'confirmed')
-                <x-dl::button icon="fa-flag-checkered" label="Tandai selesai" data-dl-open="done-modal" />
+                <x-dl::button class="sstock-btn-teal" icon="fa-flag-checkered" label="Tandai selesai" data-dl-open="done-modal" />
             @endif
             @if ($open)
-                <x-dl::button variant="secondary" icon="fa-calendar-days" label="Jadwal ulang" data-dl-open="move-modal" />
-                <x-dl::button variant="secondary" icon="fa-ban" label="Batalkan" data-dl-open="cancel-modal" />
+                <x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-calendar-days" label="Jadwal ulang" data-dl-open="move-modal" />
+                <x-dl::button class="sstock-btn-red" variant="secondary" icon="fa-ban" label="Batalkan" data-dl-open="cancel-modal" />
             @endif
         @endif
-        <x-dl::button variant="secondary" icon="print" label="Cetak Berita Acara" :href="route('ac-visits.print', $order)" target="_blank" rel="noopener" />
+        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="print" label="Cetak Berita Acara" :href="route('ac-visits.print', $order)" target="_blank" rel="noopener" />
     </x-dl::action-bar>
 
     <x-dl::divider label="AC dalam kunjungan ini" />
@@ -96,7 +96,7 @@
                 <x-dl::field.upload name="photo" label="Foto bukti" accept=".jpg,.jpeg,.png,image/jpeg,image/png" :error="$e('photo')" hint="Opsional (dianjurkan). Dari ponsel, pilihan kamera muncul saat memilih berkas. JPG atau PNG, paling besar 5 MB." />
             </x-dl::form.row>
             <x-dl::action-bar align="start">
-                <x-dl::button type="submit" variant="secondary" size="sm" icon="fa-camera" label="Unggah foto" />
+                <x-dl::button class="sstock-btn-slate" type="submit" variant="secondary" size="sm" icon="fa-camera" label="Unggah foto" />
             </x-dl::action-bar>
         </x-dl::action-form>
     @endif
@@ -109,7 +109,7 @@
     <x-dl::field.text name="preview_vendor" label="Pratinjau pesan" :multiline="true" :readonly="true" :value="$vendorMsg['text']" />
     <x-dl::action-bar align="start">
         @if ($vendorMsg['wa'])
-            <x-dl::button variant="secondary" icon="fa-whatsapp" label="Buka WhatsApp" :href="$vendorMsg['wa']" target="_blank" rel="noopener" />
+            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-whatsapp" label="Buka WhatsApp" :href="$vendorMsg['wa']" target="_blank" rel="noopener" />
         @endif
     </x-dl::action-bar>
 
@@ -119,10 +119,10 @@
         <x-dl::field.text :name="'preview_pic_'.$i" :label="'Untuk '.$n['pic'].' · '.$n['count'].' AC'.($n['phone'] ? ' · '.$n['phone'] : '')" :multiline="true" :readonly="true" :value="$n['text']" />
         <x-dl::action-bar align="start">
             @if ($n['wa'])
-                <x-dl::button variant="secondary" size="sm" icon="fa-whatsapp" label="Buka WhatsApp PIC" :href="$n['wa']" target="_blank" rel="noopener" />
+                <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" icon="fa-whatsapp" label="Buka WhatsApp PIC" :href="$n['wa']" target="_blank" rel="noopener" />
             @endif
             @if ($n['email'])
-                <x-dl::button variant="secondary" size="sm" icon="email" label="E-mail PIC" :href="'mailto:'.$n['email'].'?subject='.rawurlencode(AcMessage::subject(['date' => $order->visit_date, 'lines' => range(1, $n['count']), 'no' => $order->no])).'&body='.rawurlencode($n['text'])" />
+                <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" icon="email" label="E-mail PIC" :href="'mailto:'.$n['email'].'?subject='.rawurlencode(AcMessage::subject(['date' => $order->visit_date, 'lines' => range(1, $n['count']), 'no' => $order->no])).'&body='.rawurlencode($n['text'])" />
             @endif
         </x-dl::action-bar>
     @empty
@@ -158,7 +158,7 @@
                 <p class="dl-note">Kirim pemberitahuan kunjungan {{ $order->no }} ({{ AcMessage::dateText($order->visit_date) }}, {{ $lines->count() }} AC) ke vendor {{ $order->vendor->name }}?</p>
                 <p class="dl-note">{{ $order->vendor->email ? 'E-mail akan dikirim ke '.$order->vendor->email.' sekarang.' : 'Vendor tidak punya e-mail: hanya status yang berubah.' }} Pesan WhatsApp dikirim lewat tombol Buka WhatsApp sesudahnya.</p>
             </x-dl::action-form>
-            <x-slot:footer><x-dl::button type="submit" form="send-form" icon="fa-paper-plane" label="Kirim" /></x-slot:footer>
+            <x-slot:footer><x-dl::button class="sstock-btn-teal" type="submit" form="send-form" icon="fa-paper-plane" label="Kirim" /></x-slot:footer>
         </x-dl::modal>
     @endif
     @if ($canWrite && $st === 'confirmed')
@@ -166,7 +166,7 @@
             <x-dl::action-form :action="route('ac-visits.complete', $order)" id="done-form">
                 <x-dl::field.date name="done_at" label="Tanggal selesai" :value="old('done_at', $defaultDone->format('Y-m-d'))" required hint="Jatuh tempo berikutnya tiap AC dihitung dari tanggal ini. Tidak sebelum tanggal kunjungan, tidak setelah hari ini." />
             </x-dl::action-form>
-            <x-slot:footer><x-dl::button type="submit" form="done-form" icon="save" label="Tandai selesai" /></x-slot:footer>
+            <x-slot:footer><x-dl::button class="sstock-btn-teal" type="submit" form="done-form" icon="save" label="Tandai selesai" /></x-slot:footer>
         </x-dl::modal>
     @endif
     @if ($canWrite && $open)
@@ -176,14 +176,14 @@
                 <x-dl::field.time name="time" label="Jam mulai" :value="old('time', $order->timeText())" hint="Antara {{ $window }}." />
                 <x-dl::field.text name="reason" label="Alasan" :value="old('reason')" required maxlength="255" hint="Wajib; tersimpan di riwayat jadwal ulang." />
             </x-dl::action-form>
-            <x-slot:footer><x-dl::button type="submit" form="move-form" icon="save" label="Jadwal ulang" /></x-slot:footer>
+            <x-slot:footer><x-dl::button class="sstock-btn-amber" type="submit" form="move-form" icon="save" label="Jadwal ulang" /></x-slot:footer>
         </x-dl::modal>
         <x-dl::modal id="cancel-modal" title="Batalkan kunjungan" icon="fa-ban" size="sm">
             <x-dl::action-form :action="route('ac-visits.cancel', $order)" id="cancel-form">
                 <p class="dl-note">Kunjungan yang dibatalkan tetap tersimpan sebagai catatan, dan AC-nya bisa dijadwalkan lagi.</p>
                 <x-dl::field.text name="reason" label="Alasan" :value="old('reason')" required maxlength="255" />
             </x-dl::action-form>
-            <x-slot:footer><x-dl::button type="submit" form="cancel-form" variant="danger" icon="fa-ban" label="Batalkan kunjungan" /></x-slot:footer>
+            <x-slot:footer><x-dl::button class="sstock-btn-red" type="submit" form="cancel-form" variant="danger" icon="fa-ban" label="Batalkan kunjungan" /></x-slot:footer>
         </x-dl::modal>
     @endif
 @endsection

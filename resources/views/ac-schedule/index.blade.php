@@ -38,15 +38,15 @@
             <x-dl::field.select name="show" label="Tampilkan" :options="['perlu' => 'AC yang perlu dibersihkan', 'semua' => 'Semua AC aktif']" :value="$all ? 'semua' : 'perlu'" />
         </x-dl::form.row>
         <x-dl::action-bar>
-            <x-dl::button type="submit" icon="fa-filter" label="Terapkan" size="sm" />
+            <x-dl::button class="sstock-btn-teal" type="submit" icon="fa-filter" label="Terapkan" size="sm" />
         </x-dl::action-bar>
     </x-dl::action-form>
 
     <x-dl::divider :label="'Kalender kunjungan · '.$week->format('d-m-Y').' sampai '.$week->copy()->addDays(5)->format('d-m-Y')" />
     <x-dl::action-bar align="start">
-        <x-dl::button variant="secondary" size="sm" icon="fa-chevron-left" label="Minggu sebelumnya" :href="$query(['week' => $week->copy()->subWeek()->toDateString(), 'date' => null])" />
-        <x-dl::button variant="secondary" size="sm" label="Minggu ini" :href="$query(['week' => null, 'date' => null])" />
-        <x-dl::button variant="secondary" size="sm" icon="fa-chevron-right" label="Minggu berikutnya" :href="$query(['week' => $week->copy()->addWeek()->toDateString(), 'date' => null])" />
+        <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" icon="fa-chevron-left" label="Minggu sebelumnya" :href="$query(['week' => $week->copy()->subWeek()->toDateString(), 'date' => null])" />
+        <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" label="Minggu ini" :href="$query(['week' => null, 'date' => null])" />
+        <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" icon="fa-chevron-right" label="Minggu berikutnya" :href="$query(['week' => $week->copy()->addWeek()->toDateString(), 'date' => null])" />
     </x-dl::action-bar>
     <div class="sstock-week">
         @foreach ($calendar as $c)
@@ -121,8 +121,8 @@
         @endif
         @if ($canWrite)
             <x-dl::action-bar align="start">
-                <x-dl::button type="submit" icon="fa-calendar-plus" label="Jadwalkan yang dipilih" :disabled="! $selected" />
-                <x-dl::button type="submit" variant="secondary" icon="fa-wand-magic-sparkles" label="Susun otomatis" form="auto-form" :disabled="! $selected" />
+                <x-dl::button class="sstock-btn-teal" type="submit" icon="fa-calendar-plus" label="Jadwalkan yang dipilih" :disabled="! $selected" />
+                <x-dl::button class="sstock-btn-teal" type="submit" variant="secondary" icon="fa-wand-magic-sparkles" label="Susun otomatis" form="auto-form" :disabled="! $selected" />
             </x-dl::action-bar>
         @endif
     </form>
@@ -138,7 +138,7 @@
                 <x-dl::field.select name="capacity" label="Kapasitas harian vendor" :options="[2 => '2 AC per hari', 3 => '3 AC per hari'] + [$cap => $cap.' AC per hari']" :value="$cap" />
             </x-dl::form.row>
             <x-dl::action-bar align="start">
-                <x-dl::button type="submit" variant="secondary" size="sm" icon="save" label="Simpan kapasitas" />
+                <x-dl::button class="sstock-btn-teal" type="submit" variant="secondary" size="sm" icon="save" label="Simpan kapasitas" />
             </x-dl::action-bar>
         </x-dl::action-form>
     @endif

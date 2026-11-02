@@ -13,7 +13,7 @@
     @include('partials.flash')
     @if (auth()->user()->canAccess('GAS'))
         <x-dl::action-bar align="start">
-            <x-dl::button variant="secondary" icon="fa-calendar-check" label="Penjadwalan AC" :href="route('ac-schedule.index')" />
+            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Penjadwalan AC" :href="route('ac-schedule.index')" />
         </x-dl::action-bar>
     @endif
     <x-dl::grid id="ac-visits" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-visits/{id}')" search="Cari nomor, vendor, status..."
