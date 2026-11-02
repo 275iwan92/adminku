@@ -294,3 +294,17 @@ a.sstock-day:hover, a.sstock-day:focus-visible { border-color: var(--dl-accent);
 :is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::before { content: "Admin"; color: var(--sstock-adm); }
 :is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::after { content: "KU"; color: var(--sstock-ku); margin-left: -0.06em; }
 :is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::before, :is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::after { font-size: calc(18px * var(--dl-font-scale)); font-weight: 800; letter-spacing: 0; }
+
+/* REMARK
+ * Tujuan       : Perbaikan smartphone (potret 360-430 px): tulisan DevLib di bawah 12 px (badge, pager, kartu statistik, langkah formulir, petunjuk isian, label denah) naik ke 12 px; sasaran sentuh tombol kecil dalam isian (aa, ,00, 0), kotak "Ke halaman" pager, dan titik AC pada denah diperluas sampai >= 44 px (area sentuh lewat ::after, tampilan tidak berubah); moto di layar masuk HP dan label versi terbaca.
+ * Sumber hulu  : kelas body.dl-on-phone dari DevLib (semua layar HP: layar masuk, layar HP khusus, dan layar desktop di dalam kerangka HP); tidak menyentuh tata letak desktop.
+ * Output       : hanya tampilan HP.
+ * Status       : Aktif.
+ */
+body.dl-on-phone :is(.dl-badge, .dl-grid__tabcount, .dl-pager__left, .dl-pager__info, .dl-pager__size, .dl-pager button, .dl-stat__label, .dl-stat__sub, .dl-form__step, .dl-lines__count, .dl-field__unit, .dl-field__trigger:is(.dl-numtg, .dl-case), .dl-tip__icon, .dl-print small, .dl-print b, .dl-print__badge, .sstock-plan__room, .sstock-plan__room b, small) { font-size: 12px; }
+body.dl-on-phone .dl-pager__goto { min-height: 44px; }
+body.dl-on-phone .dl-field__trigger:is(.dl-numtg, .dl-case), body.dl-on-phone .dl-lines__case { position: relative; }
+body.dl-on-phone :is(.dl-field__trigger:is(.dl-numtg, .dl-case), .dl-lines__case)::after { content: ""; position: absolute; inset: -14px -6px; }
+body.dl-on-phone .sstock-plan__dot::after { content: ""; position: absolute; inset: -10px; }
+body.dl-on-phone .dl-brand span:not(.dl-logo-badge), body.dl-on-phone .dl-envbadge, body.dl-on-phone .dl-envbadge__stage { font-size: 12px; }
+body.dl-on-phone .sstock-plan__dot { width: 28px; height: 28px; margin: -14px 0 0 -14px; font-size: 12px; }

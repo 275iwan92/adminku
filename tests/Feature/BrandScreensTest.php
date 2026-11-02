@@ -45,6 +45,26 @@ class BrandScreensTest extends TestCase
         $this->assertStringNotContainsString('Stoku', $home);
     }
 
+    public function test_phone_screens_open_with_a_phone_viewport_numeric_keyboards_and_the_phone_css_rules(): void
+    {
+        $user = User::factory()->administrator()->create();
+        foreach (['/', '/m/group/TRX', '/m/group/RPT', '/m/group/GA', '/m/find', '/m/counts', '/m/open/ITM', '/m/open/GVM', '/m/open/GAS', '/m/open/GAD', '/m/open/R-SUM'] as $path) {
+            $html = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->get($path)->assertOk()->getContent();
+            $this->assertStringContainsString('width=device-width', $html, $path);
+            $this->assertStringContainsString('dl-phone', $html, "$path memakai kerangka HP");
+            $this->assertStringNotContainsString('Stoku', $html, $path);
+        }
+        // isian angka memakai keyboard angka (inputmode) di formulir odometer dan barang (baris dokumen digambar JS DevLib dan sudah decimal / numeric)
+        foreach (['/vehicle-odometers/create', '/products/create'] as $path) {
+            $this->actingAs($user)->get($path)->assertOk()->assertSee('inputmode="decimal"', false);
+        }
+
+        $css = file_get_contents(resource_path('css/app.css'));
+        foreach (['body.dl-on-phone .dl-pager__goto { min-height: 44px; }', 'body.dl-on-phone .sstock-plan__dot::after', '.dl-field__trigger:is(.dl-numtg, .dl-case)'] as $rule) {
+            $this->assertStringContainsString($rule, $css);
+        }
+    }
+
     public function test_brand_css_is_built_into_the_stylesheet(): void
     {
         $css = file_get_contents(resource_path('css/app.css'));
