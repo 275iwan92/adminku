@@ -446,3 +446,20 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 .dl-phone__dev, .dl-plogin__desk { display: none !important; }
 .dl-lm__title[title] { cursor: pointer; border-radius: 8px; }
 .dl-lm__title[title]:hover { background: #164049; }
+
+/* Tab form berwarna (pilihan C, 2026-11-02): pil terisi penuh, warna menurut urutan tab (Profil biru, Pekerjaan hijau, Dokumen ungu, Keluarga merah muda, Kontrak amber, Riwayat abu); aktif = tebal + cincin. */
+.dl-form__body.dl-tabs > .dl-tabs__bar { gap: 8px; border-bottom: 0; padding: 4px 4px 8px; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab { --tc: #185FA5; --tt: #E6F1FB; display: inline-flex; align-items: center; gap: 6px; background: var(--tc); color: var(--tt); border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 500; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab::before { font: 900 13px/1 'Font Awesome 6 Free', 'Font Awesome 5 Free', sans-serif; content: '\f007'; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(2) { --tc: #0F6E56; --tt: #E1F5EE; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(2)::before { content: '\f0b1'; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(3) { --tc: #534AB7; --tt: #EEEDFE; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(3)::before { content: '\f15c'; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(4) { --tc: #993556; --tt: #FBEAF0; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(4)::before { content: '\f0c0'; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(5) { --tc: #854F0B; --tt: #FAEEDA; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:nth-child(5)::before { content: '\f573'; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab[data-tab="audit"] { --tc: #5F5E5A; --tt: #F1EFE8; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab[data-tab="audit"]::before { content: none; }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab:hover { color: var(--tt); filter: brightness(1.08); }
+.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab.is-active { color: var(--tt); font-weight: 700; border-bottom: 0; box-shadow: 0 0 0 2px var(--dl-surface, #fff), 0 0 0 4px var(--tc); }
