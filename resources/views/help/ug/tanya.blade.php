@@ -1,10 +1,10 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 11 Pertanyaan umum dan masalah umum: masalah yang sering ditanyakan beserta jawabannya (laporan kosong, Saldo Awal ditolak, keluar otomatis, stok tidak cukup, barang tidak muncul, transaksi terkunci, tombol plus, dan lain-lain).
+ Tujuan       : Panduan Pengguna bagian 12 Pertanyaan umum dan masalah umum: masalah yang sering ditanyakan beserta jawabannya (laporan kosong, Saldo Awal ditolak, keluar otomatis, stok tidak cukup, barang tidak muncul, transaksi terkunci, tombol plus, dan lain-lain).
  Sumber hulu  : pesan galat dan aturan di StockLedger, StockDocuments, StockCounts, EnsureModuleAccess, EnsureActive, ProductUnits, ItemLookups, QuickAdd, Decimal.
  Dipakai oleh : help/user-guide.blade.php (semua peran).
  Status       : Aktif.
 --}}
-<h2 id="tanya">11. Pertanyaan umum</h2>
+<h2 id="tanya">12. Pertanyaan umum</h2>
 <table class="g-table">
     <thead><tr><th>Masalah</th><th>Jawaban</th></tr></thead>
     <tbody>

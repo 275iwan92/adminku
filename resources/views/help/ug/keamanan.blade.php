@@ -1,11 +1,11 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 9 Keamanan (hanya Administrator): Pengguna, Grup (hak akses RO / RW per modul), Daftar Modul, Data Contoh (Segarkan data contoh, hanya bila diaktifkan).
+ Tujuan       : Panduan Pengguna bagian 10 Keamanan (hanya Administrator): Pengguna, Grup (hak akses RO / RW per modul), Daftar Modul, Data Contoh (Segarkan data contoh, hanya bila diaktifkan).
  Sumber hulu  : UserController / UserRequest, GroupController / groups/form, ModuleController, SampleDataController / SampleData / config sstock.sample_refresh, EnsureActive.
  Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya salah satu modul Keamanan).
  Status       : Aktif.
 --}}
 @if ($anySec)
-<h2 id="keamanan">9. Keamanan <span class="g-role">hanya Administrator</span></h2>
+<h2 id="keamanan">10. Keamanan <span class="g-role">hanya Administrator</span></h2>
 <p>Menu Keamanan menempel di bawah panel kiri. Dipakai untuk mengatur siapa boleh apa.</p>
 
 @if ($can('USR'))
