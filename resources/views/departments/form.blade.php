@@ -26,6 +26,7 @@
             <x-dl::form.row :cols="3">
                 <x-dl::field.display label="Recipients" :value="(string) $department->recipients_count" />
                 <x-dl::field.display label="Issuance Documents" :value="(string) $department->documents_count" />
+                <x-dl::field.display label="Employees" :value="(string) $department->employees_count" />
             </x-dl::form.row>
         @endunless
     </x-dl::form>

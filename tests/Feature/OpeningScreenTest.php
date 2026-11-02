@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 /* REMARK
  * Tujuan       : Menjaga layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase. Hanya yang berhak (403 untuk yang tidak), ubin menurut hak dengan lencana Tulis / Baca,
- *                HR dan Purchase hanya "Segera hadir" tanpa angka, Stok membuka Beranda Stok, butir Beranda Stok tidak ada di menu, dan daftar kelompok HP diganti layar pembuka.
+ *                HR berisi Karyawan dan Bagian nyata (dengan angka), Rekrutmen dan Kedisiplinan masih "segera"; Purchase hanya "Segera hadir" tanpa angka, Stok membuka Beranda Stok, butir Beranda Stok tidak ada di menu, dan daftar kelompok HP diganti layar pembuka.
  * Dipakai oleh : php artisan test.
  * Status       : Aktif.
  */
@@ -68,13 +68,18 @@ class OpeningScreenTest extends TestCase
         $this->actingAs(User::factory()->supervisor()->create())->get(route('opening', 'hr'))->assertForbidden();
     }
 
-    public function test_hr_and_purchase_are_coming_soon_without_numbers(): void
+    public function test_hr_has_real_tiles_with_numbers_and_purchase_is_coming_soon(): void
     {
         $admin = User::factory()->administrator()->create();
         $this->assertSame(['Karyawan', 'Bagian', 'Rekrutmen', 'Kedisiplinan'], $this->tiles($admin, 'hr'));
         $this->assertSame(['Permohonan Pembelian (PR)', 'Purchase Order (PO)', 'Penerimaan Pembelian (PV)'], $this->tiles($admin, 'purchase'));
 
-        $page = $this->actingAs($admin)->get(route('opening', 'hr'))->assertOk()->assertSee('Segera hadir')->viewData('page');
+        $page = $this->actingAs($admin)->get(route('opening', 'hr'))->assertOk()->assertDontSee('Hak Anda: Baca')->viewData('page');
+        $this->assertFalse($page['soon']);
+        $this->assertSame(['0', '0', null, null], array_column($page['tiles'], 'n'));   // Rekrutmen dan Kedisiplinan belum ada layanannya
+        $this->assertSame([false, false, true, true], array_column($page['tiles'], 'soon'));
+
+        $page = $this->get(route('opening', 'purchase'))->assertOk()->assertSee('Segera hadir')->viewData('page');
         $this->assertSame([], $page['stats']);
         $this->assertSame([null], array_unique(array_column($page['tiles'], 'n')));
         $this->get(route('soon', 'kedisiplinan'))->assertOk()->assertSee('Kedisiplinan');

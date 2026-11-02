@@ -18,6 +18,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\GaSettingsController;
 use App\Http\Controllers\GroupController;
@@ -75,7 +76,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
     Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'karyawan', 'bagian', 'rekrutmen', 'kedisiplinan', 'pr', 'po', 'pv'])->name('soon');
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'rekrutmen', 'kedisiplinan', 'pr', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
@@ -237,6 +238,13 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('vehicle-types/{type}', [VehicleTypeController::class, 'show'])->name('vehicle-types.show');
     Route::put('vehicle-types/{type}', [VehicleTypeController::class, 'update'])->name('vehicle-types.update');
     Route::post('vehicle-types/{type}/toggle', [VehicleTypeController::class, 'toggle'])->name('vehicle-types.toggle');
+
+    // HR Karyawan (HRE): kepegawaian tanpa gaji; tidak dihapus, hanya dinonaktifkan dengan alasan. Bagian memakai layar Departemen (departments.*).
+    Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
+    Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 
     // GA Perawatan AC (GAM): satu butir menu; panel Monitoring dan hub Setup. Layar lain dibuka lewat tombol di panel (hak per modul tetap).
     Route::get('ac-care', [AcCareController::class, 'index'])->name('ac-care.index');

@@ -16,6 +16,7 @@
             ['key' => 'name', 'label' => 'Department', 'type' => 'identity', 'code' => 'code', 'box' => true],
             ['key' => 'recipients', 'label' => 'Recipients', 'type' => 'number'],
             ['key' => 'documents', 'label' => 'Issuance Documents', 'type' => 'number'],
+            ['key' => 'employees', 'label' => 'Employees', 'type' => 'number'],
         ]"
         :stats="[['label' => 'All departments'], ['label' => 'Inactive', 'where' => ['active' => false], 'tone' => 'warn']]" />
 @endsection

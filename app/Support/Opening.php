@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Enums\StockDocumentType;
 use App\Models\AcOrder;
 use App\Models\Batch;
+use App\Models\Employee;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\User;
@@ -59,7 +60,7 @@ final class Opening
         if ($children->isEmpty()) {
             return null;   // tanpa satu pun butir yang boleh dilihat = tanpa layar pembuka
         }
-        $soon = in_array($section, ['hr', 'purchase'], true);   // belum ada layanan: hanya rencana layar
+        $soon = $section === 'purchase';   // belum ada layanan: hanya rencana layar
         $page = ['section' => $section, 'title' => $title, 'icon' => $icon, 'tone' => $tone, 'tag' => $tag, 'soon' => $soon, 'stats' => [], 'todo' => [], 'shortcuts' => []];
         $facts = [];
         if ($section === 'master') {
@@ -73,6 +74,8 @@ final class Opening
         } elseif ($section === 'ga') {
             ['facts' => $facts] = $page = array_merge($page, self::ga($user));
             unset($page['facts']);
+        } elseif ($section === 'hr') {
+            $facts = self::hr($user);
         }
 
         $page['tiles'] = $children->map(fn ($c) => [
@@ -97,6 +100,22 @@ final class Opening
         }
         if ($user->canAccess('CMP')) {
             $out['CMP'] = ['n' => '', 'note' => Company::get()['name'] ?? ''];
+        }
+
+        return $out;
+    }
+
+    /** Angka HR per ubin: karyawan aktif (dan yang perlu perhatian), bagian aktif. @return array<string, array{n: string, note: string}> */
+    private static function hr(User $user): array
+    {
+        $out = [];
+        if ($user->canAccess('HRE')) {
+            $staff = Employee::query()->where('is_active', true)->with(['contracts', 'docs'])->get();
+            $attention = $staff->filter(fn (Employee $e) => $e->attention() !== null)->count();
+            $out['HRE'] = ['n' => Locale::number($staff->count(), 0), 'note' => $attention ? $attention.' perlu perhatian' : 'aktif'];
+        }
+        if ($user->canAccess('DEP')) {
+            $out['HR-DEP'] = ['n' => Locale::number(DB::table('m_department')->where('is_active', true)->count(), 0), 'note' => 'bagian aktif'];
         }
 
         return $out;

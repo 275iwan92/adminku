@@ -22,6 +22,7 @@ final class Modules
         'TRX' => ['Transaksi', 'fa-solid fa-right-left'],
         'RPT' => ['Laporan', 'fa-solid fa-chart-column'],
         'GA' => ['GA', 'fa-solid fa-building-user'],
+        'HR' => ['HR', 'fa-solid fa-user-tie'],
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
 
@@ -72,6 +73,7 @@ final class Modules
             'GAR' => ['GA', 'Ruang AC', 'fa-solid fa-door-open', 'grid', 'ac-rooms.index', 'entry', ['ac-rooms.']],
             'GAE' => ['GA', 'Vendor AC', 'fa-solid fa-handshake', 'grid', 'ac-vendors.index', 'entry', ['ac-vendors.']],
             'GAP' => ['GA', 'Pengaturan GA', 'fa-solid fa-sliders', 'form', 'ga-settings.edit', 'supervisor', ['ga-settings.']],
+            'HRE' => ['HR', 'Karyawan', 'fa-solid fa-id-card', 'grid', 'employees.index', 'supervisor', ['employees.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
@@ -89,10 +91,10 @@ final class Modules
         return self::LEVELS[$level] >= self::LEVELS[$min];
     }
 
-    // Modul bawaan satu peran (dipakai Grup bawaan dan pengguna tanpa Grup). Keamanan dan GA tidak otomatis: GA hanya lewat hak Grup (Administrator penuh).
+    // Modul bawaan satu peran (dipakai Grup bawaan dan pengguna tanpa Grup). Keamanan, GA, dan HR tidak otomatis: GA dan HR hanya lewat hak Grup (Administrator penuh).
     public static function defaults(string $level): array
     {
-        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA'], true) && self::levelAllows($m[5], $level)));
+        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA', 'HR'], true) && self::levelAllows($m[5], $level)));
     }
 
     // Kode modul yang menjaga rute ini (null = rute bebas, mis. beranda, logout, lookup).

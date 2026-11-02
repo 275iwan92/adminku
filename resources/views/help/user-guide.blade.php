@@ -1,7 +1,7 @@
 {{-- REMARK
  Tujuan       : User's Guide (UG) Stoku, Bahasa Indonesia, untuk SEMUA pengguna yang sudah login: peta "Mulai di sini", peran, cara memakai grid dan form, satu bagian per modul (Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum), istilah, dan pertanyaan umum.
                 Halaman dokumentasi murni: HTML biasa (kelas sstock-guide di resources/css/app.css), tidak lewat kamus Indonesian; istilah dan nama tombol ditulis sama persis dengan label di layar.
-                Isi dipecah per bagian di resources/views/help/ug/*.blade.php (mulai, dasar, master, transaksi, laporan, ga, keamanan, istilah, tanya); berkas ini memuat daftar isi dan menyambungkannya.
+                Isi dipecah per bagian di resources/views/help/ug/*.blade.php (mulai, dasar, master, transaksi, laporan, ga, hr, keamanan, istilah, tanya); berkas ini memuat daftar isi dan menyambungkannya.
                 Bagian 9 GA (Perawatan Kendaraan dan Perawatan AC, kode modul GV* dan GA*) memakai nama aplikasi AdminKU dan perusahaan Jays; bagian lama belum diganti mereknya.
  Sumber hulu  : App\Support\Modules (daftar modul + peran minimal), User::canAccess (bagian modul hanya tampil bila pengguna boleh membukanya), REMARK di view/controller, HANDOVER.md.
  Output       : tab "Panduan Pengguna" di Bantuan & dukungan (menu profil).
@@ -18,6 +18,7 @@
     $anyMaster = collect(['ITM', 'SUP', 'DEP', 'RCP', 'UOM', 'CAT', 'LOC', 'CMP'])->contains($can);
     $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD'])->contains($can);
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
+    $anyHr = $can('HRE');
     $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
@@ -88,6 +89,10 @@
             @if ($can('GAE'))<a class="g-toc-sub" href="#ga-gae">Vendor AC</a>@endif
             @if ($can('GAP'))<a class="g-toc-sub" href="#ga-gap">Pengaturan GA</a>@endif
         @endif
+        @if ($anyHr)
+            <a href="#hr">9a. HR</a>
+            <a class="g-toc-sub" href="#hr-hre">Karyawan</a>
+        @endif
         @if ($anySec)
             <a href="#keamanan">10. Keamanan</a>
             @if ($can('USR'))<a class="g-toc-sub" href="#sec-usr">Pengguna</a>@endif
@@ -109,6 +114,7 @@
         @include('help.ug.transaksi')
         @include('help.ug.laporan')
         @include('help.ug.ga')
+        @include('help.ug.hr')
         @include('help.ug.keamanan')
         @include('help.ug.istilah')
         @include('help.ug.tanya')

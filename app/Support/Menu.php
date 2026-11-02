@@ -54,9 +54,14 @@ final class Menu
         $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
         $out = [];
         foreach ($parents as $code => $p) {
-            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga')][$code] ?? null;
+            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr')][$code] ?? null;
             if ($code === 'GA' && $user->isAdministrator()) {
                 $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];
+            }
+            if ($code === 'HR') {   // Karyawan nyata (HRE), lalu Bagian = layar Departemen (hak DEP); Rekrutmen dan Kedisiplinan belum dibuat: hanya Administrator yang melihat.
+                $bagian = $user->canAccess('DEP') ? [['code' => 'HR-DEP', 'label' => 'Bagian', 'url' => route('departments.index'), 'type' => 'grid', 'icon' => 'fa-solid fa-sitemap']] : [];
+                $later = $user->isAdministrator() ? [$soon('HR-REC', 'Rekrutmen', 'fa-solid fa-user-plus', 'rekrutmen'), $soon('HR-DIS', 'Kedisiplinan', 'fa-solid fa-gavel', 'kedisiplinan')] : [];
+                $p['children'] = [...$p['children'], ...$bagian, ...$later];
             }
             if (! in_array($code, $stok)) {
                 $out[] = $p;
@@ -65,15 +70,9 @@ final class Menu
             }
         }
 
-        // Modul Jays berikutnya (belum dibuat): HR berisi Karyawan, Bagian, Rekrutmen, Kedisiplinan; Purchase berisi PR, PO, PV. Hanya Administrator yang melihat.
+        // Modul Jays berikutnya (belum dibuat): Purchase berisi PR, PO, PV. Hanya Administrator yang melihat.
         if ($user->isAdministrator()) {
             $next = [
-                ['code' => 'HR', 'short' => 'HR', 'label' => 'HR', 'icon' => 'fa-solid fa-user-tie', 'open' => Opening::url('hr'), 'children' => [
-                    $soon('HR-EMP', 'Karyawan', 'fa-solid fa-id-card', 'karyawan'),
-                    $soon('HR-DEP', 'Bagian', 'fa-solid fa-sitemap', 'bagian'),
-                    $soon('HR-REC', 'Rekrutmen', 'fa-solid fa-user-plus', 'rekrutmen'),
-                    $soon('HR-DIS', 'Kedisiplinan', 'fa-solid fa-gavel', 'kedisiplinan'),
-                ]],
                 ['code' => 'PUR', 'short' => 'PUR', 'label' => 'Purchase', 'icon' => 'fa-solid fa-cart-shopping', 'open' => Opening::url('purchase'), 'children' => [
                     $soon('PUR-PR', 'Permohonan Pembelian (PR)', 'fa-solid fa-file-pen', 'pr'),
                     $soon('PUR-PO', 'Purchase Order (PO)', 'fa-solid fa-file-invoice', 'po'),

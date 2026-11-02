@@ -42,6 +42,11 @@ class Department extends Model
         return $this->hasMany(Recipient::class);
     }
 
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class);
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(StockDocument::class);
