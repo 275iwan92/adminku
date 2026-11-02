@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Technical Guide Stoku (HTML, English): flow besar sistem, siklus dokumen (termasuk Stok Opname), buku besar stok, model data, akses dan sesi, tambah cepat, pesanan dan lead time, konvensi, operasional (pasang, konfigurasi, tes).
+ Tujuan       : Technical Guide Stoku (HTML, English); bagian 13 GA (AdminKU untuk Jays): tabel m_/g_ GA, perhitungan jatuh tempo, kapasitas dan kunci, mesin status Kunjungan AC, pesan dan WhatsApp, lampiran, pengaturan, modul dan hak, keputusan. Flow besar sistem, siklus dokumen (termasuk Stok Opname), buku besar stok, model data, akses dan sesi, tambah cepat, pesanan dan lead time, konvensi, operasional (pasang, konfigurasi, tes).
                 Halaman dokumentasi murni, jadi memakai HTML biasa (kelas sstock-guide di resources/css/app.css), bukan komponen x-dl.
  Sumber hulu  : kode (StockDocuments, StockLedger, Modules, routes/web.php) dan HANDOVER.md; ubah halaman ini bila perilaku itu berubah.
  Output       : tab Help (menu profil > Help & support) di Layer Shell.
@@ -27,6 +27,19 @@
         <a class="g-toc-sub" href="#testing">Testing</a>
         <a href="#decisions">11. Key decisions and why</a>
         <a href="#open">12. Open items</a>
+        <a href="#ga">13. GA: vehicle and AC care</a>
+        <a class="g-toc-sub" href="#ga-tables">Tables and prefix rule</a>
+        <a class="g-toc-sub" href="#ga-vehicle">Vehicle due dates and status</a>
+        <a class="g-toc-sub" href="#ga-ac">AC due dates and codes</a>
+        <a class="g-toc-sub" href="#ga-capacity">Scheduling and capacity</a>
+        <a class="g-toc-sub" href="#ga-visit">Visit state machine</a>
+        <a class="g-toc-sub" href="#ga-messages">Messages and minutes</a>
+        <a class="g-toc-sub" href="#ga-files">Attachments</a>
+        <a class="g-toc-sub" href="#ga-settings">Settings</a>
+        <a class="g-toc-sub" href="#ga-modules">Modules and rights</a>
+        <a class="g-toc-sub" href="#ga-routes">Routes</a>
+        <a class="g-toc-sub" href="#ga-decisions">GA decisions</a>
+        <a class="g-toc-sub" href="#ga-open">GA open items</a>
     </nav>
 
     <main class="g-body">
@@ -317,6 +330,8 @@
                 <tr><td>RCV, ISS</td><td>Penerimaan Barang, Pengeluaran Barang</td><td>Transaksi</td><td>Data Entry</td><td><code>docs.*</code> with <code>{type}</code> = receiving / issuance</td></tr>
                 <tr><td>R-CARD, R-SUM, R-IN, R-OUT, R-EXP</td><td>Kartu Stok, Ringkasan Stok, Laporan Penerimaan / Pengeluaran / Kedaluwarsa</td><td>Laporan</td><td>Data Entry</td><td><code>reports.*</code></td></tr>
                 <tr><td>R-ADJ</td><td>Laporan Opname &amp; Penyesuaian</td><td>Laporan</td><td>Supervisor</td><td><code>reports.adjustment</code></td></tr>
+                <tr><td>GVM, GVD, GVS, GVO, GVK, GVT, GAS, GAV, GAD, GAK, GAA, GAR, GAE</td><td>Perawatan Kendaraan and Perawatan AC screens</td><td>GA</td><td>Data Entry (rights only through a group, never by role default)</td><td>see <a href="#ga-modules">13. GA</a></td></tr>
+                <tr><td>GAP</td><td>Pengaturan GA</td><td>GA</td><td>Supervisor (group right needed)</td><td><code>ga-settings.</code></td></tr>
                 <tr><td>USR, GRP, SMP, MOD</td><td>Pengguna, Grup, Data Contoh, Daftar Modul</td><td>Keamanan</td><td>Administrator</td><td><code>users.</code>, <code>groups.</code>, <code>sample.</code>, <code>modules.</code></td></tr>
             </tbody>
         </table>
@@ -447,6 +462,7 @@ npm run build      # required after editing resources/css/app.css</pre>
         </ol>
 
         <h3 id="mail">Mail</h3>
+        <p class="g-note">Since GA, a second mail exists: <code>AcVisitNotice</code>, the visit notice to an AC vendor (<a href="#ga-messages">section 13</a>). It goes through the same <code>MAIL_*</code> settings.</p>
         <p>The only mail Stoku sends is the password-reset link (<code>PasswordResetController</code>, text in <code>AppServiceProvider</code>: Indonesian, subject and signature use <code>APP_NAME</code>). Everything is set in <code>.env</code> and read through <code>config/mail.php</code>; code never calls <code>env()</code>, so it also works with <code>config:cache</code>.</p>
         <ul class="g-list">
             <li><code>MAIL_MAILER</code> (<code>log</code> writes the mail to <code>storage/logs/laravel.log</code>; <code>smtp</code> sends), <code>MAIL_HOST</code>, <code>MAIL_PORT</code>, <code>MAIL_SCHEME</code> (<code>null</code> = STARTTLS on 587; <code>smtps</code> with 465), <code>MAIL_USERNAME</code>, <code>MAIL_PASSWORD</code>, <code>MAIL_FROM_ADDRESS</code>, <code>MAIL_FROM_NAME</code>, <code>MAIL_TIMEOUT</code> (seconds, default 15), <code>MAIL_EHLO_DOMAIN</code> (default: host of <code>APP_URL</code>).</li>
@@ -469,6 +485,8 @@ composer test                        # config:clear, then php artisan test</pre>
                 <tr><td>Stok Opname</td><td><code>StockCountEngineTest</code>, <code>StockCountEntryTest</code>, <code>StockCountReviewTest</code>, <code>StockCountAuditTest</code>, <code>StockCountPrintTest</code>, <code>StockCountScheduleTest</code>, <code>StockCountStartScreensTest</code>, <code>StockCountHelpTest</code>, <code>Unit/StockCountLineTest</code></td></tr>
                 <tr><td>Access and session</td><td><code>SecurityTest</code>, <code>IdleLogoutTest</code>, <code>NoRememberMeTest</code>, <code>PasswordResetTest</code>, <code>BackButtonTest</code></td></tr>
                 <tr><td>Company header</td><td><code>CompanyTest</code> (access, validation, logo upload and serving, three styles on documents, reports and the count sheet, defaults, group migration)</td></tr>
+                <tr><td>GA vehicle care</td><td><code>VehicleCareTest</code> (due dates, status, odometer rule), <code>VehicleMasterTest</code>, <code>VehicleFormsTest</code>, <code>FleetScreensTest</code>, <code>VehicleSeederTest</code></td></tr>
+                <tr><td>GA AC care</td><td><code>AcCareTest</code> (due dates, capacity, auto plan), <code>AcVisitsTest</code> (stage order, mail, reschedule), <code>AcVisitScreenTest</code>, <code>AcScheduleScreenTest</code>, <code>AcPlanTest</code>, <code>AcMasterTest</code>, <code>AcSeederTest</code>, <code>GaSettingsTest</code></td></tr>
                 <tr><td>Seeds, config, help</td><td><code>SeedersTest</code>, <code>SampleDataTest</code>, <code>EnvExampleTest</code>, <code>WallpapersTest</code>, <code>HelpTest</code> (module list against help anchors, anchors against the table of contents, role guards, glossary, diagrams)</td></tr>
             </tbody>
         </table>
@@ -510,6 +528,226 @@ composer test                        # config:clear, then php artisan test</pre>
             <li>Segregation of duties between creator and approver (Adjustment, Stok Opname).</li>
             <li>Hide the Save button on RO modules (the server already rejects the save).</li>
             <li>Company screen: no separate black-and-white logo for Ink Saver (the same PNG is used), and no second letterhead for a VAT variant (<code>companyPpn</code>).</li>
+        </ul>
+
+        <h2 id="ga">13. GA: vehicle care and AC care</h2>
+        <p>General Affairs modules of AdminKU for Jays: <b>Perawatan Kendaraan</b> (vehicle documents, service schedule, odometer) and <b>Perawatan AC</b> (cleaning schedule, vendor visits, floor plan). Both are self-contained: they never touch warehouse stock. Permission codes <code>GV*</code> (vehicle) and <code>GA*</code> (AC) sit under the menu parent <code>GA</code>. Perawatan Gedung, HR and Purchase are placeholders (<a href="#ga-open">open items</a>).</p>
+        <table class="g-table">
+            <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
+            <tbody>
+                <tr><td>Services</td><td><code>VehicleCare</code> (due dates, status, recording), <code>AcCare</code> (settings, due dates, capacity, scheduling), <code>AcVisits</code> (visit order life cycle), <code>AcMessage</code> (pure message text, WhatsApp number and link)</td><td><code>app/Services</code></td></tr>
+                <tr><td>Print and mail</td><td><code>AcVisitPrint</code> (data for the A4 minutes, <code>x-dl::print-sheet</code>), Mailable <code>AcVisitNotice</code> with plain-text view <code>mail.ac-visit</code></td><td><code>app/Support</code>, <code>app/Mail</code>, <code>resources/views/mail</code></td></tr>
+                <tr><td>Screens</td><td><code>FleetController</code> (Monitoring, Detail, attachments), <code>VehicleDocController</code>, <code>VehicleServiceController</code>, <code>VehicleOdometerController</code>, <code>VehicleController</code>, <code>VehicleTypeController</code>, <code>AcScheduleController</code>, <code>AcVisitController</code>, <code>AcPlanController</code>, <code>AcUnitController</code>, <code>AcAreaController</code>, <code>AcRoomController</code>, <code>AcVendorController</code>, <code>GaSettingsController</code></td><td><code>app/Http/Controllers</code>, views <code>fleet</code>, <code>vehicle-*</code>, <code>vehicles</code>, <code>ac-*</code>, <code>ga-settings</code></td></tr>
+                <tr><td>Models</td><td><code>Vehicle</code>, <code>VehicleType</code>, <code>VehicleTypePlan</code>, <code>VehicleDoc</code>, <code>VehicleService</code>, <code>VehicleServiceLine</code>, <code>VehicleOdometer</code>, <code>AcArea</code>, <code>AcRoom</code>, <code>AcUnit</code>, <code>AcVendor</code>, <code>AcOrder</code>, <code>AcOrderLine</code>, <code>AcReschedule</code></td><td><code>app/Models</code></td></tr>
+                <tr><td>Sample data</td><td><code>VehicleSeeder</code>, <code>AcSeeder</code> (fictional, dates relative to today so all three statuses exist; transactions through the services, never raw inserts; master rows idempotent by natural code)</td><td><code>database/seeders</code>, called by <code>DatabaseSeeder</code></td></tr>
+                <tr><td>Files</td><td>Private disk <code>ga</code></td><td><code>config/filesystems.php</code>, <a href="#ga-files">below</a></td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="ga-tables">GA tables and the prefix rule</h3>
+        <p>The prefix rule of <a href="#table-prefix">Table naming convention</a> applies: <code>m_</code> master, <code>g_</code> General Affairs transaction, <code>sys_</code> system; names singular; every model sets <code>$table</code>; foreign keys name their table (<code>constrained('m_vehicle')</code>). Migrations: <code>2026_11_18_100000_create_vehicle_masters</code>, <code>2026_11_18_110000_create_vehicle_transactions</code>, <code>2026_11_19_100000_create_ac_masters</code>, <code>2026_11_19_110000_create_ac_transactions</code>; the three <code>give_*_to_admin_groups</code> migrations grant rights (see <a href="#ga-modules">modules</a>).</p>
+        @include('help.diagram', ['name' => 'tg-ga-erd', 'caption' => 'GA relations: vehicle care (left) and AC care (right). Arrow = foreign key, dashed = nullable.'])
+        <table class="g-table">
+            <thead><tr><th>Table</th><th>Important columns</th><th>Relations and rules</th></tr></thead>
+            <tbody>
+                <tr><td><code>m_vehicle_type</code></td><td><code>code</code> (unique, locked after save), <code>name</code>, <code>is_active</code></td><td>has many plan items and vehicles</td></tr>
+                <tr><td><code>m_vehicle_type_plan</code></td><td><code>vehicle_type_id</code>, <code>name</code>, <code>interval_km</code>, <code>interval_months</code> (at least one), <code>sort</code>; unique (<code>vehicle_type_id</code>, <code>name</code>)</td><td>cascade delete with the type. <code>VehicleTypeController::syncPlans</code> matches form rows to rows by name (case-insensitive), so a renamed job is a new job</td></tr>
+                <tr><td><code>m_vehicle</code></td><td><code>plate</code> (unique, upper-cased, acts as the code), <code>vehicle_type_id</code>, <code>name</code>, <code>year</code>, <code>vin</code>, <code>engine_no</code>, <code>kir_required</code>, <code>odometer_km</code>, <code>odometer_at</code>, <code>is_active</code></td><td><code>odometer_km</code> only rises, through <code>VehicleCare</code>; the type cannot change once a service exists (<code>VehicleRequest</code>); never deleted, only deactivated</td></tr>
+                <tr><td><code>g_vehicle_doc</code></td><td><code>vehicle_id</code>, <code>doc_type</code> (<code>pajak | stnk | kir | asuransi</code>), <code>doc_no</code>, <code>paid_at</code>, <code>valid_until</code>, <code>cost</code> decimal(15,2), <code>attachment_path / _name</code>, <code>created_by</code>; index (<code>vehicle_id</code>, <code>doc_type</code>, <code>valid_until</code>)</td><td>append-only: every renewal is a new row; the current validity is the greatest <code>valid_until</code> per vehicle and type</td></tr>
+                <tr><td><code>g_vehicle_service</code></td><td><code>vehicle_id</code>, <code>serviced_at</code>, <code>odometer_km</code>, <code>workshop</code>, <code>cost</code>, <code>note</code>, <code>created_by</code></td><td>has many lines</td></tr>
+                <tr><td><code>g_vehicle_service_line</code></td><td><code>vehicle_service_id</code> (cascade), <code>vehicle_type_plan_id</code> (nullable, <code>nullOnDelete</code>), <code>name</code> (copied)</td><td>the copied name keeps history readable when the plan item is renamed or removed; the schedule reads the last service of each plan item from these rows</td></tr>
+                <tr><td><code>g_vehicle_odometer</code></td><td><code>vehicle_id</code>, <code>read_at</code>, <code>km</code>, <code>source</code> (<code>awal | manual | servis</code>), <code>recorded_by</code>, <code>photo_path / _name</code></td><td><code>awal</code> row = the starting odometer written when the vehicle is registered; it is the schedule baseline of a job never serviced</td></tr>
+                <tr><td><code>m_ac_area</code></td><td><code>code</code> (unique), <code>name</code>, <code>plan_path / _name</code>, <code>plan_w</code>, <code>plan_h</code>, <code>is_active</code></td><td>cannot be deactivated while it has active rooms</td></tr>
+                <tr><td><code>m_ac_room</code></td><td><code>area_id</code>, <code>code</code> (unique, may change), <code>name</code>, <code>x, y, w, h</code> (percent of the plan), <code>pic_name</code>, <code>pic_phone</code>, <code>pic_email</code>, <code>is_active</code></td><td>cannot be deactivated while it has active units</td></tr>
+                <tr><td><code>m_ac_unit</code></td><td><code>asset_code</code> (unique, permanent, <code>AC-nnnn</code>), <code>room_id</code>, <code>brand</code>, <code>model</code>, <code>capacity_pk</code>, <code>installed_at</code>, <code>pos_x</code>, <code>pos_y</code> (percent, both or none), <code>last_wash_at</code>, <code>last_major_at</code> (before the system), <code>is_active</code></td><td>moving an AC changes <code>room_id</code>, never the asset code; cannot be deactivated while it has an open order</td></tr>
+                <tr><td><code>m_ac_vendor</code></td><td><code>code</code> (unique, <code>VND-nnn</code>), <code>name</code>, <code>contact_name</code>, <code>phone</code> (WhatsApp), <code>email</code>, <code>is_active</code></td><td>capacity is counted per vendor</td></tr>
+                <tr><td><code>g_ac_service_order</code></td><td><code>no</code> (unique, <code>ACV-YYMM-NNNN</code>), <code>vendor_id</code>, <code>visit_date</code>, <code>visit_time</code>, <code>status</code>, <code>sent / confirmed / done / cancelled</code> <code>_at</code> and <code>_by</code>, <code>reschedule_reason</code>, <code>cancel_reason</code>, <code>created_by</code>; indexes (<code>vendor_id</code>, <code>visit_date</code>), <code>status</code></td><td>has many lines and reschedule rows; <code>AcOrder::OPEN</code> = draft, sent, confirmed, rescheduled</td></tr>
+                <tr><td><code>g_ac_service_line</code></td><td><code>order_id</code> (cascade), <code>unit_id</code>, <code>job</code> (<code>wash | major</code>), <code>done_at</code>, <code>photo_before_* / photo_after_*</code>; unique (<code>order_id</code>, <code>unit_id</code>)</td><td><code>done_at</code> is the basis of the next due date; one AC once per order</td></tr>
+                <tr><td><code>g_ac_service_reschedule</code></td><td><code>order_id</code> (cascade), <code>from_date/time</code>, <code>to_date/time</code>, <code>reason</code>, <code>created_by</code></td><td>history of every move; the order keeps only the last reason</td></tr>
+                <tr><td><code>sys_constant</code></td><td>keys <code>ga.vehicle.*</code> and <code>ga.ac.*</code>, group <code>ga</code></td><td>see <a href="#ga-settings">settings</a></td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="ga-vehicle">Vehicle care: due dates and status</h3>
+        <p><code>VehicleCare::overview(vehicles)</code> computes everything for a set of vehicles with a fixed number of queries (current documents, last service per plan item, starting odometers, plans of the types), so the Monitoring grid does not grow with the fleet. Detail uses the same call with one vehicle.</p>
+        <table class="g-table">
+            <thead><tr><th>Item</th><th>Rule</th></tr></thead>
+            <tbody>
+                <tr><td>Document validity</td><td><code>VehicleCare::DOCS</code>: <code>pajak</code> 12 months, <code>stnk</code> 60 months, <code>kir</code> 6 months (only when <code>kir_required</code>), <code>asuransi</code> 12 months. Default <code>valid_until</code> = <code>paid_at</code> + months with <code>addMonthsNoOverflow</code> (31 Aug + 6 months = 28 Feb); the form fills it with the same rule in JavaScript until the user edits it. The server validates <code>valid_until &gt; paid_at</code> and at most 10 years ahead.</td></tr>
+                <tr><td>Document status</td><td>Current document = greatest <code>valid_until</code>. <code>terlambat</code> when it is before today, <code>segera</code> when it is within <code>ga.vehicle.soon_days</code>, else <code>aman</code>. No document: <code>segera</code> for pajak, stnk and a required kir; asuransi and a non-required kir give no status at all.</td></tr>
+                <tr><td>Plan item due</td><td>Base = last service of that plan item (date, odometer), else the <code>awal</code> odometer row, else today. <code>next_km</code> = base km + <code>interval_km</code>; <code>next_at</code> = base date + <code>interval_months</code>. <code>terlambat</code> if <code>km_left &lt; 0</code> or <code>days_left &lt; 0</code>; <code>segera</code> if <code>km_left &lt;= ga.vehicle.soon_km</code> or <code>days_left &lt;= soon_days</code>; else <code>aman</code>. Whichever limit is reached first decides. Progress = the larger of the km ratio and the day ratio.</td></tr>
+                <tr><td>Next job</td><td>Worst status first, then the smallest ETA in days (days left, or km left divided by the average daily use since the starting odometer).</td></tr>
+                <tr><td>Vehicle status</td><td>Worst of all document statuses and all plan item statuses (<code>aman &lt; segera &lt; terlambat</code>). The Monitoring grid sorts by status then plate.</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Recording:</b> <code>recordDoc</code>, <code>recordService</code>, <code>recordOdometer</code> and <code>startOdometer</code>. Service and odometer run in a DB transaction that re-reads the vehicle row <code>FOR UPDATE</code>, so two clerks cannot both pass the "odometer must not fall" check. <code>assertOdometer</code> refuses a km below <code>m_vehicle.odometer_km</code> with a message naming the last value and date; <code>raiseOdometer</code> updates the vehicle only when the reading is higher or later.</li>
+            <li>A service stores its jobs as lines, writes a <code>servis</code> odometer row and raises the vehicle odometer. Jobs must belong to the plan of the vehicle's type or a validation error is thrown. <code>note</code> is required when no job is ticked (<code>VehicleServiceRequest</code>). Money uses <code>App\Support\Decimal</code> (bcmath) and is stored as decimal(15,2).</li>
+            <li>Registering a vehicle (<code>VehicleController::store</code>) creates the vehicle and its <code>awal</code> odometer row in one transaction. <code>odometer_km</code> is <code>prohibited</code> in the update request.</li>
+            <li>The three input screens call <code>abort_unless(canWrite(...))</code> on GET as well, so a read-only user cannot even open the form.</li>
+        </ul>
+
+        <h3 id="ga-ac">AC care: due dates, status and codes</h3>
+        <table class="g-table">
+            <thead><tr><th>Item</th><th>Rule (<code>AcCare</code>)</th></tr></thead>
+            <tbody>
+                <tr><td>Last wash</td><td>Latest of <code>last_wash_at</code>, <code>last_major_at</code> and the <code>done_at</code> of any done line (a major service includes the wash).</td></tr>
+                <tr><td>Last major</td><td>Latest of <code>last_major_at</code> and the <code>done_at</code> of done <code>major</code> lines.</td></tr>
+                <tr><td>Next dates</td><td><code>next_wash</code> = last wash + <code>ga.ac.wash_months</code>; <code>next_major</code> = last major + <code>ga.ac.major_months</code>; with no history both start from <code>installed_at</code>, then from the registration date. <code>addMonthsNoOverflow</code> throughout.</td></tr>
+                <tr><td>Due and status</td><td>Due = the earlier of the two. <code>terlambat</code> if before today, <code>segera</code> within <code>ga.ac.soon_days</code>, else <code>aman</code>.</td></tr>
+                <tr><td>Job type</td><td><code>jobFor(next_major, visit)</code>: <code>major</code> when the next major is due on or before visit date + <code>soon_days</code>, else <code>wash</code>. Computed at scheduling time and stored on the line.</td></tr>
+                <tr><td>Codes</td><td>Area and room code from the name (<code>AcCare::codeFrom</code>: several words = initials, up to 4; one word = first three letters; <code>uniqueCode</code> appends 2, 3, ...). <code>AC-nnnn</code> (<code>AcUnit::nextCode</code>) and <code>VND-nnn</code> (<code>AcVendor::nextCode</code>) are suggestions the user may override before saving. Asset code is rejected on update (<code>prohibited</code>); the room code can change.</td></tr>
+                <tr><td>Open order per AC</td><td><code>openLines()</code> joins lines and orders in <code>AcOrder::OPEN</code>; <code>assertNoOpen</code> allows one open order per AC; deactivating an AC with an open order is refused.</td></tr>
+            </tbody>
+        </table>
+        <p>Like vehicles, <code>AcCare::overview</code> runs a fixed number of queries (last done per unit and job, open lines).</p>
+
+        <h3 id="ga-capacity">Scheduling, capacity and concurrency</h3>
+        @include('help.diagram', ['name' => 'tg-ga-ac-schedule-flow', 'caption' => 'AcCare::schedule(): the checks in order. Any failure throws a validation error and rolls the transaction back.'])
+        <ul class="g-list">
+            <li><b>Capacity is per vendor and per day</b> (<code>ga.ac.capacity</code>, default 3). <code>used()</code> counts the lines of every order of that vendor on that date whose status is not <code>cancelled</code>, so done visits still use their day.</li>
+            <li><b>Enforced on the server.</b> The calendar and the disabled buttons are convenience only. <code>schedule()</code>, <code>autoPlan()</code> and <code>AcVisits::reschedule()</code> run inside <code>DB::transaction</code> and first lock the <b>vendor row</b> (<code>lockForUpdate</code>), so two planners serialize and the second sees the first one's lines. Lock order is always vendor first, then order; <code>reschedule()</code> follows the same order to avoid deadlocks.</li>
+            <li><b>Slot rules</b> (<code>assertSlot</code>): <code>Y-m-d</code> date that is real and not in the past, ISO weekday in <code>ga.ac.days</code>, time <code>HH:MM</code> between <code>ga.ac.start_time</code> and <code>ga.ac.end_time</code>.</li>
+            <li><b>Order number</b> <code>ACV-YYMM-NNNN</code>: <code>createOrder</code> reads the last number of the month, inserts, and on a unique-index collision retries up to five times, locking the read from the second try (same idea as stock document numbers).</li>
+            <li><b>Auto plan</b> (<code>autoPlan</code>): all active ACs with status <code>segera</code> or <code>terlambat</code> and no open order, ordered by days to due then asset code; walks forward day by day from the chosen date (never before today, at most 400 days), skipping disallowed weekdays and full days, filling the remaining capacity. Each day becomes (or extends) a draft order. The area filter of the screen is not applied.</li>
+            <li><b>Draft reuse:</b> if the vendor already has a draft order for that date, new lines are added to it instead of creating a second one.</li>
+            <li><b>Capacity setting from the schedule screen:</b> <code>ac-schedule.capacity</code> writes <code>ga.ac.capacity</code> (<code>AcScheduleRequest</code>: integer 1..10). The settings screen allows 1..20; the reader clamps to 1..20. Existing orders are never changed.</li>
+        </ul>
+
+        <h3 id="ga-visit">Visit order state machine</h3>
+        @include('help.diagram', ['name' => 'tg-ga-ac-visit-states', 'caption' => 'Visit order statuses and the methods that move between them.'])
+        <table class="g-table">
+            <thead><tr><th>From</th><th>Method</th><th>To</th><th>Rules and side effects</th></tr></thead>
+            <tbody>
+                <tr><td>(new)</td><td><code>AcCare::schedule()</code>, <code>autoPlan()</code></td><td><span class="g-st g-grey">draft</span></td><td>Order and lines created; see <a href="#ga-capacity">scheduling</a>.</td></tr>
+                <tr><td>draft, rescheduled, sent</td><td><code>AcVisits::send()</code></td><td><span class="g-st g-yellow">sent</span></td><td>Needs at least one line, a visit date that is not past, and a vendor e-mail or a valid WhatsApp number. With an e-mail it sends <code>AcVisitNotice</code> synchronously inside the transaction; a mail failure is logged (<code>Log::error</code>), a friendly validation error is thrown and the status does not change. Records <code>sent_at</code> and <code>sent_by</code>. From <code>sent</code> it is a resend.</td></tr>
+                <tr><td>sent</td><td><code>confirm()</code></td><td><span class="g-st g-grey">confirmed</span></td><td>Records <code>confirmed_at/by</code>. A manual statement that the vendor answered; the system does not read replies.</td></tr>
+                <tr><td>confirmed</td><td><code>complete(done_at)</code></td><td><span class="g-st g-green">done</span></td><td><code>done_at</code> not before the visit date and not after today; sets <code>done_at</code> on every line, which feeds <code>AcCare::overview</code>.</td></tr>
+                <tr><td>draft, sent, confirmed, rescheduled</td><td><code>reschedule(date, time, reason)</code></td><td><span class="g-st g-yellow">rescheduled</span></td><td>Reason 3 to 255 characters; slot rules and the capacity of the new day (excluding this order); the new slot must differ; appends <code>g_ac_service_reschedule</code>; clears <code>sent_*</code> and <code>confirmed_*</code>, so the order must be sent again.</td></tr>
+                <tr><td>draft, sent, confirmed, rescheduled</td><td><code>cancel(reason)</code></td><td><span class="g-st g-red">cancelled</span></td><td>Reason 3 to 255 characters; frees the ACs and the capacity of that day.</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Stage order is enforced.</b> Every method calls <code>AcVisits::lock()</code>: the order row is re-read <code>FOR UPDATE</code> and the status checked on that fresh copy; any other status throws "... tidak bisa: pesanan ... berstatus ... Urutan tahap: ...". A double click or two users cannot move an order twice.</li>
+            <li><b>Photos:</b> <code>attachPhoto</code> accepts <code>before | after</code> per line only while the order is <code>confirmed</code> or <code>done</code>; the request allows jpg, jpeg, png up to 5 MB; the file is stored first, the line updated, and the old file deleted after the update (the new file is deleted if the update fails).</li>
+            <li>Screens: the grid (<code>actions=worklist</code>, no new button) lists the latest 500 orders; the order screen offers actions by status and by <code>canWrite('GAV')</code>.</li>
+        </ul>
+
+        <h3 id="ga-messages">Messages, e-mail, WhatsApp and the minutes</h3>
+        <ul class="g-list">
+            <li><b>Text:</b> <code>AcMessage</code> is pure (no database, no network). <code>vendor()</code> lists date, start time, number of ACs, order number and one line per AC (area, room and code, asset code, type, job, PIC), then asks for before/after photos, the signed minutes and a reply to confirm. <code>pic()</code> builds the copy for one PIC; rooms with the same PIC and phone are merged and rooms without a PIC are listed as missing. <code>subject()</code> = "Jadwal perawatan AC {day, date} ({n} unit) - {no}". Data comes from <code>AcVisits::noticeData</code>.</li>
+            <li><b>E-mail:</b> only <code>AcVisits::send</code> sends mail, when the officer presses Kirim and confirms; <code>AcVisitNotice</code> renders <code>mail.ac-visit</code> as plain text through the normal mail configuration (<a href="#mail">Mail</a>). The PIC copy is never mailed by the application.</li>
+            <li><b>WhatsApp by link, not by API.</b> <code>AcMessage::waNumber</code> normalizes a number to international digits (<code>0812...</code> to <code>62812...</code>, <code>+62</code> and <code>0062</code> accepted, <code>620...</code> corrected, a bare <code>8...</code> gets <code>62</code>) and rejects anything outside 9 to 15 digits. <code>waLink</code> builds <code>https://wa.me/{number}?text={rawurlencode(text)}</code>. The button "Buka WhatsApp" only opens that link; the officer presses send in WhatsApp. Nothing is posted to a WhatsApp service. The message holds visit text only.</li>
+            <li><b>PIC timing:</b> <code>picNotices()</code> returns <code>send_at</code> = visit date minus one day at <code>ga.ac.pic_notice_time</code> (default 15:00). It is a hint on the screen; there is no scheduled job (<a href="#ga-open">open items</a>).</li>
+            <li><b>Minutes (Berita Acara):</b> <code>AcVisitPrint::report</code> feeds <code>x-dl::print-sheet</code> (A4 portrait): title, order number, date, vendor, MODE (status), table of ACs (room and asset code, area and room with PIC, job, done date, a blank condition column) and signature boxes for the vendor, the area PIC and GA. Cancelled orders print a "not valid" note; unfinished ones print that the sheet is filled during the visit.</li>
+        </ul>
+
+        <h3 id="ga-files">Attachments (private disk <code>ga</code>)</h3>
+        <table class="g-table">
+            <thead><tr><th>File</th><th>Path on disk <code>ga</code></th><th>Served by (module needed)</th><th>Accepted</th></tr></thead>
+            <tbody>
+                <tr><td>Document attachment</td><td><code>doc/{vehicle_id}/...</code></td><td><code>FleetController@file</code>, route <code>fleet.file</code> (GVM)</td><td>jpg, jpeg, png, pdf; 5 MB</td></tr>
+                <tr><td>Odometer photo</td><td><code>odometer/{vehicle_id}/...</code></td><td><code>fleet.file</code> (GVM)</td><td>jpg, jpeg, png, pdf; 5 MB</td></tr>
+                <tr><td>AC visit photos</td><td><code>ac/service/{order_id}/...</code></td><td><code>AcVisitController@file</code>, route <code>ac-visits.file</code> (GAV)</td><td>jpg, jpeg, png; 5 MB</td></tr>
+                <tr><td>Area plan image</td><td><code>ac/plan/{area_id}/...</code></td><td><code>AcAreaController::planResponse</code> through <code>ac-plan.image</code> (GAD) and <code>ac-areas.plan</code> (GAA)</td><td>jpg, jpeg, png; 5 MB; width and height are read on upload so the percent coordinates fit</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li>The disk has <code>root = storage/app/ga</code>, <code>serve = false</code>, so there is no public URL; files are streamed by the controllers behind <code>auth</code>, <code>active</code> and <code>module</code>, with <code>X-Content-Type-Options: nosniff</code> and <code>Cache-Control: private</code>. File names shown to the user are rebuilt from the plate or order number, not taken from the upload.</li>
+            <li>The database keeps only <code>*_path</code> and the original name (<code>*_name</code>, cut to 150 characters). A file written before a failed insert is deleted again. <b>Back up <code>storage/app/ga</code> together with the database</b>: a database dump alone loses every attachment.</li>
+        </ul>
+
+        <h3 id="ga-settings">Settings (<code>sys_constant</code>, group <code>ga</code>)</h3>
+        <p>Read through <code>App\Support\Constants</code> (cached per request) by <code>VehicleCare</code> and <code>AcCare</code>, which clamp and validate on every read, so a bad row can never break a screen. Written by the Pengaturan GA screen (<code>GaSettingsController</code>, module <code>GAP</code>, Supervisor or above), which also writes "Ubah pengaturan GA" with old and new values to <code>ActivityLog</code>. The seeders add the defaults only when a key is missing.</p>
+        <table class="g-table">
+            <thead><tr><th>Key</th><th>Default</th><th>Meaning and limits</th></tr></thead>
+            <tbody>
+                <tr><td><code>ga.vehicle.soon_days</code></td><td>30</td><td>Document and service "Segera" window in days (form 1 to 365)</td></tr>
+                <tr><td><code>ga.vehicle.soon_km</code></td><td>1000</td><td>Service "Segera" window in km (form 100 to 50,000)</td></tr>
+                <tr><td><code>ga.ac.wash_months</code></td><td>3</td><td>Regular wash interval (read clamp 1 to 60)</td></tr>
+                <tr><td><code>ga.ac.major_months</code></td><td>12</td><td>Major service interval (read clamp 1 to 120; the form requires 1 to 60 and not shorter than the wash interval)</td></tr>
+                <tr><td><code>ga.ac.soon_days</code></td><td>30</td><td>AC "Segera" window, also used by <code>jobFor</code></td></tr>
+                <tr><td><code>ga.ac.capacity</code></td><td>3</td><td>ACs per vendor per day (1 to 20)</td></tr>
+                <tr><td><code>ga.ac.days</code></td><td><code>1,2,3,4,5</code></td><td>Allowed ISO weekdays, comma separated; empty or invalid falls back to Monday to Friday</td></tr>
+                <tr><td><code>ga.ac.start_time</code>, <code>ga.ac.end_time</code></td><td><code>09:00</code>, <code>16:00</code></td><td>Visit window, <code>HH:MM</code>; end after start</td></tr>
+                <tr><td><code>ga.ac.pic_notice_time</code></td><td><code>15:00</code></td><td>Suggested send time of the PIC copy, the day before the visit</td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="ga-modules">Modules, rights and grants</h3>
+        <p>All codes live in <code>App\Support\Modules</code> under the parent <code>GA</code>. The parent is excluded from <code>Modules::defaults()</code> (like <code>SEC</code>): a role never grants GA by itself. Access = the minimum role <b>and</b> the module ticked in the user's group; Administrators always have everything. A module on <code>ro</code> refuses every non-safe request in <code>EnsureModuleAccess</code>. The input forms also check <code>canWrite</code> on GET.</p>
+        <table class="g-table">
+            <thead><tr><th>Code</th><th>Menu</th><th>Min role</th><th>Guarded route prefix</th></tr></thead>
+            <tbody>
+                <tr><td>GVM</td><td>Monitoring Kendaraan (also Detail and attachments)</td><td>Data Entry</td><td><code>fleet.</code></td></tr>
+                <tr><td>GVD</td><td>Perpanjang Dokumen Kendaraan</td><td>Data Entry</td><td><code>vehicle-docs.</code></td></tr>
+                <tr><td>GVS</td><td>Catat Servis Kendaraan</td><td>Data Entry</td><td><code>vehicle-services.</code></td></tr>
+                <tr><td>GVO</td><td>Catat Odometer (the driver module)</td><td>Data Entry</td><td><code>vehicle-odometers.</code></td></tr>
+                <tr><td>GVK</td><td>Master Kendaraan</td><td>Data Entry</td><td><code>vehicles.</code></td></tr>
+                <tr><td>GVT</td><td>Jenis Kendaraan (with Rencana Perawatan)</td><td>Data Entry</td><td><code>vehicle-types.</code></td></tr>
+                <tr><td>GAS</td><td>Penjadwalan AC</td><td>Data Entry</td><td><code>ac-schedule.</code></td></tr>
+                <tr><td>GAV</td><td>Kunjungan AC (also photos and minutes)</td><td>Data Entry</td><td><code>ac-visits.</code></td></tr>
+                <tr><td>GAD</td><td>Denah AC</td><td>Data Entry</td><td><code>ac-plan.</code></td></tr>
+                <tr><td>GAK</td><td>Master AC</td><td>Data Entry</td><td><code>ac-units.</code></td></tr>
+                <tr><td>GAA</td><td>Area dan Gedung AC</td><td>Data Entry</td><td><code>ac-areas.</code></td></tr>
+                <tr><td>GAR</td><td>Ruang AC</td><td>Data Entry</td><td><code>ac-rooms.</code></td></tr>
+                <tr><td>GAE</td><td>Vendor AC</td><td>Data Entry</td><td><code>ac-vendors.</code></td></tr>
+                <tr><td>GAP</td><td>Pengaturan GA</td><td>Supervisor</td><td><code>ga-settings.</code></td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Rights migrations</b> give the built-in group <code>ADMIN</code> read-write on the new codes with <code>insertOrIgnore</code> (safe to re-run; <code>down()</code> deletes those rows): <code>2026_11_18_120000_give_vehicle_care_to_admin_groups</code> (GVM, GVD, GVS, GVO, GVK, GVT), <code>2026_11_19_120000_give_ac_care_to_admin_groups</code> (GAS, GAV, GAD, GAK, GAA, GAR, GAE) and <code>2026_11_20_120000_give_ga_settings_to_admin_groups</code> (GAP). No other group receives anything: the Administrator ticks GA modules per group in the Grup screen (typically a GA officer group with everything, and a driver group with only GVO).</li>
+            <li><b>Menu:</b> <code>Menu::layers</code> builds the GA parent from <code>Modules</code>; for Administrators only it appends the placeholder <b>Perawatan Gedung</b> (route <code>soon</code>, view <code>soon.blade.php</code>), as it does for HR and Purchase. Placeholders have no module code or group right.</li>
+            <li><b>Phone view:</b> GA has no native phone screens; its pages are the desktop pages and use the DevLib phone rules (<code>:phone-cards</code> on the grids, <code>dl-table--stack</code> tables).</li>
+        </ul>
+
+        <h3 id="ga-routes">Routes</h3>
+        <table class="g-table">
+            <thead><tr><th>Route name</th><th>Method and path</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td><code>fleet.index</code>, <code>fleet.show</code>, <code>fleet.file</code></td><td>GET <code>fleet</code>, <code>fleet/{vehicle}</code>, <code>fleet/file/{doc|odometer}/{id}</code></td><td>GVM; read only</td></tr>
+                <tr><td><code>vehicle-docs.create / store</code>, <code>vehicle-services.create / store</code>, <code>vehicle-odometers.create / store</code></td><td>GET <code>.../create</code>, POST <code>vehicle-docs</code>, <code>vehicle-services</code>, <code>vehicle-odometers</code></td><td>GVD, GVS, GVO; RW needed even for GET; multipart for docs and odometer; redirect to <code>fleet.show</code> when the user has GVM</td></tr>
+                <tr><td><code>vehicles.*</code>, <code>vehicle-types.*</code></td><td>index, create, store, show, update, <code>POST .../toggle</code></td><td>GVK, GVT; <code>PUT</code> accepts <code>_action = activate | deactivate</code></td></tr>
+                <tr><td><code>ac-schedule.index / store / auto / capacity</code></td><td>GET and POST <code>ac-schedule</code>, <code>ac-schedule/auto</code>, <code>ac-schedule/capacity</code></td><td>GAS</td></tr>
+                <tr><td><code>ac-visits.index / show / print / file</code> and POST <code>send, confirm, complete, reschedule, cancel, photo</code></td><td><code>ac-visits</code>, <code>ac-visits/{order}</code>, <code>.../print</code>, <code>ac-visits/file/{line}/{before|after}</code>, <code>ac-visits/{order}/{action}</code></td><td>GAV; the order screen is the only place that changes an order</td></tr>
+                <tr><td><code>ac-plan.index / image</code></td><td>GET <code>ac-plan</code>, <code>ac-plan/image/{area}</code></td><td>GAD</td></tr>
+                <tr><td><code>ac-units.*</code>, <code>ac-areas.*</code> (+ <code>ac-areas.plan</code>), <code>ac-rooms.*</code>, <code>ac-vendors.*</code></td><td>generated in a loop in <code>routes/web.php</code>: index, create, store, show, update, toggle</td><td>GAK, GAA, GAR, GAE; ids restricted with <code>whereNumber</code></td></tr>
+                <tr><td><code>ga-settings.edit / update</code></td><td>GET and PUT <code>ga-settings</code></td><td>GAP</td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="ga-decisions">GA decisions and why</h3>
+        <table class="g-table">
+            <thead><tr><th>Decision</th><th>Why</th></tr></thead>
+            <tbody>
+                <tr><td>AC vendors live in their own table <code>m_ac_vendor</code>, not <code>m_supplier</code></td><td><code>m_supplier</code> has no e-mail column and its rows feed the supplier dropdown of Penerimaan Barang; AC contractors would pollute that list and a stock supplier would get fields it does not need</td></tr>
+                <tr><td>WhatsApp through a pre-filled <code>wa.me</code> link, confirmed by a person; no WhatsApp Cloud API</td><td>The Cloud API needs a verified business account, approved message templates and per-message cost, and would send without a human glance. A link needs none of that and nothing leaves the building unless an officer presses send. Only e-mail is sent by the system, and only after a confirm dialog</td></tr>
+                <tr><td>No OCR on odometer photos</td><td>A wrong reading would silently move every service schedule; the photo is evidence, the number is typed, and the server refuses a number lower than the last one</td></tr>
+                <tr><td>A major AC service includes the wash</td><td>A technician who services the unit also cleans it; counting the wash separately would schedule a pointless visit three months later</td></tr>
+                <tr><td>Capacity per vendor, enforced inside a transaction that locks the vendor row</td><td>Each vendor has its own crew, so a global limit is wrong; the lock makes the limit hold when two clerks plan at once</td></tr>
+                <tr><td>One AC, one open order</td><td>Prevents double booking and keeps "when is this AC scheduled" a single answer</td></tr>
+                <tr><td>Stage order of a visit is enforced in the service, not only hidden in the screen</td><td>A stale page or a double click must not skip Sent or complete a cancelled order; every transition re-reads the row <code>FOR UPDATE</code></td></tr>
+                <tr><td>Reschedule keeps its own history table and clears sent / confirmed</td><td>The vendor must be told again; the old confirmation no longer applies; the audit trail of moves stays</td></tr>
+                <tr><td>Due dates are computed from done lines plus a starting date on the unit, not stored</td><td>One source of truth; changing an interval in settings changes the next due dates without a migration</td></tr>
+                <tr><td>Vehicle maintenance plan belongs to the vehicle type</td><td>Every pickup shares the same plan; typing it per service would drift. Jobs are matched by name so the form can stay a plain table</td></tr>
+                <tr><td>Vehicle documents are append-only and the greatest <code>valid_until</code> wins</td><td>History of costs and attachments is kept and a late-entered older renewal cannot shorten the validity. There is deliberately no edit or delete screen yet (<a href="#ga-open">open items</a>)</td></tr>
+                <tr><td>Insurance not recorded does not flag a vehicle, other documents do</td><td>Insurance is optional at Jays; tax, STNK and a required KIR are legal duties</td></tr>
+                <tr><td>Asset code is permanent, room code is not</td><td>The asset code is a sticker on the unit; moving an AC changes only the room, so the label <code>ROOM · AC-nnnn</code> stays truthful</td></tr>
+                <tr><td>GA rights come only from groups, and settings need Supervisor</td><td>GA staff and drivers are not the warehouse roles; changing due-date rules affects every schedule, so Data Entry never gets it even if a group ticks it</td></tr>
+                <tr><td>Attachments on a private disk, served by controllers</td><td>Documents and photos are internal records; the same module rights as the screens apply</td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="ga-open">GA open items (not built)</h3>
+        <ul class="g-list">
+            <li>No WhatsApp Cloud API and no automatic sending: the PIC copy at 15:00 the day before is only a suggested time. There is no scheduled job, so a reminder service would need <code>routes/console.php</code> plus a queue worker or a cron entry.</li>
+            <li>No OCR for odometer photos.</li>
+            <li>Vehicle documents, services and odometer readings cannot be edited or deleted from a screen; a wrong entry needs a database correction by an Administrator.</li>
+            <li>No alerts: Segera and Terlambat items appear only on the GA screens (no Beranda card, no e-mail digest, no GA report screens).</li>
+            <li>Servicing does not deduct stock; oil and filters taken from the warehouse are issued manually in Pengeluaran Barang.</li>
+            <li>Perawatan Gedung, HR (Employee, Recruitment) and Purchase (PR, PO, PV) are placeholders ("Segera hadir"), visible to Administrators only; the tables <code>g_maintenance_order</code>, <code>h_*</code> and <code>p_*</code> from the prefix plan do not exist.</li>
+            <li>No scan or signature capture for the printed minutes (Berita Acara); the paper is signed by hand.</li>
+            <li>Two job types only for AC (<code>wash</code>, <code>major</code>); repairs are not tracked.</li>
         </ul>
     </main>
 </div>
