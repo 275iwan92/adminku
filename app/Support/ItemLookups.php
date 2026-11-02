@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Batch;
 use App\Models\Item;
+use App\Models\PurchaseRequest;
 use App\Models\UnitConversion;
 use App\Services\ItemUnits;
 use Devlib\Locale;
@@ -51,6 +52,14 @@ final class ItemLookups
                 'find' => fn ($id) => ($i = Batch::query()->find($id)) ? self::itemRow($i) : null,
             ]);
         }
+        // Permintaan Pembelian: barang master aktif apa pun; memilih mengisi satuan dan estimasi harga satuan (harga beli terakhir, kosong bila belum pernah dibeli).
+        $pp = fn (Item $p) => ['id' => $p->id, 'label' => "{$p->code} · {$p->name}", 'name' => $p->name, 'code' => $p->code, 'unit' => $p->unit, 'last_cost' => PurchaseRequest::lastCost($p->id) ?? '—'];
+        Lookup::define('item_pp', [
+            'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', 'est_price' => 'last_cost'],
+            'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'last_cost' => 'Last cost'],
+            'search' => fn (string $q) => Search::apply(Item::query()->where('is_active', true), $q, ['name', 'location'])->orderBy('name')->limit(50)->get()->map($pp),
+            'find' => fn ($id) => ($p = Item::query()->find($id)) ? $pp($p) : null,
+        ]);
         // Stok Opname "Tambah barang": batch aktif apa pun, TANPA stok sistem (hitung buta tidak boleh bocor lewat pilihan ini).
         Lookup::define('item_count', [
             'key' => 'id', 'label' => 'label', 'source' => 'items (is_active = 1)', 'columns' => ['name' => 'Item', 'code' => 'Code', 'expiry' => 'Expiry'],

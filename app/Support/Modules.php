@@ -23,6 +23,7 @@ final class Modules
         'RPT' => ['Laporan', 'fa-solid fa-chart-column'],
         'GA' => ['GA', 'fa-solid fa-building-user'],
         'HR' => ['HR', 'fa-solid fa-user-tie'],
+        'PUR' => ['Purchase', 'fa-solid fa-cart-shopping'],
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
 
@@ -76,6 +77,7 @@ final class Modules
             'HRE' => ['HR', 'Karyawan', 'fa-solid fa-id-card', 'grid', 'employees.index', 'supervisor', ['employees.']],
             'HRR' => ['HR', 'Rekrutmen', 'fa-solid fa-user-plus', 'grid', 'candidates.index', 'supervisor', ['candidates.', 'recruit-steps.']],
             'HRD' => ['HR', 'Kedisiplinan', 'fa-solid fa-gavel', 'grid', 'disciplines.index', 'supervisor', ['disciplines.']],
+            'PUP' => ['PUR', 'Permintaan Pembelian', 'fa-solid fa-file-pen', 'grid', 'pr.index', 'entry', ['pr.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
@@ -96,7 +98,7 @@ final class Modules
     // Modul bawaan satu peran (dipakai Grup bawaan dan pengguna tanpa Grup). Keamanan, GA, dan HR tidak otomatis: GA dan HR hanya lewat hak Grup (Administrator penuh).
     public static function defaults(string $level): array
     {
-        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA', 'HR'], true) && self::levelAllows($m[5], $level)));
+        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA', 'HR', 'PUR'], true) && self::levelAllows($m[5], $level)));
     }
 
     // Kode modul yang menjaga rute ini (null = rute bebas, mis. beranda, logout, lookup).

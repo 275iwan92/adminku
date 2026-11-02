@@ -62,6 +62,7 @@ final class Indonesian
         'Reference price. Stock valuation uses the moving average of purchase prices.' => 'Harga acuan. Valuasi stok memakai rata-rata bergerak harga pembelian.',
 
         // Form Supplier
+        'Approval' => 'Menunggu Persetujuan',
         'Payment Term (days)' => 'Syarat Bayar (hari)', 'Payment Term' => 'Syarat Bayar',
         'Supplier Code' => 'Kode Pemasok', 'Supplier Name' => 'Nama Pemasok', 'Company Phone (PSTN)' => 'Telepon Kantor (PSTN)', 'Landline, with area code.' => 'Telepon kabel, dengan kode area.',
         'Contact Name' => 'Nama Kontak', 'Contact Mobile (smartphone)' => 'HP Kontak (smartphone)', 'Also used for WhatsApp.' => 'Juga dipakai untuk WhatsApp.',

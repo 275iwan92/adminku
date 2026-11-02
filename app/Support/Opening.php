@@ -8,6 +8,7 @@ use App\Models\Batch;
 use App\Models\Candidate;
 use App\Models\Discipline;
 use App\Models\Employee;
+use App\Models\PurchaseRequest;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\User;
@@ -32,7 +33,7 @@ final class Opening
         'laporan' => ['RPT', 'Laporan', 'fa-solid fa-chart-column', 'coral', 'Hanya membaca data; tidak mengubah apa pun'],
         'ga' => ['GA', 'GA', 'fa-solid fa-building-user', 'slate', 'Kendaraan, AC, dan gedung'],
         'hr' => ['HR', 'HR', 'fa-solid fa-user-tie', 'slate', 'Karyawan, bagian, rekrutmen, kedisiplinan'],
-        'purchase' => ['PUR', 'Purchase', 'fa-solid fa-cart-shopping', 'coral', 'PR, PO, dan penerimaan pembelian'],
+        'purchase' => ['PUR', 'Purchase', 'fa-solid fa-cart-shopping', 'coral', 'PP, keputusan pesanan, PO, dan penerimaan pembelian'],
     ];
 
     // Tabel master yang dihitung: kode modul => tabel.
@@ -62,7 +63,7 @@ final class Opening
         if ($children->isEmpty()) {
             return null;   // tanpa satu pun butir yang boleh dilihat = tanpa layar pembuka
         }
-        $soon = $section === 'purchase';   // belum ada layanan: hanya rencana layar
+        $soon = false;   // tiap ubin yang belum dibuat ditandai sendiri (url /segera/)
         $page = ['section' => $section, 'title' => $title, 'icon' => $icon, 'tone' => $tone, 'tag' => $tag, 'soon' => $soon, 'stats' => [], 'todo' => [], 'shortcuts' => []];
         $facts = [];
         if ($section === 'master') {
@@ -78,6 +79,8 @@ final class Opening
             unset($page['facts']);
         } elseif ($section === 'hr') {
             $facts = self::hr($user);
+        } elseif ($section === 'purchase') {
+            $facts = $user->canAccess('PUP') ? ['PUP' => ['n' => Locale::number(PurchaseRequest::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan']] : [];
         }
 
         $page['tiles'] = $children->map(fn ($c) => [

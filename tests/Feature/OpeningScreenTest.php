@@ -72,17 +72,19 @@ class OpeningScreenTest extends TestCase
     {
         $admin = User::factory()->administrator()->create();
         $this->assertSame(['Karyawan', 'Bagian', 'Rekrutmen', 'Kedisiplinan'], $this->tiles($admin, 'hr'));
-        $this->assertSame(['Permohonan Pembelian (PR)', 'Purchase Order (PO)', 'Penerimaan Pembelian (PV)'], $this->tiles($admin, 'purchase'));
+        $this->assertSame(['Permintaan Pembelian', 'Keputusan Pesanan', 'Pesanan Pembelian (PO)', 'Penerimaan Pembelian (PV)'], $this->tiles($admin, 'purchase'));
 
         $page = $this->actingAs($admin)->get(route('opening', 'hr'))->assertOk()->assertDontSee('Hak Anda: Baca')->viewData('page');
         $this->assertFalse($page['soon']);
         $this->assertSame(['0', '0', '0', '0'], array_column($page['tiles'], 'n'));
         $this->assertSame([false, false, false, false], array_column($page['tiles'], 'soon'));
 
-        $page = $this->get(route('opening', 'purchase'))->assertOk()->assertSee('Segera hadir')->viewData('page');
+        $page = $this->get(route('opening', 'purchase'))->assertOk()->viewData('page');
+        $this->assertFalse($page['soon']);
         $this->assertSame([], $page['stats']);
-        $this->assertSame([null], array_unique(array_column($page['tiles'], 'n')));
-        $this->get(route('soon', 'pr'))->assertOk();
+        $this->assertSame(['0', null, null, null], array_column($page['tiles'], 'n'));   // PP nyata (0 menunggu persetujuan); sisanya segera
+        $this->assertSame([false, true, true, true], array_column($page['tiles'], 'soon'));
+        $this->get(route('soon', 'keputusan'))->assertOk();
     }
 
     public function test_ga_summary_shows_only_the_panels_of_the_user(): void

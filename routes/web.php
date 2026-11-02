@@ -32,6 +32,7 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\OpeningController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\ReorderOrderController;
 use App\Http\Controllers\ReportController;
@@ -79,7 +80,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
     Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'pr', 'po', 'pv'])->name('soon');
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'keputusan', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
@@ -265,6 +266,12 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('candidates/{candidate}', [CandidateController::class, 'show'])->whereNumber('candidate')->name('candidates.show');
     Route::put('candidates/{candidate}', [CandidateController::class, 'update'])->whereNumber('candidate')->name('candidates.update');
     Route::get('candidates/{candidate}/file/{kind}', [CandidateController::class, 'file'])->whereNumber('candidate')->whereIn('kind', ['ktp', 'cv'])->name('candidates.file');
+    // Purchase, Permintaan Pembelian (PUP): daftar, form satu PP banyak barang, siklus lewat PUT (save, confirm, approve, reject, cancel, delete, duplicate).
+    Route::get('pr', [PurchaseRequestController::class, 'index'])->name('pr.index');
+    Route::get('pr/create', [PurchaseRequestController::class, 'create'])->name('pr.create');
+    Route::post('pr', [PurchaseRequestController::class, 'store'])->name('pr.store');
+    Route::get('pr/{pr}', [PurchaseRequestController::class, 'show'])->whereNumber('pr')->name('pr.show');
+    Route::put('pr/{pr}', [PurchaseRequestController::class, 'update'])->whereNumber('pr')->name('pr.update');
     Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
     Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
     Route::post('recruit-steps', [RecruitStepController::class, 'store'])->name('recruit-steps.store');

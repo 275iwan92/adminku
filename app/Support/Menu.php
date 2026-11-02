@@ -54,7 +54,10 @@ final class Menu
         $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
         $out = [];
         foreach ($parents as $code => $p) {
-            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr')][$code] ?? null;
+            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr'), 'PUR' => Opening::url('purchase')][$code] ?? null;
+            if ($code === 'PUR' && $user->isAdministrator()) {   // Permintaan Pembelian nyata (PUP); Keputusan Pesanan, PO, dan PV belum dibuat: hanya Administrator yang melihat.
+                $p['children'] = [...$p['children'], $soon('PUR-KP', 'Keputusan Pesanan', 'fa-solid fa-scale-balanced', 'keputusan'), $soon('PUR-PO', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'po'), $soon('PUR-PV', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'pv')];
+            }
             if ($code === 'GA' && $user->isAdministrator()) {
                 $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];
             }
@@ -68,19 +71,6 @@ final class Menu
             } elseif ($groups && ! collect($out)->contains('code', 'STK')) {
                 $out[] = ['code' => 'STK', 'short' => 'STK', 'label' => 'Stok', 'icon' => 'fa-solid fa-boxes-packing', 'open' => $user->canAccess('STB') ? route('stock.home') : null, 'children' => $groups];
             }
-        }
-
-        // Modul Jays berikutnya (belum dibuat): Purchase berisi PR, PO, PV. Hanya Administrator yang melihat.
-        if ($user->isAdministrator()) {
-            $next = [
-                ['code' => 'PUR', 'short' => 'PUR', 'label' => 'Purchase', 'icon' => 'fa-solid fa-cart-shopping', 'open' => Opening::url('purchase'), 'children' => [
-                    $soon('PUR-PR', 'Permohonan Pembelian (PR)', 'fa-solid fa-file-pen', 'pr'),
-                    $soon('PUR-PO', 'Purchase Order (PO)', 'fa-solid fa-file-invoice', 'po'),
-                    $soon('PUR-PV', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'pv'),
-                ]],
-            ];
-            $at = collect($out)->search(fn ($p) => $p['code'] === 'SEC');
-            array_splice($out, $at === false ? count($out) : $at, 0, $next);
         }
 
         return $out;

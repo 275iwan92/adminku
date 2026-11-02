@@ -6,7 +6,7 @@
  Dipakai oleh : Menu::layers (modul GA, HR, Purchase).
  Status       : Sementara.
 --}}
-@php($label = ['gedung' => 'Perawatan Gedung', 'karyawan' => 'Karyawan', 'bagian' => 'Bagian', 'rekrutmen' => 'Rekrutmen', 'kedisiplinan' => 'Kedisiplinan', 'pr' => 'Permohonan Pembelian (PR)', 'po' => 'Purchase Order (PO)', 'pv' => 'Penerimaan Pembelian (PV)'][$name])
+@php($label = ['gedung' => 'Perawatan Gedung', 'karyawan' => 'Karyawan', 'bagian' => 'Bagian', 'rekrutmen' => 'Rekrutmen', 'kedisiplinan' => 'Kedisiplinan', 'keputusan' => 'Keputusan Pesanan', 'po' => 'Pesanan Pembelian (PO)', 'pv' => 'Penerimaan Pembelian (PV)'][$name])
 @extends('layout', ['title' => $label])
 @section('body')
     <x-dl::empty-state :title="$label" message="Segera hadir." icon="clock" />
