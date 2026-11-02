@@ -40,8 +40,6 @@ final class AcCare
 
     public const DAYS = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
 
-    private const RANK = ['aman' => 0, 'segera' => 1, 'terlambat' => 2];
-
     // ---- Pengaturan (sys_constant, grup "ga") -----------------------------------------------------------------------------------
 
     public static function washMonths(): int
@@ -180,11 +178,6 @@ final class AcCare
     public static function jobFor(CarbonInterface $nextMajor, CarbonInterface $visit): string
     {
         return Carbon::parse($nextMajor->toDateString())->lte(Carbon::parse($visit->toDateString())->addDays(self::soonDays())) ? 'major' : 'wash';
-    }
-
-    public static function worse(string $a, string $b): string
-    {
-        return self::RANK[$a] >= self::RANK[$b] ? $a : $b;
     }
 
     /** Tanggal selesai terakhir per AC dan jenis. @return array<int, array<string, Carbon>> */

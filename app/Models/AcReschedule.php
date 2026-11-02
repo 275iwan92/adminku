@@ -17,11 +17,6 @@ class AcReschedule extends Model
         return ['from_date' => 'date', 'to_date' => 'date'];
     }
 
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(AcOrder::class, 'order_id');
-    }
-
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
