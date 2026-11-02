@@ -24,4 +24,16 @@
         document.addEventListener('click', e => { const el = e.target.closest('[data-open-tab]'); if (el) { e.preventDefault(); openTab(el); } });
         document.addEventListener('keydown', e => { const el = e.target.closest?.('[data-open-tab]'); if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openTab(el); } });
     </script>
+    {{-- Induk di akar menu (Data Master, Stok, GA, HR, Purchase): mengkliknya juga membuka layar pembukanya sebagai tab. DevLib hanya punya halaman pembuka untuk subgrup (Transaksi, Laporan), jadi induk akar ditangani di sini dari kunci open pada $modules. --}}
+    <script>
+        (() => {
+            const shell = document.querySelector('[data-dl-modules]');
+            const opens = Object.fromEntries(JSON.parse(shell.dataset.dlModules).filter(m => m.open).map(m => [m.label, m]));
+            document.addEventListener('click', e => {
+                const a = e.target.closest('.dl-lm__a[data-lm-x]'), pane = a?.closest('.dl-lm__pane'), m = a && opens[a.title];
+                // Tangkap dulu (Layer Menu menggambar ulang panel saat klik), buka tab sesudah Layer Menu selesai turun satu layer.
+                if (m && pane === pane.parentElement.firstElementChild) setTimeout(() => shell.dlComponent.openUrlTab('H-' + m.code, 'Beranda ' + m.label, m.open, m.icon));
+            }, true);
+        })();
+    </script>
 @endsection

@@ -17,7 +17,7 @@ final class Menu
     {
         $parents = [];
         foreach (Modules::all() as $code => [$parent, $label, $icon, $type, $route]) {
-            if (! $user->canAccess($code) || (isset(Modules::MENU_UNDER[$code]) && collect(Modules::MENU_UNDER[$code])->contains(fn ($panel) => $user->canAccess($panel)))) {
+            if ($code === 'STB' || ! $user->canAccess($code) || (isset(Modules::MENU_UNDER[$code]) && collect(Modules::MENU_UNDER[$code])->contains(fn ($panel) => $user->canAccess($panel)))) {
                 continue;
             }
             $url = is_array($route) ? route($route[0], $route[1]) : route($route);
@@ -46,34 +46,35 @@ final class Menu
     {
         $stok = ['TRX', 'RPT'];
         $parents = collect(self::modules($user))->keyBy('code');
-        // Beranda Stok (STB, modul Laporan) menjadi butir pertama induk Stok, di atas subkelompok Transaksi dan Laporan.
-        $home = collect($parents->get('RPT')['children'] ?? [])->firstWhere('code', 'STB');
+        // Subkelompok Transaksi dan Laporan membuka layar pembukanya sendiri (open = alamat, code = kunci tab) saat diklik; induk di akar (Data Master, Stok, GA, HR, Purchase) memakai open yang sama, dibaca home.blade.
         $groups = collect($stok)->filter(fn ($c) => $parents->has($c))
-            ->map(fn ($c) => ['label' => $parents[$c]['label'], 'icon' => $parents[$c]['icon'], 'items' => array_values(array_filter($parents[$c]['children'], fn ($m) => $m['code'] !== 'STB'))])
-            ->filter(fn ($g) => $g['items'])->values()->all();
+            ->map(fn ($c) => ['label' => $parents[$c]['label'], 'icon' => $parents[$c]['icon'], 'items' => $parents[$c]['children'], 'code' => 'H-'.$c, 'open' => Opening::url($c === 'TRX' ? 'transaksi' : 'laporan')])->values()->all();
 
         // Induk GA: modul nyata (Perawatan Aset Kendaraan dan Perawatan AC) dari Modules, lalu layar sementara Perawatan Gedung yang belum dibuat: belum punya modul/hak Grup, jadi hanya Administrator yang melihat.
         $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
         $out = [];
         foreach ($parents as $code => $p) {
+            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga')][$code] ?? null;
             if ($code === 'GA' && $user->isAdministrator()) {
                 $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];
             }
             if (! in_array($code, $stok)) {
                 $out[] = $p;
-            } elseif (($groups || $home) && ! collect($out)->contains('code', 'STK')) {
-                $out[] = ['code' => 'STK', 'short' => 'STK', 'label' => 'Stok', 'icon' => 'fa-solid fa-boxes-packing', 'children' => [...($home ? [$home] : []), ...$groups]];
+            } elseif ($groups && ! collect($out)->contains('code', 'STK')) {
+                $out[] = ['code' => 'STK', 'short' => 'STK', 'label' => 'Stok', 'icon' => 'fa-solid fa-boxes-packing', 'open' => $user->canAccess('STB') ? route('stock.home') : null, 'children' => $groups];
             }
         }
 
-        // Modul Jays berikutnya (belum dibuat): HR berisi Employee dan Recruitment, Purchase berisi PR, PO, PV. Hanya Administrator yang melihat.
+        // Modul Jays berikutnya (belum dibuat): HR berisi Karyawan, Bagian, Rekrutmen, Kedisiplinan; Purchase berisi PR, PO, PV. Hanya Administrator yang melihat.
         if ($user->isAdministrator()) {
             $next = [
-                ['code' => 'HR', 'short' => 'HR', 'label' => 'HR', 'icon' => 'fa-solid fa-user-tie', 'children' => [
-                    $soon('HR-EMP', 'Employee', 'fa-solid fa-id-card', 'employee'),
-                    $soon('HR-REC', 'Recruitment', 'fa-solid fa-user-plus', 'recruitment'),
+                ['code' => 'HR', 'short' => 'HR', 'label' => 'HR', 'icon' => 'fa-solid fa-user-tie', 'open' => Opening::url('hr'), 'children' => [
+                    $soon('HR-EMP', 'Karyawan', 'fa-solid fa-id-card', 'karyawan'),
+                    $soon('HR-DEP', 'Bagian', 'fa-solid fa-sitemap', 'bagian'),
+                    $soon('HR-REC', 'Rekrutmen', 'fa-solid fa-user-plus', 'rekrutmen'),
+                    $soon('HR-DIS', 'Kedisiplinan', 'fa-solid fa-gavel', 'kedisiplinan'),
                 ]],
-                ['code' => 'PUR', 'short' => 'PUR', 'label' => 'Purchase', 'icon' => 'fa-solid fa-cart-shopping', 'children' => [
+                ['code' => 'PUR', 'short' => 'PUR', 'label' => 'Purchase', 'icon' => 'fa-solid fa-cart-shopping', 'open' => Opening::url('purchase'), 'children' => [
                     $soon('PUR-PR', 'Permohonan Pembelian (PR)', 'fa-solid fa-file-pen', 'pr'),
                     $soon('PUR-PO', 'Purchase Order (PO)', 'fa-solid fa-file-invoice', 'po'),
                     $soon('PUR-PV', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'pv'),

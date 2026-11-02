@@ -25,6 +25,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HpController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\OpeningController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecipientController;
@@ -71,8 +72,10 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
     // Beranda Stok (modul STB): isi Beranda lama (pengingat opname, angka stok, titik pesan ulang, kedaluwarsa); Beranda global ada di route home.
     Route::get('stok', StockHomeController::class)->name('stock.home');
+    // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
+    Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'employee', 'recruitment', 'pr', 'po', 'pv'])->name('soon');
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'karyawan', 'bagian', 'rekrutmen', 'kedisiplinan', 'pr', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');

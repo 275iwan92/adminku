@@ -48,7 +48,7 @@ class BrandScreensTest extends TestCase
     public function test_phone_screens_open_with_a_phone_viewport_numeric_keyboards_and_the_phone_css_rules(): void
     {
         $user = User::factory()->administrator()->create();
-        foreach (['/', '/m/group/TRX', '/m/group/RPT', '/m/group/GA', '/m/find', '/m/counts', '/m/open/ITM', '/m/open/GVM', '/m/open/GAS', '/m/open/R-SUM'] as $path) {
+        foreach (['/', '/buka/transaksi', '/buka/laporan', '/buka/ga', '/buka/master', '/stok', '/m/find', '/m/counts', '/m/open/ITM', '/m/open/GVM', '/m/open/GAS', '/m/open/R-SUM'] as $path) {
             $html = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->get($path)->assertOk()->getContent();
             $this->assertStringContainsString('width=device-width', $html, $path);
             $this->assertStringContainsString('dl-phone', $html, "$path memakai kerangka HP");

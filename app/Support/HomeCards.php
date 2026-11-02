@@ -68,7 +68,7 @@ final class HomeCards
     }
 
     /** @return array{active: int, late: int, soon: int} */
-    private static function fleet(): array
+    public static function fleet(): array
     {
         $vehicles = Vehicle::query()->where('is_active', true)->get();
         $by = collect(VehicleCare::overview($vehicles))->countBy('status');
@@ -78,23 +78,33 @@ final class HomeCards
 
     private static function vehicles(array $f): array
     {
-        return self::card('GVM', 'GA · Kendaraan', 'fa-solid fa-car-side', 'slate', 'Monitoring Kendaraan', [
+        return self::card('GVM', 'GA · Kendaraan', 'fa-solid fa-car-side', 'slate', 'Perawatan Kendaraan', [
             ['value' => Locale::number($f['active'], 0), 'label' => 'Aktif'],
             ['value' => Locale::number($f['late'], 0), 'label' => 'Terlambat', 'alert' => $f['late'] > 0],
             ['value' => Locale::number($f['soon'], 0), 'label' => 'Segera', 'alert' => $f['soon'] > 0],
         ]);
     }
 
-    private static function ac(): array
+    /** @return array{units: int, late: int, week: int} */
+    public static function acCounts(): array
     {
         $units = AcUnit::query()->where('is_active', true)->get();
-        $late = collect(AcCare::overview($units))->where('status', 'terlambat')->count();
-        $week = AcCare::scheduledBetween(today()->startOfWeek(), today()->startOfWeek()->addDays(6));
+
+        return [
+            'units' => $units->count(),
+            'late' => collect(AcCare::overview($units))->where('status', 'terlambat')->count(),
+            'week' => AcCare::scheduledBetween(today()->startOfWeek(), today()->startOfWeek()->addDays(6)),
+        ];
+    }
+
+    private static function ac(): array
+    {
+        $c = self::acCounts();
 
         return self::card('GAM', 'GA · AC', 'fa-solid fa-snowflake', 'coral', 'Perawatan AC', [
-            ['value' => Locale::number($units->count(), 0), 'label' => 'AC'],
-            ['value' => Locale::number($late, 0), 'label' => 'Terlambat', 'alert' => $late > 0],
-            ['value' => Locale::number($week, 0), 'label' => 'Minggu ini'],
+            ['value' => Locale::number($c['units'], 0), 'label' => 'AC'],
+            ['value' => Locale::number($c['late'], 0), 'label' => 'Terlambat', 'alert' => $c['late'] > 0],
+            ['value' => Locale::number($c['week'], 0), 'label' => 'Minggu ini'],
         ]);
     }
 

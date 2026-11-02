@@ -138,7 +138,7 @@ class PhoneViewTest extends TestCase
         $user = User::factory()->supervisor()->create();
         $hooks = ['data-dl-phone-menu', 'data-dl-phone-bar', 'data-dl-phone-more', 'data-dl-phone-list', 'data-dl-phone-panel', 'data-dl-phone-close-panel', 'data-dl-phone-sheet', 'dl-phone__main'];
 
-        foreach (['/', route('hp.group', 'TRX'), route('hp.open', 'ITM'), route('hp.find'), route('hp.counts')] as $url) {
+        foreach (['/', route('opening', 'transaksi'), route('hp.open', 'ITM'), route('hp.find'), route('hp.counts')] as $url) {
             $html = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->get($url)->assertOk()->getContent();
             foreach ($hooks as $hook) {
                 $this->assertStringContainsString($hook, $html, "$url tanpa $hook");
@@ -179,7 +179,8 @@ class PhoneViewTest extends TestCase
     public function test_transaction_tab_lists_accessible_transaction_modules(): void
     {
         $entry = User::factory()->create();
-        $this->actingAs($entry)->get(route('hp.group', 'TRX'))->assertOk()->assertSee('Penerimaan Barang')->assertSee('Pengeluaran Barang')->assertDontSee('Saldo Awal')->assertDontSee('Penyesuaian Stok');
+        $this->actingAs($entry)->get(route('hp.group', 'TRX'))->assertRedirect(route('opening', 'transaksi'));   // layar pembuka menggantikan daftar kelompok
+        $this->actingAs($entry)->get(route('opening', 'transaksi'))->assertOk()->assertSee('Penerimaan Barang')->assertSee('Pengeluaran Barang')->assertDontSee('Saldo Awal')->assertDontSee('Penyesuaian Stok');
         $this->actingAs($entry)->get(route('hp.group', 'NOPE'))->assertNotFound();
     }
 

@@ -14,10 +14,10 @@ use Devlib\Device;
 use Illuminate\Http\Request;
 
 /* REMARK
- * Tujuan       : Beranda Stok (modul STB, butir pertama menu Stok): isi Beranda lama sebelum Beranda menjadi global: pengingat Stok Opname, angka ringkasan stok, tabel barang di titik pesan ulang dan hampir kedaluwarsa, grafik nilai stok.
+ * Tujuan       : Beranda Stok (hak STB; dibuka dengan mengklik induk Stok di panel kiri, bukan butir menu): isi Beranda lama sebelum Beranda menjadi global: pengingat Stok Opname, angka ringkasan stok, tabel barang di titik pesan ulang dan hampir kedaluwarsa, grafik nilai stok.
  * Sumber hulu  : m_item + i_batch (stok tersedia per barang, batch hampir kedaluwarsa), rm_stock (hari ini, menunggu persetujuan), CountSchedule, LeadTimes, StockValuation.
  * Output       : view stock-home (desktop, dibuka sebagai tab Layer Shell) atau hp.stock-home.
- * Dipakai oleh : route stock.home; Catat Pemesanan dan Tutup Pesanan kembali ke sini.
+ * Dipakai oleh : route stock.home (open pada induk Stok di Menu::layers, kartu Stok Beranda); Catat Pemesanan dan Tutup Pesanan kembali ke sini.
  * Status       : Aktif.
  */
 class StockHomeController extends Controller

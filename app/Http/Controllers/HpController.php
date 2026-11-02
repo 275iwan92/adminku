@@ -69,6 +69,9 @@ class HpController extends Controller
     public function group(Request $request, string $parent)
     {
         abort_unless(isset(Modules::PARENTS[$parent]), 404);
+        if ($section = ['MST' => 'master', 'TRX' => 'transaksi', 'RPT' => 'laporan', 'GA' => 'ga'][$parent] ?? null) {
+            return redirect()->route('opening', $section);   // layar pembuka kelompok menggantikan daftar kelompok
+        }
         $items = collect(HpShell::modules($request->user()))->firstWhere('code', $parent)['children'] ?? [];
 
         return view('hp.group', ['title' => Modules::PARENTS[$parent][0], 'active' => ['TRX' => 'trx', 'RPT' => 'report'][$parent] ?? '', 'items' => $items]);
