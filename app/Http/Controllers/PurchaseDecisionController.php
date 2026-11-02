@@ -71,8 +71,7 @@ class PurchaseDecisionController extends Controller
             $po = PurchaseOrder::query()->where('status', 'draft')->where('supplier_id', $supplier->id)->where('created_by', $user->id)->latest('id')->lockForUpdate()->first();
             if (! $po) {
                 $po = new PurchaseOrder(['doc_date' => today(), 'supplier_id' => $supplier->id, 'payment_term_days' => $supplier->payment_term_days, 'vat_pct' => 0, 'status' => 'draft', 'created_by' => $user->id]);
-                $po->doc_no = PurchaseOrder::nextNo(today());
-                $po->save();
+                $po->save();   // draf belum bernomor: nomor lahir saat Confirm
             }
             $po->lines()->create([
                 'request_line_id' => $link?->id, 'item_id' => $item?->id, 'item_name' => $item ? null : Text::of($data['item_name'] ?? ''),
@@ -83,6 +82,6 @@ class PurchaseDecisionController extends Controller
             return $po;
         });
 
-        return redirect()->route('po.show', $po)->with('status', "Barang ditambahkan ke draf {$po->doc_no}. Periksa harga lalu Ajukan.");
+        return redirect()->route('po.show', $po)->with('status', 'Barang ditambahkan ke draf PO ('.$po->number().'). Periksa harga lalu Confirm.');
     }
 }

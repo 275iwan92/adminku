@@ -25,7 +25,7 @@ class PurchaseRequestController extends Controller
     public function index()
     {
         $rows = PurchaseRequest::query()->with(['department', 'creator', 'lines'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (PurchaseRequest $r) => [
-            'id' => $r->id, 'doc_no' => $r->doc_no, 'doc_date' => $r->doc_date->format('Y-m-d'), 'department' => $r->department?->name, 'requester' => $r->creator->name,
+            'id' => $r->id, 'doc_no' => $r->doc_no ?? '(draf)', 'doc_date' => $r->doc_date->format('Y-m-d'), 'department' => $r->department?->name, 'requester' => $r->creator->name,
             'need_date' => $r->need_date?->format('Y-m-d'), 'total' => $r->total(), 'items' => $r->lines->count(), 'state' => $r->statusLabel(), 'open' => in_array($r->status, ['approval', 'approved'], true),
         ])->all();
 
@@ -48,14 +48,13 @@ class PurchaseRequestController extends Controller
     {
         $pr = DB::transaction(function () use ($request) {
             $pr = new PurchaseRequest($request->safe()->only(['doc_date', 'department_id', 'need_date', 'note']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
-            $pr->doc_no = PurchaseRequest::nextNo($pr->doc_date ?? today());
-            $pr->save();
+            $pr->save();   // draf belum bernomor: nomor lahir saat Confirm
             $this->saveLines($pr, $request->validated('lines'));
 
             return $pr;
         });
 
-        return redirect()->route('pr.show', $pr)->with('status', "{$pr->doc_no} disimpan sebagai draf.");
+        return redirect()->route('pr.show', $pr)->with('status', 'Draf PP disimpan. Nomor PP dibuat saat Confirm.');
     }
 
     // Siklus: save, confirm (draf -> diajukan), approve / reject (Supervisor bukan pembuat), cancel (alasan), delete (draf), duplicate (ditolak / dibatalkan -> draf baru).
@@ -79,9 +78,9 @@ class PurchaseRequestController extends Controller
                     $pr->lines()->delete();
                     $this->saveLines($pr, $request->validated('lines'));
                     if ($action === 'confirm') {
-                        $pr->update(['status' => 'approval', 'submitted_at' => now()]);
+                        $pr->update(['doc_no' => $pr->doc_no ?? PurchaseRequest::nextNo($pr->doc_date), 'status' => 'approval', 'submitted_at' => now()]);   // Confirm: nomor lahir, masuk antrean persetujuan
 
-                        return "{$pr->doc_no} diajukan dan menunggu persetujuan Supervisor.";
+                        return "{$pr->doc_no} dikonfirmasi dan menunggu persetujuan Supervisor.";
                     }
 
                     return 'Draf disimpan.';
@@ -112,12 +111,11 @@ class PurchaseRequestController extends Controller
                     $need(['rejected', 'cancelled']);
                     $copy = $pr->replicate(['doc_no', 'status', 'submitted_at', 'approved_by', 'approved_at', 'reason']);
                     $copy->fill(['doc_date' => today(), 'status' => 'draft', 'created_by' => $user->id]);
-                    $copy->doc_no = PurchaseRequest::nextNo(today());
                     $copy->save();
                     $this->saveLines($copy, $pr->lines->map(fn ($l) => ['item_id' => $l->item_id, 'item_name' => $l->item_name, 'qty' => $l->qty, 'unit' => $l->unit, 'est_price' => $l->est_price, 'note' => $l->note])->all());
                     $this->copied = $copy;
 
-                    return "{$copy->doc_no} dibuat sebagai draf dari {$pr->doc_no}.";
+                    return "Draf baru dibuat dari {$pr->doc_no}.";
                 default:
                     abort(422, 'Aksi tidak dikenal.');
             }
@@ -159,7 +157,7 @@ class PurchaseRequestController extends Controller
         if ($pr->exists) {
             $log[] = ['at' => $pr->created_at->format('Y-m-d H:i:s'), 'by' => $pr->creator->name, 'action' => 'Dibuat', 'note' => null];
             if ($pr->submitted_at) {
-                $log[] = ['at' => $pr->submitted_at->format('Y-m-d H:i:s'), 'by' => $pr->creator->name, 'action' => 'Diajukan', 'note' => null];
+                $log[] = ['at' => $pr->submitted_at->format('Y-m-d H:i:s'), 'by' => $pr->creator->name, 'action' => 'Dikonfirmasi', 'note' => null];
             }
             if ($pr->approved_at) {
                 $log[] = ['at' => $pr->approved_at->format('Y-m-d H:i:s'), 'by' => $pr->approver?->name ?? '-', 'action' => $pr->status === 'rejected' ? 'Ditolak' : 'Disetujui', 'note' => $pr->status === 'rejected' ? $pr->reason : null];

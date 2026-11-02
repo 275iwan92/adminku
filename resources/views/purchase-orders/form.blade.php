@@ -31,7 +31,7 @@
             ['key' => 'pp', 'label' => 'Dari PP', 'type' => 'display', 'width' => '120px'],
             ['key' => 'note', 'label' => 'Line Note', 'width' => '180px'],
         ];
-        $hide = array_merge(['hold', 'email', 'new', 'undo', 'delete'], $printable ? [] : ['print'], $progress ? ['cancel'] : []);
+        $hide = array_merge(['hold', 'email', 'new', 'undo'], $printable ? [] : ['print'], $progress ? ['cancel'] : []);
     @endphp
     @include('partials.flash')
     @if ($progress)
@@ -43,7 +43,7 @@
     @if ($po->exists && $po->status === 'rejected')
         <x-dl::alert tone="warn" :message="raw('Ditolak oleh '.($po->approver?->name ?? '-').'. Alasan: '.$po->reason.'. Pakai Duplicate untuk membuat draf baru dari PO ini.')" />
     @endif
-    <x-dl::form :title="'Pesanan Pembelian · '.($isNew ? 'Baru' : raw($po->doc_no))" :subtitle="$isNew ? null : raw($po->supplier?->name)" panel="top" kind="document" :status="$status"
+    <x-dl::form :title="'Pesanan Pembelian · '.($isNew ? 'Baru' : raw($po->number()))" :subtitle="$isNew ? null : raw($po->supplier?->name)" panel="top" kind="document" :status="$status"
         :back="route('po.index')" :new-url="route('po.create')" :log="$log"
         :action="$isNew ? route('po.store') : route('po.update', $po)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->isSupervisor() && ! $mine"

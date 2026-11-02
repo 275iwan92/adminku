@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 9b Purchase: Permintaan Pembelian (PP): satu PP banyak barang, siklus Draf > Diajukan > Disetujui / Ditolak > Dibatalkan, nomor otomatis, satuan dan estimasi harga satuan terisi sendiri.
+ Tujuan       : Panduan Pengguna bagian 9b Purchase: Permintaan Pembelian (PP): satu PP banyak barang, siklus Draf > Confirm > Disetujui / Ditolak > Dibatalkan, nomor otomatis, satuan dan estimasi harga satuan terisi sendiri.
                 Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
  Sumber hulu  : PurchaseRequestController / pr.*, PurchaseRequest, PurchaseRequestRequest, Modules (kode PUP), User::canAccess / canWrite, Menu::layers.
  Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya modul PUP). Tidak ada diagram.
@@ -10,7 +10,7 @@
 <p>Menu Purchase mengurus pembelian dari permintaan sampai barang masuk stok: <b>Permintaan Pembelian (PP)</b>, <b>Keputusan Pesanan</b>, <b>Pesanan Pembelian (PO)</b>, dan <b>Penerimaan Pembelian (PV)</b>.</p>
 <ul class="g-list">
     <li><b>Hak Purchase datang dari Grup, bukan dari peran.</b> Menu Purchase hanya tampil bila Grup Anda diberi modul <b>Permintaan Pembelian</b>, <b>Keputusan Pesanan</b>, atau <b>Pesanan Pembelian (PO)</b>, atau <b>Penerimaan Pembelian (PV)</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
-    <li>Alurnya: PP disetujui, lalu Keputusan Pesanan memilih pemasok dari riwayat beli, lalu PO diajukan, disetujui, dan dicetak, lalu PV mencatat barang yang datang dan otomatis menambah stok.</li>
+    <li>Alurnya: PP disetujui, lalu Keputusan Pesanan memilih pemasok dari riwayat beli, lalu PO di-Confirm, disetujui, dan dicetak, lalu PV mencatat barang yang datang dan otomatis menambah stok.</li>
 </ul>
 
 @if ($can('PUP'))
@@ -25,7 +25,7 @@
     <li>Isi <b>Tanggal</b>, <b>Bagian peminta</b>, dan bila perlu <b>Dibutuhkan tgl</b> serta <b>Catatan</b>. Pemohon adalah Anda sendiri.</li>
     <li>Tiap baris: pilih <b>Item</b> dari master, atau ketik nama di <b>Barang baru (ketik)</b> untuk barang yang belum ada di master (isi juga <b>Unit</b>). Isi <b>Qty</b>.</li>
     <li><b>Unit</b> kosong diisi satuan barang. <b>Estimasi harga satuan</b> kosong diisi harga beli terakhir barang itu bila pernah dibeli; boleh diubah. <b>Subtotal</b> = Qty x Estimasi harga satuan.</li>
-    <li>Tekan <span class="g-btn">Save</span> untuk menyimpan sebagai draf (nomor <b>PP-YYMM-0001</b>). Tekan <span class="g-btn">Confirm</span> untuk mengajukan; setelah itu PP terkunci.</li>
+    <li>Tekan <span class="g-btn">Save</span> untuk menyimpan sebagai draf (belum bernomor). Tekan <span class="g-btn">Confirm</span>: nomor <b>PP-YYMM-0001</b> lahir, PP terkunci, dan masuk antrean persetujuan Supervisor.</li>
 </ol>
 <h4>Langkah: menyetujui</h4>
 <ol class="g-steps">
@@ -74,25 +74,25 @@
 @if ($can('PUO'))
 <h3 id="pur-puo">Pesanan Pembelian (PO)</h3>
 <h4>Untuk apa</h4>
-<p>Surat pesanan resmi ke satu pemasok, dengan banyak barang. PO diajukan, disetujui Supervisor, lalu dicetak.</p>
+<p>Surat pesanan resmi ke satu pemasok, dengan banyak barang. PO di-Confirm, disetujui Supervisor, lalu dicetak.</p>
 <h4>Siapa yang bisa</h4>
 <p>Pengguna yang Grup-nya punya modul <b>Pesanan Pembelian (PO)</b>. Menyetujui atau menolak hanya untuk peran Supervisor ke atas, dan bukan pembuat PO itu sendiri.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>PO biasanya dibuat dari <b>Keputusan Pesanan</b>. Untuk PO manual, buka <b>Purchase</b> lalu <b>Pesanan Pembelian (PO)</b> dan tekan <span class="g-btn">New</span>.</li>
     <li>Tab <b>Data</b>: isi <b>Pemasok</b> (<b>Syarat Bayar</b> terisi dari pemasok), <b>Kirim tgl</b>, <b>Kirim ke</b>, <b>PPN (%)</b> bila ada (0 = tanpa PPN), dan <b>Catatan</b>. Periksa baris barang dan <b>Harga satuan</b>; kolom <b>Dari PP</b> menunjukkan PP asalnya. Tab <b>Riwayat</b> mencatat siapa mengajukan dan menyetujui.</li>
-    <li>Tekan <span class="g-btn">Save</span> untuk draf, lalu <span class="g-btn">Ajukan</span>. Setelah diajukan PO terkunci.</li>
+    <li>Tekan <span class="g-btn">Save</span> untuk draf, lalu <span class="g-btn">Confirm</span>: nomor PO lahir dan PO terkunci. Sebelum Confirm, <span class="g-btn">Delete</span> menghapus draf.</li>
     <li>Supervisor lain menekan <span class="g-btn">Approve</span> atau <span class="g-btn">Reject</span> (alasan wajib). Setelah <b>Disetujui</b>, tombol <span class="g-btn">Print</span> muncul untuk mencetak PO.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
-    <li>Nomor PO-YYMM-0001. Status: Draf, Menunggu Persetujuan, Disetujui, Ditolak, Dibatalkan; Diterima sebagian dan Selesai akan terisi otomatis oleh Penerimaan Pembelian.</li>
+    <li>Nomor PO-YYMM-0001 lahir saat Confirm (draf belum bernomor). Status: Draf, Menunggu Persetujuan, Disetujui, Ditolak, Dibatalkan; Diterima sebagian dan Selesai akan terisi otomatis oleh Penerimaan Pembelian.</li>
     <li><b>Cancel</b> (alasan wajib) bisa selama belum ada penerimaan. PO yang ditolak atau dibatalkan bisa disalin menjadi draf baru dengan <span class="g-btn">Duplicate</span>.</li>
     <li>Menyimpan ulang draf mempertahankan link ke PP selama barang barisnya tidak diganti.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">
-    <li><b>Save atau Ajukan ditolak.</b> Pemasok belum dipilih, ada baris tanpa barang, Qty 0, atau Harga satuan kosong.</li>
+    <li><b>Save atau Confirm ditolak.</b> Pemasok belum dipilih, ada baris tanpa barang, Qty 0, atau Harga satuan kosong.</li>
     <li><b>Tombol Print tidak ada.</b> PO belum Disetujui.</li>
 </ul>
 @endif
@@ -107,7 +107,7 @@
 <ol class="g-steps">
     <li>Buka PO yang <b>Disetujui</b> lalu tekan <span class="g-btn">Terima barang</span>, atau buka <b>Purchase</b> lalu <b>Penerimaan Pembelian (PV)</b>, tekan <span class="g-btn">New</span>, dan pilih <b>Pesanan Pembelian (PO)</b>. Pemasok dan barang PO terisi, dengan <b>Terima sekarang</b> = sisa PO.</li>
     <li>Isi <b>Tanggal terima</b>, <b>No surat jalan pemasok</b>, dan <b>Penerima barang</b>. Ubah <b>Terima sekarang</b> bila yang datang kurang (kosong atau 0 = barang itu belum datang). Untuk barang yang melacak kedaluwarsa isi <b>Kedaluwarsa</b>.</li>
-    <li>Tekan <span class="g-btn">Save</span> untuk draf, atau <span class="g-btn">Confirm</span> untuk menerima. Nomor RCV tampil di PV, dan stok barang bertambah.</li>
+    <li>Tekan <span class="g-btn">Save</span> untuk draf, atau <span class="g-btn">Confirm</span> untuk menerima: nomor PV lahir (draf belum bernomor), nomor RCV tampil di PV, dan stok barang bertambah.</li>
     <li>Kiriman berikutnya dibuat sebagai PV baru dari PO yang sama sampai semua barang penuh.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>

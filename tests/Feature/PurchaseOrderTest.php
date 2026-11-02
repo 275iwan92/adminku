@@ -108,7 +108,7 @@ class PurchaseOrderTest extends TestCase
 
         $this->actingAs($this->staff)->post(route('po-decision.make'), $base)->assertRedirect();
         $po = PurchaseOrder::firstOrFail();
-        $this->assertSame(['draft', 'PO-2611-0001', 30], [$po->status, $po->doc_no, $po->payment_term_days]);
+        $this->assertSame(['draft', null, 30], [$po->status, $po->doc_no, $po->payment_term_days]);   // draf belum bernomor: nomor lahir saat Confirm
         $this->assertEquals(52000, $po->lines[0]->price);
 
         $this->post(route('po-decision.make'), ['supplier_id' => $this->maju->id, 'item_name' => 'Map', 'unit' => 'pcs', 'qty' => 5]);
@@ -129,7 +129,7 @@ class PurchaseOrderTest extends TestCase
         $this->actingAs($this->boss)->put(route('pr.update', $pr), ['_action' => 'approve']);
         $line = $pr->lines()->first();
 
-        $page = $this->actingAs($this->staff)->get(route('po-decision.index', ['mode' => 'pp']))->assertOk()->assertSee($pr->doc_no, false);
+        $page = $this->actingAs($this->staff)->get(route('po-decision.index', ['mode' => 'pp']))->assertOk()->assertSee($pr->fresh()->doc_no, false);
         $this->assertCount(2, $page->viewData('outstanding'));
 
         $this->post(route('po-decision.make'), ['supplier_id' => $this->maju->id, 'item_id' => $this->paper->item_id, 'qty' => 8, 'line' => $line->id]);
@@ -152,8 +152,11 @@ class PurchaseOrderTest extends TestCase
         $a = $this->create();
         $b = $this->create(['vat_pct' => 11]);
 
-        $this->assertSame(['PO-2611-0001', 'PO-2611-0002'], [$a->doc_no, $b->doc_no]);
-        $this->assertSame([2, 'draft'], [$a->lines()->count(), $a->status]);
+        $this->assertSame([null, null], [$a->doc_no, $b->doc_no]);   // nomor lahir saat Confirm
+        $this->act($a, 'confirm', $this->staff, $this->payload())->assertSessionHasNoErrors();
+        $this->act($b, 'confirm', $this->staff, $this->payload(['vat_pct' => 11]))->assertSessionHasNoErrors();
+        $this->assertSame(['PO-2611-0001', 'PO-2611-0002'], [$a->fresh()->doc_no, $b->fresh()->doc_no]);
+        $this->assertSame([2, 'approval'], [$a->lines()->count(), $a->fresh()->status]);
         $this->assertEquals(1215000, $a->total());                 // 20 x 52.000 + 50 x 3.500
         $this->assertEqualsWithDelta(1215000 * 1.11, $b->total(), 0.01);   // PPN opsional
 
@@ -176,7 +179,7 @@ class PurchaseOrderTest extends TestCase
         $this->act($po, 'approve', $other)->assertRedirect();
         $this->assertSame('approved', $po->fresh()->status);
 
-        $this->get(route('po.print', $po))->assertOk()->assertSee($po->doc_no, false)->assertSee('CV Maju', false);
+        $this->get(route('po.print', $po))->assertOk()->assertSee($po->fresh()->doc_no, false)->assertSee('CV Maju', false);
         $this->act($po, 'cancel', $this->boss)->assertStatus(422);   // alasan wajib
         $this->act($po, 'cancel', $this->boss, ['_reason' => 'Tidak jadi'])->assertRedirect();
         $this->assertSame('cancelled', $po->fresh()->status);
@@ -199,7 +202,7 @@ class PurchaseOrderTest extends TestCase
         $this->act($po, 'cancel', $this->boss, ['_reason' => 'x'])->assertStatus(422);
         $this->assertSame('approved', $po->fresh()->status);
 
-        $this->actingAs($this->staff)->get(route('po.index'))->assertOk()->assertSee($po->doc_no, false);
+        $this->actingAs($this->staff)->get(route('po.index'))->assertOk()->assertSee($po->fresh()->doc_no, false);
         $this->get(route('po.create'))->assertOk();
         $this->get(route('po.show', $po))->assertOk()->assertSee('Map plastik', false)->assertSee('Riwayat', false);
         $this->get(route('po-decision.index'))->assertOk();

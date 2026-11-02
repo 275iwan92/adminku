@@ -26,7 +26,7 @@ class PurchaseOrderController extends Controller
     public function index()
     {
         $rows = PurchaseOrder::query()->with(['supplier', 'lines'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (PurchaseOrder $o) => [
-            'id' => $o->id, 'doc_no' => $o->doc_no, 'doc_date' => $o->doc_date->format('Y-m-d'), 'supplier' => $o->supplier->name, 'need_date' => $o->need_date?->format('Y-m-d'),
+            'id' => $o->id, 'doc_no' => $o->doc_no ?? '(draf)', 'doc_date' => $o->doc_date->format('Y-m-d'), 'supplier' => $o->supplier->name, 'need_date' => $o->need_date?->format('Y-m-d'),
             'total' => $o->total(), 'received' => $o->receivedPct().'%', 'state' => $o->statusLabel(), 'open' => $o->status === 'approval',
         ])->all();
 
@@ -50,15 +50,14 @@ class PurchaseOrderController extends Controller
     {
         $po = DB::transaction(function () use ($request) {
             $po = new PurchaseOrder(array_merge($request->safe()->only(['doc_date', 'supplier_id', 'payment_term_days', 'need_date', 'ship_to', 'note']), ['vat_pct' => $request->input('vat_pct') ?: 0, 'status' => 'draft', 'created_by' => $request->user()->id]));
-            $po->doc_no = PurchaseOrder::nextNo($po->doc_date ?? today());
-            $po->save();
+            $po->save();   // draf belum bernomor: nomor lahir saat Confirm
             $this->saveLines($po, $request->validated('lines'));
             $this->syncRequests($po);
 
             return $po;
         });
 
-        return redirect()->route('po.show', $po)->with('status', "{$po->doc_no} disimpan sebagai draf.");
+        return redirect()->route('po.show', $po)->with('status', 'Draf PO disimpan. Nomor PO dibuat saat Confirm.');
     }
 
     // Siklus: save, confirm (draf -> diajukan), approve / reject (Supervisor bukan pembuat), cancel (alasan, belum ada penerimaan), delete (draf), duplicate (ditolak / dibatalkan -> draf baru).
@@ -83,8 +82,8 @@ class PurchaseOrderController extends Controller
                     $this->saveLines($po, $request->validated('lines'));
                     $message = 'Draf disimpan.';
                     if ($action === 'confirm') {
-                        $po->update(['status' => 'approval', 'submitted_at' => now()]);
-                        $message = "{$po->doc_no} diajukan dan menunggu persetujuan Supervisor.";
+                        $po->update(['doc_no' => $po->doc_no ?? PurchaseOrder::nextNo($po->doc_date), 'status' => 'approval', 'submitted_at' => now()]);   // Confirm: nomor lahir, masuk antrean persetujuan
+                        $message = "{$po->doc_no} dikonfirmasi dan menunggu persetujuan Supervisor.";
                     }
                     break;
                 case 'approve':
@@ -116,12 +115,11 @@ class PurchaseOrderController extends Controller
                     $need(['rejected', 'cancelled']);
                     $copy = $po->replicate(['doc_no', 'status', 'submitted_at', 'approved_by', 'approved_at', 'reason']);
                     $copy->fill(['doc_date' => today(), 'status' => 'draft', 'created_by' => $user->id]);
-                    $copy->doc_no = PurchaseOrder::nextNo(today());
                     $copy->save();
                     $this->saveLines($copy, $po->lines->map(fn ($l) => ['item_id' => $l->item_id, 'item_name' => $l->item_name, 'qty' => $l->qty, 'unit' => $l->unit, 'price' => $l->price, 'note' => $l->note, 'request_line_id' => $l->request_line_id])->all());
                     $this->syncRequests($copy);
 
-                    return "{$copy->doc_no} dibuat sebagai draf dari {$po->doc_no}.";
+                    return "Draf baru dibuat dari {$po->doc_no}.";
                 default:
                     abort(422, 'Aksi tidak dikenal.');
             }
@@ -189,7 +187,7 @@ class PurchaseOrderController extends Controller
         if ($po->exists) {
             $log[] = ['at' => $po->created_at->format('Y-m-d H:i:s'), 'by' => $po->creator->name, 'action' => 'Dibuat', 'note' => null];
             if ($po->submitted_at) {
-                $log[] = ['at' => $po->submitted_at->format('Y-m-d H:i:s'), 'by' => $po->creator->name, 'action' => 'Diajukan', 'note' => null];
+                $log[] = ['at' => $po->submitted_at->format('Y-m-d H:i:s'), 'by' => $po->creator->name, 'action' => 'Dikonfirmasi', 'note' => null];
             }
             if ($po->approved_at) {
                 $log[] = ['at' => $po->approved_at->format('Y-m-d H:i:s'), 'by' => $po->approver?->name ?? '-', 'action' => $po->status === 'rejected' ? 'Ditolak' : 'Disetujui', 'note' => $po->status === 'rejected' ? $po->reason : null];

@@ -35,7 +35,7 @@
     @if ($now === 'cancelled' && $pv->exists)
         <x-dl::alert tone="warn" :message="raw('PV dibatalkan'.($pv->reason ? '. Alasan: '.$pv->reason : '').'. Stok dikembalikan dan jumlah diterima PO kembali.')" />
     @endif
-    <x-dl::form :title="'Penerimaan Pembelian · '.($isNew ? 'Baru' : raw($pv->doc_no))" :subtitle="$isNew ? null : raw($pv->supplier?->name)" panel="top" kind="document" :status="$now"
+    <x-dl::form :title="'Penerimaan Pembelian · '.($isNew ? 'Baru' : raw($pv->number()))" :subtitle="$isNew ? null : raw($pv->supplier?->name)" panel="top" kind="document" :status="$now"
         :back="route('pv.index')" :new-url="route('pv.create')" :log="$log"
         :action="$isNew ? route('pv.store') : route('pv.update', $pv)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :pipeline="true" :hide="$hide"

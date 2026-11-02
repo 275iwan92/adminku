@@ -40,7 +40,7 @@
     @if ($pr->exists && $pr->status === 'rejected')
         <x-dl::alert tone="warn" :message="raw('Ditolak oleh '.($pr->approver?->name ?? '-').'. Alasan: '.$pr->reason.'. Pakai Duplicate untuk membuat draf baru dari PP ini.')" />
     @endif
-    <x-dl::form :title="'Permintaan Pembelian · '.($isNew ? 'Baru' : raw($pr->doc_no))" :subtitle="$isNew ? null : raw($pr->department?->name)" panel="top" kind="document" :status="$status"
+    <x-dl::form :title="'Permintaan Pembelian · '.($isNew ? 'Baru' : raw($pr->number()))" :subtitle="$isNew ? null : raw($pr->department?->name)" panel="top" kind="document" :status="$status"
         :back="route('pr.index')" :new-url="route('pr.create')"
         :action="$isNew ? route('pr.store') : route('pr.update', $pr)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->isSupervisor() && ! $mine"

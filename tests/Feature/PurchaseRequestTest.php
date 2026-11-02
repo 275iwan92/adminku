@@ -76,8 +76,13 @@ class PurchaseRequestTest extends TestCase
         $b = $this->create();
         $c = $this->create(['doc_date' => '2026-12-03', 'need_date' => '2026-12-10']);
 
-        $this->assertSame(['PP-2611-0001', 'PP-2611-0002', 'PP-2612-0001'], [$a->doc_no, $b->doc_no, $c->doc_no]);
-        $this->assertSame('draft', $a->status);
+        $this->assertSame([null, null, null], [$a->doc_no, $b->doc_no, $c->doc_no]);   // draf belum bernomor: nomor lahir saat Confirm
+        $this->act($a, 'confirm', $this->staff, $this->payload())->assertSessionHasNoErrors();
+        $this->act($b, 'confirm', $this->staff, $this->payload())->assertSessionHasNoErrors();
+        $this->act($c, 'confirm', $this->staff, $this->payload(['doc_date' => '2026-12-03', 'need_date' => '2026-12-10']))->assertSessionHasNoErrors();
+        $this->assertSame(['PP-2611-0001', 'PP-2611-0002', 'PP-2612-0001'], [$a->fresh()->doc_no, $b->fresh()->doc_no, $c->fresh()->doc_no]);
+        $a = $a->fresh();
+        $this->assertSame('approval', $a->status);
         $this->assertCount(2, $a->lines);
         $this->assertSame('pcs', $a->lines[0]->unit);   // kosong -> satuan barang
         $this->assertNull($a->lines[0]->est_price);     // belum pernah dibeli
@@ -134,7 +139,7 @@ class PurchaseRequestTest extends TestCase
 
         $this->act($pr, 'duplicate', $this->staff)->assertRedirect();
         $copy = PurchaseRequest::latest('id')->first();
-        $this->assertSame(['draft', 'PP-2611-0002', 2], [$copy->status, $copy->doc_no, $copy->lines()->count()]);
+        $this->assertSame(['draft', null, 2], [$copy->status, $copy->doc_no, $copy->lines()->count()]);   // salinan = draf baru, belum bernomor
     }
 
     public function test_locked_after_submit_cancel_needs_a_reason_and_only_drafts_are_deleted(): void
@@ -167,7 +172,9 @@ class PurchaseRequestTest extends TestCase
     public function test_screens_open_and_the_module_is_guarded_by_group_rights(): void
     {
         $pr = $this->create();
-        $this->actingAs($this->staff)->get(route('pr.index'))->assertOk()->assertSee($pr->doc_no, false)->assertSee('Gudang', false);
+        $this->actingAs($this->staff)->get(route('pr.index'))->assertOk()->assertSee('(draf)', false)->assertSee('Gudang', false);
+        $this->act($pr, 'confirm', $this->staff, $this->payload());
+        $this->get(route('pr.index'))->assertOk()->assertSee('PP-2611-0001', false);
         $this->get(route('pr.create'))->assertOk()->assertSee('Estimasi harga satuan', false);
         $this->get(route('pr.show', $pr))->assertOk()->assertSee('Map plastik folio', false);
 

@@ -51,6 +51,12 @@ class PurchaseOrder extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    // Nomor dokumen lahir saat Confirm; draf belum bernomor.
+    public function number(): string
+    {
+        return $this->doc_no ?? 'Draf #'.$this->id;
+    }
+
     public function statusLabel(): string
     {
         return self::STATUS[$this->status] ?? $this->status;

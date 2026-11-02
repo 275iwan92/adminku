@@ -28,7 +28,7 @@ class PurchaseReceiptController extends Controller
     public function index()
     {
         $rows = PurchaseReceipt::query()->with(['order', 'supplier', 'stockDocument'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (PurchaseReceipt $r) => [
-            'id' => $r->id, 'doc_no' => $r->doc_no, 'doc_date' => $r->doc_date->format('Y-m-d'), 'order' => $r->order->doc_no, 'supplier' => $r->supplier->name,
+            'id' => $r->id, 'doc_no' => $r->doc_no ?? '(draf)', 'doc_date' => $r->doc_date->format('Y-m-d'), 'order' => $r->order->doc_no, 'supplier' => $r->supplier->name,
             'ref_no' => $r->ref_no, 'rcv' => $r->stockDocument?->doc_no, 'state' => $r->statusLabel(),
         ])->all();
 
@@ -56,14 +56,13 @@ class PurchaseReceiptController extends Controller
         $pv = DB::transaction(function () use ($data, $order, $request) {
             $pv = new PurchaseReceipt(['doc_date' => $data['doc_date'], 'order_id' => $order->id, 'supplier_id' => $order->supplier_id, 'ref_no' => Text::of($data['ref_no'] ?? '') ?: null, 'receiver' => Text::of($data['receiver'] ?? '') ?: null,
                 'note' => Text::of($data['note'] ?? '') ?: null, 'status' => 'draft', 'created_by' => $request->user()->id]);
-            $pv->doc_no = PurchaseReceipt::nextNo($pv->doc_date);
-            $pv->save();
+            $pv->save();   // draf belum bernomor: nomor lahir saat Confirm
             $this->saveLines($pv, $order, $this->lineRows($request, $order, null));
 
             return $pv;
         });
 
-        return redirect()->route('pv.show', $pv)->with('status', "{$pv->doc_no} disimpan sebagai draf.");
+        return redirect()->route('pv.show', $pv)->with('status', 'Draf PV disimpan. Nomor PV dibuat saat Confirm.');
     }
 
     // Siklus: save, confirm (RCV otomatis), cancel (Supervisor, alasan), delete (draf).
@@ -120,10 +119,11 @@ class PurchaseReceiptController extends Controller
     // Konfirmasi: RCV dibuat dan dikonfirmasi dalam transaksi yang sama; kegagalan stok (mis. faktor satuan belum ada) membatalkan seluruh Konfirmasi.
     private function confirm(PurchaseReceipt $pv, PurchaseOrder $order, array $rows, $user): string
     {
+        $pv->doc_no ??= PurchaseReceipt::nextNo($pv->doc_date);   // Confirm: nomor lahir (ikut dibatalkan bila stok gagal)
         $lines = array_map(fn ($r) => ['item_id' => $r['line']->item_id, 'qty' => $r['qty'], 'unit' => $r['line']->unit, 'unit_cost' => $r['line']->price, 'expiry_date' => $r['expiry'], 'note' => null], $rows);
         $rcv = $this->documents->create(StockDocumentType::Receiving, ['supplier_id' => $pv->supplier_id, 'ref_no' => $pv->ref_no, 'recipient' => $pv->receiver, 'note' => trim("{$pv->doc_no} dari {$order->doc_no}. ".$pv->note)], $lines, $user);
         $this->documents->confirm($rcv, $user);
-        $pv->update(['status' => 'confirmed', 'stock_document_id' => $rcv->id, 'confirmed_by' => $user->id, 'confirmed_at' => now()]);
+        $pv->update(['doc_no' => $pv->doc_no, 'status' => 'confirmed', 'stock_document_id' => $rcv->id, 'confirmed_by' => $user->id, 'confirmed_at' => now()]);
         $order->syncReceived();
 
         return "{$pv->doc_no} dikonfirmasi: stok bertambah lewat {$rcv->doc_no}.".($order->fresh()->status === 'done' ? " {$order->doc_no} selesai diterima." : '');

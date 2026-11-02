@@ -56,6 +56,12 @@ class PurchaseReceipt extends Model
         return $this->status === 'confirmed' && $this->stockDocument?->status === 'cancelled' ? 'cancelled' : $this->status;
     }
 
+    // Nomor dokumen lahir saat Confirm; draf belum bernomor.
+    public function number(): string
+    {
+        return $this->doc_no ?? 'Draf #'.$this->id;
+    }
+
     public function statusLabel(): string
     {
         return self::STATUS[$this->statusNow()] ?? $this->status;
