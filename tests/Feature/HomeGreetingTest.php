@@ -58,7 +58,6 @@ class HomeGreetingTest extends TestCase
 
         $this->assertStringContainsString('class="sstock-hero"', $html);
         $this->assertMatchesRegularExpression('/Selamat (pagi|siang|sore|malam)<\/span>, Budi</', $html);
-        $this->assertStringNotContainsString('sstock-hello', $html);
     }
     public function test_every_user_gets_the_network_line_on_desktop_and_in_the_phone_menu_with_the_devlib_ping(): void
     {

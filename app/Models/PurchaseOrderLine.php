@@ -26,11 +26,6 @@ class PurchaseOrderLine extends Model
         return $this->belongsTo(PurchaseRequestLine::class, 'request_line_id');
     }
 
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(PurchaseOrder::class, 'order_id');
-    }
-
     public function label(): string
     {
         return $this->item ? $this->item->code.' · '.$this->item->name : (string) $this->item_name;

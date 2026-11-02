@@ -43,11 +43,6 @@ final class Opening
 
     private const REPORT_NOTES = ['R-CARD' => 'Riwayat satu barang', 'R-SUM' => 'Saldo dan nilai', 'R-IN' => 'Per periode', 'R-OUT' => 'Per periode', 'R-ADJ' => 'Per periode'];
 
-    public static function sections(): array
-    {
-        return array_keys(self::SECTIONS);
-    }
-
     /** Alamat layar pembuka suatu induk menu. */
     public static function url(string $section): string
     {
