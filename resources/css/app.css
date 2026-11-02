@@ -239,3 +239,25 @@ article[data-scanned] { border-color: var(--dl-accent); box-shadow: 0 0 0 2px va
 .sstock-hpwall__img { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .sstock-hpwall.has-photo::before { content: ""; position: absolute; z-index: 1; inset: 0; background: color-mix(in srgb, var(--dl-navy) 38%, transparent); }
 .sstock-hpwall.has-photo > .dl-plogin { position: relative; z-index: 2; height: auto; max-height: 100%; border-radius: var(--dl-radius-xl); box-shadow: var(--dl-shadow-modal); }
+
+/* GA Perawatan AC: kalender minggu (Penjadwalan) dan denah (Denah AC). */
+.sstock-week { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.sstock-day { display: flex; flex-direction: column; gap: 2px; min-height: 76px; padding: 10px 12px; box-sizing: border-box; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md, 10px); background: var(--dl-surface); color: var(--dl-ink); text-decoration: none; }
+.sstock-day b { font-size: 14px; color: var(--dl-ink-strong); }
+.sstock-day small { font-size: 12px; }
+.sstock-day__load { font-size: 20px; font-weight: 700; color: var(--dl-ink-strong); }
+a.sstock-day:hover, a.sstock-day:focus-visible { border-color: var(--dl-accent); outline: none; }
+.sstock-day.is-on { border-color: var(--dl-accent); box-shadow: 0 0 0 2px var(--dl-accent); background: var(--dl-accent-soft); }
+.sstock-day.is-full { border-color: var(--dl-danger); }
+.sstock-day.is-full .sstock-day__load { color: var(--dl-danger); }
+.sstock-day.is-off { opacity: .5; }
+@media (max-width: 760px) { .sstock-week { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.sstock-plan { position: relative; width: 100%; max-width: 920px; box-sizing: border-box; overflow: hidden; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md, 10px); background: var(--dl-surface); }
+.sstock-plan__img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sstock-plan__room { position: absolute; box-sizing: border-box; padding: 2px 5px; overflow: hidden; border: 1.5px solid var(--dl-border-hover); border-radius: 4px; background: color-mix(in srgb, var(--dl-accent) 7%, var(--dl-surface)); color: var(--dl-ink); font-size: 11px; line-height: 1.2; }
+.sstock-plan__dot { position: absolute; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin: -12px 0 0 -12px; box-sizing: border-box; border: 2px solid var(--dl-surface); border-radius: 50%; color: var(--dl-side-ink); font-size: 10px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 4px var(--dl-overlay-soft); }
+.sstock-plan__dot:hover, .sstock-plan__dot:focus-visible { transform: scale(1.2); outline: none; }
+.sstock-plan__dot.is-aman { background: var(--dl-success); }
+.sstock-plan__dot.is-segera { background: var(--dl-amber); }
+.sstock-plan__dot.is-terlambat { background: var(--dl-danger); }
+.sstock-plan__dot.is-on { box-shadow: 0 0 0 3px var(--dl-ink-strong); z-index: 2; }

@@ -9,6 +9,7 @@
 
 use App\Http\Controllers\AcAreaController;
 use App\Http\Controllers\AcRoomController;
+use App\Http\Controllers\AcScheduleController;
 use App\Http\Controllers\AcUnitController;
 use App\Http\Controllers\AcVendorController;
 use App\Http\Controllers\AuthController;
@@ -227,6 +228,11 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::put('vehicle-types/{type}', [VehicleTypeController::class, 'update'])->name('vehicle-types.update');
     Route::post('vehicle-types/{type}/toggle', [VehicleTypeController::class, 'toggle'])->name('vehicle-types.toggle');
 
+    // GA Perawatan AC, Penjadwalan (GAS): kalender kapasitas, daftar AC, jadwalkan, susun otomatis, kapasitas harian.
+    Route::get('ac-schedule', [AcScheduleController::class, 'index'])->name('ac-schedule.index');
+    Route::post('ac-schedule', [AcScheduleController::class, 'store'])->name('ac-schedule.store');
+    Route::post('ac-schedule/auto', [AcScheduleController::class, 'auto'])->name('ac-schedule.auto');
+    Route::post('ac-schedule/capacity', [AcScheduleController::class, 'capacity'])->name('ac-schedule.capacity');
     // GA Perawatan AC, master: Unit AC (GAK), Area dan Gedung (GAA, termasuk gambar denah), Ruang (GAR), Vendor (GAE); hak per modul lewat Grup.
     foreach (['ac-units' => [AcUnitController::class, 'unit'], 'ac-areas' => [AcAreaController::class, 'area'], 'ac-rooms' => [AcRoomController::class, 'room'], 'ac-vendors' => [AcVendorController::class, 'vendor']] as $path => [$controller, $param]) {
         Route::get($path, [$controller, 'index'])->name("{$path}.index");

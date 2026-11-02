@@ -241,6 +241,13 @@ final class AcCare
         return $out;
     }
 
+    /** Jumlah AC terjadwal (bukan batal) pada rentang tanggal untuk semua vendor (kotak ringkasan "terjadwal minggu ini"). */
+    public static function scheduledBetween(CarbonInterface $from, CarbonInterface $to): int
+    {
+        return (int) DB::table('g_ac_service_line as l')->join('g_ac_service_order as o', 'o.id', '=', 'l.order_id')
+            ->whereDate('o.visit_date', '>=', $from->toDateString())->whereDate('o.visit_date', '<=', $to->toDateString())->where('o.status', '!=', 'cancelled')->count();
+    }
+
     /** Tanggal, hari, dan jam kunjungan harus sah: bukan masa lalu, hari yang diizinkan, jam dalam jendela kunjungan. */
     public static function assertSlot(string $date, string $time): Carbon
     {
