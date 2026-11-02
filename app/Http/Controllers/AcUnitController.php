@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AcUnitRequest;
 use App\Models\AcRoom;
 use App\Models\AcUnit;
+use App\Services\AcCare;
 use App\Support\Palette;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -52,6 +53,9 @@ class AcUnitController extends Controller
     {
         $action = $request->input('_action');
         if (in_array($action, ['activate', 'deactivate'], true)) {
+            if ($action === 'deactivate' && ($why = $this->blocked($unit))) {
+                return redirect()->route('ac-units.show', $unit)->withErrors(['brand' => $why]);
+            }
             $unit->update(['is_active' => $action === 'activate']);
 
             return redirect()->route('ac-units.show', $unit)->with('status', $action === 'activate' ? 'Unit AC diaktifkan.' : 'Unit AC dinonaktifkan.');
@@ -64,9 +68,20 @@ class AcUnitController extends Controller
 
     public function toggle(AcUnit $unit): JsonResponse
     {
+        if ($unit->is_active && ($why = $this->blocked($unit))) {
+            return response()->json(['message' => $why], 422);
+        }
         $unit->update(['is_active' => ! $unit->is_active]);
 
         return response()->json(['active' => $unit->is_active]);
+    }
+
+    // AC yang masih punya pesanan kunjungan terbuka tidak boleh dinonaktifkan (batalkan atau selesaikan kunjungannya dulu).
+    private function blocked(AcUnit $unit): ?string
+    {
+        $open = AcCare::openLines([$unit->id])[$unit->id] ?? null;
+
+        return $open ? 'AC ini masih terjadwal pada '.$open['date']->format('d-m-Y').' ('.$open['no'].'). Batalkan atau selesaikan kunjungannya dulu.' : null;
     }
 
     // Posisi titik kosong = otomatis: tengah ruang, bergeser ke kanan per AC lain di ruang yang sama (supaya titik tidak bertumpuk). Posisi yang tidak berubah ruangnya dipertahankan.
