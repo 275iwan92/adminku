@@ -21,6 +21,11 @@ class PurchaseRequestLine extends Model
         return $this->belongsTo(Item::class);
     }
 
+    public function request(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseRequest::class, 'request_id');
+    }
+
     public function label(): string
     {
         return $this->item ? $this->item->code.' · '.$this->item->name : (string) $this->item_name;

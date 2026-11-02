@@ -78,6 +78,8 @@ final class Modules
             'HRR' => ['HR', 'Rekrutmen', 'fa-solid fa-user-plus', 'grid', 'candidates.index', 'supervisor', ['candidates.', 'recruit-steps.']],
             'HRD' => ['HR', 'Kedisiplinan', 'fa-solid fa-gavel', 'grid', 'disciplines.index', 'supervisor', ['disciplines.']],
             'PUP' => ['PUR', 'Permintaan Pembelian', 'fa-solid fa-file-pen', 'grid', 'pr.index', 'entry', ['pr.']],
+            'PUK' => ['PUR', 'Keputusan Pesanan', 'fa-solid fa-scale-balanced', 'form', 'po-decision.index', 'entry', ['po-decision.']],
+            'PUO' => ['PUR', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'grid', 'po.index', 'entry', ['po.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],

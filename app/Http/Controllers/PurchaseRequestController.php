@@ -153,7 +153,7 @@ class PurchaseRequestController extends Controller
     private function formData(PurchaseRequest $pr): array
     {
         $lines = old('lines') ?? $pr->lines()->with('item')->get()->map(fn ($l) => [
-            'item_id' => $l->item_id, 'item_name' => $l->item_name, 'qty' => (float) $l->qty, 'unit' => $l->unit, 'est_price' => $l->est_price, 'ordered_qty' => (float) $l->ordered_qty, 'note' => $l->note,
+            'item_id' => $l->item_id, 'item_id_label' => $l->item ? $l->item->code.' · '.$l->item->name : null, 'item_name' => $l->item_name, 'qty' => (float) $l->qty, 'unit' => $l->unit, 'est_price' => $l->est_price, 'ordered_qty' => (float) $l->ordered_qty, 'note' => $l->note,
         ])->all();
         $log = [];
         if ($pr->exists) {

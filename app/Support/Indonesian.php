@@ -22,7 +22,8 @@ final class Indonesian
             'net_server_down' => ['Server tidak menjawab', 'Server not responding'],
             'net_offline' => ['Perangkat ini offline', 'This device is offline'],
         ]);
-        Lang::translateUsing(fn (string $en, string $lang) => $lang === 'id' ? (self::WORDS[$en] ?? null) : null);
+        // Layar Purchase (pr.*, po.*): tombol Confirm bertuliskan Ajukan (dokumen diajukan ke Supervisor); layar lain tetap Konfirmasi.
+        Lang::translateUsing(fn (string $en, string $lang) => $lang === 'id' ? ($en === 'Confirm' && request()->routeIs('pr.*', 'po.*') ? 'Ajukan' : (self::WORDS[$en] ?? null)) : null);
     }
 
     private const WORDS = [

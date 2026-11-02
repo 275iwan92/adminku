@@ -53,13 +53,17 @@ final class ItemLookups
             ]);
         }
         // Permintaan Pembelian: barang master aktif apa pun; memilih mengisi satuan dan estimasi harga satuan (harga beli terakhir, kosong bila belum pernah dibeli).
-        $pp = fn (Item $p) => ['id' => $p->id, 'label' => "{$p->code} · {$p->name}", 'name' => $p->name, 'code' => $p->code, 'unit' => $p->unit, 'last_cost' => PurchaseRequest::lastCost($p->id) ?? '—'];
-        Lookup::define('item_pp', [
-            'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', 'est_price' => 'last_cost'],
-            'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'last_cost' => 'Last cost'],
-            'search' => fn (string $q) => Search::apply(Item::query()->where('is_active', true), $q, ['name', 'location'])->orderBy('name')->limit(50)->get()->map($pp),
-            'find' => fn ($id) => ($p = Item::query()->find($id)) ? $pp($p) : null,
-        ]);
+        // item_pp (baris PP: kolom est_price) dan item_po (baris PO: kolom price) sama; hanya kolom yang diisi harga terakhir yang berbeda.
+        $pp = fn (Item $p) => ['id' => $p->id, 'label' => "{$p->code} · {$p->name}", 'name' => $p->name, 'code' => $p->code, 'unit' => $p->unit]
+            + (($c = PurchaseRequest::lastCost($p->id)) === null ? ['price' => '', 'last_cost' => '—'] : ['price' => (float) $c, 'last_cost' => Locale::number((float) $c, 0)]);
+        foreach (['item_pp' => 'est_price', 'item_po' => 'price'] as $name => $priceKey) {
+            Lookup::define($name, [
+                'key' => 'id', 'label' => 'label', 'source' => 'm_item (is_active = 1)', 'fill' => ['unit' => 'unit', $priceKey => 'price'],
+                'columns' => ['name' => 'Item', 'code' => 'Code', 'unit' => 'Unit', 'last_cost' => 'Last cost'],
+                'search' => fn (string $q) => Search::apply(Item::query()->where('is_active', true), $q, ['name', 'location'])->orderBy('name')->limit(50)->get()->map($pp),
+                'find' => fn ($id) => ($p = Item::query()->find($id)) ? $pp($p) : null,
+            ]);
+        }
         // Stok Opname "Tambah barang": batch aktif apa pun, TANPA stok sistem (hitung buta tidak boleh bocor lewat pilihan ini).
         Lookup::define('item_count', [
             'key' => 'id', 'label' => 'label', 'source' => 'items (is_active = 1)', 'columns' => ['name' => 'Item', 'code' => 'Code', 'expiry' => 'Expiry'],

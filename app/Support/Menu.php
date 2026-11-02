@@ -55,8 +55,8 @@ final class Menu
         $out = [];
         foreach ($parents as $code => $p) {
             $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr'), 'PUR' => Opening::url('purchase')][$code] ?? null;
-            if ($code === 'PUR' && $user->isAdministrator()) {   // Permintaan Pembelian nyata (PUP); Keputusan Pesanan, PO, dan PV belum dibuat: hanya Administrator yang melihat.
-                $p['children'] = [...$p['children'], $soon('PUR-KP', 'Keputusan Pesanan', 'fa-solid fa-scale-balanced', 'keputusan'), $soon('PUR-PO', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'po'), $soon('PUR-PV', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'pv')];
+            if ($code === 'PUR' && $user->isAdministrator()) {   // Permintaan Pembelian (PUP), Keputusan Pesanan (PUK), dan PO (PUO) nyata; PV belum dibuat: hanya Administrator yang melihat.
+                $p['children'] = [...$p['children'], $soon('PUR-PV', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'pv')];
             }
             if ($code === 'GA' && $user->isAdministrator()) {
                 $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];

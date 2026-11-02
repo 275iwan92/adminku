@@ -82,9 +82,9 @@ class OpeningScreenTest extends TestCase
         $page = $this->get(route('opening', 'purchase'))->assertOk()->viewData('page');
         $this->assertFalse($page['soon']);
         $this->assertSame([], $page['stats']);
-        $this->assertSame(['0', null, null, null], array_column($page['tiles'], 'n'));   // PP nyata (0 menunggu persetujuan); sisanya segera
-        $this->assertSame([false, true, true, true], array_column($page['tiles'], 'soon'));
-        $this->get(route('soon', 'keputusan'))->assertOk();
+        $this->assertSame(['0', '0', '0', null], array_column($page['tiles'], 'n'));   // PP, Keputusan Pesanan, PO nyata; PV segera
+        $this->assertSame([false, false, false, true], array_column($page['tiles'], 'soon'));
+        $this->get(route('soon', 'pv'))->assertOk();
     }
 
     public function test_ga_summary_shows_only_the_panels_of_the_user(): void

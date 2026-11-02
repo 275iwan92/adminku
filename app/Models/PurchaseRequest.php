@@ -57,6 +57,21 @@ class PurchaseRequest extends Model
         return (float) $this->lines->sum(fn (PurchaseRequestLine $l) => (float) $l->qty * (float) $l->est_price);
     }
 
+    // Hitung ulang jumlah dipesan tiap baris dari baris PO yang masih hidup (bukan ditolak / dibatalkan), lalu status PP yang sudah disetujui: approved (belum dipesan) / partial / done (semua baris terpesan penuh).
+    public function syncOrdered(): void
+    {
+        $lines = $this->lines()->get();
+        foreach ($lines as $line) {
+            $line->update(['ordered_qty' => DB::table('p_order_line as l')->join('p_order as o', 'o.id', '=', 'l.order_id')->where('l.request_line_id', $line->id)->whereIn('o.status', PurchaseOrder::LIVE)->sum('l.qty')]);
+        }
+        if (in_array($this->status, ['approved', 'partial', 'done'], true)) {
+            $lines = $this->lines()->get();
+            $any = $lines->contains(fn ($l) => (float) $l->ordered_qty > 0);
+            $all = $lines->every(fn ($l) => (float) $l->ordered_qty >= (float) $l->qty);
+            $this->update(['status' => $all ? 'done' : ($any ? 'partial' : 'approved')]);
+        }
+    }
+
     // PP-YYMM-0001, urut per bulan tanggal PP. Dipanggil di dalam transaksi simpan.
     public static function nextNo(\DateTimeInterface $date): string
     {

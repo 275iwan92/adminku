@@ -7,9 +7,10 @@
 --}}
 @if ($anyPur)
 <h2 id="purchase">9b. Purchase</h2>
-<p>Menu Purchase mengurus pembelian: <b>Permintaan Pembelian (PP)</b>, lalu Keputusan Pesanan, Pesanan Pembelian (PO), dan Penerimaan Pembelian (PV). Yang sudah tersedia sekarang: PP. Layar lainnya tampil "Segera hadir" untuk Administrator.</p>
+<p>Menu Purchase mengurus pembelian: <b>Permintaan Pembelian (PP)</b>, <b>Keputusan Pesanan</b>, <b>Pesanan Pembelian (PO)</b>, dan Penerimaan Pembelian (PV). Yang sudah tersedia: PP, Keputusan Pesanan, dan PO. PV tampil "Segera hadir" untuk Administrator.</p>
 <ul class="g-list">
-    <li><b>Hak Purchase datang dari Grup, bukan dari peran.</b> Menu Purchase hanya tampil bila Grup Anda diberi modul <b>Permintaan Pembelian</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
+    <li><b>Hak Purchase datang dari Grup, bukan dari peran.</b> Menu Purchase hanya tampil bila Grup Anda diberi modul <b>Permintaan Pembelian</b>, <b>Keputusan Pesanan</b>, atau <b>Pesanan Pembelian (PO)</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
+    <li>Alurnya: PP disetujui, lalu Keputusan Pesanan memilih pemasok dari riwayat beli, lalu PO diajukan, disetujui, dan dicetak.</li>
 </ul>
 
 @if ($can('PUP'))
@@ -41,6 +42,58 @@
 <ul class="g-list">
     <li><b>Save atau Confirm ditolak.</b> Bagian peminta belum dipilih, ada baris tanpa barang atau Qty 0, atau Dibutuhkan tgl sebelum Tanggal.</li>
     <li><b>Tombol Approve tidak muncul.</b> Anda pembuat PP itu, atau peran Anda bukan Supervisor.</li>
+</ul>
+@endif
+
+@if ($can('PUK'))
+<h3 id="pur-puk">Keputusan Pesanan</h3>
+<h4>Untuk apa</h4>
+<p>Memutuskan barang dipesan ke pemasok mana. Layar ini bekerja untuk <b>satu barang</b> dan tidak menyimpan dokumen: ia menunjukkan siapa saja pemasok yang pernah menjual barang itu, kapan terakhir, berapa harganya, dan berapa kali dibeli, lalu membuat draf PO.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Keputusan Pesanan</b>. Tombol <span class="g-btn">Buat PO</span> juga butuh hak tulis modul <b>Pesanan Pembelian (PO)</b>.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Pilih barangnya. Ada dua cara: <b>Dari master</b> (pilih atau ketik di <b>Item</b>, atau ketik nama di <b>Barang baru (ketik)</b> dengan <b>Unit</b>) atau <b>Dari PP</b> (daftar baris PP yang Disetujui dan belum terpesan penuh; tekan <span class="g-btn">Pilih</span> mengisi barang dan sisa Qty). Isi <b>Qty</b>.</li>
+    <li>Tekan <span class="g-btn">Proses</span>. Tiap pemasok tampil dengan <b>Beli terakhir</b>, <b>Harga terakhir</b> (hijau = paling murah), dan <b>Berapa kali</b>. Tekan <b>Riwayat</b> di satu baris untuk melihat tiap pembelian: tanggal, nomor dokumen, jumlah, harga satuan.</li>
+    <li>Pilih satu pemasok (atau pilih di <b>Pemasok lain</b> untuk yang belum pernah dipakai), lalu tekan <span class="g-btn">Buat PO</span>. Barang masuk ke draf PO pemasok itu milik Anda (atau draf baru dibuat), dengan harga terakhir di pemasok itu.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Barang yang belum pernah dibeli hanya menampilkan info <b>Barang ini belum pernah dibeli</b>; pilih pemasok lewat <b>Pemasok lain</b>.</li>
+    <li>Riwayat diambil dari Penerimaan Barang yang sudah dikonfirmasi dan tidak dibatalkan, dengan harga per satuan stok barang.</li>
+    <li>Barang yang berasal dari PP tetap terhubung ke PP-nya: kolom Dipesan di PP bertambah, dan status PP menjadi Dipesan sebagian lalu Selesai bila semua barisnya terpesan penuh.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Proses ditolak.</b> Barang belum dipilih atau diketik, Qty kosong atau 0, atau Unit belum diisi untuk barang yang diketik.</li>
+    <li><b>Buat PO ditolak.</b> Pemasok belum dipilih, atau Anda belum punya hak tulis modul Pesanan Pembelian (PO).</li>
+    <li><b>Baris PP tidak ada di tab Dari PP.</b> PP-nya belum Disetujui, atau semua barisnya sudah terpesan penuh.</li>
+</ul>
+@endif
+
+@if ($can('PUO'))
+<h3 id="pur-puo">Pesanan Pembelian (PO)</h3>
+<h4>Untuk apa</h4>
+<p>Surat pesanan resmi ke satu pemasok, dengan banyak barang. PO diajukan, disetujui Supervisor, lalu dicetak.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Pesanan Pembelian (PO)</b>. Menyetujui atau menolak hanya untuk peran Supervisor ke atas, dan bukan pembuat PO itu sendiri.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>PO biasanya dibuat dari <b>Keputusan Pesanan</b>. Untuk PO manual, buka <b>Purchase</b> lalu <b>Pesanan Pembelian (PO)</b> dan tekan <span class="g-btn">New</span>.</li>
+    <li>Tab <b>Data</b>: isi <b>Pemasok</b> (<b>Syarat Bayar</b> terisi dari pemasok), <b>Kirim tgl</b>, <b>Kirim ke</b>, <b>PPN (%)</b> bila ada (0 = tanpa PPN), dan <b>Catatan</b>. Periksa baris barang dan <b>Harga satuan</b>; kolom <b>Dari PP</b> menunjukkan PP asalnya. Tab <b>Riwayat</b> mencatat siapa mengajukan dan menyetujui.</li>
+    <li>Tekan <span class="g-btn">Save</span> untuk draf, lalu <span class="g-btn">Ajukan</span>. Setelah diajukan PO terkunci.</li>
+    <li>Supervisor lain menekan <span class="g-btn">Approve</span> atau <span class="g-btn">Reject</span> (alasan wajib). Setelah <b>Disetujui</b>, tombol <span class="g-btn">Print</span> muncul untuk mencetak PO.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Nomor PO-YYMM-0001. Status: Draf, Menunggu Persetujuan, Disetujui, Ditolak, Dibatalkan; Diterima sebagian dan Selesai akan terisi otomatis oleh Penerimaan Pembelian.</li>
+    <li><b>Cancel</b> (alasan wajib) bisa selama belum ada penerimaan. PO yang ditolak atau dibatalkan bisa disalin menjadi draf baru dengan <span class="g-btn">Duplicate</span>.</li>
+    <li>Menyimpan ulang draf mempertahankan link ke PP selama barang barisnya tidak diganti.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Save atau Ajukan ditolak.</b> Pemasok belum dipilih, ada baris tanpa barang, Qty 0, atau Harga satuan kosong.</li>
+    <li><b>Tombol Print tidak ada.</b> PO belum Disetujui.</li>
 </ul>
 @endif
 @endif

@@ -8,7 +8,9 @@ use App\Models\Batch;
 use App\Models\Candidate;
 use App\Models\Discipline;
 use App\Models\Employee;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
+use App\Models\PurchaseRequestLine;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\User;
@@ -81,6 +83,12 @@ final class Opening
             $facts = self::hr($user);
         } elseif ($section === 'purchase') {
             $facts = $user->canAccess('PUP') ? ['PUP' => ['n' => Locale::number(PurchaseRequest::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan']] : [];
+            if ($user->canAccess('PUK')) {
+                $facts['PUK'] = ['n' => Locale::number(PurchaseRequestLine::query()->whereHas('request', fn ($q) => $q->whereIn('status', ['approved', 'partial']))->whereColumn('ordered_qty', '<', 'qty')->count(), 0), 'note' => 'baris PP menunggu dipesan'];
+            }
+            if ($user->canAccess('PUO')) {
+                $facts['PUO'] = ['n' => Locale::number(PurchaseOrder::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
+            }
         }
 
         $page['tiles'] = $children->map(fn ($c) => [
