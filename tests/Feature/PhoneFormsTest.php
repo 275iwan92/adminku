@@ -55,7 +55,7 @@ class PhoneFormsTest extends TestCase
     {
         $this->actingAs(User::factory()->administrator()->create());
         foreach ($this->screens() as $name => $url) {
-            $this->withCookie('ui', 'phone')->get($url)->assertOk()->assertSee('dl-on-phone', false);
+            $this->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get($url)->assertOk()->assertSee('dl-on-phone', false);
             $this->withCookie('ui', 'desktop')->withHeader('User-Agent', self::PC)->get($url)->assertOk()->assertDontSee('dl-on-phone', false);
         }
     }
@@ -65,7 +65,7 @@ class PhoneFormsTest extends TestCase
         $this->actingAs(User::factory()->supervisor()->create());
         $p = $this->product();
         ItemUnit::create(['item_id' => $p->id, 'unit' => 'dus', 'factor' => 12]);
-        $html = $this->withCookie('ui', 'phone')->get(route('products.show', $p))->assertOk()->getContent();
+        $html = $this->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get(route('products.show', $p))->assertOk()->getContent();
         $this->assertSame(2, substr_count($html, 'dl-table--stack'), 'tabel Batch dan Satuan masuk');
         $this->assertStringContainsString('data-label="Faktor ke pcs"', $html);
     }
@@ -73,13 +73,13 @@ class PhoneFormsTest extends TestCase
     public function test_modules_screen_declares_phone_cards(): void
     {
         $this->actingAs(User::factory()->administrator()->create());
-        $this->withCookie('ui', 'phone')->get(route('modules.index'))->assertOk()->assertSee('phoneCards', false);
+        $this->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get(route('modules.index'))->assertOk()->assertSee('phoneCards', false);
     }
 
     public function test_forgot_and_reset_password_use_the_phone_login_frame_only_on_the_phone(): void
     {
         foreach ([route('password.request'), route('password.reset', ['token' => 'abc', 'email' => 'a@b.test'])] as $url) {
-            $phone = $this->withCookie('ui', 'phone')->get($url)->assertOk()->getContent();
+            $phone = $this->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get($url)->assertOk()->getContent();
             $this->assertStringContainsString('dl-plogin', $phone);
             $this->assertStringNotContainsString('dl-frame', $phone);
             $pc = $this->withCookie('ui', 'desktop')->withHeader('User-Agent', self::PC)->get($url)->assertOk()->getContent();

@@ -40,7 +40,7 @@ class PhoneViewTest extends TestCase
         $chosen = $this->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/login')->getContent();
         $this->assertStringContainsString('dl-plogin', $chosen);
         $this->assertStringNotContainsString('dl-phoneoffer', $chosen);
-        $this->assertStringContainsString('dl-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->get('/login')->getContent());
+        $this->assertStringContainsString('dl-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/login')->getContent());
     }
 
     public function test_a_real_phone_is_always_the_phone_view_with_no_desktop_switch_and_a_narrowed_pc_window_has_no_visible_switch_either(): void
@@ -51,7 +51,7 @@ class PhoneViewTest extends TestCase
         $this->assertStringNotContainsString('data-dl-device', $phone);
         $this->assertStringNotContainsString('action="'.route('ui.set').'"', $phone);
 
-        $pc = $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->get('/')->assertOk()->getContent();
+        $pc = $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('action="'.route('ui.set').'"', $pc, 'formulir tetap ada untuk peralihan otomatis; tombolnya disembunyikan lewat CSS (.dl-phone__dev)');
         $this->assertStringContainsString('.dl-phone__dev', file_get_contents(resource_path('css/app.css')));
     }
@@ -90,7 +90,7 @@ class PhoneViewTest extends TestCase
 
         // pilihan pengguna menang atas tebakan di komputer; di ponsel asli pilihan desktop diabaikan (ponsel selalu Tampilan HP)
         $this->actingAs($sup)->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/')->assertSee('dl-phone__burger', false)->assertDontSee('dl-shell', false);
-        $this->actingAs($sup)->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->get('/')->assertSee('dl-phone__burger', false);
+        $this->actingAs($sup)->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/')->assertSee('dl-phone__burger', false);
     }
 
     public function test_desktop_home_offers_the_phone_view_popup_only_until_the_user_has_chosen(): void
@@ -123,6 +123,18 @@ class PhoneViewTest extends TestCase
         $html = $this->actingAs(User::factory()->supervisor()->create())->withHeader('User-Agent', self::PC)->get('/')->getContent();
         $this->assertStringNotContainsString('data-lm-act="device"', $html);
         $this->assertStringNotContainsString('data-dl-device', $html);
+    }
+
+    public function test_a_pc_browser_with_an_old_manual_phone_choice_is_released_to_desktop_and_the_cookie_is_cleared(): void
+    {
+        $user = User::factory()->create();
+        $res = $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->get('/')->assertOk();
+        $this->assertStringNotContainsString('dl-on-phone', $res->getContent());
+        $this->assertTrue(collect($res->headers->getCookies())->contains(fn ($c) => $c->getName() === 'ui' && $c->isCleared()), 'cookie ui lama dihapus');
+        $this->defaultCookies = [];
+
+        // jendela komputer yang menyempit (pilihan otomatis) tidak tersentuh
+        $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get('/')->assertOk()->assertSee('dl-phone', false);
     }
 
     public function test_switch_saves_the_cookie_and_rejects_other_values(): void
