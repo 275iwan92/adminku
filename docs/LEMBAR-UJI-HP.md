@@ -23,18 +23,17 @@ Untuk menguji Tampilan HP Stoku di perangkat sungguhan, sekitar 45 sampai 60 men
 
 | No | Langkah | Lulus bila | A | i | Catatan |
 |---|---|---|---|---|---|
-| 2.1 | Buka halaman Masuk. | Tampilan HP: satu kolom, isian dan tombol besar, tautan kecil *Tampilan Desktop* di bawah. | | | |
+| 2.1 | Buka halaman Masuk. | Tampilan HP: satu kolom, isian dan tombol besar, tanpa tombol *Tampilan Desktop* (ponsel selalu Tampilan HP). | | | |
 | 2.2 | Ketuk kolom nama pengguna, lalu kolom password. | Layar **tidak membesar sendiri** saat isian difokus (khusus iPhone), keyboard tidak menutup tombol Masuk. | | | |
 | 2.3 | Masuk. | Beranda HP: kartu ringkasan besar, satu tombol ≡ melayang di kiri atas, tidak ada gulir ke samping. | | | |
-| 2.4 | ≡ > **Menu** > **Tampilan Desktop**. Tutup browser, buka lagi. | Tetap Tampilan Desktop (pilihan Anda menang). Di menu profil ada **Tampilan HP** untuk kembali. | | | |
-| 2.5 | Kembali ke Tampilan HP. | Tampilan HP lagi, tanpa muat ulang aneh atau berputar. | | | |
+| 2.4 | ≡ > **Menu**. Tutup browser, buka lagi. | Tidak ada tombol Tampilan Desktop; tetap Tampilan HP tanpa muat ulang aneh atau berputar. | | | |
 
 ## 3. Menu dan bilah atas (HPV-03, 03b, 04) — 5 menit
 
 | No | Langkah | Lulus bila | A | i | Catatan |
 |---|---|---|---|---|---|
 | 3.1 | Di Beranda ketuk ≡. | Tombol hilang, bilah di atas: Beranda, Stok, Transaksi, Opname, **Menu** (paling kanan). Menutup sendiri setelah sekitar 6 detik atau ketuk di luar. | | | |
-| 3.2 | Ketuk **Menu**. | Daftar semua menu yang boleh dibuka akun itu, plus *Tampilan Desktop* dan Keluar. | | | |
+| 3.2 | Ketuk **Menu**. | Daftar semua menu yang boleh dibuka akun itu, plus Keluar. | | | |
 | 3.3 | Buka Barang > **Data Baru**, isi Nama Barang. Ketuk ≡. | Titik kuning di tombol dan "belum disimpan"; bilah tidak menutup sendiri; pindah layar meminta konfirmasi. | | | |
 | 3.4 | Buka daftar Barang. | Berupa kartu (nama + kode, lencana, stok, lokasi). Ketuk kartu membuka barangnya. Bilah: Cari, Data Baru, Saring, Ekspor. | | | |
 
