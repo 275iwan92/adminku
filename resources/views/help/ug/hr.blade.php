@@ -70,9 +70,9 @@
 </ol>
 <h4>Langkah: mengelola proses</h4>
 <ol class="g-steps">
-    <li>Di <b>Papan</b>, seret kartu ke tahap mana pun (boleh loncat atau mundur); di HP pakai menu <b>Pindah ke</b> pada kartu. Tiap perpindahan tercatat: waktu persis, siapa yang memindah, dari dan ke tahap mana (tab <b>Proses</b> di kartu kandidat, bagian Riwayat Pindah).</li>
+    <li>Di <b>Papan</b>, seret kartu ke tahap mana pun (boleh loncat atau mundur); di HP tahan kartu sebentar lalu seret (menu <b>Pindah ke</b> pada kartu tetap ada). Setelah kartu pindah, bilah <span class="g-btn">Undo</span> muncul 6 detik untuk mengurungkan. Tiap perpindahan tercatat: waktu persis, siapa yang memindah, dari dan ke tahap mana (tab <b>Proses</b> di kartu kandidat, bagian Riwayat Pindah).</li>
     <li>Ke tahap <b>berjadwal</b> (bawaan Interview 1, Tes, Interview 2) muncul pop-up: isi <b>Tanggal</b> dan <b>Jam</b> (wajib), pilih <b>Penilai</b> dari daftar karyawan aktif, lalu <span class="g-btn">Simpan</span>. <span class="g-btn">Batal</span> membiarkan kartu di kolom asal dan tidak mencatat apa pun.</li>
-    <li>Klik 2x kartu untuk membuka kartu kandidat. Di tab <b>Proses</b> isi tanggal, jam, penilai, dan ubah <b>Hasil</b> menjadi Lulus atau Tidak lulus.</li>
+    <li>Ketuk atau klik kartu untuk membuka kartu kandidat. Di tab <b>Proses</b> isi tanggal, jam, penilai, dan ubah <b>Hasil</b> menjadi Lulus atau Tidak lulus.</li>
     <li>Kandidat di tahap <b>Diterima</b> punya tombol <span class="g-btn">Jadikan karyawan</span>: form Karyawan terbuka dengan data kandidat terisi; periksa lalu Save.</li>
     <li>Tombol <span class="g-btn">Daftar</span> menampilkan semua kandidat dengan pencarian NIK atau nama dan filter tahap, status, sumber, dan hasil.</li>
     <li>Tombol <span class="g-btn">Setup</span> mengatur urutan tahap. Daftar dan Diterima tetap di awal dan akhir; tahap tengah bebas ditambah, diganti nama, diurutkan, dan diberi tanda <b>Berjadwal</b> (memunculkan pop-up tanggal dan jam).</li>
