@@ -3,7 +3,7 @@
                 lalu satu baris per AC aktif: kode aset + ruang, area, cuci rutin berikutnya (+ sisa hari), servis besar berikutnya, kerusakan 12 bulan, status Aman / Segera / Terlambat / Rusak (breakdown terbuka).
  Sumber hulu  : AcCareController@index (rows, active, late, soon, broken, next).
  Input        : lihat sumber hulu.
- Output       : kpi-row + x-dl::grid (tanpa tautan baris); tombol hanya bagi yang punya hak modulnya.
+ Output       : kpi-row + x-dl::grid (klik 2x / ikon Buka membuka Detail AC, ac-care.show); tombol hanya bagi yang punya hak modulnya.
  Dipakai oleh : route ac-care.index (menu GA > Perawatan AC).
  Status       : Aktif.
 --}}
@@ -34,7 +34,7 @@
         </x-dl::action-bar>
     @endif
     <p class="dl-note">{{ $next ? 'Kunjungan terdekat: '.\App\Services\AcMessage::dateText($next->visit_date).' · '.$next->no.' · '.$next->typeText().' · '.AcCare::ORDER_STATUS[$next->status].'.' : 'Belum ada kunjungan terjadwal.' }}</p>
-    <x-dl::grid id="ac-care" :rows="$rows" actions="worklist" :new-record="null" search="Cari kode aset, ruang, area, status..."
+    <x-dl::grid id="ac-care" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-care/{id}')" search="Cari kode aset, ruang, area, status..."
         :columns="[
             ['key' => 'code', 'label' => 'AC', 'type' => 'identity', 'code' => 'name', 'avatar' => false],
             ['key' => 'area', 'label' => 'Area'],

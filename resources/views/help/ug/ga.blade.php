@@ -281,6 +281,7 @@
     <li>Buka <b>GA</b> lalu <b>Perawatan AC</b>.</li>
     <li>Baca empat kotak: <b>AC aktif</b>, <b>Terlambat</b> (cuci atau servis besar sudah lewat), <b>Segera</b> (dalam 30 hari), dan <b>Kerusakan terbuka</b> (AC rusak yang belum selesai ditangani). Di bawah tombol tertulis <i>Kunjungan terdekat</i>.</li>
     <li>Baca tabelnya: <b>AC</b>, <b>Area</b>, <b>Cuci berikutnya</b>, <b>Servis besar</b>, <b>Kerusakan 12 bln</b>, dan <b>Status</b> (<i>Rusak</i> bila ada Breakdown terbuka, selain itu Terlambat, Segera, atau Aman).</li>
+    <li>Klik dua kali baris AC (atau ikon Buka) untuk membuka <b>Detail AC</b>: status dan jadwal cuci serta servis besar, kondisi terakhir, riwayat perawatan (temuan, tindakan, biaya jasa, foto sebelum dan sesudah), spare part yang pernah diganti, dan biaya 12 bulan. Tombol <span class="g-btn">Jadwalkan Kunjungan</span> (hak Penjadwalan, hilang bila AC sudah punya kunjungan terbuka) dan <span class="g-btn">Ubah Data AC</span> (hak Master AC) ada di sana. Nomor kunjungan dan foto hanya tampil bagi yang punya modul Kunjungan AC.</li>
     <li>Tekan <span class="g-btn">Setup</span> untuk membuka Master AC, Area dan Gedung, Ruang, Vendor AC, dan Pengaturan. Tekan <span class="g-btn">Penjadwalan</span> untuk menjadwalkan kunjungan, melihat Kunjungan, dan mencatat hasil.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>

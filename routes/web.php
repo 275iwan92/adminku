@@ -248,6 +248,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
 
     // GA Perawatan AC (GAM): satu butir menu; panel Monitoring dan hub Setup. Layar lain dibuka lewat tombol di panel (hak per modul tetap).
     Route::get('ac-care', [AcCareController::class, 'index'])->name('ac-care.index');
+    Route::get('ac-care/{unit}', [AcCareController::class, 'show'])->whereNumber('unit')->name('ac-care.show');
     Route::get('ac-setup', [AcCareController::class, 'setup'])->name('ac-setup.index');
     // GA Perawatan AC, Penjadwalan (GAS): kalender kapasitas, daftar AC, jadwalkan, susun otomatis, kapasitas harian.
     Route::get('ac-schedule', [AcScheduleController::class, 'index'])->name('ac-schedule.index');
