@@ -1,0 +1,49 @@
+<svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 440" role="img" aria-labelledby="tg-ga-ac-visit-states-t tg-ga-ac-visit-states-d">
+<title id="tg-ga-ac-visit-states-t">AC visit order state machine (g_ac_service_order.status)</title>
+<desc id="tg-ga-ac-visit-states-d">A scheduled visit starts as draft (AcCare::schedule or autoPlan). send() moves draft, rescheduled or sent to sent. confirm() moves sent to confirmed. complete() moves confirmed to done. reschedule() moves any open status to rescheduled, and send() then moves it back to sent. cancel() moves any open status to cancelled. Done and cancelled are final. Open statuses are draft, sent, confirmed and rescheduled.</desc>
+<defs><marker id="m-tg-ga-ac-visit-states" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="n n-gray" stroke-dasharray="5 4" x="20" y="70" width="110" height="64" rx="9"/>
+<text class="t b" x="75" y="98" text-anchor="middle">(new)</text>
+<text class="t s" x="75" y="116" text-anchor="middle">no row yet</text>
+<rect class="n n-gray" x="190" y="70" width="150" height="64" rx="9"/>
+<text class="t b" x="265" y="98" text-anchor="middle">draft</text>
+<text class="t s" x="265" y="116" text-anchor="middle">Draf</text>
+<rect class="n n-in" x="390" y="70" width="150" height="64" rx="9"/>
+<text class="t b" x="465" y="98" text-anchor="middle">sent</text>
+<text class="t s" x="465" y="116" text-anchor="middle">Terkirim</text>
+<rect class="n n-teal" x="590" y="70" width="150" height="64" rx="9"/>
+<text class="t b" x="665" y="98" text-anchor="middle">confirmed</text>
+<text class="t s" x="665" y="116" text-anchor="middle">Dikonfirmasi vendor</text>
+<rect class="n n-ok" x="780" y="70" width="100" height="64" rx="9"/>
+<text class="t b" x="830" y="98" text-anchor="middle">done</text>
+<text class="t s" x="830" y="116" text-anchor="middle">Selesai</text>
+<path class="e" d="M130,102 L190,102" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<text class="el" x="160" y="56" text-anchor="middle">schedule() / autoPlan()</text>
+<path class="e" d="M340,102 L390,102" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<text class="el" x="365" y="56" text-anchor="middle">send()</text>
+<path class="e" d="M540,102 L590,102" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<text class="el" x="565" y="56" text-anchor="middle">confirm()</text>
+<path class="e" d="M740,102 L780,102" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<text class="el" x="760" y="56" text-anchor="middle">complete()</text>
+<text class="t s" x="476" y="154" text-anchor="start">send() again = resend</text>
+<path class="e dash" d="M265,134 L265,196 L665,196 L665,134"/>
+<path class="e dash" d="M465,134 L465,196"/>
+<text class="t s" x="680" y="190" text-anchor="start">from draft, sent, confirmed</text>
+<text class="t s" x="680" y="204" text-anchor="start">or rescheduled</text>
+<path class="e" d="M285,196 L285,252" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<path class="e" d="M615,196 L615,252" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<text class="el" x="293" y="232" text-anchor="start">reschedule(date, time, reason)</text>
+<text class="el" x="623" y="232" text-anchor="start">cancel(reason)</text>
+<rect class="n n-warn" x="170" y="252" width="230" height="64" rx="9"/>
+<text class="t b" x="285" y="280" text-anchor="middle">rescheduled</text>
+<text class="t s" x="285" y="298" text-anchor="middle">Dijadwal ulang</text>
+<rect class="n n-bad" x="500" y="252" width="230" height="64" rx="9"/>
+<text class="t b" x="615" y="280" text-anchor="middle">cancelled</text>
+<text class="t s" x="615" y="298" text-anchor="middle">Dibatalkan</text>
+<path class="e" d="M400,284 L430,284 L430,134" marker-end="url(#m-tg-ga-ac-visit-states)"/>
+<text class="el" x="438" y="270" text-anchor="start">send()</text>
+<text class="t s" x="20" y="350" text-anchor="start">Open statuses (AcOrder::OPEN) hold their ACs and the vendor's daily capacity: draft, sent, confirmed, rescheduled.</text>
+<text class="t s" x="20" y="368" text-anchor="start">done and cancelled are final. Every transition re-reads the order row FOR UPDATE and refuses any other stage (AcVisits::lock).</text>
+<text class="t s" x="20" y="386" text-anchor="start">reschedule() clears sent_at and confirmed_at and appends a g_ac_service_reschedule row; the capacity of the new date is checked.</text>
+<text class="t s" x="20" y="404" text-anchor="start">complete() stamps done_at on every line, which moves the next due dates (AcCare::overview). Cancelled orders free their ACs.</text>
+</svg>

@@ -1,0 +1,48 @@
+<svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 350" role="img" aria-labelledby="ug-ga-kunjungan-ac-t ug-ga-kunjungan-ac-d">
+<title id="ug-ga-kunjungan-ac-t">Empat tahap Kunjungan AC</title>
+<desc id="ug-ga-kunjungan-ac-d">Penjadwalan AC membuat kunjungan berstatus Draf. Tombol Kirim mengubahnya menjadi Terkirim, Tandai dikonfirmasi vendor menjadi Dikonfirmasi vendor, Tandai selesai menjadi Selesai. Dari tahap mana pun sebelum Selesai, Jadwal ulang membuat status Dijadwal ulang (kembali ke tahap pertama, kirim lagi), dan Batalkan membuat status Dibatalkan. Selesai dan Dibatalkan menutup kunjungan.</desc>
+<defs><marker id="m-ug-ga-kunjungan-ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="n n-gray" x="20" y="12" width="300" height="44" rx="9"/>
+<text class="t b" x="170" y="31" text-anchor="middle">Penjadwalan AC</text>
+<text class="t s" x="170" y="47" text-anchor="middle">Jadwalkan yang dipilih / Susun otomatis</text>
+<path class="e" d="M100,56 L100,100" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<rect class="n n-gray" x="20" y="100" width="160" height="70" rx="9"/>
+<text class="t b" x="100" y="124" text-anchor="middle">1. Draf</text>
+<text class="t s" x="100" y="143" text-anchor="middle">Dibuat dari</text>
+<text class="t s" x="100" y="158" text-anchor="middle">Penjadwalan AC</text>
+<rect class="n n-in" x="250" y="100" width="160" height="70" rx="9"/>
+<text class="t b" x="330" y="124" text-anchor="middle">2. Terkirim</text>
+<text class="t s" x="330" y="143" text-anchor="middle">E-mail ke vendor,</text>
+<text class="t s" x="330" y="158" text-anchor="middle">WhatsApp lewat tombol</text>
+<rect class="n n-teal" x="480" y="100" width="160" height="70" rx="9"/>
+<text class="t b" x="560" y="119" text-anchor="middle">3. Dikonfirmasi</text>
+<text class="t b" x="560" y="134" text-anchor="middle">vendor</text>
+<text class="t s" x="560" y="156" text-anchor="middle">Foto bukti boleh diunggah</text>
+<rect class="n n-ok" x="710" y="100" width="160" height="70" rx="9"/>
+<text class="t b" x="790" y="124" text-anchor="middle">4. Selesai</text>
+<text class="t s" x="790" y="143" text-anchor="middle">Tanggal selesai dicatat,</text>
+<text class="t s" x="790" y="158" text-anchor="middle">jatuh tempo AC baru</text>
+<path class="e" d="M180,135 L250,135" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<text class="el" x="215" y="92" text-anchor="middle">Kirim</text>
+<path class="e" d="M410,135 L480,135" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<text class="el" x="445" y="92" text-anchor="middle">Tandai dikonfirmasi vendor</text>
+<path class="e" d="M640,135 L710,135" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<text class="el" x="675" y="92" text-anchor="middle">Tandai selesai</text>
+<path class="e dash" d="M100,170 L100,205 L560,205 L560,170"/>
+<path class="e dash" d="M330,170 L330,205"/>
+<text class="t s" x="580" y="200" text-anchor="start">dari tahap mana pun sebelum Selesai</text>
+<path class="e" d="M220,205 L220,240" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<path class="e" d="M500,205 L500,240" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<rect class="n n-warn" x="100" y="240" width="240" height="64" rx="9"/>
+<text class="t b" x="220" y="262" text-anchor="middle">Jadwal ulang</text>
+<text class="t s" x="220" y="280" text-anchor="middle">Alasan wajib. Status Dijadwal ulang,</text>
+<text class="t s" x="220" y="295" text-anchor="middle">tekan Kirim lagi</text>
+<rect class="n n-bad" x="380" y="240" width="240" height="64" rx="9"/>
+<text class="t b" x="500" y="262" text-anchor="middle">Batalkan</text>
+<text class="t s" x="500" y="280" text-anchor="middle">Alasan wajib. Status Dibatalkan,</text>
+<text class="t s" x="500" y="295" text-anchor="middle">AC bisa dijadwalkan lagi</text>
+<path class="e" d="M100,272 L50,272 L50,170" marker-end="url(#m-ug-ga-kunjungan-ac)"/>
+<text class="t s" x="58" y="228" text-anchor="start">kembali ke</text>
+<text class="t s" x="58" y="242" text-anchor="start">tahap 1</text>
+<text class="t s" x="20" y="334" text-anchor="start">Selesai dan Dibatalkan menutup kunjungan. Tidak ada tahap yang bisa dilompati.</text>
+</svg>

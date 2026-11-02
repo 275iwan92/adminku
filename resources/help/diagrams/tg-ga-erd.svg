@@ -1,0 +1,166 @@
+<svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 740" role="img" aria-labelledby="tg-ga-erd-t tg-ga-erd-d">
+<title id="tg-ga-erd-t">GA database relations (ERD): vehicle care and AC care</title>
+<desc id="tg-ga-erd-d">Vehicle care: m_vehicle_type has m_vehicle_type_plan items and m_vehicle records. m_vehicle has g_vehicle_doc, g_vehicle_service and g_vehicle_odometer rows. g_vehicle_service has g_vehicle_service_line rows that may point at a plan item. AC care: m_ac_area has m_ac_room, which has m_ac_unit. m_ac_vendor has g_ac_service_order, which has g_ac_service_line (one per AC, pointing at m_ac_unit) and g_ac_service_reschedule rows.</desc>
+<defs><marker id="m-tg-ga-erd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<text class="t b" x="20" y="20" text-anchor="start">Vehicle care (GVM, GVD, GVS, GVO, GVK, GVT)</text>
+<text class="t b" x="580" y="20" text-anchor="start">AC care (GAS, GAV, GAD, GAK, GAA, GAR, GAE)</text>
+<g transform="translate(0,30)">
+<rect class="n n-gray" x="20" y="0" width="230" height="92" rx="7"/>
+<line class="n-rule" x1="20" y1="24" x2="250" y2="24"/>
+<text class="t b" x="28" y="16">m_vehicle_type</text>
+<text class="t m" x="28" y="38">id PK</text>
+<text class="t m" x="28" y="53">code (unique)</text>
+<text class="t m" x="28" y="68">name</text>
+<text class="t m" x="28" y="83">is_active</text>
+
+<rect class="n n-gray" x="20" y="140" width="230" height="107" rx="7"/>
+<line class="n-rule" x1="20" y1="164" x2="250" y2="164"/>
+<text class="t b" x="28" y="156">m_vehicle_type_plan</text>
+<text class="t m" x="28" y="178">id PK</text>
+<text class="t m" x="28" y="193">vehicle_type_id FK</text>
+<text class="t m" x="28" y="208">name (unique per type)</text>
+<text class="t m" x="28" y="223">interval_km, interval_months</text>
+<text class="t m" x="28" y="238">sort</text>
+
+<rect class="n n-gray" x="290" y="0" width="230" height="137" rx="7"/>
+<line class="n-rule" x1="290" y1="24" x2="520" y2="24"/>
+<text class="t b" x="298" y="16">m_vehicle</text>
+<text class="t m" x="298" y="38">id PK</text>
+<text class="t m" x="298" y="53">vehicle_type_id FK</text>
+<text class="t m" x="298" y="68">plate (unique)</text>
+<text class="t m" x="298" y="83">name, year, vin, engine_no</text>
+<text class="t m" x="298" y="98">kir_required</text>
+<text class="t m" x="298" y="113">odometer_km, odometer_at</text>
+<text class="t m" x="298" y="128">is_active</text>
+
+<rect class="n n-in" x="290" y="180" width="230" height="137" rx="7"/>
+<line class="n-rule" x1="290" y1="204" x2="520" y2="204"/>
+<text class="t b" x="298" y="196">g_vehicle_doc</text>
+<text class="t m" x="298" y="218">id PK</text>
+<text class="t m" x="298" y="233">vehicle_id FK</text>
+<text class="t m" x="298" y="248">doc_type pajak|stnk|kir|asuransi</text>
+<text class="t m" x="298" y="263">doc_no</text>
+<text class="t m" x="298" y="278">paid_at, valid_until</text>
+<text class="t m" x="298" y="293">cost</text>
+<text class="t m" x="298" y="308">attachment_path, created_by</text>
+
+<rect class="n n-in" x="290" y="360" width="230" height="107" rx="7"/>
+<line class="n-rule" x1="290" y1="384" x2="520" y2="384"/>
+<text class="t b" x="298" y="376">g_vehicle_odometer</text>
+<text class="t m" x="298" y="398">id PK</text>
+<text class="t m" x="298" y="413">vehicle_id FK</text>
+<text class="t m" x="298" y="428">read_at, km</text>
+<text class="t m" x="298" y="443">source awal|manual|servis</text>
+<text class="t m" x="298" y="458">photo_path, created_by</text>
+
+<rect class="n n-in" x="20" y="300" width="230" height="122" rx="7"/>
+<line class="n-rule" x1="20" y1="324" x2="250" y2="324"/>
+<text class="t b" x="28" y="316">g_vehicle_service</text>
+<text class="t m" x="28" y="338">id PK</text>
+<text class="t m" x="28" y="353">vehicle_id FK</text>
+<text class="t m" x="28" y="368">serviced_at</text>
+<text class="t m" x="28" y="383">odometer_km</text>
+<text class="t m" x="28" y="398">workshop, cost</text>
+<text class="t m" x="28" y="413">note, created_by</text>
+
+<rect class="n n-in" x="20" y="470" width="230" height="92" rx="7"/>
+<line class="n-rule" x1="20" y1="494" x2="250" y2="494"/>
+<text class="t b" x="28" y="486">g_vehicle_service_line</text>
+<text class="t m" x="28" y="508">id PK</text>
+<text class="t m" x="28" y="523">vehicle_service_id FK</text>
+<text class="t m" x="28" y="538">vehicle_type_plan_id FK, null</text>
+<text class="t m" x="28" y="553">name (copied)</text>
+
+<path class="e" d="M135,140 L135,92" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M290,40 L250,40" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M270,90 L290,90" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M270,90 L270,400"/>
+<path class="e" d="M290,250 L270,250"/>
+<path class="e" d="M290,400 L270,400"/>
+<path class="e" d="M250,360 L270,360"/>
+<path class="e" d="M135,470 L135,422" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e dash" d="M20,516 L8,516 L8,193 L20,193" marker-end="url(#m-tg-ga-erd)"/>
+
+<rect class="n n-gray" x="580" y="0" width="230" height="107" rx="7"/>
+<line class="n-rule" x1="580" y1="24" x2="810" y2="24"/>
+<text class="t b" x="588" y="16">m_ac_area</text>
+<text class="t m" x="588" y="38">id PK</text>
+<text class="t m" x="588" y="53">code (unique)</text>
+<text class="t m" x="588" y="68">name</text>
+<text class="t m" x="588" y="83">plan_path, plan_w, plan_h</text>
+<text class="t m" x="588" y="98">is_active</text>
+
+<rect class="n n-gray" x="580" y="150" width="230" height="137" rx="7"/>
+<line class="n-rule" x1="580" y1="174" x2="810" y2="174"/>
+<text class="t b" x="588" y="166">m_ac_room</text>
+<text class="t m" x="588" y="188">id PK</text>
+<text class="t m" x="588" y="203">area_id FK</text>
+<text class="t m" x="588" y="218">code (unique, can change)</text>
+<text class="t m" x="588" y="233">name</text>
+<text class="t m" x="588" y="248">x, y, w, h (% of the plan)</text>
+<text class="t m" x="588" y="263">pic_name, pic_phone</text>
+<text class="t m" x="588" y="278">pic_email, is_active</text>
+
+<rect class="n n-gray" x="580" y="330" width="230" height="152" rx="7"/>
+<line class="n-rule" x1="580" y1="354" x2="810" y2="354"/>
+<text class="t b" x="588" y="346">m_ac_unit</text>
+<text class="t m" x="588" y="368">id PK</text>
+<text class="t m" x="588" y="383">asset_code (unique, fixed)</text>
+<text class="t m" x="588" y="398">room_id FK</text>
+<text class="t m" x="588" y="413">brand, model, capacity_pk</text>
+<text class="t m" x="588" y="428">installed_at</text>
+<text class="t m" x="588" y="443">pos_x, pos_y (% of the plan)</text>
+<text class="t m" x="588" y="458">last_wash_at, last_major_at</text>
+<text class="t m" x="588" y="473">note, is_active</text>
+
+<rect class="n n-gray" x="840" y="0" width="230" height="107" rx="7"/>
+<line class="n-rule" x1="840" y1="24" x2="1070" y2="24"/>
+<text class="t b" x="848" y="16">m_ac_vendor</text>
+<text class="t m" x="848" y="38">id PK</text>
+<text class="t m" x="848" y="53">code (unique)</text>
+<text class="t m" x="848" y="68">name, contact_name</text>
+<text class="t m" x="848" y="83">phone (WhatsApp), email</text>
+<text class="t m" x="848" y="98">note, is_active</text>
+
+<rect class="n n-in" x="840" y="150" width="230" height="152" rx="7"/>
+<line class="n-rule" x1="840" y1="174" x2="1070" y2="174"/>
+<text class="t b" x="848" y="166">g_ac_service_order</text>
+<text class="t m" x="848" y="188">id PK</text>
+<text class="t m" x="848" y="203">no (unique) ACV-YYMM-NNNN</text>
+<text class="t m" x="848" y="218">vendor_id FK</text>
+<text class="t m" x="848" y="233">visit_date, visit_time</text>
+<text class="t m" x="848" y="248">status (6 values)</text>
+<text class="t m" x="848" y="263">sent / confirmed / done /</text>
+<text class="t m" x="848" y="278">cancelled: *_at, *_by</text>
+<text class="t m" x="848" y="293">reasons, created_by</text>
+
+<rect class="n n-in" x="840" y="345" width="230" height="137" rx="7"/>
+<line class="n-rule" x1="840" y1="369" x2="1070" y2="369"/>
+<text class="t b" x="848" y="361">g_ac_service_line</text>
+<text class="t m" x="848" y="383">id PK</text>
+<text class="t m" x="848" y="398">order_id FK</text>
+<text class="t m" x="848" y="413">unit_id FK</text>
+<text class="t m" x="848" y="428">job wash|major, done_at</text>
+<text class="t m" x="848" y="443">photo_before_*, photo_after_*</text>
+<text class="t m" x="848" y="458">unique (order_id, unit_id)</text>
+<text class="t m" x="848" y="473">note</text>
+
+<rect class="n n-in" x="840" y="525" width="230" height="122" rx="7"/>
+<line class="n-rule" x1="840" y1="549" x2="1070" y2="549"/>
+<text class="t b" x="848" y="541">g_ac_service_reschedule</text>
+<text class="t m" x="848" y="563">id PK</text>
+<text class="t m" x="848" y="578">order_id FK</text>
+<text class="t m" x="848" y="593">from_date, from_time</text>
+<text class="t m" x="848" y="608">to_date, to_time</text>
+<text class="t m" x="848" y="623">reason</text>
+<text class="t m" x="848" y="638">created_by</text>
+
+<path class="e" d="M695,150 L695,107" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M695,330 L695,287" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M955,150 L955,107" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M955,345 L955,302" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M840,420 L810,420" marker-end="url(#m-tg-ga-erd)"/>
+<path class="e" d="M1070,586 L1090,586 L1090,226 L1070,226" marker-end="url(#m-tg-ga-erd)"/>
+</g>
+<text class="t s" x="20" y="712" text-anchor="start">Grey = master (m_), blue = GA transaction (g_). Arrow = foreign key, many to one; dashed = nullable. users (created_by, sent_by, ...) and sys_constant are not drawn.</text>
+</svg>

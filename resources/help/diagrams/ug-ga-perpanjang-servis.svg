@@ -1,0 +1,58 @@
+<svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" role="img" aria-labelledby="ug-ga-perpanjang-servis-t ug-ga-perpanjang-servis-d">
+<title id="ug-ga-perpanjang-servis-t">Alur memperpanjang dokumen, mencatat servis, dan mencatat odometer kendaraan</title>
+<desc id="ug-ga-perpanjang-servis-d">Dari Monitoring Kendaraan, buka kendaraan dengan klik 2x lalu pilih Perpanjang Dokumen, Catat Servis, atau Catat Odometer. Isi form lalu Simpan. Dokumen memperbarui masa berlaku, servis menghitung ulang jadwal pekerjaan yang dicentang dan menaikkan odometer, odometer menaikkan angka terakhir. Status kendaraan mengikuti yang paling buruk dari dokumen dan jadwal perawatan.</desc>
+<defs><marker id="m-ug-ga-perpanjang-servis" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="n n-gray" x="20" y="15" width="260" height="54" rx="9"/>
+<text class="t b" x="150" y="38" text-anchor="middle">Monitoring Kendaraan</text>
+<text class="t s" x="150" y="55" text-anchor="middle">Lihat kotak ringkasan dan status</text>
+<rect class="n n-gray" x="330" y="15" width="260" height="54" rx="9"/>
+<text class="t b" x="460" y="38" text-anchor="middle">Detail kendaraan</text>
+<text class="t s" x="460" y="55" text-anchor="middle">Klik 2x barisnya atau tekan Buka</text>
+<path class="e" d="M280,42 L330,42" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M460,69 L460,95 L150,95 L150,120" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M460,69 L460,120" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M460,69 L460,95 L750,95 L750,120" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<rect class="n n-in" x="20" y="120" width="260" height="46" rx="9"/>
+<text class="t b" x="150" y="148" text-anchor="middle">Perpanjang Dokumen</text>
+<rect class="n n-in" x="330" y="120" width="260" height="46" rx="9"/>
+<text class="t b" x="460" y="148" text-anchor="middle">Catat Servis</text>
+<rect class="n n-in" x="620" y="120" width="260" height="46" rx="9"/>
+<text class="t b" x="750" y="148" text-anchor="middle">Catat Odometer</text>
+<path class="e" d="M150,166 L150,200" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M460,166 L460,200" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M750,166 L750,200" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<rect class="n n-gray" x="20" y="200" width="260" height="76" rx="9"/>
+<text class="t s" x="150" y="224" text-anchor="middle">Pilih Jenis Dokumen, isi</text>
+<text class="t s" x="150" y="241" text-anchor="middle">Tanggal Bayar / Uji. Berlaku Sampai</text>
+<text class="t s" x="150" y="258" text-anchor="middle">terisi otomatis. Lampiran dianjurkan.</text>
+<rect class="n n-gray" x="330" y="200" width="260" height="76" rx="9"/>
+<text class="t s" x="460" y="224" text-anchor="middle">Isi Tanggal Servis dan Odometer (km).</text>
+<text class="t s" x="460" y="241" text-anchor="middle">Centang Pekerjaan yang Dikerjakan.</text>
+<text class="t s" x="460" y="258" text-anchor="middle">Isi Bengkel dan Biaya Total.</text>
+<rect class="n n-gray" x="620" y="200" width="260" height="76" rx="9"/>
+<text class="t s" x="750" y="224" text-anchor="middle">Isi Kilometer yang tertera di panel.</text>
+<text class="t s" x="750" y="241" text-anchor="middle">Foto Odometer dianjurkan,</text>
+<text class="t s" x="750" y="258" text-anchor="middle">tidak wajib.</text>
+<path class="e" d="M150,276 L150,316" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<text class="el" x="158" y="302" text-anchor="start">Simpan</text>
+<path class="e" d="M460,276 L460,316" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<text class="el" x="468" y="302" text-anchor="start">Simpan</text>
+<path class="e" d="M750,276 L750,316" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<text class="el" x="758" y="302" text-anchor="start">Simpan</text>
+<rect class="n n-ok" x="20" y="316" width="260" height="70" rx="9"/>
+<text class="t s" x="150" y="342" text-anchor="middle">Masa berlaku dokumen diperbarui</text>
+<text class="t s" x="150" y="359" text-anchor="middle">(Berlaku sampai terbesar yang</text>
+<text class="t s" x="150" y="376" text-anchor="middle">dipakai)</text>
+<rect class="n n-ok" x="330" y="316" width="260" height="70" rx="9"/>
+<text class="t s" x="460" y="342" text-anchor="middle">Jadwal pekerjaan yang dicentang</text>
+<text class="t s" x="460" y="359" text-anchor="middle">dihitung ulang dari servis ini;</text>
+<text class="t s" x="460" y="376" text-anchor="middle">odometer ikut naik</text>
+<rect class="n n-ok" x="620" y="316" width="260" height="70" rx="9"/>
+<text class="t s" x="750" y="342" text-anchor="middle">Odometer terakhir naik. Tidak boleh</text>
+<text class="t s" x="750" y="359" text-anchor="middle">lebih kecil dari catatan sebelumnya</text>
+<path class="e" d="M150,386 L150,416" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M460,386 L460,416" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<path class="e" d="M750,386 L750,416" marker-end="url(#m-ug-ga-perpanjang-servis)"/>
+<rect class="n n-warn" x="20" y="416" width="860" height="40" rx="9"/>
+<text class="t b" x="450" y="441" text-anchor="middle">Status kendaraan = yang paling buruk dari dokumen dan jadwal perawatan: Aman, Segera, atau Terlambat</text>
+</svg>

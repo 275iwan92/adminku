@@ -1,0 +1,65 @@
+<svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 580" role="img" aria-labelledby="tg-ga-ac-schedule-flow-t tg-ga-ac-schedule-flow-d">
+<title id="tg-ga-ac-schedule-flow-t">AcCare::schedule(): server-side checks in order</title>
+<desc id="tg-ga-ac-schedule-flow-d">schedule() validates the slot, then inside one transaction locks the vendor row, loads the active units, refuses a unit that already has an open order, refuses a day without enough free capacity, reuses or creates the vendor's draft order for that day with an ACV-YYMM-NNNN number, and sets the job (wash or major) per line. Any failed check throws a validation error and nothing is saved.</desc>
+<defs><marker id="m-tg-ga-ac-schedule-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="n n-gray" x="20" y="14" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="36" text-anchor="middle">1. assertSlot(date, time)</text>
+<text class="t s" x="230" y="53" text-anchor="middle">date not past, weekday allowed, time in window, units chosen</text>
+<rect class="n n-gray" x="20" y="92" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="114" text-anchor="middle">2. DB::transaction + lockForUpdate(vendor)</text>
+<text class="t s" x="230" y="131" text-anchor="middle">vendor row locked, so two planners are serialized; vendor must be active</text>
+<rect class="n n-gray" x="20" y="170" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="192" text-anchor="middle">3. Load the units</text>
+<text class="t s" x="230" y="209" text-anchor="middle">every chosen id must exist and be an active unit</text>
+<rect class="n n-gray" x="20" y="248" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="270" text-anchor="middle">4. assertNoOpen(units)</text>
+<text class="t s" x="230" y="287" text-anchor="middle">one AC, one open order (draft, sent, confirmed, rescheduled)</text>
+<rect class="n n-gray" x="20" y="326" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="348" text-anchor="middle">5. assertCapacity(vendor, day, n)</text>
+<text class="t s" x="230" y="365" text-anchor="middle">ga.ac.capacity - used(vendor, day) >= n; cancelled orders not counted</text>
+<rect class="n n-gray" x="20" y="404" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="426" text-anchor="middle">6. addLines(): order of that vendor and day</text>
+<text class="t s" x="230" y="443" text-anchor="middle">reuse the draft order if there is one, else createOrder() with ACV-YYMM-NNNN</text>
+<rect class="n n-ok" x="20" y="482" width="420" height="52" rx="9"/>
+<text class="t b" x="230" y="504" text-anchor="middle">7. One g_ac_service_line per unit, then commit</text>
+<text class="t s" x="230" y="521" text-anchor="middle">job = jobFor(next_major, day): major if due within soon_days of the visit</text>
+<path class="e" d="M230,66 L230,92" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M230,144 L230,170" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M230,222 L230,248" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M230,300 L230,326" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M230,378 L230,404" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M230,456 L230,482" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<rect class="n n-bad" x="520" y="14" width="360" height="52" rx="9"/>
+<text class="t b" x="700" y="36" text-anchor="middle">Validation error on field date / time</text>
+<text class="t s" x="700" y="53" text-anchor="middle">weekday not allowed, past date, time outside window, no unit</text>
+<rect class="n n-bad" x="520" y="92" width="360" height="52" rx="9"/>
+<text class="t b" x="700" y="114" text-anchor="middle">Validation error: vendor inactive</text>
+<text class="t s" x="700" y="131" text-anchor="middle">the transaction rolls back, nothing is saved</text>
+<rect class="n n-bad" x="520" y="170" width="360" height="52" rx="9"/>
+<text class="t b" x="700" y="192" text-anchor="middle">Validation error on units</text>
+<text class="t s" x="700" y="209" text-anchor="middle">missing or inactive AC, or nothing selected</text>
+<rect class="n n-bad" x="520" y="248" width="360" height="52" rx="9"/>
+<text class="t b" x="700" y="270" text-anchor="middle">Validation error on units</text>
+<text class="t s" x="700" y="287" text-anchor="middle">names the AC and the order number it already sits in</text>
+<rect class="n n-bad" x="520" y="326" width="360" height="52" rx="9"/>
+<text class="t b" x="700" y="348" text-anchor="middle">Validation error on date</text>
+<text class="t s" x="700" y="365" text-anchor="middle">day full, or only N slots left for n units</text>
+<rect class="n n-warn" x="520" y="404" width="360" height="52" rx="9"/>
+<text class="t b" x="700" y="426" text-anchor="middle">Number collision is retried</text>
+<text class="t s" x="700" y="443" text-anchor="middle">unique index on no rejects the loser; up to 5 tries</text>
+<path class="e" d="M440,40 L520,40" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M440,118 L520,118" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M440,196 L520,196" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M440,274 L520,274" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e" d="M440,352 L520,352" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<path class="e dash" d="M440,430 L520,430" marker-end="url(#m-tg-ga-ac-schedule-flow)"/>
+<text class="el" x="480" y="34" text-anchor="middle">fails</text>
+<text class="el" x="480" y="112" text-anchor="middle">fails</text>
+<text class="el" x="480" y="190" text-anchor="middle">fails</text>
+<text class="el" x="480" y="268" text-anchor="middle">fails</text>
+<text class="el" x="480" y="346" text-anchor="middle">fails</text>
+<text class="el" x="480" y="424" text-anchor="middle">collides</text>
+<text class="t s" x="520" y="500" text-anchor="start">autoPlan() runs the same steps 2, 5, 6 and 7 day by day:</text>
+<text class="t s" x="520" y="518" text-anchor="start">late and soon ACs first, free capacity per allowed weekday.</text>
+<text class="t s" x="520" y="536" text-anchor="start">Step 1 does not apply: it starts from today or the chosen date.</text>
+</svg>
