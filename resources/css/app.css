@@ -280,3 +280,17 @@ a.sstock-day:hover, a.sstock-day:focus-visible { border-color: var(--dl-accent);
 .dl-lm__brand b::before { content: "Admin"; order: 0; font-size: calc(18px * var(--dl-font-scale)); font-weight: 800; color: #fff; letter-spacing: 0; }
 .dl-lm__brand b::after { content: "KU"; order: 1; font-size: calc(18px * var(--dl-font-scale)); font-weight: 800; color: #2dd4bf; letter-spacing: 0; }
 .dl-lm__brand b > * { order: 2; font-size: calc(10px * var(--dl-font-scale)); margin-left: 8px; }
+
+/* REMARK
+ * Tujuan       : Tulisan merek "Admin"+"KU" dua warna di luar panel kiri: kotak masuk dan lupa / reset password (desktop dan HP), pojok kiri atas layar masuk, dan judul bilah HP bila judulnya nama merek.
+ * Sumber hulu  : config('devlib.brand.name') = ADMINKU lewat x-dl::brand (.dl-brand b); sama seperti blok panel kiri, teks aslinya disembunyikan (font-size 0, tetap terbaca pembaca layar) dan "Admin" / "KU" dicetak oleh ::before/::after; bila nama merek diganti, ubah dua teks di sini juga.
+ * Output       : latar terang "Admin" #1B2545 + "KU" #14A796; latar gelap (tone light, tema dark_ / hitam_) "Admin" putih + "KU" #2DD4BF.
+ * Status       : Aktif.
+ */
+.dl-brand, .sstock-brandtitle .dl-phone__title { --sstock-adm: #1b2545; --sstock-ku: #14a796; }
+.dl-brand--light { --sstock-adm: #fff; --sstock-ku: #2dd4bf; }
+:is(html[data-dl-theme^="dark_"], html[data-dl-theme^="hitam_"]) :is(.dl-brand--auto, .sstock-brandtitle .dl-phone__title) { --sstock-adm: #fff; --sstock-ku: #2dd4bf; }
+.dl-brand b, .sstock-brandtitle .dl-phone__title { font-size: 0; }
+:is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::before { content: "Admin"; color: var(--sstock-adm); }
+:is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::after { content: "KU"; color: var(--sstock-ku); margin-left: -0.06em; }
+:is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::before, :is(.dl-brand b, .sstock-brandtitle .dl-phone__title)::after { font-size: calc(18px * var(--dl-font-scale)); font-weight: 800; letter-spacing: 0; }

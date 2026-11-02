@@ -49,7 +49,7 @@ class HpController extends Controller
         ]));
 
         return view('hp.home', [
-            'title' => 'Beranda', 'active' => 'home',
+            'title' => 'Beranda', 'brandTitle' => true, 'active' => 'home',
             'cards' => array_values(array_filter($cards, fn ($c) => $user->canAccess($c['code']))),
             'countReminder' => $user->canAccess('SO') && CountSchedule::available() ? CountSchedule::state() : null,
         ]);
