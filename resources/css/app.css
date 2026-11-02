@@ -253,6 +253,15 @@ a.sstock-day:hover, a.sstock-day:focus-visible { border-color: var(--dl-accent);
 .sstock-day.is-off { opacity: .5; }
 @media (max-width: 760px) { .sstock-week { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
+/* GA Perawatan AC: hub Setup (ubin ke layar master). */
+.sstock-setup { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 12px 0; }
+.sstock-setup__tile { display: flex; flex-direction: column; gap: 4px; min-height: 96px; padding: 14px 16px; box-sizing: border-box; border: 1px solid var(--dl-border); border-radius: var(--dl-radius-md, 10px); background: var(--dl-surface); color: var(--dl-ink-strong); text-decoration: none; }
+.sstock-setup__tile i { font-size: 20px; color: var(--dl-accent); }
+.sstock-setup__tile b { font-size: 15px; }
+.sstock-setup__tile small { font-size: 13px; color: var(--dl-ink-soft, var(--dl-ink-strong)); }
+.sstock-setup__tile:hover, .sstock-setup__tile:focus-visible { border-color: var(--dl-accent); outline: none; background: var(--dl-accent-soft); }
+body.dl-on-phone .sstock-setup__tile { min-height: 64px; }
+
 /* REMARK
  * Tujuan       : Panel kiri (x-dl::layer-menu) AdminKU: warna Slate teal serasi dengan lencana arang bertepi perak dan KU toska, indikator menu aktif koral, dan tulisan merek "Admin" putih + "KU" toska.
  * Sumber hulu  : token panel DevLib (--dl-side, --dl-side-2, --dl-side-hover, --dl-side-muted, --dl-side-scroll), config('devlib.brand.name') = ADMINKU (teks aslinya disembunyikan; "Admin" dan "KU" dicetak oleh ::before/::after, jadi bila nama merek diganti, ubah dua teks di sini juga).

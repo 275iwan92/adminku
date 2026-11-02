@@ -23,7 +23,7 @@ class MenuLayersTest extends TestCase
 
         $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'SEC'], $layers->pluck('code')->all());
         $this->assertSame(['Employee', 'Recruitment'], collect($layers->firstWhere('code', 'HR')['children'])->pluck('label')->all());
-        $this->assertSame(['Monitoring Kendaraan', 'Perpanjang Dokumen Kendaraan', 'Catat Servis Kendaraan', 'Catat Odometer', 'Master Kendaraan', 'Jenis Kendaraan', 'Penjadwalan AC', 'Kunjungan AC', 'Denah AC', 'Master AC', 'Area dan Gedung AC', 'Ruang AC', 'Vendor AC', 'Pengaturan GA', 'Perawatan Gedung'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
+        $this->assertSame(['Monitoring Kendaraan', 'Perawatan AC', 'Pengaturan GA', 'Perawatan Gedung'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
         $this->assertSame(['PR', 'PO', 'PV'], collect($layers->firstWhere('code', 'PUR')['children'])->map(fn ($c) => substr($c['label'], -3, 2))->all());
         $stok = $layers->firstWhere('code', 'STK');
         $this->assertSame(['Beranda Stok', 'Transaksi', 'Laporan'], collect($stok['children'])->pluck('label')->all());   // Beranda Stok = butir pertama, lalu dua subkelompok

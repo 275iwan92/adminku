@@ -41,6 +41,7 @@
     <li>Tombol yang tidak boleh Anda pakai tidak tampil. Contoh: tanpa hak RW pada Catat Servis Kendaraan, tombol <span class="g-btn">Catat Servis</span> tidak ada di Monitoring Kendaraan.</li>
     <li>Pembagian yang lazim: petugas admin GA mendapat semua modul GA, sopir hanya <b>Catat Odometer</b>. Administrator mengatur ini di menu {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</li>
     <li><b>Pengaturan GA</b> hanya untuk peran Supervisor ke atas: Data Entry tidak bisa memakainya walau Grup-nya dicentang.</li>
+    <li><b>Menu GA ringkas:</b> satu butir <b>Perawatan AC</b> dan satu butir <b>Monitoring Kendaraan</b>. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
     <li>Menu GA milik Administrator juga memuat <b>Perawatan Gedung</b>. Itu layar sementara bertuliskan "Segera hadir"; belum bisa dipakai.</li>
 </ul>
 
@@ -270,6 +271,31 @@
 </ul>
 @endif
 
+@if ($can('GAM'))
+<h3 id="ga-gam">Perawatan AC</h3>
+<h4>Untuk apa</h4>
+<p>Satu butir menu untuk memantau semua AC aktif, seperti Monitoring Kendaraan: AC mana yang terlambat atau segera jatuh tempo cuci dan servis besar, dan AC mana yang sedang rusak. Dari sini Anda membuka <b>Setup</b> dan <b>Penjadwalan</b>.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Perawatan AC</b> (RO cukup). Tombol <span class="g-btn">Setup</span> dan <span class="g-btn">Penjadwalan</span> tampil sesuai hak modul yang Anda punya.</p>
+<h4>Langkah: membaca Perawatan AC</h4>
+<ol class="g-steps">
+    <li>Buka <b>GA</b> lalu <b>Perawatan AC</b>.</li>
+    <li>Baca empat kotak: <b>AC aktif</b>, <b>Terlambat</b> (cuci atau servis besar sudah lewat), <b>Segera</b> (dalam 30 hari), dan <b>Kerusakan terbuka</b> (AC rusak yang belum selesai ditangani). Di bawah tombol tertulis <i>Kunjungan terdekat</i>.</li>
+    <li>Baca tabelnya: <b>AC</b>, <b>Area</b>, <b>Cuci berikutnya</b>, <b>Servis besar</b>, <b>Kerusakan 12 bln</b>, dan <b>Status</b> (<i>Rusak</i> bila ada Breakdown terbuka, selain itu Terlambat, Segera, atau Aman). Klik 2x barisnya untuk membuka Denah AC dengan AC itu terpilih.</li>
+    <li>Tekan <span class="g-btn">Setup</span> untuk membuka Denah AC, Master AC, Area dan Gedung, Ruang, Vendor AC, dan Pengaturan. Tekan <span class="g-btn">Penjadwalan</span> untuk menjadwalkan kunjungan, melihat Kunjungan, dan mencatat hasil.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Hanya AC <b>aktif</b> yang tampil. Tombol dan ubin yang modulnya tidak Anda punya tidak tampil.</li>
+    <li>Perbaikan Breakdown tidak menggeser jadwal cuci dan servis besar.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Tombol Setup atau Penjadwalan tidak ada.</b> Grup Anda belum diberi modul layar tujuannya. Minta Administrator memeriksa di {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</li>
+    <li><b>AC tidak tampil.</b> Belum didaftarkan di Master AC, atau sudah dinonaktifkan.</li>
+</ul>
+@endif
+
 @if ($can('GAS'))
 <h3 id="ga-gas">Penjadwalan AC</h3>
 <h4>Untuk apa</h4>
@@ -278,12 +304,19 @@
 <p>Pengguna yang Grup-nya punya modul <b>Penjadwalan AC</b>: RO untuk melihat, RW untuk menjadwalkan, menyusun otomatis, dan mengubah kapasitas harian.</p>
 <h4>Langkah: menjadwalkan AC</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Penjadwalan AC</b>. Empat kotak di atas: <b>Total AC</b>, <b>Terlambat dicuci</b>, <b>Jatuh tempo</b> (dalam 30 hari), dan <b>Terjadwal minggu ini</b>.</li>
+    <li>Buka <b>GA</b>, <b>Perawatan AC</b>, lalu tekan <span class="g-btn">Penjadwalan</span>. Pilih <b>Tipe</b> <i>Preventif (jadwal rutin)</i> (bawaan) lalu <span class="g-btn">Terapkan</span>. Empat kotak di atas: <b>Total AC</b>, <b>Terlambat dicuci</b>, <b>Jatuh tempo</b> (dalam 30 hari), dan <b>Terjadwal minggu ini</b>.</li>
     <li>Pilih <b>Vendor</b>. Atur juga <b>Area</b> (<i>Semua area</i> atau satu area) dan <b>Tampilkan</b> (<i>AC yang perlu dibersihkan</i> atau <i>Semua AC aktif</i>), lalu tekan <span class="g-btn">Terapkan</span>.</li>
     <li>Di <b>Kalender kunjungan</b> (Senin sampai Sabtu), klik hari kunjungan. Tiap hari menunjukkan jumlah AC terjadwal per kapasitas, mis. <i>2/3</i>, dan keterangan <i>1 slot kosong</i>, <i>Penuh</i>, <i>Sudah lewat</i>, atau <i>Bukan hari kunjungan</i>. Tombol <span class="g-btn">Minggu sebelumnya</span>, <span class="g-btn">Minggu ini</span>, dan <span class="g-btn">Minggu berikutnya</span> menggeser kalender.</li>
     <li>Di bagian <b>AC yang perlu dibersihkan</b>, periksa <b>Tanggal kunjungan terpilih</b> dan <b>Sisa kapasitas hari itu</b>. Atur <b>Jam mulai</b> bila perlu (bawaan jam awal kunjungan).</li>
     <li>Centang AC yang akan dikunjungi. Kolomnya: <b>AC dan lokasi</b>, <b>Terakhir dicuci</b>, <b>Jatuh tempo</b>, <b>Pekerjaan</b>, <b>Status</b>, dan <b>Jadwal</b>. Kotak di kepala kolom mencentang semua yang belum terjadwal.</li>
     <li>Tekan <span class="g-btn">Jadwalkan yang dipilih</span>. Pesan hasilnya menyebut nomor pesanan dan status <i>Draf</i>.</li>
+</ol>
+<h4>Langkah: menjadwalkan perbaikan (Breakdown)</h4>
+<ol class="g-steps">
+    <li>Di Penjadwalan, ubah <b>Tipe</b> menjadi <i>Breakdown (AC rusak)</i> lalu tekan <span class="g-btn">Terapkan</span>. Semua AC aktif tampil, bukan hanya yang jatuh tempo.</li>
+    <li>Isi <b>Tanggal kunjungan</b>, <b>Jam mulai</b>, <b>Tingkat</b> (<i>Biasa</i> atau <i>Mendesak</i>), dan <b>Keluhan</b> (wajib), mis. <i>Tidak dingin, menetes air</i>.</li>
+    <li>Centang AC yang rusak lalu tekan <span class="g-btn">Jadwalkan perbaikan</span>. Hasilnya pesanan <b>Draf</b> bertipe Breakdown yang dikirim dari Kunjungan AC seperti biasa; pesannya menyebut keluhan.</li>
+    <li><b>Mendesak</b> boleh melampaui kapasitas harian dan jatuh di hari yang bukan hari kunjungan (mis. hari ini atau Minggu), tetapi <b>Alasan mendesak</b> wajib diisi. <i>Biasa</i> tetap mengikuti kapasitas dan hari kunjungan. Jam tetap dalam jendela kunjungan.</li>
 </ol>
 <h4>Langkah: Susun otomatis dan kapasitas</h4>
 <ol class="g-steps">
@@ -323,12 +356,21 @@
 </ul>
 <h4>Langkah: dari Draf sampai Selesai</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Kunjungan AC</b>. Grid memuat <b>No. Pesanan</b>, <b>Tanggal kunjungan</b>, <b>Jam mulai</b>, <b>Vendor</b>, <b>Jumlah AC</b>, dan <b>Status</b>. Kotak <b>Semua</b>, <b>Draf</b>, <b>Terkirim</b>, <b>Dikonfirmasi vendor</b>, <b>Selesai</b>, dan <b>Dijadwal ulang</b> menyaring daftar. Klik 2x sebuah baris untuk membukanya.</li>
+    <li>Buka <b>GA</b>, <b>Perawatan AC</b>, <span class="g-btn">Penjadwalan</span>, lalu tombol <span class="g-btn">Kunjungan dan Catat hasil</span>. Grid memuat <b>No. Pesanan</b>, <b>Tipe</b> (<i>Preventif</i> atau <i>Breakdown</i>), <b>Tanggal kunjungan</b>, <b>Jam mulai</b>, <b>Vendor</b>, <b>Jumlah AC</b>, dan <b>Status</b>. Kotak <b>Semua</b>, <b>Draf</b>, <b>Terkirim</b>, <b>Dikonfirmasi vendor</b>, <b>Selesai</b>, dan <b>Dijadwal ulang</b> menyaring daftar. Klik 2x sebuah baris untuk membukanya.</li>
     <li>Layar pesanan menunjukkan empat kotak tahap (<b>1. Draf</b>, <b>2. Terkirim</b>, <b>3. Dikonfirmasi</b>, <b>4. Selesai</b>) beserta waktu dan nama yang melakukannya, lalu tanggal, jam, vendor, dan jumlah AC.</li>
     <li><b>Draf.</b> Baca <b>Pesan untuk vendor</b> di <b>Pratinjau pesan</b>. Tekan <span class="g-btn">Kirim</span>, periksa jendela <b>Kirim pemberitahuan</b>, lalu tekan <b>Kirim</b>. E-mail terkirim ke vendor (bila vendor punya alamat e-mail) dan status menjadi <b>Terkirim</b>.</li>
     <li><b>WhatsApp.</b> Tekan <span class="g-btn">Buka WhatsApp</span>. WhatsApp terbuka dengan pesan yang sudah terisi dan nomor vendor; Anda sendiri menekan kirim di WhatsApp. Tidak ada WhatsApp yang terkirim otomatis.</li>
     <li><b>Terkirim.</b> Setelah vendor menjawab, tekan <span class="g-btn">Tandai dikonfirmasi vendor</span>. Status menjadi <b>Dikonfirmasi vendor</b>. Belum ada balasan? <span class="g-btn">Kirim ulang</span> mengirim e-mail lagi.</li>
     <li><b>Dikonfirmasi vendor.</b> Setelah kunjungan berlangsung, tekan <span class="g-btn">Tandai selesai</span>, isi <b>Tanggal selesai</b> (bawaan tanggal kunjungan, atau hari ini bila kunjungan belum tiba), lalu tekan <b>Tandai selesai</b>. Status menjadi <b>Selesai</b>; jatuh tempo berikutnya tiap AC dihitung dari tanggal ini.</li>
+</ol>
+<h4>Langkah: Catat hasil per AC dan spare-part</h4>
+<ol class="g-steps">
+    <li>Saat status <b>Dikonfirmasi vendor</b>, buka bagian <b>Catat hasil per AC</b> di layar pesanan.</li>
+    <li>Pilih <b>AC</b>, isi <b>Tanggal dikerjakan</b> (tidak sebelum tanggal kunjungan, tidak setelah hari ini), <b>Kondisi / temuan</b>, dan <b>Biaya jasa</b> (opsional). Pada Breakdown isi juga <b>Penyebab kerusakan</b> dan <b>Tindakan</b>.</li>
+    <li>Bila ada penggantian, isi sampai tiga <b>Spare-part diganti</b>: nama bebas (saran muncul dari nama yang pernah dipakai), <b>Jumlah</b>, dan <b>Biaya (IDR)</b> opsional. Kosongkan nama bila tidak ada.</li>
+    <li>Tekan <span class="g-btn">Simpan hasil</span>. Hasilnya tampil di kolom <b>Hasil</b> tabel AC. Mencatat ulang AC yang sama menggantikan catatan sebelumnya.</li>
+    <li>Bila <b>semua</b> AC pada pesanan sudah tercatat, status otomatis menjadi <b>Selesai</b>. Tombol <span class="g-btn">Tandai semua selesai</span> tetap ada untuk menyelesaikan semua AC sekaligus tanpa rincian.</li>
+    <li>Spare-part tidak mengurangi stok gudang.</li>
 </ol>
 <h4>Langkah: salinan untuk PIC, foto bukti, dan Berita Acara</h4>
 <ol class="g-steps">

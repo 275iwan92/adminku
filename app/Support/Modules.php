@@ -25,6 +25,9 @@ final class Modules
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
 
+    // Modul GA yang dibuka lewat tombol di panel Monitoring (kode => panel: GVM Kendaraan, GAM AC) dan tidak tampil di menu samping bagi yang punya panelnya; pengguna tanpa panel (mis. sopir hanya GVO) tetap melihatnya. Hak Grup dan penjagaan rute tetap per kode.
+    public const MENU_UNDER = ['GVD' => 'GVM', 'GVS' => 'GVM', 'GVO' => 'GVM', 'GVK' => 'GVM', 'GVT' => 'GVM', 'GAS' => 'GAM', 'GAV' => 'GAM', 'GAD' => 'GAM', 'GAK' => 'GAM', 'GAA' => 'GAM', 'GAR' => 'GAM', 'GAE' => 'GAM'];
+
     // kode => [induk, label, ikon, tipe tab, nama rute daftar, peran minimal, awalan rute yang dijaga]
     public static function all(): array
     {
@@ -44,7 +47,7 @@ final class Modules
             'SO' => ['TRX', 'Stok Opname', 'fa-solid fa-clipboard-check', 'grid', 'stock-counts.index', 'entry', ['stock-counts.', 'hp.count']],
             'ORD' => ['TRX', 'Riwayat Pemesanan', 'fa-solid fa-clock-rotate-left', 'grid', 'reorder-orders.index', 'entry', ['reorder-orders.']],
             'STB' => ['RPT', 'Beranda Stok', 'fa-solid fa-gauge-high', 'form', 'stock.home', 'entry', ['stock.']],
-            'R-CARD' => ['RPT', 'Kartu Stok', 'fa-solid fa-clipboard-list', 'report', 'reports.stock-card', 'entry', ['reports.stock-card']],
+            'R-CARD' => ['RPT','Kartu Stok', 'fa-solid fa-clipboard-list', 'report', 'reports.stock-card', 'entry', ['reports.stock-card']],
             'R-SUM' => ['RPT', 'Ringkasan Stok', 'fa-solid fa-table-list', 'report', 'reports.summary', 'entry', ['reports.summary']],
             'R-IN' => ['RPT', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.receiving', 'entry', ['reports.receiving']],
             'R-OUT' => ['RPT', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.issuance', 'entry', ['reports.issuance']],
@@ -56,6 +59,7 @@ final class Modules
             'GVO' => ['GA', 'Catat Odometer', 'fa-solid fa-gauge-high', 'form', 'vehicle-odometers.create', 'entry', ['vehicle-odometers.']],
             'GVK' => ['GA', 'Master Kendaraan', 'fa-solid fa-truck-pickup', 'grid', 'vehicles.index', 'entry', ['vehicles.']],
             'GVT' => ['GA', 'Jenis Kendaraan', 'fa-solid fa-list-check', 'grid', 'vehicle-types.index', 'entry', ['vehicle-types.']],
+            'GAM' => ['GA', 'Perawatan AC', 'fa-solid fa-snowflake', 'grid', 'ac-care.index', 'entry', ['ac-care.', 'ac-setup.']],
             'GAS' => ['GA', 'Penjadwalan AC', 'fa-solid fa-calendar-check', 'form', 'ac-schedule.index', 'entry', ['ac-schedule.']],
             'GAV' => ['GA', 'Kunjungan AC', 'fa-solid fa-truck-fast', 'grid', 'ac-visits.index', 'entry', ['ac-visits.']],
             'GAD' => ['GA', 'Denah AC', 'fa-solid fa-map-location-dot', 'form', 'ac-plan.index', 'entry', ['ac-plan.']],

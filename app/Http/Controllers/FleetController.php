@@ -40,6 +40,12 @@ class FleetController extends Controller
         ]);
     }
 
+    // Hub Setup: Master Kendaraan dan Jenis Kendaraan dibuka lewat tombol di Monitoring (bukan menu samping).
+    public function setup()
+    {
+        return view('fleet.setup');
+    }
+
     public function show(Vehicle $vehicle)
     {
         $vehicle->load('type');

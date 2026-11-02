@@ -37,7 +37,7 @@ final class AcVisits
         $order->loadMissing('vendor', 'lines.unit.room.area');
 
         return [
-            'no' => $order->no, 'date' => $order->visit_date, 'time' => $order->timeText(), 'company' => Company::get()['name'], 'sender' => $sender,
+            'no' => $order->no, 'type' => $order->type, 'complaint' => $order->complaint, 'priority' => $order->priority, 'date' => $order->visit_date, 'time' => $order->timeText(), 'company' => Company::get()['name'], 'sender' => $sender,
             'greeting' => $order->vendor->contact_name ?: $order->vendor->name, 'vendor' => $order->vendor->name,
             'lines' => $order->lines->sortBy(fn ($l) => $l->unit->room->area->name.'|'.$l->unit->room->code.'|'.$l->unit->asset_code)->map(fn (AcOrderLine $l) => [
                 'area' => $l->unit->room->area->name, 'room' => $l->unit->room->name, 'room_code' => $l->unit->room->code, 'asset_code' => $l->unit->asset_code,
@@ -157,6 +157,51 @@ final class AcVisits
         });
     }
 
+    /**
+     * Catat hasil satu AC: tanggal dikerjakan (tidak sebelum tanggal kunjungan, tidak setelah hari ini), kondisi, penyebab dan tindakan, biaya jasa, dan spare-part yang diganti (daftar lama diganti seluruhnya,
+     * baris tanpa nama diabaikan). Hanya saat pesanan Dikonfirmasi vendor. Bila semua AC pada pesanan sudah tercatat, pesanan otomatis Selesai. Jatuh tempo preventif dihitung dari tanggal ini (pekerjaan "fix" tidak menggeser).
+     *
+     * @param  array{findings?: ?string, cause?: ?string, action?: ?string, labor_cost?: float|int|string|null}  $data
+     * @param  list<array{name?: ?string, qty?: float|int|string|null, cost?: float|int|string|null}>  $parts
+     */
+    public static function recordResult(AcOrderLine $line, string $doneAt, array $data, array $parts, User $by): AcOrder
+    {
+        try {
+            $day = Carbon::createFromFormat('Y-m-d', $doneAt)->startOfDay();
+        } catch (Throwable) {
+            throw ValidationException::withMessages(['done_at' => 'Tanggal dikerjakan tidak valid.']);
+        }
+        $num = fn ($v) => $v === null || $v === '' ? null : (float) $v;
+        $text = fn ($v) => ($v = trim((string) $v)) === '' ? null : mb_substr($v, 0, 255);
+
+        return DB::transaction(function () use ($line, $day, $data, $parts, $by, $num, $text) {
+            $o = self::lock($line->order, ['confirmed'], 'Catat hasil');
+            $l = AcOrderLine::query()->where('order_id', $o->id)->lockForUpdate()->findOrFail($line->id);
+            if ($day->gt(today())) {
+                throw ValidationException::withMessages(['done_at' => 'Tanggal dikerjakan tidak boleh setelah hari ini.']);
+            }
+            if ($day->lt($o->visit_date)) {
+                throw ValidationException::withMessages(['done_at' => 'Tanggal dikerjakan tidak boleh sebelum tanggal kunjungan ('.$o->visit_date->format('d-m-Y').').']);
+            }
+            $l->update([
+                'done_at' => $day->toDateString(), 'findings' => $text($data['findings'] ?? null), 'cause' => $text($data['cause'] ?? null), 'action' => $text($data['action'] ?? null),
+                'labor_cost' => $num($data['labor_cost'] ?? null),
+            ]);
+            $l->parts()->delete();
+            foreach ($parts as $p) {
+                $name = trim((string) ($p['name'] ?? ''));
+                if ($name !== '') {
+                    $l->parts()->create(['name' => mb_substr($name, 0, 100), 'qty' => $num($p['qty'] ?? null) ?? 1, 'cost' => $num($p['cost'] ?? null)]);
+                }
+            }
+            if (! $o->lines()->whereNull('done_at')->exists()) {
+                $o->update(['status' => 'done', 'done_at' => now(), 'done_by' => $by->id]);
+            }
+
+            return $o->fresh();
+        });
+    }
+
     /** Pindahkan kunjungan ke tanggal / jam baru: alasan wajib, hari / jam / kapasitas dicek seperti penjadwalan, riwayat tersimpan; status Dijadwal ulang (kirim ulang pemberitahuan). */
     public static function reschedule(AcOrder $order, string $date, ?string $time, string $reason, User $by): AcOrder
     {
@@ -165,15 +210,16 @@ final class AcVisits
             throw ValidationException::withMessages(['reason' => 'Alasan jadwal ulang wajib diisi (3 sampai 255 huruf).']);
         }
         $time = $time ?: AcCare::startTime();
-        $day = AcCare::assertSlot($date, $time);
+        $urgent = $order->priority === 'urgent';   // Breakdown Mendesak: hari kunjungan dan kapasitas tidak membatasi
+        $day = AcCare::assertSlot($date, $time, $urgent);
 
-        return DB::transaction(function () use ($order, $day, $time, $reason, $by) {
+        return DB::transaction(function () use ($order, $day, $time, $reason, $by, $urgent) {
             $vendor = AcVendor::query()->lockForUpdate()->findOrFail($order->vendor_id);   // urutan kunci sama dengan penjadwalan: vendor dulu
             $o = self::lock($order, AcOrder::OPEN, 'Jadwal ulang');
             if ($o->visit_date->isSameDay($day) && $o->timeText() === $time) {
                 throw ValidationException::withMessages(['date' => 'Tanggal dan jam baru sama dengan jadwal sekarang.']);
             }
-            AcCare::assertCapacity($vendor, $day, $o->lines()->count(), $o->id);
+            $urgent || AcCare::assertCapacity($vendor, $day, $o->lines()->count(), $o->id);
             $o->reschedules()->create(['from_date' => $o->visit_date->toDateString(), 'from_time' => $o->timeText(), 'to_date' => $day->toDateString(), 'to_time' => $time, 'reason' => $reason, 'created_by' => $by->id]);
             $o->update([
                 'visit_date' => $day->toDateString(), 'visit_time' => $time, 'status' => 'rescheduled', 'reschedule_reason' => $reason,

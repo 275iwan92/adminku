@@ -28,11 +28,11 @@ use Illuminate\Validation\ValidationException;
  */
 final class AcCare
 {
-    public const JOBS = ['wash' => 'Cuci rutin', 'major' => 'Servis besar'];
+    public const JOBS = ['wash' => 'Cuci rutin', 'major' => 'Servis besar', 'fix' => 'Perbaikan'];
 
     public const STATUS = ['aman' => 'Aman', 'segera' => 'Segera', 'terlambat' => 'Terlambat'];
 
-    public const TONES = ['Aman' => 'success', 'Segera' => 'warn', 'Terlambat' => 'danger'];
+    public const TONES = ['Aman' => 'success', 'Segera' => 'warn', 'Terlambat' => 'danger', 'Rusak' => 'danger'];
 
     public const ORDER_STATUS = ['draft' => 'Draf', 'sent' => 'Terkirim', 'confirmed' => 'Dikonfirmasi vendor', 'done' => 'Selesai', 'rescheduled' => 'Dijadwal ulang', 'cancelled' => 'Dibatalkan'];
 
@@ -184,7 +184,7 @@ final class AcCare
     private static function lastDone(array $ids): array
     {
         $map = [];
-        $rows = DB::table('g_ac_service_line')->whereIn('unit_id', $ids)->whereNotNull('done_at')->groupBy('unit_id', 'job')->get(['unit_id', 'job', DB::raw('max(done_at) as d')]);
+        $rows = DB::table('g_ac_service_line')->whereIn('unit_id', $ids)->whereNotNull('done_at')->whereIn('job', ['wash', 'major'])->groupBy('unit_id', 'job')->get(['unit_id', 'job', DB::raw('max(done_at) as d')]);
         foreach ($rows as $r) {
             $map[$r->unit_id][$r->job] = Carbon::parse(substr((string) $r->d, 0, 10));
         }
@@ -241,8 +241,22 @@ final class AcCare
             ->whereDate('o.visit_date', '>=', $from->toDateString())->whereDate('o.visit_date', '<=', $to->toDateString())->where('o.status', '!=', 'cancelled')->count();
     }
 
-    /** Tanggal, hari, dan jam kunjungan harus sah: bukan masa lalu, hari yang diizinkan, jam dalam jendela kunjungan. */
-    public static function assertSlot(string $date, string $time): Carbon
+    /**
+     * Kerusakan per AC: pesanan Breakdown yang masih terbuka dan jumlah yang Selesai dalam 12 bulan terakhir (tanggal kunjungan). Dua kueri tetap.
+     *
+     * @return array{open: array<int, true>, year: array<int, int>}
+     */
+    public static function breakdownStats(): array
+    {
+        $base = fn () => DB::table('g_ac_service_line as l')->join('g_ac_service_order as o', 'o.id', '=', 'l.order_id')->where('o.type', 'breakdown');
+        $open = $base()->whereIn('o.status', AcOrder::OPEN)->pluck('l.unit_id')->flip()->map(fn () => true)->all();
+        $year = $base()->where('o.status', 'done')->whereDate('o.visit_date', '>=', today()->subYear()->toDateString())->groupBy('l.unit_id')->pluck(DB::raw('count(*)'), 'l.unit_id')->map(fn ($n) => (int) $n)->all();
+
+        return ['open' => $open, 'year' => $year];
+    }
+
+    /** Tanggal, hari, dan jam kunjungan harus sah: bukan masa lalu, hari yang diizinkan (kecuali $anyDay: Breakdown mendesak), jam dalam jendela kunjungan. */
+    public static function assertSlot(string $date, string $time, bool $anyDay = false): Carbon
     {
         try {
             $day = Carbon::createFromFormat('Y-m-d', $date)->startOfDay();
@@ -255,7 +269,7 @@ final class AcCare
         if ($day->lt(today())) {
             throw ValidationException::withMessages(['date' => 'Tanggal kunjungan tidak boleh di masa lalu.']);
         }
-        if (! in_array($day->dayOfWeekIso, self::visitDays(), true)) {
+        if (! $anyDay && ! in_array($day->dayOfWeekIso, self::visitDays(), true)) {
             throw ValidationException::withMessages(['date' => 'Hari '.self::DAYS[$day->dayOfWeekIso].' tidak diizinkan untuk kunjungan. Hari yang diizinkan: '.self::dayNames(self::visitDays()).'.']);
         }
         if (! preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $time) || $time < self::startTime() || $time > self::endTime()) {
@@ -279,30 +293,44 @@ final class AcCare
     // ---- Penjadwalan ------------------------------------------------------------------------------------------------------------
 
     /**
-     * Jadwalkan AC pada satu tanggal untuk satu vendor (pesanan berstatus Draf; bila vendor sudah punya pesanan Draf pada tanggal itu, AC ditambahkan ke sana).
+     * Jadwalkan AC pada satu tanggal untuk satu vendor (pesanan berstatus Draf; Preventif: bila vendor sudah punya pesanan Draf Preventif pada tanggal itu, AC ditambahkan ke sana).
      * Dijaga di server: tanggal / hari / jam, AC aktif, satu AC satu pesanan terbuka, dan kapasitas harian vendor (baris vendor dikunci supaya dua petugas yang menjadwalkan bersamaan tidak melewati kapasitas).
+     * Breakdown: keluhan wajib, tingkat Mendesak / Biasa; Mendesak dengan alasan boleh di luar kapasitas dan hari kunjungan. Pesanan Breakdown selalu pesanan sendiri.
      *
      * @param  list<int|string>  $unitIds
+     * @param  array{type?: string, complaint?: ?string, priority?: ?string, override?: ?string}  $extra
      */
-    public static function schedule(AcVendor $vendor, string $date, ?string $time, array $unitIds, User $by): AcOrder
+    public static function schedule(AcVendor $vendor, string $date, ?string $time, array $unitIds, User $by, array $extra = []): AcOrder
     {
+        $type = ($extra['type'] ?? 'preventive') === 'breakdown' ? 'breakdown' : 'preventive';
+        $complaint = trim((string) ($extra['complaint'] ?? ''));
+        $priority = $type === 'breakdown' ? (($extra['priority'] ?? 'normal') === 'urgent' ? 'urgent' : 'normal') : null;
+        $override = trim((string) ($extra['override'] ?? ''));
+        if ($type === 'breakdown' && (mb_strlen($complaint) < 3 || mb_strlen($complaint) > 255)) {
+            throw ValidationException::withMessages(['complaint' => 'Keluhan wajib diisi (3 sampai 255 huruf).']);
+        }
+        if ($priority === 'urgent' && (mb_strlen($override) < 3 || mb_strlen($override) > 255)) {
+            throw ValidationException::withMessages(['override_reason' => 'Breakdown Mendesak butuh alasan (3 sampai 255 huruf), mis. AC ruang server mati.']);
+        }
+        $urgent = $priority === 'urgent';
         $time = $time ?: self::startTime();
-        $day = self::assertSlot($date, $time);
+        $day = self::assertSlot($date, $time, $urgent);
         $ids = array_values(array_unique(array_map('intval', $unitIds)));
         if (! $ids) {
             throw ValidationException::withMessages(['units' => 'Pilih minimal satu AC yang akan dijadwalkan.']);
         }
+        $fields = $type === 'breakdown' ? ['type' => 'breakdown', 'complaint' => $complaint, 'priority' => $priority, 'override_reason' => $urgent ? $override : null] : [];
 
-        return DB::transaction(function () use ($vendor, $day, $time, $ids, $by) {
+        return DB::transaction(function () use ($vendor, $day, $time, $ids, $by, $fields, $urgent) {
             $v = self::lockVendor($vendor);
             $units = AcUnit::query()->with('room.area')->whereIn('id', $ids)->where('is_active', true)->get();
             if ($units->count() !== count($ids)) {
                 throw ValidationException::withMessages(['units' => 'Ada AC yang tidak ditemukan atau sudah nonaktif.']);
             }
             self::assertNoOpen($units);
-            self::assertCapacity($v, $day, $units->count());
+            $urgent || self::assertCapacity($v, $day, $units->count());
 
-            return self::addLines($v, $day, $time, $units, self::overview($units), $by);
+            return self::addLines($v, $day, $time, $units, self::overview($units), $by, $fields);
         });
     }
 
@@ -357,26 +385,27 @@ final class AcCare
         }
     }
 
-    private static function addLines(AcVendor $vendor, Carbon $day, string $time, Collection $units, array $over, User $by): AcOrder
+    private static function addLines(AcVendor $vendor, Carbon $day, string $time, Collection $units, array $over, User $by, array $fields = []): AcOrder
     {
-        $order = AcOrder::query()->where('vendor_id', $vendor->id)->whereDate('visit_date', $day->toDateString())->where('status', 'draft')->orderBy('id')->first()
-            ?? self::createOrder($vendor, $day, $time, $by);
+        $breakdown = ($fields['type'] ?? null) === 'breakdown';
+        $order = ($breakdown ? null : AcOrder::query()->where('vendor_id', $vendor->id)->whereDate('visit_date', $day->toDateString())->where('status', 'draft')->where('type', 'preventive')->orderBy('id')->first())
+            ?? self::createOrder($vendor, $day, $time, $by, $fields);
         foreach ($units as $u) {
-            $order->lines()->create(['unit_id' => $u->id, 'job' => self::jobFor($over[$u->id]['next_major'], $day)]);
+            $order->lines()->create(['unit_id' => $u->id, 'job' => $breakdown ? 'fix' : self::jobFor($over[$u->id]['next_major'], $day)]);
         }
 
         return $order;
     }
 
     // Nomor ACV-YYMM-NNNN; dua penyimpan bersamaan bisa membaca nomor terakhir yang sama: kolom unik menolak yang kalah, lalu nomor berikutnya diambil lagi (bacaan terkunci).
-    private static function createOrder(AcVendor $vendor, Carbon $day, string $time, User $by): AcOrder
+    private static function createOrder(AcVendor $vendor, Carbon $day, string $time, User $by, array $fields = []): AcOrder
     {
         for ($try = 1; ; $try++) {
             $stem = 'ACV-'.now()->format('ym').'-';
             $last = AcOrder::query()->where('no', 'like', $stem.'%')->orderByDesc('no')->when($try > 1, fn ($q) => $q->lockForUpdate())->value('no');
             $no = $stem.str_pad((string) ($last ? (int) substr($last, -4) + 1 : 1), 4, '0', STR_PAD_LEFT);
             try {
-                return AcOrder::create(['no' => $no, 'vendor_id' => $vendor->id, 'visit_date' => $day->toDateString(), 'visit_time' => $time, 'status' => 'draft', 'created_by' => $by->id]);
+                return AcOrder::create(['no' => $no, 'vendor_id' => $vendor->id, 'visit_date' => $day->toDateString(), 'visit_time' => $time, 'status' => 'draft', 'created_by' => $by->id] + $fields);
             } catch (UniqueConstraintViolationException $e) {
                 if ($try >= 5) {
                     throw $e;

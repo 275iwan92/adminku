@@ -45,7 +45,8 @@ class AcScheduleController extends Controller
         $units = AcUnit::query()->with('room.area')->where('is_active', true)->get();
         $over = AcCare::overview($units);
         $areaId = (int) Text::of($request->query('area'));
-        $all = Text::of($request->query('show')) === 'semua';
+        $type = Text::of($request->query('type')) === 'breakdown' ? 'breakdown' : 'preventive';
+        $all = $type === 'breakdown' || Text::of($request->query('show')) === 'semua';   // Breakdown: semua AC aktif bisa dipilih
         $pick = (int) Text::of($request->query('pick'));   // AC yang ditandai dari kartu Denah AC
         $rows = $units->filter(fn ($u) => ! $areaId || $u->room->area_id === $areaId)
             ->filter(fn ($u) => $all || $u->id === $pick || $over[$u->id]['open'] || $over[$u->id]['status'] !== 'aman')
@@ -53,7 +54,7 @@ class AcScheduleController extends Controller
             ->map(fn (AcUnit $u) => ['unit' => $u, 'o' => $over[$u->id]])->values();
 
         return view('ac-schedule.index', [
-            'vendors' => $vendors, 'vendorId' => $vendorId, 'calendar' => $calendar, 'week' => $week, 'selected' => $selected, 'cap' => $cap, 'rows' => $rows, 'pick' => $pick,
+            'vendors' => $vendors, 'vendorId' => $vendorId, 'calendar' => $calendar, 'week' => $week, 'selected' => $selected, 'cap' => $cap, 'rows' => $rows, 'pick' => $pick, 'type' => $type,
             'areas' => AcArea::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id')->all(), 'areaId' => $areaId, 'all' => $all,
             'time' => AcCare::startTime(), 'days' => AcCare::dayNames($allowed), 'window' => AcCare::timeText(AcCare::startTime()).' - '.AcCare::timeText(AcCare::endTime()),
             'summary' => [
@@ -67,11 +68,13 @@ class AcScheduleController extends Controller
 
     public function store(AcScheduleRequest $request): RedirectResponse
     {
-        $order = AcCare::schedule(AcVendor::findOrFail($request->validated('vendor_id')), $request->validated('date'), $request->validated('time'), $request->validated('units'), $request->user());
+        $order = AcCare::schedule(AcVendor::findOrFail($request->validated('vendor_id')), $request->validated('date'), $request->validated('time'), $request->validated('units'), $request->user(), [
+            'type' => $request->validated('type'), 'complaint' => $request->validated('complaint'), 'priority' => $request->validated('priority'), 'override' => $request->validated('override_reason'),
+        ]);
         $n = count($request->validated('units'));
 
         return redirect()->route('ac-schedule.index', ['vendor' => $order->vendor_id, 'date' => $order->visit_date->toDateString()])
-            ->with('status', $n.' AC dijadwalkan pada '.AcMessage::dateText($order->visit_date).' (pesanan '.$order->no.', Draf). Kirim pemberitahuan dari Kunjungan AC.');
+            ->with('status', $n.' AC dijadwalkan ('.$order->typeText().') pada '.AcMessage::dateText($order->visit_date).' (pesanan '.$order->no.', Draf). Kirim pemberitahuan dari Kunjungan AC.');
     }
 
     public function auto(AcScheduleRequest $request): RedirectResponse

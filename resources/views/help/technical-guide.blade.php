@@ -725,6 +725,9 @@ composer test                        # config:clear, then php artisan test</pre>
                 <tr><td>No OCR on odometer photos</td><td>A wrong reading would silently move every service schedule; the photo is evidence, the number is typed, and the server refuses a number lower than the last one</td></tr>
                 <tr><td>A major AC service includes the wash</td><td>A technician who services the unit also cleans it; counting the wash separately would schedule a pointless visit three months later</td></tr>
                 <tr><td>Capacity per vendor, enforced inside a transaction that locks the vendor row</td><td>Each vendor has its own crew, so a global limit is wrong; the lock makes the limit hold when two clerks plan at once</td></tr>
+                <tr><td>GA menu is one item per module (<code>GVM</code>, <code>GAM</code>); the other GA modules are hidden from the sidebar (<code>Modules::MENU_UNDER</code>) only for users who hold the panel module</td><td>The sidebar stays short and the buttons on the panel open the rest; rights and route guards are still per module code, and a driver with only <code>GVO</code> still sees that one screen</td></tr>
+                <tr><td>Order type (<code>g_ac_service_order.type</code>: <code>preventive</code> | <code>breakdown</code>) instead of a separate breakdown table; repair lines use job <code>fix</code>, which never moves a preventive due date</td><td>A breakdown needs the same vendor, capacity, message, stage and minutes machinery as a visit; an urgent breakdown with a reason may exceed capacity and visit days (<code>override_reason</code>)</td></tr>
+                <tr><td>Result per unit (<code>g_ac_service_line</code> findings / cause / action / labor_cost, <code>g_ac_service_part</code> free-text spare-parts); the order completes itself when every line has a result</td><td>The old "complete all" stamped one date on every unit and kept no findings or costs; spare-parts are free text with suggestions, not linked to the warehouse stock</td></tr>
                 <tr><td>One AC, one open order</td><td>Prevents double booking and keeps "when is this AC scheduled" a single answer</td></tr>
                 <tr><td>Stage order of a visit is enforced in the service, not only hidden in the screen</td><td>A stale page or a double click must not skip Sent or complete a cancelled order; every transition re-reads the row <code>FOR UPDATE</code></td></tr>
                 <tr><td>Reschedule keeps its own history table and clears sent / confirmed</td><td>The vendor must be told again; the old confirmation no longer applies; the audit trail of moves stays</td></tr>
@@ -747,7 +750,7 @@ composer test                        # config:clear, then php artisan test</pre>
             <li>Servicing does not deduct stock; oil and filters taken from the warehouse are issued manually in Pengeluaran Barang.</li>
             <li>Perawatan Gedung, HR (Employee, Recruitment) and Purchase (PR, PO, PV) are placeholders ("Segera hadir"), visible to Administrators only; the tables <code>g_maintenance_order</code>, <code>h_*</code> and <code>p_*</code> from the prefix plan do not exist.</li>
             <li>No scan or signature capture for the printed minutes (Berita Acara); the paper is signed by hand.</li>
-            <li>Two job types only for AC (<code>wash</code>, <code>major</code>); repairs are not tracked.</li>
+            <li>No spare-part master list and no cost report yet: parts are free text with an optional total cost per row.</li>
         </ul>
     </main>
 </div>

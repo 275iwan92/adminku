@@ -103,11 +103,9 @@ class AcSeederTest extends TestCase
     public function test_the_ga_menu_lists_the_real_ac_items_and_keeps_only_the_building_placeholder(): void
     {
         $labels = collect(Menu::layers(User::factory()->administrator()->create()))->firstWhere('code', 'GA')['children'];
-        $this->assertSame(['Penjadwalan AC', 'Kunjungan AC', 'Denah AC', 'Master AC', 'Area dan Gedung AC', 'Ruang AC', 'Vendor AC', 'Pengaturan GA', 'Perawatan Gedung'], array_slice(array_column($labels, 'label'), 6));
-        $this->assertNotContains('Perawatan AC', array_column($labels, 'label'));
-        foreach (array_slice($labels, 6, 7) as $item) {
-            $this->assertStringNotContainsString('segera', $item['url']);
-        }
+        // Menu ringkas: satu butir Perawatan AC (panel Monitoring); layar Penjadwalan, Kunjungan, Denah, master dibuka lewat tombol.
+        $this->assertSame(['Monitoring Kendaraan', 'Perawatan AC', 'Pengaturan GA', 'Perawatan Gedung'], array_column($labels, 'label'));
+        $this->assertStringNotContainsString('segera', $labels[1]['url']);
         $this->actingAs(User::factory()->administrator()->create())->get('/segera/ac')->assertNotFound();
         $this->get('/segera/gedung')->assertOk();   // Perawatan Gedung tetap layar sementara
 

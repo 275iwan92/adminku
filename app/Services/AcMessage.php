@@ -51,6 +51,10 @@ final class AcMessage
 
     public static function subject(array $d): string
     {
+        if (($d['type'] ?? 'preventive') === 'breakdown') {
+            return (($d['priority'] ?? null) === 'urgent' ? 'MENDESAK - ' : '').'Perbaikan AC '.self::dateText($d['date']).' ('.count($d['lines']).' unit) - '.$d['no'];
+        }
+
         return 'Jadwal perawatan AC '.self::dateText($d['date']).' ('.count($d['lines']).' unit) - '.$d['no'];
     }
 
@@ -61,10 +65,12 @@ final class AcMessage
      */
     public static function vendor(array $d): string
     {
+        $breakdown = ($d['type'] ?? 'preventive') === 'breakdown';
         $out = [
             'Yth. '.$d['greeting'].',',
             '',
-            'Kami menjadwalkan perawatan AC di '.$d['company'].' sebagai berikut.',
+            $breakdown ? 'Kami membutuhkan perbaikan AC'.(($d['priority'] ?? null) === 'urgent' ? ' (MENDESAK)' : '').' di '.$d['company'].' sebagai berikut.' : 'Kami menjadwalkan perawatan AC di '.$d['company'].' sebagai berikut.',
+            ...($breakdown ? ['Keluhan      : '.$d['complaint']] : []),
             'Tanggal      : '.self::dateText($d['date']),
             'Jam mulai    : '.AcCare::timeText($d['time']),
             'Jumlah AC    : '.count($d['lines']).' unit',
@@ -85,6 +91,7 @@ final class AcMessage
             'Terima kasih.',
             $d['sender'],
         );
+        $breakdown && array_splice($out, (int) array_search('- Berita acara ditandatangani PIC area setelah pekerjaan selesai.', $out, true), 0, '- Sebutkan penyebab kerusakan dan spare-part yang diganti beserta biayanya.');
 
         return implode("\n", $out);
     }
@@ -99,7 +106,7 @@ final class AcMessage
         $out = [
             'Yth. '.$d['pic'].',',
             '',
-            'Pengingat: vendor '.$d['vendor'].' akan datang pada '.self::dateText($d['date']).' mulai pukul '.AcCare::timeText($d['time']).' untuk membersihkan '.count($d['lines']).' AC di area Anda:',
+            'Pengingat: vendor '.$d['vendor'].' akan datang pada '.self::dateText($d['date']).' mulai pukul '.AcCare::timeText($d['time']).(($d['type'] ?? 'preventive') === 'breakdown' ? ' untuk memperbaiki ' : ' untuk membersihkan ').count($d['lines']).' AC di area Anda:',
         ];
         foreach ($d['lines'] as $i => $l) {
             $out[] = ($i + 1).'. '.self::lineText($l, false);

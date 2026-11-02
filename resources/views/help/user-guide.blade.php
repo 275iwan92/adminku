@@ -18,7 +18,7 @@
     $anyMaster = collect(['ITM', 'SUP', 'DEP', 'RCP', 'UOM', 'CAT', 'LOC', 'CMP'])->contains($can);
     $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD'])->contains($can);
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
-    $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAS', 'GAV', 'GAD', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
+    $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAD', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
 @include('help.tabs', ['active' => 'ug'])
@@ -79,6 +79,7 @@
             @if ($can('GVO'))<a class="g-toc-sub" href="#ga-gvo">Catat Odometer</a>@endif
             @if ($can('GVK'))<a class="g-toc-sub" href="#ga-gvk">Master Kendaraan</a>@endif
             @if ($can('GVT'))<a class="g-toc-sub" href="#ga-gvt">Jenis Kendaraan</a>@endif
+            @if ($can('GAM'))<a class="g-toc-sub" href="#ga-gam">Perawatan AC</a>@endif
             @if ($can('GAS'))<a class="g-toc-sub" href="#ga-gas">Penjadwalan AC</a>@endif
             @if ($can('GAV'))<a class="g-toc-sub" href="#ga-gav">Kunjungan AC</a>@endif
             @if ($can('GAD'))<a class="g-toc-sub" href="#ga-gad">Denah AC</a>@endif

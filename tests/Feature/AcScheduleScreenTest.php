@@ -83,7 +83,7 @@ class AcScheduleScreenTest extends TestCase
 
         $this->post(route('ac-schedule.store'), ['vendor_id' => $vendor->id, 'date' => '2026-11-03', 'units' => [$a->id, $b->id]])
             ->assertRedirect(route('ac-schedule.index', ['vendor' => $vendor->id, 'date' => '2026-11-03']))
-            ->assertSessionHas('status', '2 AC dijadwalkan pada Selasa, 03-11-2026 (pesanan ACV-2611-0001, Draf). Kirim pemberitahuan dari Kunjungan AC.');
+            ->assertSessionHas('status', '2 AC dijadwalkan (Preventif) pada Selasa, 03-11-2026 (pesanan ACV-2611-0001, Draf). Kirim pemberitahuan dari Kunjungan AC.');
         $this->assertSame(['draft', 2], [AcOrder::first()->status, AcOrder::first()->lines()->count()]);
 
         // Layar tidak bisa dipakai menembus kapasitas: server menolak walau tombolnya ditekan.

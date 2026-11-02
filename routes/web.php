@@ -8,6 +8,7 @@
  */
 
 use App\Http\Controllers\AcAreaController;
+use App\Http\Controllers\AcCareController;
 use App\Http\Controllers\AcPlanController;
 use App\Http\Controllers\AcRoomController;
 use App\Http\Controllers\AcScheduleController;
@@ -212,6 +213,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
 
     // GA Perawatan Aset Kendaraan: Monitoring + Detail + lampiran (GVM, hanya-baca), master Kendaraan (GVK) dan Jenis Kendaraan beserta rencana perawatannya (GVT); hak per modul lewat Grup.
     Route::get('fleet', [FleetController::class, 'index'])->name('fleet.index');
+    Route::get('fleet/setup', [FleetController::class, 'setup'])->name('fleet.setup');
     Route::get('fleet/file/{kind}/{id}', [FleetController::class, 'file'])->whereIn('kind', ['doc', 'odometer'])->whereNumber('id')->name('fleet.file');
     Route::get('fleet/{vehicle}', [FleetController::class, 'show'])->whereNumber('vehicle')->name('fleet.show');
     // Tiga form input: Perpanjang Dokumen (GVD), Catat Servis (GVS), Catat Odometer (GVO, satu-satunya modul sopir); menulis butuh akses RW modulnya.
@@ -234,6 +236,9 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::put('vehicle-types/{type}', [VehicleTypeController::class, 'update'])->name('vehicle-types.update');
     Route::post('vehicle-types/{type}/toggle', [VehicleTypeController::class, 'toggle'])->name('vehicle-types.toggle');
 
+    // GA Perawatan AC (GAM): satu butir menu; panel Monitoring dan hub Setup. Layar lain dibuka lewat tombol di panel (hak per modul tetap).
+    Route::get('ac-care', [AcCareController::class, 'index'])->name('ac-care.index');
+    Route::get('ac-setup', [AcCareController::class, 'setup'])->name('ac-setup.index');
     // GA Perawatan AC, Penjadwalan (GAS): kalender kapasitas, daftar AC, jadwalkan, susun otomatis, kapasitas harian.
     Route::get('ac-schedule', [AcScheduleController::class, 'index'])->name('ac-schedule.index');
     Route::post('ac-schedule', [AcScheduleController::class, 'store'])->name('ac-schedule.store');
@@ -247,7 +252,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('ac-visits/file/{line}/{kind}', [AcVisitController::class, 'file'])->whereNumber('line')->whereIn('kind', ['before', 'after'])->name('ac-visits.file');
     Route::get('ac-visits/{order}', [AcVisitController::class, 'show'])->whereNumber('order')->name('ac-visits.show');
     Route::get('ac-visits/{order}/print', [AcVisitController::class, 'print'])->whereNumber('order')->name('ac-visits.print');
-    foreach (['send', 'confirm', 'complete', 'reschedule', 'cancel', 'photo'] as $action) {
+    foreach (['send', 'confirm', 'complete', 'result', 'reschedule', 'cancel', 'photo'] as $action) {
         Route::post("ac-visits/{order}/{$action}", [AcVisitController::class, $action])->whereNumber('order')->name("ac-visits.{$action}");
     }
     // GA Perawatan AC, master: Unit AC (GAK), Area dan Gedung (GAA, termasuk gambar denah), Ruang (GAR), Vendor (GAE); hak per modul lewat Grup.

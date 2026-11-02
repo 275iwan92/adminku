@@ -29,7 +29,7 @@ class AcVisitController extends Controller
     public function index()
     {
         $rows = AcOrder::query()->with('vendor:id,name')->withCount('lines')->orderByDesc('visit_date')->orderByDesc('id')->limit(500)->get()->map(fn (AcOrder $o) => [
-            'id' => $o->id, 'no' => $o->no, 'date' => $o->visit_date->format('Y-m-d'), 'time' => AcCare::timeText($o->timeText()), 'vendor' => $o->vendor->name, 'units' => $o->lines_count,
+            'id' => $o->id, 'no' => $o->no, 'type' => $o->typeText(), 'date' => $o->visit_date->format('Y-m-d'), 'time' => AcCare::timeText($o->timeText()), 'vendor' => $o->vendor->name, 'units' => $o->lines_count,
             'status' => AcCare::ORDER_STATUS[$o->status], 'sent' => $o->sent_at?->format('d-m-Y H:i'), 'confirmed' => $o->confirmed_at?->format('d-m-Y H:i'), 'done' => $o->done_at?->format('d-m-Y H:i'), 'note' => $o->reschedule_reason ?? $o->cancel_reason,
         ])->all();
 
@@ -38,7 +38,7 @@ class AcVisitController extends Controller
 
     public function show(Request $request, AcOrder $order)
     {
-        $order->load(['vendor', 'creator:id,name', 'sender:id,name', 'confirmer:id,name', 'finisher:id,name', 'canceller:id,name', 'lines.unit.room.area', 'reschedules.creator:id,name']);
+        $order->load(['vendor', 'creator:id,name', 'sender:id,name', 'confirmer:id,name', 'finisher:id,name', 'canceller:id,name', 'lines.unit.room.area', 'lines.parts', 'reschedules.creator:id,name']);
         $sender = $request->user()->name;
         $lines = $order->lines->sortBy(fn (AcOrderLine $l) => $l->unit->room->area->name.'|'.$l->unit->room->code.'|'.$l->unit->asset_code)->values();
         $vendor = AcVisits::vendorMessage($order, $sender);
@@ -46,7 +46,7 @@ class AcVisitController extends Controller
 
         return view('ac-visits.show', [
             'order' => $order, 'lines' => $lines, 'vendorMsg' => $vendor, 'pic' => AcVisits::picNotices($order, $sender), 'canWrite' => $request->user()->canWrite('GAV'),
-            'defaultDone' => $order->visit_date->gt(today()) ? today() : $order->visit_date, 'newDate' => $first,
+            'defaultDone' => $order->visit_date->gt(today()) ? today() : $order->visit_date, 'newDate' => $first, 'partNames' => \App\Models\AcOrderPart::query()->select('name')->distinct()->orderBy('name')->limit(200)->pluck('name')->all(),
             'waNumber' => AcMessage::waNumber($order->vendor->phone), 'window' => AcCare::timeText(AcCare::startTime()).' - '.AcCare::timeText(AcCare::endTime()), 'days' => AcCare::dayNames(AcCare::visitDays()),
         ]);
     }
@@ -72,6 +72,14 @@ class AcVisitController extends Controller
         AcVisits::complete($order, $request->validated('done_at'), $request->user());
 
         return redirect()->route('ac-visits.show', $order)->with('status', 'Kunjungan '.$order->no.' selesai; jatuh tempo berikutnya tiap AC dihitung dari tanggal selesai.');
+    }
+
+    public function result(AcVisitRequest $request, AcOrder $order): RedirectResponse
+    {
+        $line = $order->lines()->with('unit.room')->findOrFail($request->validated('line_id'));
+        $o = AcVisits::recordResult($line, $request->validated('done_at'), $request->safe()->only(['findings', 'cause', 'action', 'labor_cost']), $request->validated('parts') ?? [], $request->user());
+
+        return redirect()->route('ac-visits.show', $order)->with('status', 'Hasil '.$line->unit->label().' dicatat.'.($o->status === 'done' ? ' Semua AC sudah tercatat: kunjungan '.$o->no.' Selesai.' : ''));
     }
 
     public function reschedule(AcVisitRequest $request, AcOrder $order): RedirectResponse

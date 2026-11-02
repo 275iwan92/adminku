@@ -1,10 +1,10 @@
 {{-- REMARK
  Tujuan       : Layar satu Kunjungan AC (GA, modul GAV): empat tahap berurutan (Draf, Terkirim, Dikonfirmasi vendor, Selesai) beserta waktu dan petugasnya, data kunjungan, tombol tahap berikutnya (Kirim dengan konfirmasi,
                 Tandai dikonfirmasi vendor, Tandai selesai), Jadwal ulang, Batalkan, cetak Berita Acara; pratinjau pesan vendor (tautan Buka WhatsApp) dan pesan salinan PIC (siap kirim sehari sebelumnya pukul 15.00);
-                daftar AC dengan foto sebelum / sesudah (opsional) dan riwayat jadwal ulang.
+                daftar AC dengan hasil (kondisi, penyebab, tindakan, spare-part, biaya jasa), foto sebelum / sesudah (opsional), form Catat hasil per AC (semua AC tercatat = Selesai otomatis) dan riwayat jadwal ulang.
  Sumber hulu  : AcVisitController@show (order, lines, vendorMsg, pic, canWrite, defaultDone, newDate, waNumber, window, days).
  Input        : lihat sumber hulu.
- Output       : POST ac-visits.send / confirm / complete / reschedule / cancel / photo.
+ Output       : POST ac-visits.send / confirm / complete / result / reschedule / cancel / photo.
  Dipakai oleh : route ac-visits.show (Buka dari Kunjungan AC; tautan dari Penjadwalan AC).
  Status       : Aktif.
 --}}
@@ -28,7 +28,7 @@
         $e = fn (string $k) => $errors->first($k) ?: null;
     @endphp
     @include('partials.flash')
-    <x-dl::headline>Kunjungan · {{ $order->no }} <x-dl::badge :tone="AcCare::ORDER_TONES[$label]" :label="$label" /></x-dl::headline>
+    <x-dl::headline>Kunjungan · {{ $order->no }} <x-dl::badge :tone="AcCare::ORDER_TONES[$label]" :label="$label" /> <x-dl::badge :tone="$order->isBreakdown() ? 'danger' : 'neutral'" :label="$order->typeText()" /></x-dl::headline>
     <x-dl::kpi-row>
         @foreach ($stages as $i => [$short, $name, $sub])
             <x-dl::stat-box :label="($i + 1).'. '.$short" :value="$name" :tone="$st === 'cancelled' ? 'neutral' : ($rank > $i ? 'success' : ($rank === $i ? ($st === 'rescheduled' ? 'warn' : 'accent') : 'neutral'))" :sub="$sub" />
@@ -40,6 +40,13 @@
         <x-dl::field.display label="Vendor" :value="raw($order->vendor->name.($order->vendor->contact_name ? ' · '.$order->vendor->contact_name : ''))" />
         <x-dl::field.display label="Jumlah AC" :value="raw($lines->count().' unit')" />
     </x-dl::form.row>
+    @if ($order->isBreakdown())
+        <x-dl::form.row :cols="3">
+            <x-dl::field.display label="Tipe" :value="raw('Breakdown · '.\App\Models\AcOrder::PRIORITIES[$order->priority ?? 'normal'])" />
+            <x-dl::field.display label="Keluhan" :value="raw($order->complaint ?? '-')" />
+            <x-dl::field.display label="Alasan mendesak" :value="raw($order->override_reason ?? '-')" />
+        </x-dl::form.row>
+    @endif
     @if ($order->reschedule_reason)
         <x-dl::alert tone="warn" :message="raw('Dijadwal ulang: '.$order->reschedule_reason)" />
     @endif
@@ -59,7 +66,7 @@
                 </x-dl::action-form>
             @endif
             @if ($st === 'confirmed')
-                <x-dl::button class="sstock-btn-teal" icon="fa-flag-checkered" label="Tandai selesai" data-dl-open="done-modal" />
+                <x-dl::button class="sstock-btn-teal" icon="fa-flag-checkered" label="Tandai semua selesai" data-dl-open="done-modal" />
             @endif
             @if ($open)
                 <x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-calendar-days" label="Jadwal ulang" data-dl-open="move-modal" />
@@ -72,7 +79,7 @@
     <x-dl::divider label="AC dalam kunjungan ini" />
     <div class="dl-table-wrap dl-table--stack">
         <table class="dl-table is-striped">
-            <thead><tr><th>AC</th><th>Area dan ruang</th><th>PIC</th><th>Pekerjaan</th><th>Selesai</th><th>Foto sebelum</th><th>Foto sesudah</th></tr></thead>
+            <thead><tr><th>AC</th><th>Area dan ruang</th><th>PIC</th><th>Pekerjaan</th><th>Selesai</th><th>Hasil</th><th>Foto sebelum</th><th>Foto sesudah</th></tr></thead>
             <tbody>
                 @foreach ($lines as $l)
                     <tr>
@@ -81,6 +88,12 @@
                         <td data-label="PIC">{{ $l->unit->room->pic_name ?: '—' }}</td>
                         <td data-label="Pekerjaan">{{ AcCare::JOBS[$l->job] }}</td>
                         <td data-label="Selesai">{{ $l->done_at?->format('d-m-Y') ?? '—' }}</td>
+                        <td data-label="Hasil">
+                            @php($result = array_filter([$l->findings ? 'Kondisi: '.$l->findings : null, $l->cause ? 'Penyebab: '.$l->cause : null, $l->action ? 'Tindakan: '.$l->action : null, $l->labor_cost !== null ? 'Jasa: IDR '.number_format($l->labor_cost, 0, ',', '.') : null]))
+                            @foreach ($result as $r)<small>{{ $r }}</small><br>@endforeach
+                            @foreach ($l->parts as $part)<small>Ganti: {{ $part->name }} × {{ \App\Support\Decimal::fmtQty($part->qty) }}{{ $part->cost !== null ? ' · IDR '.number_format($part->cost, 0, ',', '.') : '' }}</small><br>@endforeach
+                            @if (! $result && $l->parts->isEmpty()) — @endif
+                        </td>
                         <td data-label="Foto sebelum">@if ($l->photo_before_path)<a href="{{ route('ac-visits.file', [$l, 'before']) }}" target="_blank" rel="noopener">{{ $l->photo_before_name ?: 'Lihat' }}</a>@else — @endif</td>
                         <td data-label="Foto sesudah">@if ($l->photo_after_path)<a href="{{ route('ac-visits.file', [$l, 'after']) }}" target="_blank" rel="noopener">{{ $l->photo_after_name ?: 'Lihat' }}</a>@else — @endif</td>
                     </tr>
@@ -88,6 +101,35 @@
             </tbody>
         </table>
     </div>
+    @if ($canWrite && $st === 'confirmed')
+        <x-dl::divider label="Catat hasil per AC" />
+        <p class="dl-note">Catat tiap AC sesudah dikerjakan: tanggal, kondisi, spare-part yang diganti, dan biaya. Mencatat ulang AC yang sama menggantikan catatan sebelumnya. Bila semua AC sudah tercatat, kunjungan otomatis Selesai.{{ $order->isBreakdown() ? ' Perbaikan Breakdown tidak menggeser jadwal cuci dan servis besar.' : '' }}</p>
+        <x-dl::action-form :action="route('ac-visits.result', $order)" id="result-form">
+            <x-dl::form.row :cols="3">
+                <x-dl::field.select name="line_id" label="AC" :options="$linesOpts" :value="old('line_id', array_key_first($linesOpts))" :error="$e('line_id')" />
+                <x-dl::field.date name="done_at" label="Tanggal dikerjakan" :value="old('done_at', $defaultDone->format('Y-m-d'))" required :error="$e('done_at')" hint="Tidak sebelum tanggal kunjungan, tidak setelah hari ini." />
+                <x-dl::field.decimal name="labor_cost" label="Biaya jasa (IDR)" :decimals="2" :value="old('labor_cost')" :error="$e('labor_cost')" hint="Opsional." />
+            </x-dl::form.row>
+            <x-dl::form.row :cols="$order->isBreakdown() ? 3 : 1">
+                <x-dl::field.text name="findings" label="Kondisi / temuan" :value="old('findings')" maxlength="255" :error="$e('findings')" hint="Mis. Baik, freon ditambah." />
+                @if ($order->isBreakdown())
+                    <x-dl::field.text name="cause" label="Penyebab kerusakan" :value="old('cause')" maxlength="255" :error="$e('cause')" />
+                    <x-dl::field.text name="action" label="Tindakan" :value="old('action')" maxlength="255" :error="$e('action')" />
+                @endif
+            </x-dl::form.row>
+            <datalist id="part-names">@foreach ($partNames as $n)<option value="{{ $n }}">@endforeach</datalist>
+            @for ($i = 0; $i < 3; $i++)
+                <x-dl::form.row :cols="3">
+                    <x-dl::field.text :name="'parts['.$i.'][name]'" :label="'Spare-part diganti '.($i + 1)" :value="old('parts.'.$i.'.name')" maxlength="100" list="part-names" :error="$e('parts.'.$i.'.name')" hint="{{ $i === 0 ? 'Nama bebas; kosongkan bila tidak ada.' : '' }}" />
+                    <x-dl::field.decimal :name="'parts['.$i.'][qty]'" label="Jumlah" :decimals="2" :value="old('parts.'.$i.'.qty')" :error="$e('parts.'.$i.'.qty')" />
+                    <x-dl::field.decimal :name="'parts['.$i.'][cost]'" label="Biaya (IDR)" :decimals="2" :value="old('parts.'.$i.'.cost')" :error="$e('parts.'.$i.'.cost')" />
+                </x-dl::form.row>
+            @endfor
+            <x-dl::action-bar align="start">
+                <x-dl::button class="sstock-btn-teal" type="submit" icon="fa-clipboard-check" label="Simpan hasil" />
+            </x-dl::action-bar>
+        </x-dl::action-form>
+    @endif
     @if ($canWrite && in_array($st, ['confirmed', 'done'], true))
         <x-dl::action-form :action="route('ac-visits.photo', $order)" enctype="multipart/form-data">
             <x-dl::form.row :cols="3">

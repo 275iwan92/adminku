@@ -20,8 +20,11 @@
         <x-dl::stat-box label="Segera" :value="(string) $soon" :tone="$soon ? 'warn' : 'success'" :sub="'Dalam '.\App\Services\VehicleCare::soonDays().' hari atau '.number_format(\App\Services\VehicleCare::soonKm(), 0, ',', '.').' km'" />
         <x-dl::stat-box :label="'Biaya servis '.$year" :value="\App\Services\VehicleCare::rp($yearCost)" tone="neutral" />
     </x-dl::kpi-row>
-    @if ($u->canWrite('GVD') || $u->canWrite('GVS') || $u->canWrite('GVO'))
+    @if ($u->canWrite('GVD') || $u->canWrite('GVS') || $u->canWrite('GVO') || $u->canAccess('GVK') || $u->canAccess('GVT'))
         <x-dl::action-bar align="start">
+        @if ($u->canAccess('GVK') || $u->canAccess('GVT'))
+            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('fleet.setup')" />
+        @endif
         @if ($u->canWrite('GVD'))
             <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create')" />
         @endif

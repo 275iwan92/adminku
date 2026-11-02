@@ -11,15 +11,21 @@
 @section('body')
     @php($tones = \App\Services\AcCare::ORDER_TONES)
     @include('partials.flash')
-    @if (auth()->user()->canAccess('GAS'))
-        <x-dl::action-bar align="start">
-            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Penjadwalan AC" :href="route('ac-schedule.index')" />
-        </x-dl::action-bar>
-    @endif
+    @php($typeTones = ['Preventif' => 'neutral', 'Breakdown' => 'danger'])
+    <x-dl::action-bar align="start">
+        @if (auth()->user()->canAccess('GAM'))
+            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('ac-care.index')" />
+        @endif
+        @if (auth()->user()->canAccess('GAS'))
+            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Jadwal" :href="route('ac-schedule.index')" />
+        @endif
+        <x-dl::button class="sstock-btn-coral" icon="fa-truck-fast" label="Kunjungan dan Catat hasil" :href="route('ac-visits.index')" />
+    </x-dl::action-bar>
     <x-dl::grid id="ac-visits" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-visits/{id}')" search="Cari nomor, vendor, status..."
         :phone-cards="['title' => 'no', 'sub' => 'vendor', 'badge' => 'status', 'tones' => $tones, 'meta' => ['date', 'time', 'units']]"
         :columns="[
             ['key' => 'no', 'label' => 'No. Pesanan', 'type' => 'identity', 'avatar' => false],
+            ['key' => 'type', 'label' => 'Tipe', 'type' => 'badge', 'tones' => $typeTones],
             ['key' => 'date', 'label' => 'Tanggal kunjungan', 'type' => 'date'],
             ['key' => 'time', 'label' => 'Jam mulai'],
             ['key' => 'vendor', 'label' => 'Vendor'],
@@ -30,5 +36,5 @@
             ['key' => 'done', 'label' => 'Selesai', 'visible' => false],
             ['key' => 'note', 'label' => 'Alasan jadwal ulang / batal', 'visible' => false],
         ]"
-        :stats="[['label' => 'Semua'], ['label' => 'Draf', 'where' => ['status' => 'Draf']], ['label' => 'Terkirim', 'where' => ['status' => 'Terkirim'], 'tone' => 'info'], ['label' => 'Dikonfirmasi vendor', 'where' => ['status' => 'Dikonfirmasi vendor']], ['label' => 'Selesai', 'where' => ['status' => 'Selesai'], 'tone' => 'success'], ['label' => 'Dijadwal ulang', 'where' => ['status' => 'Dijadwal ulang'], 'tone' => 'warn']]" />
+        :stats="[['label' => 'Semua'], ['label' => 'Preventif', 'where' => ['type' => 'Preventif']], ['label' => 'Breakdown', 'where' => ['type' => 'Breakdown'], 'tone' => 'danger'], ['label' => 'Draf', 'where' => ['status' => 'Draf']], ['label' => 'Terkirim', 'where' => ['status' => 'Terkirim'], 'tone' => 'info'], ['label' => 'Dikonfirmasi vendor', 'where' => ['status' => 'Dikonfirmasi vendor']], ['label' => 'Selesai', 'where' => ['status' => 'Selesai'], 'tone' => 'success'], ['label' => 'Dijadwal ulang', 'where' => ['status' => 'Dijadwal ulang'], 'tone' => 'warn']]" />
 @endsection

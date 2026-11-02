@@ -33,7 +33,7 @@ class SecurityTest extends TestCase
         $sup = User::factory()->supervisor()->create();
         $entry = User::factory()->create();
 
-        $this->assertEqualsCanonicalizing(array_keys(Modules::all()), $this->codes($admin));
+        $this->assertEqualsCanonicalizing(array_values(array_diff(array_keys(Modules::all()), array_keys(Modules::MENU_UNDER))), $this->codes($admin));   // layar di bawah panel GA dibuka lewat tombol
         $this->assertNotContains('USR', $this->codes($sup));
         $this->assertContains('OPN', $this->codes($sup));
         $this->assertNotContains('OPN', $this->codes($entry));
