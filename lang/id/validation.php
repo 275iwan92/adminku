@@ -20,12 +20,16 @@ return [
     'boolean' => ':Attribute harus berupa ya atau tidak.',
     'confirmed' => 'Konfirmasi :attribute tidak sama.',
     'date' => ':Attribute bukan tanggal yang valid.',
+    'date_format' => ':Attribute harus berformat :format.',
     'decimal' => ':Attribute paling banyak 2 angka desimal.',
     'dimensions' => 'Ukuran gambar :attribute tidak sesuai.',
     'distinct' => ':Attribute berisi nilai ganda.',
     'email' => ':Attribute harus berupa alamat e-mail yang valid.',
     'exists' => ':Attribute yang dipilih tidak valid.',
     'file' => ':Attribute harus berupa berkas.',
+    'gte' => [
+        'numeric' => ':Attribute tidak boleh kurang dari :value.',
+    ],
     'gt' => [
         'numeric' => ':Attribute harus lebih dari :value.',
         'string' => ':Attribute harus lebih dari :value karakter.',

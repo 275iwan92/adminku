@@ -19,6 +19,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FleetController;
+use App\Http\Controllers\GaSettingsController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HpController;
@@ -256,6 +257,9 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::post("{$path}/{{$param}}/toggle", [$controller, 'toggle'])->whereNumber($param)->name("{$path}.toggle");
     }
     Route::get('ac-areas/{area}/plan', [AcAreaController::class, 'plan'])->whereNumber('area')->name('ac-areas.plan');
+    // GA Pengaturan (GAP): ambang kendaraan dan aturan Perawatan AC (sys_constant ga.*); hanya Supervisor ke atas, hak lewat Grup.
+    Route::get('ga-settings', [GaSettingsController::class, 'edit'])->name('ga-settings.edit');
+    Route::put('ga-settings', [GaSettingsController::class, 'update'])->name('ga-settings.update');
 
     Route::prefix('reports')->controller(ReportController::class)->group(function () {
         Route::get('stock-card', 'stockCard')->name('reports.stock-card');
