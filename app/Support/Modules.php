@@ -49,6 +49,7 @@ final class Modules
             'R-OUT' => ['RPT', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.issuance', 'entry', ['reports.issuance']],
             'R-EXP' => ['RPT', 'Laporan Kedaluwarsa', 'fa-solid fa-hourglass-end', 'report', 'reports.expiry', 'entry', ['reports.expiry']],
             'R-ADJ' => ['RPT', 'Laporan Opname & Penyesuaian', 'fa-solid fa-file-circle-check', 'report', 'reports.adjustment', 'supervisor', ['reports.adjustment']],
+            'GVM' => ['GA', 'Monitoring Kendaraan', 'fa-solid fa-car-side', 'grid', 'fleet.index', 'entry', ['fleet.']],
             'GVK' => ['GA', 'Master Kendaraan', 'fa-solid fa-truck-pickup', 'grid', 'vehicles.index', 'entry', ['vehicles.']],
             'GVT' => ['GA', 'Jenis Kendaraan', 'fa-solid fa-list-check', 'grid', 'vehicle-types.index', 'entry', ['vehicle-types.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],

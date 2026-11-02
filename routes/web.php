@@ -11,6 +11,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FleetController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HpController;
@@ -195,7 +196,10 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::post('{count}/finish', 'finish')->name('stock-counts.finish');
     });
 
-    // GA Perawatan Aset Kendaraan: master Kendaraan (GVK) dan Jenis Kendaraan beserta rencana perawatannya (GVT); hak per modul lewat Grup.
+    // GA Perawatan Aset Kendaraan: Monitoring + Detail + lampiran (GVM, hanya-baca), master Kendaraan (GVK) dan Jenis Kendaraan beserta rencana perawatannya (GVT); hak per modul lewat Grup.
+    Route::get('fleet', [FleetController::class, 'index'])->name('fleet.index');
+    Route::get('fleet/file/{kind}/{id}', [FleetController::class, 'file'])->whereIn('kind', ['doc', 'odometer'])->whereNumber('id')->name('fleet.file');
+    Route::get('fleet/{vehicle}', [FleetController::class, 'show'])->whereNumber('vehicle')->name('fleet.show');
     Route::get('vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
     Route::get('vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
     Route::post('vehicles', [VehicleController::class, 'store'])->name('vehicles.store');

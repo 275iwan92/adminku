@@ -95,10 +95,10 @@ final class VehicleCare
         return 'IDR '.number_format($v, fmod($v, 1) === 0.0 ? 0 : 2, ',', '.');
     }
 
-    /** Biaya servis dalam satu tahun kalender (presisi desimal). */
-    public static function yearCost(?int $year = null): float
+    /** Biaya servis dalam satu tahun kalender, semua kendaraan atau satu kendaraan (presisi desimal). */
+    public static function yearCost(?int $year = null, ?int $vehicleId = null): float
     {
-        return Decimal::round(Decimal::of(VehicleService::query()->whereYear('serviced_at', $year ?? today()->year)->sum('cost')), 2);
+        return Decimal::round(Decimal::of(VehicleService::query()->whereYear('serviced_at', $year ?? today()->year)->when($vehicleId, fn ($q) => $q->where('vehicle_id', $vehicleId))->sum('cost')), 2);
     }
 
     /**
@@ -179,21 +179,20 @@ final class VehicleCare
         $daysLeft = $nextAt === null ? null : self::days($today, $nextAt);
         $kmRatio = $nextKm === null ? null : ($v->odometer_km - $baseKm) / $plan->interval_km;
         $dayRatio = $nextAt === null ? null : self::days($baseAt, $today) / max(1, self::days($baseAt, $nextAt));
-        $byKm = $kmRatio !== null && ($dayRatio === null || $kmRatio >= $dayRatio);   // kriteria yang lebih dulu tercapai
         $status = match (true) {
             ($kmLeft !== null && $kmLeft < 0) || ($daysLeft !== null && $daysLeft < 0) => 'terlambat',
             ($kmLeft !== null && $kmLeft <= $soonKm) || ($daysLeft !== null && $daysLeft <= $soonDays) => 'segera',
             default => 'aman',
         };
-        $ratio = max($kmRatio ?? 0, $dayRatio ?? 0);
+        $ratio = max($kmRatio ?? 0, $dayRatio ?? 0);   // kemajuan = kriteria yang lebih dulu tercapai
+        $left = collect([$kmLeft === null ? null : self::kmText($kmLeft), $daysLeft === null ? null : self::daysText($daysLeft)])->filter()->implode(' / ');
 
         return [
             'plan' => $plan, 'name' => $plan->name, 'interval' => $plan->intervalLabel(), 'done' => $last !== null,
             'last_at' => $last['at'] ?? null, 'last_km' => $last['km'] ?? null, 'base_at' => $baseAt, 'base_km' => $baseKm,
             'next_km' => $nextKm, 'next_at' => $nextAt, 'km_left' => $kmLeft, 'days_left' => $daysLeft,
             'ratio' => $ratio, 'progress' => (int) round(max(0, min(1, $ratio)) * 100), 'status' => $status,
-            'text' => $plan->name.' · '.($byKm ? self::kmText($kmLeft) : self::daysText($daysLeft)),
-            'left' => $byKm ? self::kmText($kmLeft) : self::daysText($daysLeft),
+            'text' => $plan->name.' · '.$left, 'left' => $left,
         ];
     }
 
