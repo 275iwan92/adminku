@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Enums\StockDocumentType;
 use App\Models\AcOrder;
 use App\Models\Batch;
+use App\Models\Candidate;
 use App\Models\Employee;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
@@ -113,6 +114,9 @@ final class Opening
             $staff = Employee::query()->where('is_active', true)->with(['contracts', 'docs'])->get();
             $attention = $staff->filter(fn (Employee $e) => $e->attention() !== null)->count();
             $out['HRE'] = ['n' => Locale::number($staff->count(), 0), 'note' => $attention ? $attention.' perlu perhatian' : 'aktif'];
+        }
+        if ($user->canAccess('HRR')) {
+            $out['HRR'] = ['n' => Locale::number(Candidate::query()->where('status', 'active')->whereHas('step', fn ($q) => $q->where('kind', '!=', 'end'))->count(), 0), 'note' => 'kandidat diproses'];
         }
         if ($user->canAccess('DEP')) {
             $out['HR-DEP'] = ['n' => Locale::number(DB::table('m_department')->where('is_active', true)->count(), 0), 'note' => 'bagian aktif'];

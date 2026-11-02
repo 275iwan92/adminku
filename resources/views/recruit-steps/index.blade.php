@@ -1,0 +1,23 @@
+{{-- REMARK
+ Tujuan       : Setup Rekrutmen (Grid Master, modul HRR): daftar tahap proses berurutan; Daftar dan Diterima tetap di awal dan akhir, tahap tengah bebas.
+ Sumber hulu  : RecruitStepController@index.
+ Input        : rows.
+ Output       : x-dl::grid; klik 2x / Edit membuka form tahap.
+ Dipakai oleh : route recruit-steps.index (tombol Setup di Rekrutmen).
+ Status       : Aktif.
+--}}
+@extends('layout', ['title' => 'Setup Rekrutmen'])
+@section('body')
+    @include('partials.flash')
+    <x-dl::grid id="recruit-steps" :rows="$rows" actions="edit" :new-url="route('recruit-steps.create')" :open-url="url('recruit-steps/{id}')"
+        search="Cari tahap..."
+        :phone-cards="['title' => 'name', 'sub' => 'kind', 'meta' => ['sort', 'candidates']]"
+        :columns="[
+            ['key' => 'sort', 'label' => 'Urutan', 'type' => 'integer'],
+            ['key' => 'name', 'label' => 'Tahap'],
+            ['key' => 'kind', 'label' => 'Jenis'],
+            ['key' => 'candidates', 'label' => 'Kandidat di tahap ini', 'type' => 'integer'],
+        ]"
+        :stats="[['label' => 'Semua tahap'], ['label' => 'Nonaktif', 'where' => ['active' => false], 'tone' => 'warn']]" />
+    <p class="dl-note">Daftar selalu pertama dan Diterima selalu terakhir. Tahap di antaranya bebas ditambah, diganti nama, dan diurutkan lewat angka Urutan. Tahap tidak dihapus, hanya dinonaktifkan.</p>
+@endsection

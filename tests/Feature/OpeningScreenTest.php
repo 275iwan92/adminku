@@ -76,8 +76,8 @@ class OpeningScreenTest extends TestCase
 
         $page = $this->actingAs($admin)->get(route('opening', 'hr'))->assertOk()->assertDontSee('Hak Anda: Baca')->viewData('page');
         $this->assertFalse($page['soon']);
-        $this->assertSame(['0', '0', null, null], array_column($page['tiles'], 'n'));   // Rekrutmen dan Kedisiplinan belum ada layanannya
-        $this->assertSame([false, false, true, true], array_column($page['tiles'], 'soon'));
+        $this->assertSame(['0', '0', '0', null], array_column($page['tiles'], 'n'));   // Kedisiplinan belum ada layanannya
+        $this->assertSame([false, false, false, true], array_column($page['tiles'], 'soon'));
 
         $page = $this->get(route('opening', 'purchase'))->assertOk()->assertSee('Segera hadir')->viewData('page');
         $this->assertSame([], $page['stats']);

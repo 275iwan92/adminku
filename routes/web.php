@@ -15,11 +15,13 @@ use App\Http\Controllers\AcUnitController;
 use App\Http\Controllers\AcVendorController;
 use App\Http\Controllers\AcVisitController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetController;
+use App\Http\Controllers\RecruitStepController;
 use App\Http\Controllers\GaSettingsController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
@@ -76,7 +78,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
     Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'rekrutmen', 'kedisiplinan', 'pr', 'po', 'pv'])->name('soon');
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'kedisiplinan', 'pr', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
@@ -245,6 +247,20 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+
+    // HR Rekrutmen (HRR): papan kanban + daftar kandidat (kunci NIK), pindah tahap bebas; Setup = urutan tahap (recruit-steps.*, satu-satunya tombol Setup).
+    Route::get('candidates', [CandidateController::class, 'index'])->name('candidates.index');
+    Route::get('candidates/create', [CandidateController::class, 'create'])->name('candidates.create');
+    Route::post('candidates', [CandidateController::class, 'store'])->name('candidates.store');
+    Route::post('candidates/move', [CandidateController::class, 'move'])->name('candidates.move');
+    Route::get('candidates/{candidate}', [CandidateController::class, 'show'])->whereNumber('candidate')->name('candidates.show');
+    Route::put('candidates/{candidate}', [CandidateController::class, 'update'])->whereNumber('candidate')->name('candidates.update');
+    Route::get('candidates/{candidate}/file/{kind}', [CandidateController::class, 'file'])->whereNumber('candidate')->whereIn('kind', ['ktp', 'cv'])->name('candidates.file');
+    Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
+    Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
+    Route::post('recruit-steps', [RecruitStepController::class, 'store'])->name('recruit-steps.store');
+    Route::get('recruit-steps/{step}', [RecruitStepController::class, 'show'])->name('recruit-steps.show');
+    Route::put('recruit-steps/{step}', [RecruitStepController::class, 'update'])->name('recruit-steps.update');
 
     // GA Perawatan AC (GAM): satu butir menu; panel Monitoring dan hub Setup. Layar lain dibuka lewat tombol di panel (hak per modul tetap).
     Route::get('ac-care', [AcCareController::class, 'index'])->name('ac-care.index');

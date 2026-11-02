@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
+use App\Models\Candidate;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /* REMARK
@@ -34,9 +36,14 @@ class EmployeeController extends Controller
         return view('employees.index', ['rows' => $rows]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('employees.form', $this->formData(new Employee(['code' => Employee::nextCode(), 'employment' => 'tetap', 'work_status' => 'working', 'join_date' => today()])));
+        $employee = new Employee(['code' => Employee::nextCode(), 'employment' => 'tetap', 'work_status' => 'working', 'join_date' => today()]);
+        if ($candidate = Candidate::with('departments')->find($request->query('kandidat'))) {   // Jadikan karyawan dari Rekrutmen: data kandidat terisi, belum tersimpan
+            $employee->fill(['name' => $candidate->name, 'nik_ktp' => $candidate->nik, 'phone' => $candidate->phone, 'email' => $candidate->email, 'birth_date' => $candidate->birth_date, 'department_id' => $candidate->departments->first()?->id, 'position' => $candidate->position]);
+        }
+
+        return view('employees.form', $this->formData($employee));
     }
 
     public function show(Employee $employee)

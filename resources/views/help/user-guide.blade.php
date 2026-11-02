@@ -18,7 +18,7 @@
     $anyMaster = collect(['ITM', 'SUP', 'DEP', 'RCP', 'UOM', 'CAT', 'LOC', 'CMP'])->contains($can);
     $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD'])->contains($can);
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
-    $anyHr = $can('HRE');
+    $anyHr = $can('HRE') || $can('HRR');
     $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
@@ -91,7 +91,8 @@
         @endif
         @if ($anyHr)
             <a href="#hr">9a. HR</a>
-            <a class="g-toc-sub" href="#hr-hre">Karyawan</a>
+            @if ($can('HRE'))<a class="g-toc-sub" href="#hr-hre">Karyawan</a>@endif
+            @if ($can('HRR'))<a class="g-toc-sub" href="#hr-hrr">Rekrutmen</a>@endif
         @endif
         @if ($anySec)
             <a href="#keamanan">10. Keamanan</a>
