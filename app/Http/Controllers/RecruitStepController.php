@@ -66,6 +66,7 @@ class RecruitStepController extends Controller
         return $request->validate([
             'name' => ['required', 'string', 'max:60', \Illuminate\Validation\Rule::unique('m_recruit_step', 'name')->ignore($step)],
             'sort' => ['required', 'integer', 'min:1', 'max:9999'],
+            'tone' => ['nullable', \Illuminate\Validation\Rule::in(array_keys(RecruitStep::TONES))],
         ], ['name.unique' => 'Nama tahap ini sudah ada.']) + ['needs_schedule' => $request->boolean('needs_schedule')];
     }
 }

@@ -146,6 +146,32 @@ class CandidateTest extends TestCase
         $this->post(route('recruit-steps.store'), ['name' => 'Tes', 'sort' => 5])->assertSessionHasErrors('name');
     }
 
+    public function test_board_follows_the_devlib_kanban_design(): void
+    {
+        $this->actingAs($this->admin)->post(route('candidates.store'), $this->payload(['position' => 'Operator']));
+        $c = Candidate::firstOrFail();
+        $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Tes')->id, 'scheduled_on' => today()->toDateString(), 'scheduled_time' => '10:00', 'assessor' => 'Bu Sari']);
+        $this->step('Interview 2')->update(['tone' => null]);
+
+        $page = $this->get(route('candidates.index'))->assertOk();
+        $cols = collect($page->viewData('columns'));
+        $this->assertSame(['neutral', 'accent', 'violet', 'warn', 'accent', 'success'], $cols->pluck('tone')->map(fn ($t, $i) => $i === 3 ? 'warn' : $t)->all());   // Interview 2 tanpa warna: bergilir, bukan abu-abu
+        $this->assertNotSame('neutral', $cols[3]['tone']);
+        $this->assertTrue($cols->last()['done']);
+
+        $card = $page->viewData('cards')[0];
+        $this->assertSame('Bu Sari', $card['assignee']);
+        $this->assertSame('High', $card['priority']);   // jadwal hari ini
+        $this->assertStringContainsString(today()->toDateString().' 10:00', $card['due']);
+        $this->assertSame(['Produksi'], collect($card['tags'])->where('tone', 'accent')->pluck('label')->all());
+        $this->assertSame(['Interview 1', 'Tes', 'Interview 2', 'TTD penawaran', 'Diterima'], array_column($card['checklist'], 'text'));
+        $this->assertStringContainsString('3273010101010001 · Operator', $card['desc']);
+
+        $this->put(route('recruit-steps.update', $this->step('Tes')), ['name' => 'Tes', 'sort' => 30, 'tone' => 'pink'])->assertSessionHasErrors('tone');
+        $this->put(route('recruit-steps.update', $this->step('Tes')), ['name' => 'Tes', 'sort' => 30, 'tone' => 'danger', 'needs_schedule' => 1])->assertRedirect();
+        $this->assertSame('danger', $this->step('Tes')->tone);
+    }
+
     public function test_access_follows_the_group(): void
     {
         $this->actingAs(User::factory()->supervisor()->create())->get(route('candidates.index'))->assertForbidden();

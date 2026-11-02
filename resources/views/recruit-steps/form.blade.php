@@ -25,6 +25,7 @@
             @unless ($fixed)
                 <x-dl::field.toggle name="needs_schedule" label="Berjadwal" on-label="Ya" off-label="Tidak" :value="session()->hasOldInput() ? (bool) old('needs_schedule') : $step->needs_schedule" hint="Ya: memindahkan kartu ke tahap ini memunculkan pop-up tanggal dan jam (wajib)." />
             @endunless
+            <x-dl::field.select name="tone" label="Warna Kolom" :options="\App\Models\RecruitStep::TONES" :value="$v('tone')" :error="$e('tone')" hint="Warna bilah atas kolom di papan. Kosong = bergilir otomatis." />
             @unless ($isNew)
                 <x-dl::field.display label="Kandidat di tahap ini" :value="(string) $step->candidates_count" />
             @endunless

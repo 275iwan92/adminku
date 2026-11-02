@@ -74,8 +74,9 @@
     <li>Ke tahap <b>berjadwal</b> (bawaan Interview 1, Tes, Interview 2) muncul pop-up: isi <b>Tanggal</b> dan <b>Jam</b> (wajib), pilih <b>Penilai</b> dari daftar karyawan aktif, lalu <span class="g-btn">Simpan</span>. <span class="g-btn">Batal</span> membiarkan kartu di kolom asal dan tidak mencatat apa pun.</li>
     <li>Ketuk atau klik kartu untuk membuka kartu kandidat. Di tab <b>Proses</b> isi tanggal, jam, penilai, dan ubah <b>Hasil</b> menjadi Lulus atau Tidak lulus.</li>
     <li>Kandidat di tahap <b>Diterima</b> punya tombol <span class="g-btn">Jadikan karyawan</span>: form Karyawan terbuka dengan data kandidat terisi; periksa lalu Save.</li>
+    <li>Kartu di papan memuat label bagian yang dilamar, label hasil (Lulus, Menunggu, Tidak lulus), jadwal terdekat (merah bila lewat), avatar penilai, dan jumlah tahap yang sudah lulus. Baris <b>Semua / nama bagian</b> di atas papan menyaring kartu per bagian, dan <b>Tambah kartu</b> di kolom Daftar membuka form Kandidat Baru.</li>
     <li>Tombol <span class="g-btn">Daftar</span> menampilkan semua kandidat dengan pencarian NIK atau nama dan filter tahap, status, sumber, dan hasil.</li>
-    <li>Tombol <span class="g-btn">Setup</span> mengatur urutan tahap. Daftar dan Diterima tetap di awal dan akhir; tahap tengah bebas ditambah, diganti nama, diurutkan, dan diberi tanda <b>Berjadwal</b> (memunculkan pop-up tanggal dan jam).</li>
+    <li>Tombol <span class="g-btn">Setup</span> mengatur urutan tahap. Daftar dan Diterima tetap di awal dan akhir; tahap tengah bebas ditambah, diganti nama, diurutkan, diberi <b>Warna Kolom</b>, dan diberi tanda <b>Berjadwal</b> (memunculkan pop-up tanggal dan jam).</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">

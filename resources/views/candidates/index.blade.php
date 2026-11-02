@@ -19,10 +19,15 @@
         <x-dl::button :variant="$view === 'list' ? 'primary' : 'secondary'" icon="fa-list" label="Daftar" :href="route('candidates.index', ['view' => 'list'])" />
     </x-dl::action-bar>
     @if ($view === 'board')
-        <x-dl::kanban :columns="$columns" :cards="$cards" :add-column="false" :add-card="false" :move-url="route('candidates.move')" :me="$u->name" open-on="click" undo />
+        @if (count($departments) > 1)
+            <div class="rk-seg dl-segment" id="rk-seg"><button type="button" class="dl-segment__opt is-active" data-q="">Semua</button>@foreach ($departments as $d)<button type="button" class="dl-segment__opt" data-q="{{ $d }}">{{ $d }}</button>@endforeach</div>
+        @endif
+        <x-dl::kanban :columns="$columns" :cards="$cards" :add-column="false" :add-card="true" :members="$assessors" :move-url="route('candidates.move')" :me="$u->name" open-on="click" undo />
         <p class="dl-note">Seret kartu ke tahap mana pun (boleh loncat atau mundur; di HP tahan kartu sebentar lalu seret); tiap perpindahan tercatat dan bisa diurungkan 6 detik. Ketuk kartu untuk membuka kartu kandidat. Kandidat Ditolak atau Mundur hanya ada di Daftar.</p>
         <style>
-            [data-k-prio] { display: none; }
+            /* Tambah kartu hanya di kolom Daftar (kolom pertama); membuka form Kandidat Baru. */
+            .dl-kanban .dl-kcol:not(:first-child) .dl-kcol__foot { display: none; }
+            .rk-seg { display: inline-flex; flex-wrap: wrap; margin: 0 0 8px; }
             .rk-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
             .rk-box { background: var(--dl-surface, #fff); color: var(--dl-ink, #222); border: 1px solid var(--dl-border, #ddd); border-radius: 12px; padding: 16px 18px; width: 100%; max-width: 380px; }
             .rk-box h4 { margin: 0 0 2px; font-size: 15px; }
@@ -39,6 +44,20 @@
                 const SCHEDULED = @json($scheduled);   // id tahap => nama, tahap yang meminta tanggal + jam
                 const ASSESSORS = @json($assessors);
                 const board = document.querySelector('[data-dl-kanban]');
+
+                // "Tambah kartu" di kolom Daftar = form Kandidat Baru (bukan kartu cepat bawaan papan).
+                board.addEventListener('click', (ev) => {
+                    if (! ev.target.closest('[data-k-add]')) { return; }
+                    ev.preventDefault(); ev.stopImmediatePropagation();
+                    location.href = @json(route('candidates.create'));
+                }, true);
+
+                // Segmen bagian di atas papan: mengisi kotak cari papan (kartu memuat nama bagiannya).
+                document.getElementById('rk-seg')?.addEventListener('click', (ev) => {
+                    const b = ev.target.closest('[data-q]'); if (! b) { return; }
+                    document.querySelectorAll('#rk-seg [data-q]').forEach((x) => x.classList.toggle('is-active', x === b));
+                    const box = board.querySelector('[data-k-search]'); box.value = b.dataset.q; box.dispatchEvent(new Event('input', { bubbles: true }));
+                });
 
                 // Ketuk atau klik kartu membuka kartu kandidat (bukan dialog kartu bawaan papan, yang tidak dipakai di sini).
                 board.addEventListener('dl:kanban-open', (ev) => { ev.preventDefault(); location.href = @json(url('candidates')) + '/' + ev.detail.card.id; });
