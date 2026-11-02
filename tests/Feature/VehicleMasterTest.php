@@ -91,6 +91,25 @@ class VehicleMasterTest extends TestCase
         $this->post(route('vehicles.store'), ['plate' => 'L 3 A', 'odometer_km' => -5] + $payload)->assertSessionHasErrors('odometer_km');
     }
 
+    public function test_new_vehicle_records_the_starting_odometer_and_type_is_locked_after_the_first_service(): void
+    {
+        $admin = User::factory()->administrator()->create();
+        $this->actingAs($admin);
+        $type = VehicleType::create(['code' => 'BOKS', 'name' => 'Boks']);
+        $other = VehicleType::create(['code' => 'PICKUP', 'name' => 'Pickup']);
+
+        $this->post(route('vehicles.store'), ['plate' => 'N 5 A', 'name' => 'Boks', 'vehicle_type_id' => $type->id, 'odometer_km' => 42000])->assertSessionHasNoErrors();
+        $v = Vehicle::firstWhere('plate', 'N 5 A');
+        $this->assertDatabaseHas('g_vehicle_odometer', ['vehicle_id' => $v->id, 'km' => 42000, 'source' => 'awal']);
+        $this->assertSame(today()->toDateString(), $v->odometer_at->toDateString());
+
+        $update = ['plate' => 'N 5 A', 'name' => 'Boks', 'vehicle_type_id' => $other->id];
+        $this->put(route('vehicles.update', $v), $update)->assertSessionHasNoErrors();   // belum ada servis: jenis boleh diganti
+        \App\Services\VehicleCare::recordService($v->fresh(), ['serviced_at' => today()->toDateString(), 'odometer_km' => 42100, 'cost' => 0, 'jobs' => []], $admin);
+        $this->put(route('vehicles.update', $v), ['vehicle_type_id' => $type->id] + $update)->assertSessionHasErrors('vehicle_type_id');
+        $this->assertSame($other->id, $v->fresh()->vehicle_type_id);
+    }
+
     public function test_odometer_cannot_be_changed_from_the_master_and_toggle_works(): void
     {
         $this->actingAs(User::factory()->administrator()->create());

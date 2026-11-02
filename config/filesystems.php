@@ -38,6 +38,15 @@ return [
             'report' => false,
         ],
 
+        // GA Perawatan Aset Kendaraan: lampiran dokumen dan foto odometer. Privat (tanpa url), disajikan lewat FleetController@file di dalam grup auth dengan hak modul.
+        'ga' => [
+            'driver' => 'local',
+            'root' => storage_path('app/ga'),
+            'serve' => false,
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

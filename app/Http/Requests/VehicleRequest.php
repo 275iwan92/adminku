@@ -28,7 +28,8 @@ class VehicleRequest extends FormRequest
         return [
             'plate' => ['required', 'string', 'max:20', Rule::unique('m_vehicle', 'plate')->ignore($own)],
             'name' => ['required', 'string', 'max:100'],
-            'vehicle_type_id' => ['required', Rule::exists('m_vehicle_type', 'id')->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $own?->vehicle_type_id))],
+            'vehicle_type_id' => ['required', Rule::exists('m_vehicle_type', 'id')->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $own?->vehicle_type_id)),
+                fn ($attr, $value, $fail) => $own && (int) $value !== $own->vehicle_type_id && $own->services()->exists() ? $fail('Jenis kendaraan tidak bisa diganti: kendaraan ini sudah punya riwayat servis (jadwalnya mengikuti jenis).') : null],
             'year' => ['nullable', 'integer', 'min:1980', 'max:'.(now()->year + 1)],
             'vin' => ['nullable', 'string', 'max:40'],
             'engine_no' => ['nullable', 'string', 'max:40'],

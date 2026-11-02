@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\VehicleRequest;
 use App\Models\Vehicle;
 use App\Models\VehicleType;
+use App\Services\VehicleCare;
 use App\Support\Palette;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 /* REMARK
  * Tujuan       : Master Kendaraan (GA, modul GVK): plat (= kode), nama / model, jenis, tahun, no. rangka / mesin, wajib KIR, odometer terakhir, aktif / nonaktif. Kendaraan tidak dihapus (riwayatnya tersimpan), hanya dinonaktifkan.
@@ -41,9 +43,12 @@ class VehicleController extends Controller
 
     public function store(VehicleRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data += ['odometer_at' => today()];
-        $vehicle = Vehicle::create($data);
+        $vehicle = DB::transaction(function () use ($request) {
+            $vehicle = Vehicle::create($request->validated() + ['odometer_at' => today()]);
+            VehicleCare::startOdometer($vehicle, $request->user());   // dasar jadwal bagi butir yang belum pernah diservis
+
+            return $vehicle;
+        });
 
         return redirect()->route('vehicles.show', $vehicle)->with('status', 'Kendaraan disimpan.');
     }

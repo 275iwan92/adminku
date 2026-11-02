@@ -20,6 +20,7 @@ return [
     'boolean' => ':Attribute harus berupa ya atau tidak.',
     'confirmed' => 'Konfirmasi :attribute tidak sama.',
     'date' => ':Attribute bukan tanggal yang valid.',
+    'decimal' => ':Attribute paling banyak 2 angka desimal.',
     'dimensions' => 'Ukuran gambar :attribute tidak sesuai.',
     'distinct' => ':Attribute berisi nilai ganda.',
     'email' => ':Attribute harus berupa alamat e-mail yang valid.',
