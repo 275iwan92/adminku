@@ -12,7 +12,8 @@
     @php
         $isNew = ! $pr->exists;
         $me = auth()->user();
-        $status = $isNew ? 'new' : $pr->status;
+        $progress = in_array($pr->status, ['partial', 'done'], true);   // dipesan sebagian / selesai: DevLib menampilkannya sebagai Approved; Cancel disembunyikan
+        $status = $isNew ? 'new' : ($progress ? 'approved' : $pr->status);
         $locked = ! $isNew && $pr->status !== 'draft';
         $mine = $isNew || $me->id === $pr->created_by;
         $v = fn (string $k) => old($k, $pr->{$k});
@@ -30,6 +31,12 @@
         ];
     @endphp
     @include('partials.flash')
+    @if ($progress)
+        <x-dl::alert tone="info" :message="raw($pr->statusLabel().': kolom Dipesan menunjukkan jumlah yang sudah masuk PO.')" />
+    @endif
+    @if (in_array($pr->status, ['approved', 'partial'], true) && $me->canAccess('PUK'))
+        <p><x-dl::button class="sstock-btn-amber" variant="secondary" size="sm" icon="fa-scale-balanced" label="Keputusan Pesanan" :href="route('po-decision.index', ['mode' => 'pp'])" /></p>
+    @endif
     @if ($pr->exists && $pr->status === 'rejected')
         <x-dl::alert tone="warn" :message="raw('Ditolak oleh '.($pr->approver?->name ?? '-').'. Alasan: '.$pr->reason.'. Pakai Duplicate untuk membuat draf baru dari PP ini.')" />
     @endif
@@ -37,7 +44,7 @@
         :back="route('pr.index')" :new-url="route('pr.create')"
         :action="$isNew ? route('pr.store') : route('pr.update', $pr)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->isSupervisor() && ! $mine"
-        :hide="['hold', 'email', 'print']" :log="$log"
+        :hide="array_merge(['hold', 'email', 'print'], $progress ? ['cancel'] : [])" :log="$log"
         :created-by="$pr->creator?->name" :created-at="$pr->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$pr->approver?->name ?? $pr->creator?->name" :updated-at="$pr->updated_at?->format('Y-m-d H:i:s')">
         <x-dl::form.row :cols="3">

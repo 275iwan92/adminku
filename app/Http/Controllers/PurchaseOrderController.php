@@ -42,6 +42,7 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $po)
     {
+        $po->syncReceived();   // RCV yang dibatalkan langsung di Stok tidak boleh tetap dihitung diterima
         return view('purchase-orders.form', $this->formData($po));
     }
 

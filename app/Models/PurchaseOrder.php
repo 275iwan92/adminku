@@ -71,6 +71,21 @@ class PurchaseOrder extends Model
         return $this->subtotal() + $this->vat();
     }
 
+    // Hitung ulang jumlah diterima tiap baris dari PV terkonfirmasi yang RCV-nya masih berlaku, lalu status PO yang sudah disetujui: approved (belum ada) / partial / done (semua baris penuh).
+    public function syncReceived(): void
+    {
+        foreach ($this->lines()->get() as $line) {
+            $line->update(['received_qty' => DB::table('p_receipt_line as rl')->join('p_receipt as r', 'r.id', '=', 'rl.receipt_id')->join('rm_stock as d', 'd.id', '=', 'r.stock_document_id')
+                ->where('rl.order_line_id', $line->id)->where('r.status', 'confirmed')->whereIn('d.status', ['confirmed', 'cancel_pending'])->sum('rl.qty')]);
+        }
+        if (in_array($this->status, ['approved', 'partial', 'done'], true)) {
+            $lines = $this->lines()->get();
+            $any = $lines->contains(fn ($l) => (float) $l->received_qty > 0);
+            $all = $lines->every(fn ($l) => (float) $l->received_qty >= (float) $l->qty);
+            $this->update(['status' => $all ? 'done' : ($any ? 'partial' : 'approved')]);
+        }
+    }
+
     // Persen diterima = jumlah diterima / jumlah dipesan, semua baris.
     public function receivedPct(): int
     {

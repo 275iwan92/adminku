@@ -86,6 +86,9 @@ final class Opening
             if ($user->canAccess('PUK')) {
                 $facts['PUK'] = ['n' => Locale::number(PurchaseRequestLine::query()->whereHas('request', fn ($q) => $q->whereIn('status', ['approved', 'partial']))->whereColumn('ordered_qty', '<', 'qty')->count(), 0), 'note' => 'baris PP menunggu dipesan'];
             }
+            if ($user->canAccess('PUV')) {
+                $facts['PUV'] = ['n' => Locale::number(PurchaseOrder::query()->whereIn('status', ['approved', 'partial'])->count(), 0), 'note' => 'PO menunggu barang'];
+            }
             if ($user->canAccess('PUO')) {
                 $facts['PUO'] = ['n' => Locale::number(PurchaseOrder::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
             }

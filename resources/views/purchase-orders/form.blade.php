@@ -12,7 +12,8 @@
     @php
         $isNew = ! $po->exists;
         $me = auth()->user();
-        $status = $isNew ? 'new' : $po->status;
+        $progress = in_array($po->status, ['partial', 'done'], true);   // diterima sebagian / selesai: DevLib menampilkannya sebagai Approved; Cancel disembunyikan
+        $status = $isNew ? 'new' : ($progress ? 'approved' : $po->status);
         $locked = ! $isNew && $po->status !== 'draft';
         $mine = $isNew || $me->id === $po->created_by;
         $printable = in_array($po->status, ['approved', 'partial', 'done'], true);
@@ -30,9 +31,15 @@
             ['key' => 'pp', 'label' => 'Dari PP', 'type' => 'display', 'width' => '120px'],
             ['key' => 'note', 'label' => 'Line Note', 'width' => '180px'],
         ];
-        $hide = array_merge(['hold', 'email', 'new', 'undo', 'delete'], $printable ? [] : ['print']);
+        $hide = array_merge(['hold', 'email', 'new', 'undo', 'delete'], $printable ? [] : ['print'], $progress ? ['cancel'] : []);
     @endphp
     @include('partials.flash')
+    @if ($progress)
+        <x-dl::alert tone="info" :message="raw($po->statusLabel().': '.$po->receivedPct().'% diterima.')" />
+    @endif
+    @if (in_array($po->status, ['approved', 'partial'], true) && $me->canWrite('PUV'))
+        <p><x-dl::button class="sstock-btn-teal" variant="secondary" size="sm" icon="fa-truck-ramp-box" label="Terima barang" :href="route('pv.create', ['po' => $po->id])" /></p>
+    @endif
     @if ($po->exists && $po->status === 'rejected')
         <x-dl::alert tone="warn" :message="raw('Ditolak oleh '.($po->approver?->name ?? '-').'. Alasan: '.$po->reason.'. Pakai Duplicate untuk membuat draf baru dari PO ini.')" />
     @endif

@@ -19,7 +19,7 @@
     $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD'])->contains($can);
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
     $anyHr = $can('HRE') || $can('HRR') || $can('HRD');
-    $anyPur = $can('PUP') || $can('PUK') || $can('PUO');
+    $anyPur = $can('PUP') || $can('PUK') || $can('PUO') || $can('PUV');
     $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
@@ -101,6 +101,7 @@
             @if ($can('PUP'))<a class="g-toc-sub" href="#pur-pup">Permintaan Pembelian</a>@endif
             @if ($can('PUK'))<a class="g-toc-sub" href="#pur-puk">Keputusan Pesanan</a>@endif
             @if ($can('PUO'))<a class="g-toc-sub" href="#pur-puo">Pesanan Pembelian (PO)</a>@endif
+            @if ($can('PUV'))<a class="g-toc-sub" href="#pur-puv">Penerimaan Pembelian (PV)</a>@endif
         @endif
         @if ($anySec)
             <a href="#keamanan">10. Keamanan</a>

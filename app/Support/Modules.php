@@ -80,6 +80,7 @@ final class Modules
             'PUP' => ['PUR', 'Permintaan Pembelian', 'fa-solid fa-file-pen', 'grid', 'pr.index', 'entry', ['pr.']],
             'PUK' => ['PUR', 'Keputusan Pesanan', 'fa-solid fa-scale-balanced', 'form', 'po-decision.index', 'entry', ['po-decision.']],
             'PUO' => ['PUR', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'grid', 'po.index', 'entry', ['po.']],
+            'PUV' => ['PUR', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'grid', 'pv.index', 'entry', ['pv.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],

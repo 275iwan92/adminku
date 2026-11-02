@@ -287,6 +287,12 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::put('po/{po}', [PurchaseOrderController::class, 'update'])->whereNumber('po')->name('po.update');
     Route::get('po/{po}/print', [PurchaseOrderController::class, 'print'])->whereNumber('po')->name('po.print');
     Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
+    // Purchase, Penerimaan Pembelian (PUV): barang datang dari PO; Konfirmasi membuat Penerimaan Barang (RCV) di Stok otomatis.
+    Route::get('pv', [PurchaseReceiptController::class, 'index'])->name('pv.index');
+    Route::get('pv/create', [PurchaseReceiptController::class, 'create'])->name('pv.create');
+    Route::post('pv', [PurchaseReceiptController::class, 'store'])->name('pv.store');
+    Route::get('pv/{pv}', [PurchaseReceiptController::class, 'show'])->whereNumber('pv')->name('pv.show');
+    Route::put('pv/{pv}', [PurchaseReceiptController::class, 'update'])->whereNumber('pv')->name('pv.update');
     Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
     Route::post('recruit-steps', [RecruitStepController::class, 'store'])->name('recruit-steps.store');
     Route::get('recruit-steps/{step}', [RecruitStepController::class, 'show'])->name('recruit-steps.show');
