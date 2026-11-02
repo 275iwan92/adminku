@@ -3,7 +3,7 @@
 <desc id="tg-ga-erd-d">Vehicle care: m_vehicle_type has m_vehicle_type_plan items and m_vehicle records. m_vehicle has g_vehicle_doc, g_vehicle_service and g_vehicle_odometer rows. g_vehicle_service has g_vehicle_service_line rows that may point at a plan item. AC care: m_ac_area has m_ac_room, which has m_ac_unit. m_ac_vendor has g_ac_service_order, which has g_ac_service_line (one per AC, pointing at m_ac_unit) and g_ac_service_reschedule rows.</desc>
 <defs><marker id="m-tg-ga-erd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <text class="t b" x="20" y="20" text-anchor="start">Vehicle care (GVM, GVD, GVS, GVO, GVK, GVT)</text>
-<text class="t b" x="580" y="20" text-anchor="start">AC care (GAS, GAV, GAD, GAK, GAA, GAR, GAE)</text>
+<text class="t b" x="580" y="20" text-anchor="start">AC care (GAS, GAV, GAK, GAA, GAR, GAE)</text>
 <g transform="translate(0,30)">
 <rect class="n n-gray" x="20" y="0" width="230" height="92" rx="7"/>
 <line class="n-rule" x1="20" y1="24" x2="250" y2="24"/>

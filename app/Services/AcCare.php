@@ -23,7 +23,7 @@ use Illuminate\Validation\ValidationException;
  *                Siklus pesanan (kirim, konfirmasi, selesai, jadwal ulang, batal) ada di AcVisits; pesan pemberitahuan di AcMessage. Modul ini TIDAK menyentuh stok gudang.
  * Sumber hulu  : Constants (ga.ac.wash_months = 3, major_months = 12, capacity = 3, days = 1,2,3,4,5, start_time = 09:00, end_time = 16:00, soon_days = 30), m_ac_*, g_ac_*.
  * Output       : overview() untuk layar Penjadwalan / Denah; schedule(), autoPlan(), weekLoad(), used(), openLines().
- * Dipakai oleh : AcScheduleController, AcVisitController, AcPlanController, controller master AC, AcSeeder.
+ * Dipakai oleh : AcScheduleController, AcVisitController, controller master AC, AcSeeder.
  * Status       : Aktif.
  */
 final class AcCare

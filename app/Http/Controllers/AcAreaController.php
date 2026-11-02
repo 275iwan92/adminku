@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 /* REMARK
  * Tujuan       : Master Area / Gedung AC (GA, modul GAA): nama, kode (kosong = otomatis dari nama), denah unggahan (jpg / png, maks 5 MB; kosong = denah skematis dari persegi ruang). Aktif / Nonaktif saja.
- *                Denah disimpan di disk privat "ga" dan disajikan lewat AcPlanController (hak modul Denah AC); ukuran gambar dibaca saat unggah supaya titik AC (persen) tepat.
+ *                Denah disimpan di disk privat "ga" dan disajikan lewat rute ac-areas.plan (hak modul Area dan Gedung AC); layar Denah AC dihapus, gambar dan posisi titik tetap tersimpan; ukuran gambar dibaca saat unggah supaya titik AC (persen) tepat.
  * Sumber hulu  : m_ac_area, m_ac_room.
  * Output       : grid Area, form Area.
  * Dipakai oleh : routes/web.php (ac-areas.*).

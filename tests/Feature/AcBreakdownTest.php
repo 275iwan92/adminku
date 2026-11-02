@@ -81,7 +81,7 @@ class AcBreakdownTest extends TestCase
         $this->breakdown([$broken], '2026-11-02', ['priority' => 'urgent', 'override' => 'AC ruang server mati']);
 
         $this->actingAs($this->admin)->get(route('ac-care.index'))->assertOk()->assertSee('AC aktif')->assertSee('Kerusakan terbuka')->assertSee('Rusak')->assertSee('Terlambat');
-        $this->actingAs($this->admin)->get(route('ac-setup.index'))->assertOk()->assertSee('Denah AC')->assertSee('Vendor AC')->assertSee('Pengaturan');
+        $this->actingAs($this->admin)->get(route('ac-setup.index'))->assertOk()->assertDontSee('Denah AC')->assertSee('Vendor AC')->assertSee('Pengaturan');
 
         $viewer = $this->acUser(['GAM' => 'ro', 'GAK' => 'ro']);
         $this->actingAs($viewer)->get(route('ac-setup.index'))->assertOk()->assertSee('Master AC')->assertDontSee('Vendor AC');

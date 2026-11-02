@@ -103,7 +103,7 @@ class AcSeederTest extends TestCase
     public function test_the_ga_menu_lists_the_real_ac_items_and_keeps_only_the_building_placeholder(): void
     {
         $labels = collect(Menu::layers(User::factory()->administrator()->create()))->firstWhere('code', 'GA')['children'];
-        // Menu ringkas: satu butir Perawatan AC (panel Monitoring); layar Penjadwalan, Kunjungan, Denah, master dibuka lewat tombol.
+        // Menu ringkas: satu butir Perawatan AC (panel Monitoring); layar Penjadwalan, Kunjungan, master dibuka lewat tombol.
         $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'], array_column($labels, 'label'));
         $this->assertStringNotContainsString('segera', $labels[1]['url']);
         $this->actingAs(User::factory()->administrator()->create())->get('/segera/ac')->assertNotFound();
@@ -112,9 +112,9 @@ class AcSeederTest extends TestCase
         // Pengguna biasa tanpa Grup tidak melihat GA; pengguna berhak (Grup) hanya melihat modul yang diberikan.
         $this->assertNull(collect(Menu::layers(User::factory()->create()))->firstWhere('code', 'GA'));
         $group = UserGroup::create(['code' => 'GAV', 'name' => 'Lihat AC']);
-        $group->syncAccess(['GAD' => 'ro', 'GAV' => 'ro']);
+        $group->syncAccess(['GAK' => 'ro', 'GAV' => 'ro']);
         $user = User::factory()->create(['group_id' => $group->id]);
-        $this->assertSame(['Kunjungan AC', 'Denah AC'], array_column(collect(Menu::layers($user))->firstWhere('code', 'GA')['children'], 'label'));
+        $this->assertSame(['Kunjungan AC', 'Master AC'], array_column(collect(Menu::layers($user))->firstWhere('code', 'GA')['children'], 'label'));
     }
 
     public function test_the_phone_shell_opens_every_ac_module_and_every_master_form_goes_back_to_its_grid(): void
@@ -122,7 +122,7 @@ class AcSeederTest extends TestCase
         $this->seed(DatabaseSeeder::class);
         $admin = User::where('username', 'admin')->first();
         $this->actingAs($admin);
-        foreach (['GAS', 'GAV', 'GAD', 'GAK', 'GAA', 'GAR', 'GAE'] as $code) {
+        foreach (['GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE'] as $code) {
             $this->withHeader('User-Agent', 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36')->get(route('hp.open', $code))->assertOk();
         }
         $back = function (string $html) {
@@ -149,7 +149,6 @@ class AcSeederTest extends TestCase
         $unit = AcUnit::firstWhere('asset_code', 'AC-0001');
         $urls = [
             route('ac-schedule.index'), route('ac-schedule.index', ['show' => 'semua']), route('ac-visits.index'), route('ac-visits.show', $order), route('ac-visits.print', $order),
-            route('ac-plan.index'), route('ac-plan.index', ['unit' => $unit->id]), route('ac-plan.index', ['area' => AcArea::firstWhere('code', 'GDG')->id]),
             route('ac-units.index'), route('ac-units.show', $unit), route('ac-areas.index'), route('ac-areas.show', AcArea::first()), route('ac-rooms.index'), route('ac-rooms.show', AcRoom::first()),
             route('ac-vendors.index'), route('ac-vendors.show', AcVendor::first()),
         ];

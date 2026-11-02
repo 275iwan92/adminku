@@ -303,7 +303,6 @@ body.dl-on-phone .sstock-setup__tile { min-height: 64px; }
  */
 body.dl-on-phone :is(.dl-badge, .dl-grid__tabcount, .dl-pager__left, .dl-pager__info, .dl-pager__size, .dl-pager button, .dl-stat__label, .dl-stat__sub, .dl-form__step, .dl-lines__count, .dl-field__unit, .dl-field__trigger:is(.dl-numtg, .dl-case), .dl-tip__icon, .dl-print small, .dl-print b, .dl-print__badge, small) { font-size: 12px; }
 body.dl-on-phone .dl-pager__goto { min-height: 44px; }
-body.dl-on-phone .dl-floorplan__pin { width: 28px; height: 28px; margin: -14px 0 0 -14px; font-size: 12px; }   /* titik denah di HP tetap 28 px, angka 12 px (DevLib: 24 px / 10 px); area sentuh 44 px dari DevLib */
 body.dl-on-phone .dl-field__trigger:is(.dl-numtg, .dl-case), body.dl-on-phone .dl-lines__case { position: relative; }
 body.dl-on-phone :is(.dl-field__trigger:is(.dl-numtg, .dl-case), .dl-lines__case)::after { content: ""; position: absolute; inset: -14px -6px; }
 body.dl-on-phone .dl-brand span:not(.dl-logo-badge), body.dl-on-phone .dl-envbadge, body.dl-on-phone .dl-envbadge__stage { font-size: 12px; }

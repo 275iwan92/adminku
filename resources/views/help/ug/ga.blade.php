@@ -1,8 +1,8 @@
 {{-- REMARK
  Tujuan       : Panduan Pengguna bagian 9 GA (General Affairs): Perawatan Kendaraan (Monitoring Kendaraan dan Detail kendaraan, Perpanjang Dokumen Kendaraan, Catat Servis Kendaraan, Catat Odometer, Master Kendaraan, Jenis Kendaraan)
-                dan Perawatan AC (Penjadwalan AC, Kunjungan AC, Denah AC, Master AC, Area dan Gedung AC, Ruang AC, Vendor AC), arti Aman / Segera / Terlambat, dan hak akses lewat Grup.
+                dan Perawatan AC (Penjadwalan AC, Kunjungan AC, Master AC, Area dan Gedung AC, Ruang AC, Vendor AC), arti Aman / Segera / Terlambat, dan hak akses lewat Grup.
                 Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
- Sumber hulu  : FleetController / fleet/*, Vehicle*Controller / vehicle-docs, vehicle-services, vehicle-odometers, vehicles, vehicle-types, VehicleCare, AcScheduleController / ac-schedule, AcVisitController / ac-visits, AcPlanController / ac-plan,
+ Sumber hulu  : FleetController / fleet/*, Vehicle*Controller / vehicle-docs, vehicle-services, vehicle-odometers, vehicles, vehicle-types, VehicleCare, AcScheduleController / ac-schedule, AcVisitController / ac-visits,
                 AcUnit / AcArea / AcRoom / AcVendor controller dan view, AcCare, AcVisits, AcMessage, AcVisitPrint, Modules (kode GV* dan GA*, peran minimal), User::canAccess / canWrite, Menu::layers (Perawatan Gedung sementara).
  Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya salah satu modul GA; tiap bagian bergantung $can). Diagram: ug-ga-perpanjang-servis, ug-ga-kunjungan-ac.
  Status       : Aktif.
@@ -25,7 +25,6 @@
         @if ($can('GVT'))<tr><td>{!! $ref('GVT', 'ga-gvt', 'Jenis Kendaraan') !!}</td><td>Jenis kendaraan beserta Rencana Perawatan (pekerjaan dan intervalnya)</td></tr>@endif
         @if ($can('GAS'))<tr><td>{!! $ref('GAS', 'ga-gas', 'Penjadwalan AC') !!}</td><td>Kalender kunjungan vendor, kapasitas harian, Jadwalkan yang dipilih, Susun otomatis</td></tr>@endif
         @if ($can('GAV'))<tr><td>{!! $ref('GAV', 'ga-gav', 'Kunjungan AC') !!}</td><td>Pesanan kunjungan vendor: Kirim, konfirmasi, selesai, jadwal ulang, batal, foto bukti, Berita Acara</td></tr>@endif
-        @if ($can('GAD'))<tr><td>{!! $ref('GAD', 'ga-gad', 'Denah AC') !!}</td><td>Denah per area dengan titik AC berwarna menurut status</td></tr>@endif
         @if ($can('GAK'))<tr><td>{!! $ref('GAK', 'ga-gak', 'Master AC') !!}</td><td>Daftar unit AC: kode aset, ruang, merek, tanggal pasang</td></tr>@endif
         @if ($can('GAA'))<tr><td>{!! $ref('GAA', 'ga-gaa', 'Area dan Gedung AC') !!}</td><td>Area atau gedung beserta gambar denahnya</td></tr>@endif
         @if ($can('GAR'))<tr><td>{!! $ref('GAR', 'ga-gar', 'Ruang AC') !!}</td><td>Ruang di tiap area, kode ruang, dan PIC</td></tr>@endif
@@ -57,7 +56,7 @@
 </table>
 <ul class="g-list">
     <li>Status satu kendaraan adalah yang <b>paling buruk</b> dari semua dokumen dan semua pekerjaan perawatannya.</li>
-    <li>Angka 30 hari dan 1.000 km adalah bawaan. Angka yang berlaku tertulis di kotak <b>Segera</b> (kendaraan) dan di keterangan layar Denah AC. Mengubahnya di {!! $ref('GAP', 'ga-gap', 'Pengaturan GA') !!}.</li>
+    <li>Angka 30 hari dan 1.000 km adalah bawaan. Angka yang berlaku tertulis di kotak <b>Segera</b> (kendaraan). Mengubahnya di {!! $ref('GAP', 'ga-gap', 'Pengaturan GA') !!}.</li>
     <li>Asuransi yang belum dicatat tidak membuat kendaraan berstatus Segera.</li>
 </ul>
 
@@ -281,8 +280,8 @@
 <ol class="g-steps">
     <li>Buka <b>GA</b> lalu <b>Perawatan AC</b>.</li>
     <li>Baca empat kotak: <b>AC aktif</b>, <b>Terlambat</b> (cuci atau servis besar sudah lewat), <b>Segera</b> (dalam 30 hari), dan <b>Kerusakan terbuka</b> (AC rusak yang belum selesai ditangani). Di bawah tombol tertulis <i>Kunjungan terdekat</i>.</li>
-    <li>Baca tabelnya: <b>AC</b>, <b>Area</b>, <b>Cuci berikutnya</b>, <b>Servis besar</b>, <b>Kerusakan 12 bln</b>, dan <b>Status</b> (<i>Rusak</i> bila ada Breakdown terbuka, selain itu Terlambat, Segera, atau Aman). Klik 2x barisnya untuk membuka Denah AC dengan AC itu terpilih.</li>
-    <li>Tekan <span class="g-btn">Setup</span> untuk membuka Denah AC, Master AC, Area dan Gedung, Ruang, Vendor AC, dan Pengaturan. Tekan <span class="g-btn">Penjadwalan</span> untuk menjadwalkan kunjungan, melihat Kunjungan, dan mencatat hasil.</li>
+    <li>Baca tabelnya: <b>AC</b>, <b>Area</b>, <b>Cuci berikutnya</b>, <b>Servis besar</b>, <b>Kerusakan 12 bln</b>, dan <b>Status</b> (<i>Rusak</i> bila ada Breakdown terbuka, selain itu Terlambat, Segera, atau Aman).</li>
+    <li>Tekan <span class="g-btn">Setup</span> untuk membuka Master AC, Area dan Gedung, Ruang, Vendor AC, dan Pengaturan. Tekan <span class="g-btn">Penjadwalan</span> untuk menjadwalkan kunjungan, melihat Kunjungan, dan mencatat hasil.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
@@ -404,36 +403,6 @@
 </ul>
 @endif
 
-@if ($can('GAD'))
-<h3 id="ga-gad">Denah AC</h3>
-<h4>Untuk apa</h4>
-<p>Melihat letak semua AC di sebuah area atau lantai, dengan warna status di tiap titik, lalu membuka kartu satu AC.</p>
-<h4>Siapa yang bisa</h4>
-<p>Pengguna yang Grup-nya punya modul <b>Denah AC</b> (RO cukup). Tombol di kartu AC mengikuti hak Anda pada Penjadwalan AC, Kunjungan AC, dan Master AC.</p>
-<h4>Langkah</h4>
-<ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Denah AC</b>.</li>
-    <li>Pilih <b>Area / Lantai</b>, tekan <span class="g-btn">Tampilkan</span>.</li>
-    <li>Empat kotak: <b>AC di area ini</b> (keterangannya <i>Denah gambar unggahan</i> atau <i>Denah skematis (asumsi)</i>), <b>Aman</b>, <b>Segera</b>, dan <b>Terlambat</b>.</li>
-    <li>Titik hijau berarti Aman, kuning Segera, merah Terlambat. Angka di titik adalah dua angka terakhir kode aset. Klik sebuah titik.</li>
-    <li>Kartu AC terbuka di bawah denah: <b>Kode ruang</b>, <b>Kode aset</b>, <b>Tipe</b>, <b>Area</b>, <b>Cuci rutin terakhir</b>, <b>Cuci rutin berikutnya</b>, <b>Servis besar terakhir</b>, <b>Servis besar berikutnya</b>, <b>PIC</b>, <b>WhatsApp PIC</b>, <b>Jadwal</b>, dan <b>Pekerjaan berikutnya</b>.</li>
-    <li>Dari kartu: <span class="g-btn">Jadwalkan</span> (membuka Penjadwalan AC dengan AC itu tercentang; hanya bila belum terjadwal), <span class="g-btn">Buka kunjungan</span>, atau <span class="g-btn">Master AC</span>.</li>
-    <li>Bagian <b>Riwayat dan foto</b> memuat sampai 10 pekerjaan selesai terakhir dengan nomor pesanan dan fotonya.</li>
-</ol>
-<h4>Yang perlu diperhatikan</h4>
-<ul class="g-list">
-    <li>Tanpa gambar denah, sistem menggambar <b>denah skematis</b> dari persegi tiap ruang. Unggah gambarnya di {!! $ref('GAA', 'ga-gaa', 'Area dan Gedung AC') !!}.</li>
-    <li>Letak titik mengikuti persen posisi yang diisi di Master AC. AC tanpa posisi diletakkan di tengah ruangnya.</li>
-    <li>Foto di riwayat hanya bisa dibuka bila Anda juga punya modul Kunjungan AC.</li>
-</ul>
-<h4>Masalah umum</h4>
-<ul class="g-list">
-    <li><b>Layar kosong dengan tulisan "Belum ada area".</b> Tambahkan area dan ruang dulu di Area dan Gedung AC.</li>
-    <li><b>Titik AC tidak pada tempatnya.</b> Isi <b>Denah: Titik Kiri</b> dan <b>Denah: Titik Atas</b> di {!! $ref('GAK', 'ga-gak', 'Master AC') !!}.</li>
-    <li><b>Belum ada pekerjaan selesai di riwayat.</b> Jatuh tempo dihitung dari tanggal awal di Master AC sampai ada kunjungan Selesai.</li>
-</ul>
-@endif
-
 @if ($can('GAK'))
 <h3 id="ga-gak">Master AC</h3>
 <h4>Untuk apa</h4>
@@ -484,7 +453,7 @@
 <ul class="g-list">
     <li>Area yang masih punya <b>ruang aktif</b> tidak bisa dinonaktifkan: <i>Area masih punya ruang aktif. Nonaktifkan ruangnya dulu.</i></li>
     <li>Titik AC dan persegi ruang memakai persen dari gambar, jadi tetap tepat walau gambarnya diganti dengan ukuran lain, selama letak ruang di gambar baru sama.</li>
-    <li>Gambar denah hanya terlihat oleh pengguna yang punya modul Denah AC atau Area dan Gedung AC.</li>
+    <li>Gambar denah hanya terlihat oleh pengguna yang punya modul Area dan Gedung AC.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">

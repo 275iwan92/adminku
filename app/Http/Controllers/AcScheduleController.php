@@ -47,7 +47,7 @@ class AcScheduleController extends Controller
         $areaId = (int) Text::of($request->query('area'));
         $type = Text::of($request->query('type')) === 'breakdown' ? 'breakdown' : 'preventive';
         $all = $type === 'breakdown' || Text::of($request->query('show')) === 'semua';   // Breakdown: semua AC aktif bisa dipilih
-        $pick = (int) Text::of($request->query('pick'));   // AC yang ditandai dari kartu Denah AC
+        $pick = (int) Text::of($request->query('pick'));   // AC yang ditandai dari tautan layar lain
         $rows = $units->filter(fn ($u) => ! $areaId || $u->room->area_id === $areaId)
             ->filter(fn ($u) => $all || $u->id === $pick || $over[$u->id]['open'] || $over[$u->id]['status'] !== 'aman')
             ->sortBy([fn ($a, $b) => (bool) $over[$a->id]['open'] <=> (bool) $over[$b->id]['open'], fn ($a, $b) => $over[$a->id]['days'] <=> $over[$b->id]['days'], fn ($a, $b) => strcmp($a->asset_code, $b->asset_code)])

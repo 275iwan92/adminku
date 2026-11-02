@@ -29,7 +29,7 @@ final class Modules
     // pengguna tanpa panel (mis. sopir hanya GVO) tetap melihatnya. Pengaturan GA (GAP) dibuka dari Setup kedua panel. Hak Grup dan penjagaan rute tetap per kode.
     public const MENU_UNDER = [
         'GVD' => ['GVM'], 'GVS' => ['GVM'], 'GVO' => ['GVM'], 'GVK' => ['GVM'], 'GVT' => ['GVM'],
-        'GAS' => ['GAM'], 'GAV' => ['GAM'], 'GAD' => ['GAM'], 'GAK' => ['GAM'], 'GAA' => ['GAM'], 'GAR' => ['GAM'], 'GAE' => ['GAM'],
+        'GAS' => ['GAM'], 'GAV' => ['GAM'], 'GAK' => ['GAM'], 'GAA' => ['GAM'], 'GAR' => ['GAM'], 'GAE' => ['GAM'],
         'GAP' => ['GVM', 'GAM'],
     ];
 
@@ -67,7 +67,6 @@ final class Modules
             'GAM' => ['GA', 'Perawatan AC', 'fa-solid fa-snowflake', 'grid', 'ac-care.index', 'entry', ['ac-care.', 'ac-setup.']],
             'GAS' => ['GA', 'Penjadwalan AC', 'fa-solid fa-calendar-check', 'form', 'ac-schedule.index', 'entry', ['ac-schedule.']],
             'GAV' => ['GA', 'Kunjungan AC', 'fa-solid fa-truck-fast', 'grid', 'ac-visits.index', 'entry', ['ac-visits.']],
-            'GAD' => ['GA', 'Denah AC', 'fa-solid fa-map-location-dot', 'form', 'ac-plan.index', 'entry', ['ac-plan.']],
             'GAK' => ['GA', 'Master AC', 'fa-solid fa-snowflake', 'grid', 'ac-units.index', 'entry', ['ac-units.']],
             'GAA' => ['GA', 'Area dan Gedung AC', 'fa-solid fa-building', 'grid', 'ac-areas.index', 'entry', ['ac-areas.']],
             'GAR' => ['GA', 'Ruang AC', 'fa-solid fa-door-open', 'grid', 'ac-rooms.index', 'entry', ['ac-rooms.']],
