@@ -17,7 +17,7 @@
     $sup = $user->isSupervisor();
     $anyMaster = collect(['ITM', 'SUP', 'DEP', 'RCP', 'UOM', 'CAT', 'LOC', 'CMP'])->contains($can);
     $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD'])->contains($can);
-    $anyRpt = collect(['R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
+    $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
     $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAS', 'GAV', 'GAD', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
@@ -61,6 +61,7 @@
         @endif
         @if ($anyRpt)
             <a href="#laporan">8. Laporan</a>
+            @if ($can('STB'))<a class="g-toc-sub" href="#r-stb">Beranda Stok</a>@endif
             @if ($can('R-CARD'))<a class="g-toc-sub" href="#r-card">Kartu Stok</a>@endif
             @if ($can('R-SUM'))<a class="g-toc-sub" href="#r-sum">Ringkasan Stok</a>@endif
             @if ($can('R-IN'))<a class="g-toc-sub" href="#r-in">Laporan Penerimaan</a>@endif

@@ -24,7 +24,7 @@ class HelpTest extends TestCase
     private const ANCHORS = [
         'ITM' => 'm-itm', 'SUP' => 'm-sup', 'DEP' => 'm-dep', 'RCP' => 'm-rcp', 'UOM' => 'm-uom', 'CAT' => 'm-cat', 'LOC' => 'm-loc', 'CMP' => 'm-cmp',
         'OPN' => 't-opn', 'RCV' => 't-rcv', 'ISS' => 't-iss', 'ADJ' => 't-adj', 'SO' => 't-so', 'ORD' => 't-ord',
-        'R-CARD' => 'r-card', 'R-SUM' => 'r-sum', 'R-IN' => 'r-in', 'R-OUT' => 'r-out', 'R-EXP' => 'r-exp', 'R-ADJ' => 'r-adj',
+        'STB' => 'r-stb', 'R-CARD' => 'r-card', 'R-SUM' => 'r-sum', 'R-IN' => 'r-in', 'R-OUT' => 'r-out', 'R-EXP' => 'r-exp', 'R-ADJ' => 'r-adj',
         'GVM' => 'ga-gvm', 'GVD' => 'ga-gvd', 'GVS' => 'ga-gvs', 'GVO' => 'ga-gvo', 'GVK' => 'ga-gvk', 'GVT' => 'ga-gvt',
         'GAS' => 'ga-gas', 'GAV' => 'ga-gav', 'GAD' => 'ga-gad', 'GAK' => 'ga-gak', 'GAA' => 'ga-gaa', 'GAR' => 'ga-gar', 'GAE' => 'ga-gae', 'GAP' => 'ga-gap',
         'USR' => 'sec-usr', 'GRP' => 'sec-grp', 'SMP' => 'sec-smp', 'MOD' => 'sec-mod',

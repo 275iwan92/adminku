@@ -21,6 +21,28 @@
 <p class="g-note">Kop laporan (nama, logo, alamat) mengikuti data di menu <b>Perusahaan</b>. Semua cetakan memakai kop yang sama.</p>
 <div class="g-tip"><b>Cetak dokumen:</b> tombol <b>Cetak</b> juga ada di form semua dokumen stok (Draf, Terkonfirmasi, Dibatalkan, dan seterusnya). Hasil cetak selalu memuat <b>mode</b> dokumen (DRAFT, CONFIRMED, CANCELLED). Penyesuaian juga memuat WAITING APPROVAL, APPROVED, atau REJECTED. Dokumen yang belum atau tidak sah diberi tanda air.</div>
 
+@if ($can('STB'))
+<h3 id="r-stb">Beranda Stok</h3>
+<h4>Untuk apa</h4>
+<p>Layar pembuka menu <b>Stok</b>: pengingat Stok Opname, angka ringkasan stok (barang aktif, di titik pesan ulang, hampir kedaluwarsa, penerimaan dan pengeluaran hari ini, nilai stok, dokumen menunggu persetujuan), tabel barang di titik pesan ulang, dan tabel barang hampir kedaluwarsa. Beranda aplikasi sendiri hanya berisi ringkasan lintas modul.</p>
+<h4>Siapa yang bisa</h4>
+<p>Data Entry dan Supervisor. Nilai stok dan dokumen menunggu persetujuan hanya untuk Supervisor.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Stok</b> &gt; <b>Beranda Stok</b>, atau tekan kartu <b>Stok</b> di Beranda.</li>
+    <li>Tekan kotak angka atau tombol di tabel untuk membuka layar terkait, misalnya <b>Buka Penerimaan</b> atau <b>Catat Pemesanan</b>.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Semua isinya sama dengan yang dulu tampil di Beranda. Cara <b>Catat Pemesanan</b> tidak berubah.</li>
+    <li>Di HP, kartu <b>Stok</b> di Beranda membuka ubin ringkasan stok dan pengingat opname.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Menu Beranda Stok tidak ada.</b> Grup Anda belum diberi modul ini. Minta Administrator mencentangnya di menu <b>Grup</b>.</li>
+</ul>
+@endif
+
 @if ($can('R-CARD'))
 <h3 id="r-card">Kartu Stok</h3>
 <h4>Untuk apa</h4>
