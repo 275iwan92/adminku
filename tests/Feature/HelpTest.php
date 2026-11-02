@@ -25,6 +25,8 @@ class HelpTest extends TestCase
         'ITM' => 'm-itm', 'SUP' => 'm-sup', 'DEP' => 'm-dep', 'RCP' => 'm-rcp', 'UOM' => 'm-uom', 'CAT' => 'm-cat', 'LOC' => 'm-loc', 'CMP' => 'm-cmp',
         'OPN' => 't-opn', 'RCV' => 't-rcv', 'ISS' => 't-iss', 'ADJ' => 't-adj', 'SO' => 't-so', 'ORD' => 't-ord',
         'R-CARD' => 'r-card', 'R-SUM' => 'r-sum', 'R-IN' => 'r-in', 'R-OUT' => 'r-out', 'R-EXP' => 'r-exp', 'R-ADJ' => 'r-adj',
+        'GVM' => 'ga-gvm', 'GVD' => 'ga-gvd', 'GVS' => 'ga-gvs', 'GVO' => 'ga-gvo', 'GVK' => 'ga-gvk', 'GVT' => 'ga-gvt',
+        'GAS' => 'ga-gas', 'GAV' => 'ga-gav', 'GAD' => 'ga-gad', 'GAK' => 'ga-gak', 'GAA' => 'ga-gaa', 'GAR' => 'ga-gar', 'GAE' => 'ga-gae', 'GAP' => 'ga-gap',
         'USR' => 'sec-usr', 'GRP' => 'sec-grp', 'SMP' => 'sec-smp', 'MOD' => 'sec-mod',
     ];
 
@@ -54,8 +56,7 @@ class HelpTest extends TestCase
 
     public function test_every_module_has_a_help_section_and_a_toc_link(): void
     {
-        // Modul GA (Perawatan Aset Kendaraan) belum punya bagian bantuan: pemilik meminta UG/TG dibiarkan dulu (lihat laporan GA); hapus pengecualian ini saat bagiannya ditulis.
-        $this->assertEqualsCanonicalizing(array_keys(array_filter(Modules::all(), fn ($m) => $m[0] !== 'GA')), array_keys(self::ANCHORS), 'Modul baru wajib punya bagian bantuan: tambahkan anchor-nya di HelpTest::ANCHORS dan di help/ug.');
+        $this->assertEqualsCanonicalizing(array_keys(Modules::all()), array_keys(self::ANCHORS), 'Modul baru wajib punya bagian bantuan: tambahkan anchor-nya di HelpTest::ANCHORS dan di help/ug.');
 
         $html = $this->guide(User::factory()->administrator()->create());
         foreach (self::ANCHORS as $anchor) {
@@ -74,6 +75,54 @@ class HelpTest extends TestCase
             foreach (self::ANCHORS as $code => $anchor) {
                 $user->canAccess($code) ? $this->assertStringContainsString('id="'.$anchor.'"', $html, "{$user->role} harus melihat {$anchor}") : $this->assertStringNotContainsString('id="'.$anchor.'"', $html, "{$user->role} tidak boleh melihat {$anchor}");
             }
+        }
+    }
+
+    public function test_ga_help_shows_only_the_modules_of_the_group_and_has_no_broken_links(): void
+    {
+        $group = UserGroup::create(['code' => 'GAO', 'name' => 'Petugas GA']);
+        $group->syncAccess(['GVO' => 'rw', 'GAV' => 'ro']);
+        $driver = User::factory()->create(['group_id' => $group->id]);
+
+        $html = $this->guide($driver);
+        foreach (['GVO' => true, 'GAV' => true, 'GVD' => false, 'GAP' => false, 'GAS' => false] as $code => $shown) {
+            $shown ? $this->assertStringContainsString('id="'.self::ANCHORS[$code].'"', $html) : $this->assertStringNotContainsString('id="'.self::ANCHORS[$code].'"', $html);
+        }
+        [$ids, $links] = $this->anchors($html);
+        $this->assertSame([], array_values(array_diff($links, $ids)), 'Tautan GA patah untuk pengguna dengan hak sebagian');
+
+        $this->assertStringNotContainsString('id="ga"', $this->guide(User::factory()->create()), 'GA tidak otomatis mengikuti peran');
+
+        // Pengaturan GA butuh peran Supervisor ke atas: Grup yang mencentangnya tidak membukanya bagi Data Entry.
+        $settings = UserGroup::create(['code' => 'GAS2', 'name' => 'Pengatur GA']);
+        $settings->syncAccess(['GAP' => 'rw', 'GAS' => 'rw']);
+        $this->assertStringContainsString('id="ga-gap"', $this->guide(User::factory()->supervisor()->create(['group_id' => $settings->id])));
+        $entry = $this->guide(User::factory()->create(['group_id' => $settings->id]));
+        $this->assertStringNotContainsString('id="ga-gap"', $entry);
+        $this->assertStringContainsString('id="ga-gas"', $entry);
+
+        $admin = $this->guide(User::factory()->administrator()->create());
+        foreach (['ug-ga-perpanjang-servis', 'ug-ga-kunjungan-ac'] as $diagram) {
+            $this->assertStringContainsString('id="'.$diagram.'-t"', $admin);
+        }
+        foreach (['Aman, Segera, dan Terlambat', 'Perawatan Gedung', 'Susun otomatis', 'Kode aset versus kode ruang', 'Tandai dikonfirmasi vendor', 'Cetak Berita Acara'] as $text) {
+            $this->assertStringContainsString($text, $admin, "UG GA tidak memuat {$text}");
+        }
+    }
+
+    public function test_technical_guide_covers_the_ga_modules(): void
+    {
+        $tg = $this->guide(User::factory()->administrator()->create(), 'help.technical-guide');
+
+        foreach (['tg-ga-erd', 'tg-ga-ac-visit-states', 'tg-ga-ac-schedule-flow'] as $diagram) {
+            $this->assertStringContainsString('id="'.$diagram.'-t"', $tg);
+        }
+        foreach (['m_vehicle', 'm_vehicle_type_plan', 'g_vehicle_doc', 'g_vehicle_service_line', 'g_vehicle_odometer', 'm_ac_area', 'm_ac_room', 'm_ac_unit', 'm_ac_vendor', 'g_ac_service_order', 'g_ac_service_line', 'g_ac_service_reschedule',
+            'VehicleCare', 'AcCare', 'AcVisits', 'AcMessage', 'AcVisitNotice', 'AcVisitPrint', 'lockForUpdate', 'ga.vehicle.soon_days', 'ga.ac.capacity', 'wa.me', 'storage/app/ga', 'give_vehicle_care_to_admin_groups', 'give_ga_settings_to_admin_groups', 'm_ac_vendor'] as $needle) {
+            $this->assertStringContainsString($needle, $tg, "TG tidak memuat {$needle}");
+        }
+        foreach (Modules::all() as $code => $def) {
+            $def[0] === 'GA' && $this->assertStringContainsString($code, $tg, "TG tidak menyebut modul {$code}");
         }
     }
 
