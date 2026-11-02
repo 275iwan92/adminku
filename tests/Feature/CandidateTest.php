@@ -153,7 +153,7 @@ class CandidateTest extends TestCase
         $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Tes')->id, 'scheduled_on' => today()->toDateString(), 'scheduled_time' => '10:00', 'assessor' => 'Bu Sari']);
         $this->step('Interview 2')->update(['tone' => null]);
 
-        $page = $this->get(route('candidates.index'))->assertOk();
+        $page = $this->get(route('candidates.index'))->assertOk()->assertSee('flex: 1 1 0', false)->assertSee('dl:layer-menu-mini', false);   // kolom sama lebar; panel kiri mengecil otomatis
         $cols = collect($page->viewData('columns'));
         $this->assertSame(['neutral', 'accent', 'violet', 'warn', 'accent', 'success'], $cols->pluck('tone')->map(fn ($t, $i) => $i === 3 ? 'warn' : $t)->all());   // Interview 2 tanpa warna: bergilir, bukan abu-abu
         $this->assertNotSame('neutral', $cols[3]['tone']);

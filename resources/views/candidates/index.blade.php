@@ -53,6 +53,8 @@
             .rk-menu { position: absolute; z-index: 9998; background: var(--dl-surface, #fff); border: 1px solid var(--dl-border, #ddd); border-radius: 8px; padding: 4px; min-width: 170px; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
             .rk-menu button { display: block; width: 100%; text-align: left; border: none; background: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 12.5px; color: inherit; }
             .rk-menu button:hover { background: var(--dl-hover, #f1f1f1); }
+            /* Kolom membagi lebar papan sama rata (tanpa gulir mendatar); baru menggulir bila kolom terlalu sempit (tahap sangat banyak, layar kecil). */
+            .dl-kanban .dl-kcol { flex: 1 1 0; min-width: 150px; }
             .dl-kcard { background: var(--dl-surface, #fff); }
             .dl-kcard--ghost { transform: rotate(3deg); outline: 2px solid #7F77DD; box-shadow: 0 10px 24px rgba(60, 52, 137, .28); }
             .dl-kcard__ph { background: var(--dl-surface, #fff); border-color: #7F77DD; }
@@ -166,6 +168,31 @@
                     const r = mb.getBoundingClientRect(); m.style.left = Math.min(r.left + scrollX, innerWidth - 190) + 'px'; m.style.top = (r.bottom + scrollY + 4) + 'px';
                     document.body.append(m); setTimeout(() => document.addEventListener('click', () => m.remove(), { once: true }));
                 });
+
+                // Papan terbuka (tab ini tampak) = panel kiri shell mengecil otomatis jadi lajur ikon; kembali normal saat pindah tab atau ditutup.
+                // Hanya otomatis: bila pemakai mengubah sendiri (tombol panel) selama papan terbuka, pilihannya dibiarkan dan tidak dikembalikan; pilihan tersimpan tidak ditimpa.
+                (() => {
+                    let host, lm, btn, key, saved, applied = false, busy = false;
+                    try { host = window.parent !== window ? window.parent : null; lm = host?.document.querySelector('[data-dl-layer-menu]'); btn = lm?.querySelector('[data-lm-mini]'); } catch (e) { return; }
+                    if (! lm || ! btn) { return; }
+                    key = 'dl-lm-' + lm.dataset.id + '-mini';
+                    const store = (v) => { try { v === null ? host.localStorage.removeItem(key) : host.localStorage.setItem(key, v); } catch (e) { /* tanpa penyimpanan: abaikan */ } };
+                    lm.addEventListener('dl:layer-menu-mini', () => { if (! busy) { applied = false; } });   // perubahan manual: jangan dikembalikan
+                    const press = () => { busy = true; btn.click(); busy = false; };
+                    const visible = () => window.frameElement ? window.frameElement.getClientRects().length > 0 : true;
+                    const sync = () => {
+                        if (visible() && ! applied && ! lm.classList.contains('is-mini')) {
+                            try { saved = host.localStorage.getItem(key); } catch (e) { saved = null; }
+                            press(); store(saved); applied = true;
+                        } else if (! visible() && applied) {
+                            if (lm.classList.contains('is-mini')) { press(); store(saved); }
+                            applied = false;
+                        }
+                    };
+                    sync();
+                    setInterval(sync, 400);
+                    window.addEventListener('pagehide', () => { if (applied && lm.classList.contains('is-mini')) { press(); store(saved); applied = false; } });
+                })();
             })();
         </script>
     @else
