@@ -19,7 +19,7 @@ class RecruitStepController extends Controller
     public function index()
     {
         $rows = RecruitStep::query()->withCount('candidates')->ordered()->get()->map(fn (RecruitStep $s) => [
-            'id' => $s->id, 'name' => $s->name, 'sort' => $s->sort, 'kind' => ['start' => 'Awal (tetap)', 'mid' => 'Tengah', 'end' => 'Akhir (tetap)'][$s->kind], 'candidates' => $s->candidates_count, 'active' => $s->is_active,
+            'id' => $s->id, 'name' => $s->name, 'sort' => $s->sort, 'kind' => ['start' => 'Awal (tetap)', 'mid' => 'Tengah', 'end' => 'Akhir (tetap)'][$s->kind], 'scheduled' => $s->needs_schedule ? 'Ya' : '', 'candidates' => $s->candidates_count, 'active' => $s->is_active,
         ])->all();
 
         return view('recruit-steps.index', ['rows' => $rows]);
@@ -66,6 +66,6 @@ class RecruitStepController extends Controller
         return $request->validate([
             'name' => ['required', 'string', 'max:60', \Illuminate\Validation\Rule::unique('m_recruit_step', 'name')->ignore($step)],
             'sort' => ['required', 'integer', 'min:1', 'max:9999'],
-        ], ['name.unique' => 'Nama tahap ini sudah ada.']);
+        ], ['name.unique' => 'Nama tahap ini sudah ada.']) + ['needs_schedule' => $request->boolean('needs_schedule')];
     }
 }

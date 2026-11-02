@@ -53,7 +53,8 @@ class CandidateController extends Controller
 
         return view('candidates.index', [
             'view' => $view, 'rows' => $rows, 'cards' => $cards, 'columns' => $steps->map(fn ($s) => ['key' => (string) $s->id, 'label' => $s->name, 'tone' => $s->kind === 'mid' ? 'neutral' : 'success'])->all(),
-            'steps' => $steps->pluck('name', 'id')->all(),
+            'steps' => $steps->pluck('name', 'id')->all(), 'scheduled' => $steps->where('needs_schedule', true)->pluck('name', 'id')->all(),
+            'assessors' => Employee::query()->where('is_active', true)->orderBy('name')->pluck('name')->all(),
         ]);
     }
 
@@ -100,19 +101,26 @@ class CandidateController extends Controller
         return redirect()->route('candidates.show', $candidate)->with('status', 'Kandidat disimpan.');
     }
 
-    // Pindah tahap dari papan: bebas (loncat / mundur) ke tahap aktif mana pun; server memutuskan, riwayat bertambah satu baris.
+    // Pindah tahap dari papan (seret atau menu Pindah ke): bebas (loncat / mundur) ke tahap aktif mana pun; server memutuskan. Tahap berjadwal wajib tanggal + jam (pop-up di papan).
+    // Tiap perpindahan menambah satu baris log (waktu, pemindah, dari, ke) dan satu baris riwayat tahap.
     public function move(Request $request): JsonResponse
     {
-        $data = $request->validate(['card' => ['required', 'integer'], 'to' => ['required', 'integer']]);
+        $data = $request->validate(['card' => ['required', 'integer'], 'to' => ['required', 'integer'], 'scheduled_on' => ['nullable', 'date'], 'scheduled_time' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'], 'assessor' => ['nullable', 'string', 'max:100'], 'note' => ['nullable', 'string', 'max:255']]);
         $candidate = Candidate::findOrFail($data['card']);
         $step = RecruitStep::where('is_active', true)->find($data['to']);
         if (! $step) {
             return response()->json(['ok' => false, 'message' => 'Tahap tidak ditemukan atau nonaktif.'], 422);
         }
+        if ($step->needs_schedule && $candidate->step_id !== $step->id && (empty($data['scheduled_on']) || empty($data['scheduled_time']))) {
+            return response()->json(['ok' => false, 'message' => 'Isi tanggal dan jam untuk tahap '.$step->name.'.'], 422);
+        }
         if ($candidate->step_id !== $step->id) {
-            DB::transaction(function () use ($candidate, $step, $request) {
+            DB::transaction(function () use ($candidate, $step, $request, $data) {
+                $from = $candidate->step_id;
+                $when = $step->needs_schedule ? ['scheduled_on' => $data['scheduled_on'], 'scheduled_time' => $data['scheduled_time'], 'assessor' => $data['assessor'] ?? null] : [];
                 $candidate->update(['step_id' => $step->id]);
-                $candidate->events()->create(['step_id' => $step->id, 'result' => $step->kind === 'end' ? 'pass' : 'waiting', 'created_by' => $request->user()->id]);
+                $candidate->moves()->create(['from_step_id' => $from, 'to_step_id' => $step->id, 'moved_by' => $request->user()->id, 'moved_at' => now()] + $when);
+                $candidate->events()->create(['step_id' => $step->id, 'result' => $step->kind === 'end' ? 'pass' : 'waiting', 'note' => $data['note'] ?? null, 'created_by' => $request->user()->id] + $when);
             });
         }
 
@@ -150,7 +158,7 @@ class CandidateController extends Controller
             'departments' => Department::query()->where('is_active', true)->orWhereIn('id', $candidate->exists ? $candidate->departments->pluck('id') : [])->orderBy('name')->pluck('name', 'id')->all(),
             'chosen' => old('departments', $candidate->exists ? $candidate->departments->pluck('id')->all() : []),
             'steps' => RecruitStep::query()->where('is_active', true)->orWhere('id', $candidate->step_id)->ordered()->pluck('name', 'id')->all(),
-            'events' => $events,
+            'events' => $events, 'moves' => $candidate->exists ? $candidate->moves()->with(['from', 'to', 'mover'])->get() : collect(), 'assessors' => Employee::query()->where('is_active', true)->orderBy('name')->pluck('name', 'name')->all() + collect($events)->pluck('assessor')->filter()->mapWithKeys(fn ($a) => [$a => $a])->all(),
             'warnings' => array_values(array_filter([
                 $same->isNotEmpty() ? 'NIK ini pernah melamar: '.$same->map(fn ($c) => $c->applied_at->format('d-m-Y'))->implode(', ').'.' : null,
                 $candidate->nik && ($emp = Employee::where('nik_ktp', $candidate->nik)->first()) ? 'NIK ini sudah terdaftar sebagai karyawan: '.$emp->code.' · '.$emp->name.'.' : null,

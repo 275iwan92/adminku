@@ -77,7 +77,8 @@ class CandidateTest extends TestCase
         $c = Candidate::firstOrFail();
 
         $this->postJson(route('candidates.move'), ['card' => $c->id, 'from' => $c->step_id, 'to' => $this->step('TTD penawaran')->id])->assertOk()->assertJson(['ok' => true]);   // loncat
-        $this->postJson(route('candidates.move'), ['card' => $c->id, 'from' => 0, 'to' => $this->step('Interview 1')->id])->assertOk();   // mundur
+        $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Interview 1')->id])->assertStatus(422);   // tahap berjadwal: tanggal + jam wajib
+        $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Interview 1')->id, 'scheduled_on' => '2026-11-05', 'scheduled_time' => '09:30', 'assessor' => 'Pak Hadi'])->assertOk();   // mundur
         $c->refresh();
         $this->assertSame('Interview 1', $c->step->name);
         $this->assertSame(3, $c->events()->count());
@@ -86,6 +87,11 @@ class CandidateTest extends TestCase
         $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Diterima')->id])->assertOk();
         $this->assertSame('pass', $c->events()->reorder('id', 'desc')->first()->result);
 
+        $log = $c->moves()->with(['from', 'to'])->get();   // terbaru dulu
+        $this->assertSame(['Diterima', 'Interview 1', 'TTD penawaran'], $log->map(fn ($m) => $m->to->name)->all());   // yang ditolak (422) tidak tercatat
+        $this->assertSame(['Interview 1', 'TTD penawaran', 'Daftar'], $log->map(fn ($m) => $m->from->name)->all());
+        $this->assertSame('Pak Hadi', $log[1]->assessor);
+        $this->assertSame($this->admin->id, $log[0]->moved_by);
         $this->step('Tes')->update(['is_active' => false]);
         $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Tes')->id])->assertStatus(422);
     }

@@ -67,11 +67,22 @@
                         ['key' => 'step_id', 'label' => 'Tahap', 'type' => 'select', 'options' => $steps, 'required' => true, 'width' => '190px'],
                         ['key' => 'scheduled_on', 'label' => 'Tanggal', 'type' => 'date', 'width' => '160px'],
                         ['key' => 'scheduled_time', 'label' => 'Jam', 'type' => 'text', 'width' => '90px', 'placeholder' => '09:30'],
-                        ['key' => 'assessor', 'label' => 'Penilai', 'type' => 'text', 'width' => '170px'],
+                        ['key' => 'assessor', 'label' => 'Penilai', 'type' => 'select', 'options' => $assessors, 'width' => '190px'],
                         ['key' => 'result', 'label' => 'Hasil', 'type' => 'select', 'options' => \App\Models\Candidate::RESULTS, 'required' => true, 'width' => '150px'],
                         ['key' => 'note', 'label' => 'Catatan', 'type' => 'text'],
                     ]" />
                 <p class="dl-note">Satu baris per tahap yang dijalani. Pindah tahap di papan menambah baris Menunggu; isi tanggal, jam, penilai, lalu ubah Hasil menjadi Lulus atau Tidak lulus setelah selesai. Jadwal Menunggu yang terdekat tampil di papan dan di Daftar.</p>
+                <h4 style="margin:14px 0 6px">Riwayat Pindah</h4>
+                <table class="dl-table" style="width:100%">
+                    <thead><tr><th>Waktu</th><th>Oleh</th><th>Dari</th><th>Ke</th><th>Jadwal</th></tr></thead>
+                    <tbody>
+                    @forelse ($moves as $m)
+                        <tr><td>{{ $m->moved_at->format('d-m-Y H:i:s') }}</td><td>{{ $m->mover?->name ?? '-' }}</td><td>{{ $m->from?->name ?? '-' }}</td><td>{{ $m->to->name }}</td><td>{{ $m->scheduled_on ? $m->scheduled_on->format('d-m-Y').' '.$m->scheduled_time.($m->assessor ? ' · '.$m->assessor : '') : '' }}</td></tr>
+                    @empty
+                        <tr><td colspan="5">Belum ada perpindahan di papan.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
             </x-slot:proses>
         @endunless
     </x-dl::form>

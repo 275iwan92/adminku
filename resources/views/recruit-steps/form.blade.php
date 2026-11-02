@@ -22,6 +22,9 @@
         <x-dl::form.row :cols="3">
             <x-dl::field.text name="name" label="Nama Tahap" :value="$v('name')" required :readonly="$fixed" maxlength="60" :error="$e('name')" :hint="$fixed ? 'Tahap awal dan akhir tetap.' : 'Mis. Interview 1, Tes, TTD penawaran.'" />
             <x-dl::field.number name="sort" label="Urutan" :value="$v('sort')" required :readonly="$fixed" :error="$e('sort')" hint="Angka kecil lebih dulu. Daftar selalu pertama, Diterima selalu terakhir." />
+            @unless ($fixed)
+                <x-dl::field.toggle name="needs_schedule" label="Berjadwal" on-label="Ya" off-label="Tidak" :value="session()->hasOldInput() ? (bool) old('needs_schedule') : $step->needs_schedule" hint="Ya: memindahkan kartu ke tahap ini memunculkan pop-up tanggal dan jam (wajib)." />
+            @endunless
             @unless ($isNew)
                 <x-dl::field.display label="Kandidat di tahap ini" :value="(string) $step->candidates_count" />
             @endunless

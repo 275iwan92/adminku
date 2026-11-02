@@ -16,6 +16,7 @@
             ['key' => 'sort', 'label' => 'Urutan', 'type' => 'integer'],
             ['key' => 'name', 'label' => 'Tahap'],
             ['key' => 'kind', 'label' => 'Jenis'],
+            ['key' => 'scheduled', 'label' => 'Berjadwal'],
             ['key' => 'candidates', 'label' => 'Kandidat di tahap ini', 'type' => 'integer'],
         ]"
         :stats="[['label' => 'Semua tahap'], ['label' => 'Nonaktif', 'where' => ['active' => false], 'tone' => 'warn']]" />

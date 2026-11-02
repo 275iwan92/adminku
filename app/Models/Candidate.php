@@ -37,6 +37,11 @@ class Candidate extends Model
         return $this->belongsToMany(Department::class, 'h_recruit_candidate_dept', 'candidate_id', 'department_id')->orderBy('name');
     }
 
+    public function moves(): HasMany
+    {
+        return $this->hasMany(CandidateMove::class)->orderByDesc('moved_at')->orderByDesc('id');
+    }
+
     public function events(): HasMany
     {
         return $this->hasMany(CandidateEvent::class)->orderBy('id');
