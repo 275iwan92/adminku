@@ -308,3 +308,39 @@ body.dl-on-phone :is(.dl-field__trigger:is(.dl-numtg, .dl-case), .dl-lines__case
 body.dl-on-phone .sstock-plan__dot::after { content: ""; position: absolute; inset: -10px; }
 body.dl-on-phone .dl-brand span:not(.dl-logo-badge), body.dl-on-phone .dl-envbadge, body.dl-on-phone .dl-envbadge__stage { font-size: 12px; }
 body.dl-on-phone .sstock-plan__dot { width: 28px; height: 28px; margin: -14px 0 0 -14px; font-size: 12px; }
+
+/* REMARK
+ * Tujuan       : Banner "hero" Beranda (partial home-hero) desktop dan HP: kartu gradasi Slate teal, dua kolom (sapaan + ringkasan | jam + tanggal + cuaca) yang menumpuk di layar sempit dan HP.
+ * Sumber hulu  : desain pemilik (pratinjau disetujui). Warna literal di blok ini DIIZINKAN karena identitas merek (serasi dengan panel kiri AdminKU), bukan token tema; teks selalu putih di atas gradasi gelap.
+ * Output       : hanya .sstock-hero*; lebar mengikuti pembungkusnya (container query), jadi menumpuk juga bila jendela desktop sempit.
+ * Status       : Aktif.
+ */
+.sstock-herobox { container-type: inline-size; margin: 0 0 14px; }
+.sstock-hero { box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 0; padding: 22px 24px; border-radius: 20px; color: #fff; background: linear-gradient(115deg, #0b2027 0%, #0f2a33 35%, #17414a 75%, #1f5f63 100%); }
+.sstock-hero__main { min-width: 0; padding-right: 24px; }
+.sstock-hero__side { min-width: 0; padding-left: 24px; border-left: 1px solid #ffffff2e; display: flex; flex-direction: column; gap: 6px; }
+.sstock-hero .sstock-hero__kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; opacity: .8; }
+.sstock-hero .sstock-hero__hi { margin: 6px 0 4px; font-size: 30px; line-height: 1.2; font-weight: 700; color: #fff; overflow-wrap: anywhere; }
+.sstock-hero .sstock-hero__meta { margin: 0 0 14px; font-size: 13px; color: #fffc; }
+.sstock-hero__stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; padding: 0; list-style: none; }
+.sstock-hero__stat { display: flex; flex-direction: column; gap: 2px; min-width: 120px; padding: 10px 14px; border: 1px solid #ffffff2e; border-radius: 14px; background: #ffffff14; font-size: 12px; color: #fff; }
+.sstock-hero__num { font-size: 22px; line-height: 1.1; font-weight: 700; color: #5eead4; font-variant-numeric: tabular-nums; }
+.sstock-hero__num.is-alert { color: #ffb199; }
+.sstock-hero__btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; box-sizing: border-box; padding: 0 16px; border-radius: 9px; background: #fff; color: #0f2a33; font-size: 14px; font-weight: 600; text-decoration: none; }
+.sstock-hero__btn:hover, .sstock-hero__btn:focus-visible { background: #e6f7f5; }
+.sstock-hero__clock { font-size: 36px; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sstock-hero__clock small { font-size: 13px; font-weight: 600; opacity: .8; }
+.sstock-hero__date { font-size: 13px; color: #fffc; }
+.sstock-hero .sstock-hero__wx { margin-top: 8px; padding: 12px 14px; border: 1px solid #ffffff2e; border-radius: 14px; background: #ffffff14; color: #fff; backdrop-filter: none; }
+.sstock-hero .sstock-hero__wx .dl-weather__temp { font-size: 26px; }
+.sstock-hero .sstock-hero__wx .dl-weather__desc { font-size: 12px; color: #fffc; }
+.sstock-hero .sstock-hero__wx[hidden] { display: none; }
+@container (max-width: 720px) {
+    .sstock-hero { grid-template-columns: minmax(0, 1fr); }
+    .sstock-hero__main { padding-right: 0; }
+    .sstock-hero__side { margin-top: 16px; padding: 16px 0 0; border-left: 0; border-top: 1px solid #ffffff2e; }
+    .sstock-hero .sstock-hero__hi { font-size: 24px; }
+    .sstock-hero__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sstock-hero__stat { min-width: 0; }
+    .sstock-hero__btn { width: 100%; justify-content: center; }
+}

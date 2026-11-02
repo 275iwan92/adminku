@@ -10,6 +10,7 @@ use App\Models\Supplier;
 use App\Services\CountSchedule;
 use App\Services\LeadTimes;
 use App\Services\StockValuation;
+use App\Support\HomeHero;
 use App\Support\Menu;
 use Devlib\Device;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ class HomeController extends Controller
         $below = Item::query()->belowReorderPoint()->withAvailable()->with('category', 'openOrder.creator', 'openOrder.supplier')->orderByRaw(Item::availableSql().' / m_item.reorder_point', [Batch::usableFrom()])->get();
 
         return view('home', [
+            'hero' => HomeHero::build($user, $user->canAccess('ITM') ? $below->count() : null, $user->isSupervisor() && $user->canAccess('ADJ') ? StockDocument::query()->whereIn('status', ['approval', 'cancel_pending'])->count() : null),
             'modules' => Menu::layers($user),
             'user' => ['name' => $user->name, 'email' => $user->email, 'role' => $user->roleLabel()],
             'open' => $request->query('open'),
