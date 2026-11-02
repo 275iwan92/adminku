@@ -34,6 +34,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseDecisionController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseReceiptController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RecipientController;
 use App\Http\Controllers\ReorderOrderController;
@@ -82,7 +83,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
     Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'pv'])->name('soon');
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
@@ -265,6 +266,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('candidates/create', [CandidateController::class, 'create'])->name('candidates.create');
     Route::post('candidates', [CandidateController::class, 'store'])->name('candidates.store');
     Route::post('candidates/move', [CandidateController::class, 'move'])->name('candidates.move');
+    Route::post('candidates/{candidate}/result', [CandidateController::class, 'result'])->whereNumber('candidate')->name('candidates.result');
     Route::get('candidates/{candidate}', [CandidateController::class, 'show'])->whereNumber('candidate')->name('candidates.show');
     Route::put('candidates/{candidate}', [CandidateController::class, 'update'])->whereNumber('candidate')->name('candidates.update');
     Route::get('candidates/{candidate}/file/{kind}', [CandidateController::class, 'file'])->whereNumber('candidate')->whereIn('kind', ['ktp', 'cv'])->name('candidates.file');

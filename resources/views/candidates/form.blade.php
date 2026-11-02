@@ -77,7 +77,7 @@
                     <thead><tr><th>Waktu</th><th>Oleh</th><th>Dari</th><th>Ke</th><th>Jadwal</th></tr></thead>
                     <tbody>
                     @forelse ($moves as $m)
-                        <tr><td>{{ $m->moved_at->format('d-m-Y H:i:s') }}</td><td>{{ $m->mover?->name ?? '-' }}</td><td>{{ $m->from?->name ?? '-' }}</td><td>{{ $m->to->name }}</td><td>{{ $m->scheduled_on ? $m->scheduled_on->format('d-m-Y').' '.$m->scheduled_time.($m->assessor ? ' · '.$m->assessor : '') : '' }}</td></tr>
+                        <tr><td>{{ $m->moved_at->format('d-m-Y H:i:s') }}</td><td>{{ $m->mover?->name ?? '-' }}</td><td>{{ $m->from?->name ?? '-' }}@if ($m->no_result) <em>(dipindah tanpa hasil)</em>@endif</td><td>{{ $m->to->name }}</td><td>{{ $m->scheduled_on ? $m->scheduled_on->format('d-m-Y').' '.$m->scheduled_time.($m->assessor ? ' · '.$m->assessor : '') : '' }}</td></tr>
                     @empty
                         <tr><td colspan="5">Belum ada perpindahan di papan.</td></tr>
                     @endforelse

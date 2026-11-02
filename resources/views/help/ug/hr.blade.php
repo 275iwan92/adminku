@@ -71,6 +71,7 @@
 <h4>Langkah: mengelola proses</h4>
 <ol class="g-steps">
     <li>Di <b>Papan</b>, seret kartu ke tahap mana pun (boleh loncat atau mundur); di HP tahan kartu sebentar lalu seret (menu <b>Pindah ke</b> pada kartu tetap ada). Setelah kartu pindah, bilah <span class="g-btn">Undo</span> muncul 6 detik untuk mengurungkan. Tiap perpindahan tercatat: waktu persis, siapa yang memindah, dari dan ke tahap mana (tab <b>Proses</b> di kartu kandidat, bagian Riwayat Pindah).</li>
+    <li>Memindahkan kartu <b>keluar</b> dari tahap berjadwal (Interview, Tes) saat hasilnya belum diisi memunculkan peringatan <b>Hasil ... belum diisi. Pindahkan tanpa hasil?</b>: <b>Isi hasil dulu</b> (Lulus atau Tidak lulus + catatan, lalu kartu dipindah), <b>Tetap pindahkan</b> (tercatat di Riwayat Pindah sebagai <i>dipindah tanpa hasil</i>), atau <b>Batal</b> (kartu tetap di tahap asal). Berlaku untuk seret maupun menu Pindah ke.</li>
     <li>Ke tahap <b>berjadwal</b> (bawaan Interview 1, Tes, Interview 2) muncul pop-up: isi <b>Tanggal</b> dan <b>Jam</b> (wajib), pilih <b>Penilai</b> dari daftar karyawan aktif, lalu <span class="g-btn">Simpan</span>. <span class="g-btn">Batal</span> membiarkan kartu di kolom asal dan tidak mencatat apa pun.</li>
     <li>Ketuk atau klik kartu untuk membuka kartu kandidat. Di tab <b>Proses</b> isi tanggal, jam, penilai, dan ubah <b>Hasil</b> menjadi Lulus atau Tidak lulus.</li>
     <li>Kandidat di tahap <b>Diterima</b> punya tombol <span class="g-btn">Jadikan karyawan</span>: form Karyawan terbuka dengan data kandidat terisi; periksa lalu Save.</li>

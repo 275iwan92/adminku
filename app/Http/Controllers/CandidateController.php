@@ -51,7 +51,7 @@ class CandidateController extends Controller
             $passed = $c->events->where('result', 'pass')->pluck('step_id')->all();
             $before = $c->events->filter(fn ($e) => $e->result !== 'waiting' && $e->step_id !== $c->step_id && $steps->firstWhere('id', $e->step_id)?->kind === 'mid')->last();
             $nik = substr($c->nik, 0, 4).' **** **** '.substr($c->nik, -4);
-            $meta[(string) $c->id] = ['src' => $c->source ?: 'other', 'assessor' => $due?->assessor ?? $c->events->pluck('assessor')->filter()->last(), 'att' => (bool) ($c->ktp_path || $c->cv_path), 'applied' => $c->applied_at->toDateString()];
+            $meta[(string) $c->id] = ['src' => $c->source ?: 'other', 'assessor' => $due?->assessor ?? $c->events->pluck('assessor')->filter()->last(), 'att' => (bool) ($c->ktp_path || $c->cv_path), 'applied' => $c->applied_at->toDateString(), 'pending' => (bool) ($steps->firstWhere('id', $c->step_id)?->needs_schedule && $last?->result === 'waiting'), 'stepName' => $steps->firstWhere('id', $c->step_id)?->name];
 
             return array_filter([
                 'id' => (string) $c->id, 'col' => (string) $c->step_id, 'title' => $c->name, 'desc' => ($c->position ? $c->position.' · ' : '').$nik,
@@ -134,7 +134,7 @@ class CandidateController extends Controller
     // Tiap perpindahan menambah satu baris log (waktu, pemindah, dari, ke) dan satu baris riwayat tahap.
     public function move(Request $request): JsonResponse
     {
-        $data = $request->validate(['card' => ['required', 'integer'], 'to' => ['required', 'integer'], 'scheduled_on' => ['nullable', 'date'], 'scheduled_time' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'], 'assessor' => ['nullable', 'string', 'max:100'], 'note' => ['nullable', 'string', 'max:255']]);
+        $data = $request->validate(['card' => ['required', 'integer'], 'to' => ['required', 'integer'], 'scheduled_on' => ['nullable', 'date'], 'scheduled_time' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d$/'], 'assessor' => ['nullable', 'string', 'max:100'], 'note' => ['nullable', 'string', 'max:255'], 'no_result' => ['nullable', 'boolean']]);
         $candidate = Candidate::findOrFail($data['card']);
         $step = RecruitStep::where('is_active', true)->find($data['to']);
         if (! $step) {
@@ -148,10 +148,23 @@ class CandidateController extends Controller
                 $from = $candidate->step_id;
                 $when = $step->needs_schedule ? ['scheduled_on' => $data['scheduled_on'], 'scheduled_time' => $data['scheduled_time'], 'assessor' => $data['assessor'] ?? null] : [];
                 $candidate->update(['step_id' => $step->id]);
-                $candidate->moves()->create(['from_step_id' => $from, 'to_step_id' => $step->id, 'moved_by' => $request->user()->id, 'moved_at' => now()] + $when);
+                $candidate->moves()->create(['from_step_id' => $from, 'to_step_id' => $step->id, 'moved_by' => $request->user()->id, 'moved_at' => now(), 'no_result' => (bool) ($data['no_result'] ?? false)] + $when);
                 $candidate->events()->create(['step_id' => $step->id, 'result' => $step->kind === 'end' ? 'pass' : 'waiting', 'note' => $data['note'] ?? null, 'created_by' => $request->user()->id] + $when);
             });
         }
+
+        return response()->json(['ok' => true]);
+    }
+
+    // Isi hasil tahap berjadwal yang sedang berjalan (dari peringatan "hasil belum diisi" saat kartu dipindah): memperbarui riwayat tahap terbaru yang masih Menunggu.
+    public function result(Request $request, Candidate $candidate): JsonResponse
+    {
+        $data = $request->validate(['result' => ['required', 'in:pass,fail'], 'note' => ['nullable', 'string', 'max:255']]);
+        $event = $candidate->events()->where('step_id', $candidate->step_id)->where('result', 'waiting')->reorder('id', 'desc')->first();
+        if (! $event) {
+            return response()->json(['ok' => false, 'message' => 'Tidak ada hasil yang menunggu pada tahap ini.'], 422);
+        }
+        $event->update(['result' => $data['result']] + (($data['note'] ?? null) ? ['note' => $data['note']] : []));
 
         return response()->json(['ok' => true]);
     }

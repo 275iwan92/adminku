@@ -95,11 +95,43 @@
 
                 // Pindah ke tahap berjadwal ditahan dulu (kartu belum pindah) sampai tanggal dan jam diisi; Batal = tetap di tahap asal.
                 board.addEventListener('dl:kanban-beforemove', (ev) => {
-                    const { card, to, resume } = ev.detail;
-                    if (! (to in SCHEDULED)) { return; }
+                    const { card, from, to, resume } = ev.detail;
+                    const warn = from !== to && META[card.id]?.pending, sched = to in SCHEDULED;
+                    if (! warn && ! sched) { return; }
                     ev.preventDefault();
-                    ask(card, to, resume);
+                    const done = (extra = {}) => {
+                        const go = (more = {}) => { META[card.id].pending = sched; resume({ ...extra, ...more }); };
+                        sched ? ask(card, to, go) : go();
+                    };
+                    warn ? warnNoResult(card, done) : done();
                 });
+
+                // Keluar dari tahap berjadwal tanpa hasil: konfirmasi. Isi hasil dulu / Tetap pindahkan (tercatat "dipindah tanpa hasil") / Batal (kartu tetap di tahap asal).
+                function warnNoResult(card, done) {
+                    const step = META[card.id].stepName, name = card.title.replace(/</g, '&lt;');
+                    const ov = document.createElement('div');
+                    ov.className = 'rk-ov';
+                    ov.innerHTML = `<div class="rk-box" role="alertdialog" aria-modal="true"><h4>Hasil belum diisi</h4><div class="rk-sub">Hasil ${step} untuk ${name} belum diisi. Pindahkan tanpa hasil?</div>
+                        <div data-pane="ask" class="rk-act" style="flex-wrap:wrap"><button type="button" class="dl-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl-btn sstock-btn-amber" data-x="skip">Tetap pindahkan</button><button type="button" class="dl-btn sstock-btn-teal" data-x="fill">Isi hasil dulu</button></div>
+                        <div data-pane="fill" hidden><label>Hasil (wajib)<select data-f="result"><option value="">Pilih hasil</option><option value="pass">Lulus</option><option value="fail">Tidak lulus</option></select><span class="rk-err" data-e="result"></span></label><label>Catatan<input type="text" maxlength="255" data-f="note"></label><div class="rk-err" data-e="all"></div>
+                        <div class="rk-act"><button type="button" class="dl-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl-btn sstock-btn-teal" data-x="save">Simpan dan pindahkan</button></div></div></div>`;
+                    document.body.appendChild(ov);
+                    const q = (s) => ov.querySelector(s), close = () => ov.remove();
+                    ov.addEventListener('click', async (e) => {
+                        const x = e.target.closest('[data-x]')?.dataset.x;
+                        if (e.target === ov || x === 'cancel') { close(); return; }
+                        if (x === 'skip') { close(); done({ no_result: 1 }); return; }
+                        if (x === 'fill') { q('[data-pane="ask"]').hidden = true; q('[data-pane="fill"]').hidden = false; q('[data-f="result"]').focus(); return; }
+                        if (x === 'save') {
+                            const result = q('[data-f="result"]').value;
+                            q('[data-e="result"]').textContent = result ? '' : 'Pilih hasil.';
+                            if (! result) { return; }
+                            const r = await fetch(RESULT_URL.replace('__ID__', card.id), { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': window.DL_CSRF || '' }, body: JSON.stringify({ result, note: q('[data-f="note"]').value || null }) });
+                            if (! r.ok) { q('[data-e="all"]').textContent = (await r.json().catch(() => ({}))).message || 'Gagal menyimpan.'; return; }
+                            META[card.id].pending = false; close(); done();
+                        }
+                    });
+                }
 
                 function ask(card, to, resume) {
                     const opts = '<option value="">Pilih penilai</option>' + ASSESSORS.map((a) => `<option>${a.replace(/</g, '&lt;')}</option>`).join('');
@@ -129,6 +161,7 @@
 
                 // Tampilan kartu: strip warna sumber, ikon lampiran, jadwal merah bila dalam 24 jam, filter Sumber dan Penilai, menu kolom.
                 const META = @json($meta);
+                const RESULT_URL = @json(route('candidates.result', '__ID__'));
                 const COLORS = { referral: '#639922', online: '#378ADD', walkin: '#EF9F27', other: '#888780' };
                 const flt = { src: '', who: '' };
                 const cardData = (id) => board.dlKanban.cards.find((c) => String(c.id) === String(id));

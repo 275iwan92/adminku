@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 // Log satu perpindahan kartu kandidat di papan: waktu persis, pemindah, tahap asal dan tujuan, dan jadwal yang diisi di pop-up (bila tahap tujuan berjadwal). Hanya ditambah, tidak diubah.
-#[Fillable(['candidate_id', 'from_step_id', 'to_step_id', 'moved_by', 'scheduled_on', 'scheduled_time', 'assessor', 'moved_at'])]
+#[Fillable(['candidate_id', 'from_step_id', 'to_step_id', 'moved_by', 'scheduled_on', 'scheduled_time', 'assessor', 'no_result', 'moved_at'])]
 class CandidateMove extends Model
 {
     protected $table = 'h_recruit_move';
@@ -16,7 +16,7 @@ class CandidateMove extends Model
 
     protected function casts(): array
     {
-        return ['scheduled_on' => 'date', 'moved_at' => 'datetime'];
+        return ['scheduled_on' => 'date', 'moved_at' => 'datetime', 'no_result' => 'boolean'];
     }
 
     public function from(): BelongsTo

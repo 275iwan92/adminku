@@ -178,6 +178,30 @@ class CandidateTest extends TestCase
         $this->assertSame('danger', $this->step('Tes')->tone);
     }
 
+    public function test_leaving_a_scheduled_step_without_result_is_flagged_and_logged(): void
+    {
+        $this->actingAs($this->admin)->post(route('candidates.store'), $this->payload());
+        $c = Candidate::firstOrFail();
+        $when = ['scheduled_on' => '2026-11-05', 'scheduled_time' => '09:30'];
+        $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Interview 1')->id] + $when)->assertOk();
+
+        $meta = $this->get(route('candidates.index'))->viewData('meta')[(string) $c->id];
+        $this->assertTrue($meta['pending']);   // hasil Interview 1 belum diisi: papan menampilkan peringatan
+        $this->assertSame('Interview 1', $meta['stepName']);
+
+        $this->postJson(route('candidates.result', $c), ['result' => ''])->assertStatus(422);
+        $this->postJson(route('candidates.result', $c), ['result' => 'pass', 'note' => 'Baik'])->assertOk();
+        $this->assertFalse($this->get(route('candidates.index'))->viewData('meta')[(string) $c->id]['pending']);
+        $this->assertSame('pass', $c->events()->reorder('id', 'desc')->first()->result);
+        $this->postJson(route('candidates.result', $c), ['result' => 'fail'])->assertStatus(422);   // tidak ada yang menunggu lagi
+
+        $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Tes')->id] + $when + ['no_result' => 1])->assertOk();
+        $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('TTD penawaran')->id, 'no_result' => 1])->assertOk();   // keluar dari Tes tanpa hasil
+        $flags = $c->moves()->get()->pluck('no_result')->all();
+        $this->assertSame([true, true, false], $flags);   // terbaru dulu: TTD, Tes (keduanya ditandai), Interview 1
+        $this->get(route('candidates.show', $c))->assertOk()->assertSee('dipindah tanpa hasil');
+    }
+
     public function test_access_follows_the_group(): void
     {
         $this->actingAs(User::factory()->supervisor()->create())->get(route('candidates.index'))->assertForbidden();
