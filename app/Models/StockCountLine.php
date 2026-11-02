@@ -17,11 +17,6 @@ class StockCountLine extends Model
         return ['system_qty' => 'float', 'unit_cost' => 'float', 'counted_qty' => 'float', 'recount_qty' => 'float', 'skipped' => 'boolean', 'added_manually' => 'boolean', 'entered_at' => 'datetime', 'rev' => 'integer'];
     }
 
-    public function count(): BelongsTo
-    {
-        return $this->belongsTo(StockCount::class, 'stock_count_id');
-    }
-
     public function enteredBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'entered_by');

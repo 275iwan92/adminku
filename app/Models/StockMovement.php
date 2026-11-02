@@ -18,11 +18,6 @@ class StockMovement extends Model
         return ['moved_at' => 'datetime', 'qty' => 'float', 'unit_cost' => 'float', 'balance_qty' => 'float', 'balance_avg_cost' => 'float'];
     }
 
-    public function batch(): BelongsTo
-    {
-        return $this->belongsTo(Batch::class);
-    }
-
     public function document(): BelongsTo
     {
         return $this->belongsTo(StockDocument::class, 'stock_document_id');
