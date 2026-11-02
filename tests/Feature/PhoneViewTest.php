@@ -81,7 +81,7 @@ class PhoneViewTest extends TestCase
         $desktop = $this->actingAs($sup)->withHeader('User-Agent', self::PC)->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('dl-shell', $desktop);
         $this->assertStringNotContainsString('dl-phone__burger', $desktop);
-        $this->assertStringContainsString('dl-dash__quote', $desktop, 'kutipan di latar terang memakai pembungkus dashboard DevLib (teks gelap)');
+        $this->assertStringContainsString('sstock-hero', $desktop, 'Beranda desktop memuat banner hero (menggantikan sapaan dan kutipan)');
 
         $phone = $this->actingAs($sup)->withHeader('User-Agent', self::PHONE)->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('dl-phone__burger', $phone);
