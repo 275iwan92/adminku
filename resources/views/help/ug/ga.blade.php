@@ -37,7 +37,7 @@
 <ul class="g-list">
     <li><b>Hak GA datang dari Grup, bukan dari peran.</b> Menu GA hanya tampil bila Grup Anda diberi modulnya. Administrator melihat semuanya.</li>
     <li>Tiap modul punya dua tingkat: <b>RO</b> (hanya baca: boleh membuka layar) dan <b>RW</b> (baca dan tulis: boleh juga menyimpan, mengirim, dan mengubah). Form Perpanjang Dokumen Kendaraan, Catat Servis Kendaraan, dan Catat Odometer baru bisa dibuka dengan hak <b>RW</b>.</li>
-    <li>Tombol yang tidak boleh Anda pakai tidak tampil. Contoh: tanpa hak RW pada Catat Servis Kendaraan, tombol <span class="g-btn">Catat Servis</span> tidak ada di Monitoring Kendaraan.</li>
+    <li>Tombol yang tidak boleh Anda pakai tidak tampil. Contoh: tanpa hak RW pada Catat Servis Kendaraan, tombol <span class="g-btn">Catat Servis</span> tidak ada di Detail kendaraan.</li>
     <li>Pembagian yang lazim: petugas admin GA mendapat semua modul GA, sopir hanya <b>Catat Odometer</b>. Administrator mengatur ini di menu {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</li>
     <li><b>Pengaturan GA</b> hanya untuk peran Supervisor ke atas: Data Entry tidak bisa memakainya walau Grup-nya dicentang.</li>
     <li><b>Menu GA ringkas:</b> satu butir <b>Perawatan Kendaraan</b> dan satu butir <b>Perawatan AC</b>, tanpa butir Pengaturan terpisah. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
@@ -80,7 +80,7 @@
     <li>Sel dokumen berbunyi tanggal Berlaku sampai dan sisa waktunya, mis. <i>12-03-2027 · 120 hari lagi</i> atau <i>lewat 5 hari</i>. <i>Tidak wajib</i> muncul di KIR untuk mobil penumpang. <i>Belum dicatat</i> berarti belum pernah ada perpanjangan yang dicatat.</li>
     <li>Sel <b>Servis berikutnya</b> menunjuk pekerjaan yang paling dekat jatuh tempo, mis. <i>Oli mesin · 800 km lagi / 20 hari lagi</i>. <i>Tidak ada jadwal</i> berarti Jenis Kendaraannya belum punya rencana perawatan.</li>
     <li>Hanya kendaraan <b>aktif</b> yang tampil. Kendaraan nonaktif tersimpan di {!! $ref('GVK', 'ga-gvk', 'Master Kendaraan') !!}.</li>
-    <li>Tombol <span class="g-btn">Perpanjang Dokumen</span>, <span class="g-btn">Catat Servis</span>, dan <span class="g-btn">Catat Odometer</span> di atas tabel tampil sesuai hak RW Anda.</li>
+    <li>Panel hanya punya satu tombol, <span class="g-btn">Setup</span>. Untuk memperpanjang dokumen, mencatat servis, atau mencatat odometer, buka kendaraannya (klik 2x barisnya atau ikon Buka); tombolnya ada di Detail kendaraan.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">
@@ -124,7 +124,7 @@
 <p>Pengguna yang Grup-nya punya hak <b>RW</b> pada modul Perpanjang Dokumen Kendaraan, biasanya petugas admin GA. Sopir tidak mendapat modul ini.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Perpanjang Dokumen Kendaraan</b>. Dari Detail kendaraan, tekan <span class="g-btn">Perpanjang Dokumen</span> agar kendaraannya sudah terpilih.</li>
+    <li>Buka <b>GA</b> lalu <b>Perawatan Kendaraan</b>, buka kendaraannya, lalu tekan <span class="g-btn">Perpanjang Dokumen</span> (kendaraannya sudah terpilih).</li>
     <li>Pilih <b>Kendaraan</b>.</li>
     <li>Pilih <b>Jenis Dokumen</b>: <i>Pajak tahunan</i>, <i>STNK dan plat 5 tahunan</i>, <i>KIR</i>, atau <i>Asuransi</i>.</li>
     <li>Isi <b>Tanggal Bayar / Uji</b> (bawaan hari ini).</li>
@@ -158,7 +158,7 @@
 <p>Pengguna yang Grup-nya punya hak <b>RW</b> pada modul Catat Servis Kendaraan, biasanya petugas admin GA.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Catat Servis Kendaraan</b>, atau tekan <span class="g-btn">Catat Servis</span> di Detail kendaraan.</li>
+    <li>Buka <b>GA</b> lalu <b>Perawatan Kendaraan</b>, buka kendaraannya, lalu tekan <span class="g-btn">Catat Servis</span>.</li>
     <li>Pilih <b>Kendaraan</b>. Daftar pekerjaan di bawahnya berubah mengikuti jenis kendaraan itu.</li>
     <li>Isi <b>Tanggal Servis</b> (bawaan hari ini) dan <b>Odometer (km)</b> (bawaan odometer terakhir; ketik angka yang sebenarnya).</li>
     <li>Centang <b>Pekerjaan yang Dikerjakan</b> dari jadwal perawatan kendaraan itu. Jadwal tiap pekerjaan yang dicentang mulai lagi dari servis ini.</li>
@@ -190,7 +190,7 @@
 <p>Pengguna yang Grup-nya punya hak <b>RW</b> pada modul Catat Odometer. Ini satu-satunya modul GA untuk sopir.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Catat Odometer</b>.</li>
+    <li>Buka <b>GA</b> lalu <b>Catat Odometer</b> (sopir). Petugas yang punya Perawatan Kendaraan membukanya dari Detail kendaraan lewat tombol <span class="g-btn">Catat Odometer</span>.</li>
     <li>Pilih <b>Kendaraan</b>.</li>
     <li>Isi <b>Tanggal</b> (bawaan hari ini) dan <b>Kilometer</b> (bawaan odometer terakhir; ketik angka di panel).</li>
     <li><b>Dicatat Oleh</b> sudah berisi nama Anda; ubah bila orang lain yang membaca.</li>

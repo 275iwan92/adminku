@@ -212,7 +212,7 @@ class VehicleFormsTest extends TestCase
         $admin = $this->adminGa();
         $this->actingAs($admin);
         $this->get(route('fleet.show', $this->truck))->assertOk()->assertSee('Perpanjang Dokumen')->assertSee('Catat Servis')->assertSee('Catat Odometer');
-        $this->get(route('fleet.index'))->assertOk()->assertSee('Catat Odometer');
+        $this->get(route('fleet.index'))->assertOk()->assertSee('Setup')->assertDontSee('Catat Odometer')->assertDontSee('Perpanjang Dokumen')->assertDontSee('Catat Servis');   // panel: satu tombol Setup; input harian di Detail
         // tombol aksi berwarna (teal / koral / kuning / slate); bilah form bawaan DevLib tidak memakainya
         $this->get(route('fleet.show', $this->truck))->assertSee('sstock-btn-slate', false)->assertSee('sstock-btn-teal', false)->assertSee('sstock-btn-coral', false)->assertSee('sstock-btn-amber', false);
         $this->get(route('vehicle-docs.create'))->assertOk()->assertDontSee('sstock-btn-', false);
