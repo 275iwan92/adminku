@@ -6,7 +6,7 @@
  * Status       : Aktif.
  */
 return [
-    'brand' => ['name' => 'ADMINKU', 'tagline' => 'STOK, GA, HR, PURCHASE', 'logo' => '/media/brand/adminku.svg'],
+    'brand' => ['name' => 'ADMINKU', 'tagline' => 'KERJA JADI RAPI', 'logo' => '/media/brand/adminku.svg'],
 
     // Kop laporan cetak.
     'company' => ['name' => 'Jays', 'tagline' => 'Gudang Maintenance & ATK'],

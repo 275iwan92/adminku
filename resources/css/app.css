@@ -261,3 +261,22 @@ a.sstock-day:hover, a.sstock-day:focus-visible { border-color: var(--dl-accent);
 .sstock-plan__dot.is-segera { background: var(--dl-amber); }
 .sstock-plan__dot.is-terlambat { background: var(--dl-danger); }
 .sstock-plan__dot.is-on { box-shadow: 0 0 0 3px var(--dl-ink-strong); z-index: 2; }
+
+/* REMARK
+ * Tujuan       : Panel kiri (x-dl::layer-menu) AdminKU: warna Slate teal serasi dengan lencana arang bertepi perak dan KU toska, indikator menu aktif koral, dan tulisan merek "Admin" putih + "KU" toska.
+ * Sumber hulu  : token panel DevLib (--dl-side, --dl-side-2, --dl-side-hover, --dl-side-muted, --dl-side-scroll), config('devlib.brand.name') = ADMINKU (teks aslinya disembunyikan; "Admin" dan "KU" dicetak oleh ::before/::after, jadi bila nama merek diganti, ubah dua teks di sini juga).
+ * Output       : hanya tampilan panel kiri desktop; layar masuk dan HP memakai tampilan bawaan.
+ * Status       : Aktif.
+ */
+.dl-lm {
+    --dl-side: #0f2a33;
+    --dl-side-2: #17414a;
+    --dl-side-hover: #164049;
+    --dl-side-muted: #bfd6da;
+    --dl-side-scroll: #2c5a66;
+}
+.dl-lm__a.is-active { background: #17414a; color: #fff; box-shadow: inset 3px 0 0 #ff7a59; }
+.dl-lm__brand b { font-size: 0; display: inline-flex; align-items: baseline; flex-wrap: nowrap; }
+.dl-lm__brand b::before { content: "Admin"; order: 0; font-size: calc(18px * var(--dl-font-scale)); font-weight: 800; color: #fff; letter-spacing: 0; }
+.dl-lm__brand b::after { content: "KU"; order: 1; font-size: calc(18px * var(--dl-font-scale)); font-weight: 800; color: #2dd4bf; letter-spacing: 0; }
+.dl-lm__brand b > * { order: 2; font-size: calc(10px * var(--dl-font-scale)); margin-left: 8px; }
