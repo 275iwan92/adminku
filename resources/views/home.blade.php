@@ -34,6 +34,11 @@
                 // Tangkap dulu (Layer Menu menggambar ulang panel saat klik), buka tab sesudah Layer Menu selesai turun satu layer.
                 if (m && pane === pane.parentElement.firstElementChild) setTimeout(() => shell.dlComponent.openUrlTab('H-' + m.code, 'Beranda ' + m.label, m.open, m.icon));
             }, true);
+            // Judul induk di atas daftar butir ("Stok" dst.) juga bisa diklik: membuka layar pembuka lagi (mis. setelah tabnya ditutup); layer tidak berubah.
+            document.addEventListener('click', e => {
+                const t = e.target.closest('.dl-lm__title'), m = t && opens[t.title];
+                if (m) shell.dlComponent.openUrlTab('H-' + m.code, 'Beranda ' + m.label, m.open, m.icon);
+            });
         })();
     </script>
 @endsection

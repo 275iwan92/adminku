@@ -124,6 +124,13 @@ class OpeningScreenTest extends TestCase
         $this->assertNotContains('STB', collect(Menu::modules($admin))->flatMap(fn ($p) => collect($p['children'])->pluck('code'))->all());   // hak STB tetap ada, tetapi bukan butir menu
     }
 
+    public function test_the_layer_title_above_the_items_is_clickable_and_opens_the_same_screen(): void
+    {
+        $html = $this->actingAs(User::factory()->administrator()->create())->get('/')->assertOk()->getContent();
+        $this->assertStringContainsString("closest('.dl-lm__title')", $html);
+        $this->assertStringContainsString('.dl-lm__title[title]', file_get_contents(resource_path('css/app.css')));
+    }
+
     public function test_phone_group_list_is_replaced_by_the_opening_screen(): void
     {
         $entry = User::factory()->create();

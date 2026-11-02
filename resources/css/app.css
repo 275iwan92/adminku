@@ -444,3 +444,5 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 
 /* Pindah tampilan HP/Desktop otomatis (deteksi perangkat): tombol manual disembunyikan; formulirnya tetap ada karena DevLib memakainya untuk kembali ke desktop saat jendela dilebarkan. */
 .dl-phone__dev, .dl-plogin__desk { display: none !important; }
+.dl-lm__title[title] { cursor: pointer; border-radius: 8px; }
+.dl-lm__title[title]:hover { background: #164049; }
