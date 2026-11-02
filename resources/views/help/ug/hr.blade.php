@@ -33,6 +33,7 @@
     <li>Buka <b>HR</b> lalu <b>Karyawan</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Tab <b>Profil</b>: isi nama, jenis kelamin, tanggal lahir, NIK KTP (16 angka), HP, wilayah dan alamat KTP, serta kontak darurat. Kode karyawan (E-0001 dan seterusnya) terisi sendiri.</li>
     <li>Tab <b>Pekerjaan</b>: pilih <b>Bagian</b>, isi jabatan, <b>Status Kerja</b> (Tetap, Kontrak, Harian, Magang), tanggal masuk, dan <b>Akun Jays</b> bila karyawan ini memakai AdminKU.</li>
+    <li>Di tab <b>Profil</b> unggah <b>Foto Profil</b> (JPG, PNG, atau WEBP) dan <b>Scan KTP</b> (JPG, PNG, WEBP, atau PDF), masing-masing paling besar 5 MB; pilih berkas baru untuk mengganti. Berkas privat: hanya pemegang hak Karyawan yang bisa membukanya.</li>
     <li>Tab <b>Dokumen</b>: tambah KTP, KK, NPWP, SIM, BPJS, dan lainnya dengan nomor dan Berlaku s/d (bila ada). Tab <b>Keluarga</b> dan <b>Kontrak</b> diisi dengan cara sama.</li>
     <li>Tekan <span class="g-btn">Save</span>.</li>
 </ol>

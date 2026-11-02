@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             VehicleSeeder::class,
             AcSeeder::class,
             RecruitmentSeeder::class,
+            EmployeeSampleSeeder::class,
             SampleTransactionSeeder::class,
         ]);
     }

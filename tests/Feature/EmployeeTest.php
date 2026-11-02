@@ -7,7 +7,10 @@ use App\Models\Employee;
 use App\Models\User;
 use App\Models\UserGroup;
 use Carbon\Carbon;
+use Database\Seeders\EmployeeSampleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /* REMARK
@@ -72,6 +75,43 @@ class EmployeeTest extends TestCase
         $this->actingAs($this->admin)->get(route('employees.show', $e))->assertOk();
         $this->actingAs($this->admin)->get(route('employees.index'))->assertOk();
         $this->actingAs($this->admin)->get(route('employees.create'))->assertOk()->assertSee('E-0002');
+    }
+
+    public function test_photo_and_ktp_scan_are_private_files_that_can_be_replaced(): void
+    {
+        Storage::fake('ga');
+        $this->actingAs($this->admin)->post(route('employees.store'), $this->payload(['photo' => UploadedFile::fake()->image('foto.jpg'), 'ktp_file' => UploadedFile::fake()->image('ktp.png')]))->assertRedirect();
+        $e = Employee::firstOrFail();
+        Storage::disk('ga')->assertExists([$e->photo_path, $e->ktp_path]);
+        $this->get(route('employees.file', [$e, 'photo']))->assertOk();
+        $this->get(route('employees.show', $e))->assertOk()->assertSee('foto.jpg');
+
+        $old = $e->photo_path;
+        $this->put(route('employees.update', $e), $this->payload(['photo' => UploadedFile::fake()->image('baru.png')]))->assertRedirect();
+        $e->refresh();
+        $this->assertSame('baru.png', $e->photo_name);
+        Storage::disk('ga')->assertMissing($old);   // berkas lama diganti
+
+        $this->put(route('employees.update', $e), $this->payload(['photo' => UploadedFile::fake()->create('x.exe', 10)]))->assertSessionHasErrors('photo');
+        $this->put(route('employees.update', $e), $this->payload(['ktp_file' => UploadedFile::fake()->create('besar.pdf', 6000, 'application/pdf')]))->assertSessionHasErrors('ktp_file');
+        $this->actingAs(User::factory()->supervisor()->create())->get(route('employees.file', [$e, 'ktp']))->assertForbidden();   // tanpa hak HRE
+    }
+
+    public function test_sample_seeder_makes_two_complete_employees_once(): void
+    {
+        Storage::fake('ga');
+        $this->seed(EmployeeSampleSeeder::class);
+        $this->seed(EmployeeSampleSeeder::class);
+
+        $people = Employee::where('code', 'like', 'E-C%')->with(['family', 'docs', 'contracts'])->orderBy('code')->get();
+        $this->assertSame(['L', 'P'], $people->pluck('gender')->all());
+        foreach ($people as $p) {
+            $this->assertSame(16, strlen($p->nik_ktp));
+            $this->assertGreaterThan(0, $p->family->count() * $p->docs->count() * $p->contracts->count());
+            Storage::disk('ga')->assertExists([$p->photo_path, $p->ktp_path]);
+            $this->assertStringContainsString('CONTOH / DUMMY', Storage::disk('ga')->get($p->ktp_path));
+        }
+        $this->assertSame(0, User::where('username', 'like', '%contoh%')->count());   // tidak membuat akun
     }
 
     public function test_nik_must_be_sixteen_digits_and_unique(): void

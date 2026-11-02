@@ -252,6 +252,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    Route::get('employees/{employee}/file/{kind}', [EmployeeController::class, 'file'])->whereNumber('employee')->whereIn('kind', ['photo', 'ktp'])->name('employees.file');
 
     // HR Kedisiplinan (HRD): penerbitan SP 1 / SP 2 / SP 3 / PHK dengan nomor surat otomatis dan cetak; tidak diubah setelah terbit, hanya dicabut.
     Route::get('disciplines', [DisciplineController::class, 'index'])->name('disciplines.index');
@@ -286,13 +287,13 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('po/{po}', [PurchaseOrderController::class, 'show'])->whereNumber('po')->name('po.show');
     Route::put('po/{po}', [PurchaseOrderController::class, 'update'])->whereNumber('po')->name('po.update');
     Route::get('po/{po}/print', [PurchaseOrderController::class, 'print'])->whereNumber('po')->name('po.print');
-    Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
     // Purchase, Penerimaan Pembelian (PUV): barang datang dari PO; Konfirmasi membuat Penerimaan Barang (RCV) di Stok otomatis.
     Route::get('pv', [PurchaseReceiptController::class, 'index'])->name('pv.index');
     Route::get('pv/create', [PurchaseReceiptController::class, 'create'])->name('pv.create');
     Route::post('pv', [PurchaseReceiptController::class, 'store'])->name('pv.store');
     Route::get('pv/{pv}', [PurchaseReceiptController::class, 'show'])->whereNumber('pv')->name('pv.show');
     Route::put('pv/{pv}', [PurchaseReceiptController::class, 'update'])->whereNumber('pv')->name('pv.update');
+    Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
     Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
     Route::post('recruit-steps', [RecruitStepController::class, 'store'])->name('recruit-steps.store');
     Route::get('recruit-steps/{step}', [RecruitStepController::class, 'show'])->name('recruit-steps.show');

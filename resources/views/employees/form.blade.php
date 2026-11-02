@@ -18,12 +18,16 @@
         $family = array_map(fn ($r) => $r + ['is_deceased' => false], $family);
     @endphp
     @include('partials.flash')
-    <x-dl::form :title="$isNew ? 'Karyawan · Baru' : 'Karyawan · '.raw($employee->code)" :subtitle="$isNew ? null : raw($employee->name)" panel="top" kind="master"
+    <x-dl::form :title="$isNew ? 'Karyawan · Baru' : 'Karyawan · '.raw($employee->code)" :subtitle="$isNew ? null : raw($employee->name)" panel="top" kind="master" enctype="multipart/form-data"
         :tabs="['profile' => 'Profil', 'job' => 'Pekerjaan', 'docs' => 'Dokumen', 'family' => 'Keluarga', 'contracts' => 'Kontrak'] + ($isNew ? [] : ['discipline' => 'Disiplin'])"
         :status="$isNew ? 'new' : ($employee->is_active ? 'active' : 'inactive')" :back="route('employees.index')" :new-url="route('employees.create')"
         :action="$isNew ? route('employees.store') : route('employees.update', $employee)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :created-at="$employee->created_at?->format('Y-m-d H:i:s')" :updated-at="$employee->updated_at?->format('Y-m-d H:i:s')">
         <x-slot:profile>
+            <x-dl::form.row :cols="2">
+                <x-dl::field.upload name="photo" label="Foto Profil" accept="image/jpeg,image/png,image/webp" :value="$employee->photo_path ? ['url' => route('employees.file', [$employee, 'photo']), 'name' => $employee->photo_name] : null" :error="$e('photo')" hint="JPG, PNG, atau WEBP, paling besar 5 MB. Pilih berkas baru untuk mengganti." />
+                <x-dl::field.upload name="ktp_file" label="Scan KTP" accept="image/jpeg,image/png,image/webp,application/pdf" :value="$employee->ktp_path ? ['url' => route('employees.file', [$employee, 'ktp']), 'name' => $employee->ktp_name] : null" :error="$e('ktp_file')" hint="JPG, PNG, WEBP, atau PDF, paling besar 5 MB. Data pribadi: hanya terlihat oleh pemegang hak Karyawan." />
+            </x-dl::form.row>
             <x-dl::form.row :cols="3">
                 <x-dl::field.text name="code" label="Kode Karyawan" :value="$v('code')" code :case-toggle="false" required :readonly="! $isNew" maxlength="20" :error="$e('code')" hint="Unik. Tidak bisa diubah setelah disimpan." />
                 <x-dl::field.text name="name" label="Nama Lengkap" :value="$v('name')" required maxlength="150" :error="$e('name')" />

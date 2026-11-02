@@ -58,6 +58,8 @@ class EmployeeRequest extends FormRequest
             'emergency_name' => ['nullable', 'string', 'max:150'],
             'emergency_relation' => ['nullable', 'string', 'max:50'],
             'emergency_phone' => ['nullable', 'string', 'max:30'],
+            'photo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'ktp_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
             'department_id' => ['required', Rule::exists('m_department', 'id')],
             'position' => ['nullable', 'string', 'max:100'],
             'employment' => ['required', $keys(Employee::EMPLOYMENTS)],
@@ -91,6 +93,10 @@ class EmployeeRequest extends FormRequest
             'exit_date.required' => 'Isi tanggal efektif keluar.',
             'nik_ktp.digits' => 'NIK KTP harus 16 angka.',
             'nik_ktp.unique' => 'NIK KTP ini sudah dipakai karyawan lain.',
+            'photo.mimes' => 'Foto harus JPG, PNG, atau WEBP.',
+            'photo.max' => 'Foto paling besar 5 MB.',
+            'ktp_file.mimes' => 'Scan KTP harus JPG, PNG, WEBP, atau PDF.',
+            'ktp_file.max' => 'Scan KTP paling besar 5 MB.',
             'family.*.nik.digits' => 'NIK anggota keluarga harus 16 angka.',
         ];
     }
@@ -113,6 +119,7 @@ class EmployeeRequest extends FormRequest
             [$data[$p.'_area_level'], $data[$p.'_area_id']] = ($data[$p.'_area'] ?? '') !== '' ? explode(':', $data[$p.'_area']) : [null, null];
             unset($data[$p.'_area']);
         }
+        unset($data['photo'], $data['ktp_file']);   // berkas disimpan terpisah oleh controller
         foreach (['family', 'docs', 'contracts'] as $k) {
             $data[$k] = array_values($data[$k] ?? []);
         }

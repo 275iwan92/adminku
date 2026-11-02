@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 // Karyawan (kepegawaian saja, tanpa gaji). Tidak dihapus: keluar = is_active false + alasan (exit_reason). work_status hanya untuk yang masih aktif.
-#[Fillable(['code', 'name', 'nickname', 'gender', 'birth_place', 'birth_date', 'religion', 'marital', 'nik_ktp', 'npwp', 'phone', 'email', 'ktp_address', 'ktp_area_level', 'ktp_area_id', 'home_address', 'home_area_level', 'home_area_id', 'emergency_name', 'emergency_relation', 'emergency_phone', 'department_id', 'position', 'employment', 'join_date', 'work_status', 'user_id', 'is_active', 'exit_reason', 'exit_date', 'exit_note'])]
+#[Fillable(['code', 'name', 'nickname', 'gender', 'birth_place', 'birth_date', 'religion', 'marital', 'nik_ktp', 'npwp', 'phone', 'email', 'ktp_address', 'ktp_area_level', 'ktp_area_id', 'home_address', 'home_area_level', 'home_area_id', 'emergency_name', 'emergency_relation', 'emergency_phone', 'photo_path', 'photo_name', 'ktp_path', 'ktp_name', 'department_id', 'position', 'employment', 'join_date', 'work_status', 'user_id', 'is_active', 'exit_reason', 'exit_date', 'exit_note'])]
 class Employee extends Model
 {
     protected $table = 'm_employee';

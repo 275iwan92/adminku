@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /* REMARK
  * Tujuan       : Master Karyawan (HR, modul HRE), kepegawaian saja tanpa gaji: profil, pekerjaan, dokumen (nomor + masa berlaku), keluarga, riwayat kontrak, akun Jays opsional.
@@ -59,7 +60,12 @@ class EmployeeController extends Controller
 
     public function store(EmployeeRequest $request): RedirectResponse
     {
-        $employee = DB::transaction(fn () => $this->save(new Employee, $request->employeeData()));
+        $employee = DB::transaction(function () use ($request) {
+            $employee = $this->save(new Employee, $request->employeeData());
+            $this->saveFiles($employee, $request);
+
+            return $employee;
+        });
 
         return redirect()->route('employees.show', $employee)->with('status', 'Karyawan disimpan.');
     }
@@ -86,9 +92,35 @@ class EmployeeController extends Controller
             return redirect()->route('employees.show', $employee)->with('status', 'Karyawan diaktifkan kembali.');
         }
 
-        DB::transaction(fn () => $this->save($employee, $request->employeeData()));
+        DB::transaction(function () use ($request, $employee) {
+            $this->save($employee, $request->employeeData());
+            $this->saveFiles($employee, $request);
+        });
 
         return redirect()->route('employees.show', $employee)->with('status', 'Karyawan disimpan.');
+    }
+
+    // Berkas privat (disk 'ga', folder employee/{id}): foto profil dan scan KTP; berkas baru mengganti yang lama.
+    private function saveFiles(Employee $employee, EmployeeRequest $request): void
+    {
+        foreach (['photo' => 'photo', 'ktp_file' => 'ktp'] as $input => $col) {
+            if (! $request->hasFile($input)) {
+                continue;
+            }
+            $file = $request->file($input);
+            $old = $employee->{$col.'_path'};
+            $employee->update([$col.'_path' => $file->store("employee/{$employee->id}", 'ga'), $col.'_name' => mb_substr($file->getClientOriginalName(), 0, 150)]);
+            $old && Storage::disk('ga')->delete($old);
+        }
+    }
+
+    // Tampil berkas (foto / scan KTP) sebagai gambar; hanya pemegang hak HRE (rute employees.*).
+    public function file(Employee $employee, string $kind)
+    {
+        $path = $employee->{$kind.'_path'};
+        abort_unless($path && Storage::disk('ga')->exists($path), 404);
+
+        return Storage::disk('ga')->response($path, $employee->{$kind.'_name'});
     }
 
     // Keluarga, dokumen, dan kontrak = salinan form: baris lama diganti seluruhnya (tidak ada yang merujuk id barisnya). Kode tidak berubah setelah disimpan.
