@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\Vehicle;
 use App\Models\VehicleType;
+use App\Services\VehicleCare;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -105,7 +106,7 @@ class VehicleMasterTest extends TestCase
 
         $update = ['plate' => 'N 5 A', 'name' => 'Boks', 'vehicle_type_id' => $other->id];
         $this->put(route('vehicles.update', $v), $update)->assertSessionHasNoErrors();   // belum ada servis: jenis boleh diganti
-        \App\Services\VehicleCare::recordService($v->fresh(), ['serviced_at' => today()->toDateString(), 'odometer_km' => 42100, 'cost' => 0, 'jobs' => []], $admin);
+        VehicleCare::recordService($v->fresh(), ['serviced_at' => today()->toDateString(), 'odometer_km' => 42100, 'cost' => 0, 'jobs' => []], $admin);
         $this->put(route('vehicles.update', $v), ['vehicle_type_id' => $type->id] + $update)->assertSessionHasErrors('vehicle_type_id');
         $this->assertSame($other->id, $v->fresh()->vehicle_type_id);
     }
