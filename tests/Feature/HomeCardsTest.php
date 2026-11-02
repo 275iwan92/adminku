@@ -22,9 +22,11 @@ class HomeCardsTest extends TestCase
 
     private const PHONE = 'Mozilla/5.0 (Linux; Android 15; CPH2700) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36';
 
+    private static int $groups = 0;
+
     private function group(array $access): User
     {
-        $group = UserGroup::create(['code' => 'G'.random_int(100, 999), 'name' => 'Grup uji']);
+        $group = UserGroup::create(['code' => 'G'.(100 + ++self::$groups), 'name' => 'Grup uji']);
         $group->syncAccess($access);
 
         return User::factory()->create(['group_id' => $group->id]);
