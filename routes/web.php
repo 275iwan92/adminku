@@ -7,6 +7,10 @@
  * Status       : Aktif.
  */
 
+use App\Http\Controllers\AcAreaController;
+use App\Http\Controllers\AcRoomController;
+use App\Http\Controllers\AcUnitController;
+use App\Http\Controllers\AcVendorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
@@ -222,6 +226,17 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('vehicle-types/{type}', [VehicleTypeController::class, 'show'])->name('vehicle-types.show');
     Route::put('vehicle-types/{type}', [VehicleTypeController::class, 'update'])->name('vehicle-types.update');
     Route::post('vehicle-types/{type}/toggle', [VehicleTypeController::class, 'toggle'])->name('vehicle-types.toggle');
+
+    // GA Perawatan AC, master: Unit AC (GAK), Area dan Gedung (GAA, termasuk gambar denah), Ruang (GAR), Vendor (GAE); hak per modul lewat Grup.
+    foreach (['ac-units' => [AcUnitController::class, 'unit'], 'ac-areas' => [AcAreaController::class, 'area'], 'ac-rooms' => [AcRoomController::class, 'room'], 'ac-vendors' => [AcVendorController::class, 'vendor']] as $path => [$controller, $param]) {
+        Route::get($path, [$controller, 'index'])->name("{$path}.index");
+        Route::get("{$path}/create", [$controller, 'create'])->name("{$path}.create");
+        Route::post($path, [$controller, 'store'])->name("{$path}.store");
+        Route::get("{$path}/{{$param}}", [$controller, 'show'])->whereNumber($param)->name("{$path}.show");
+        Route::put("{$path}/{{$param}}", [$controller, 'update'])->whereNumber($param)->name("{$path}.update");
+        Route::post("{$path}/{{$param}}/toggle", [$controller, 'toggle'])->whereNumber($param)->name("{$path}.toggle");
+    }
+    Route::get('ac-areas/{area}/plan', [AcAreaController::class, 'plan'])->whereNumber('area')->name('ac-areas.plan');
 
     Route::prefix('reports')->controller(ReportController::class)->group(function () {
         Route::get('stock-card', 'stockCard')->name('reports.stock-card');

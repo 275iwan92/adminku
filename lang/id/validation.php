@@ -71,6 +71,7 @@ return [
         'lines.*.expiry_date' => 'tanggal kedaluwarsa',
         'conversions.*.to_unit' => 'satuan tujuan', 'conversions.*.factor' => 'faktor',
         'plate' => 'plat nomor', 'vehicle_id' => 'kendaraan', 'vehicle_type_id' => 'jenis kendaraan', 'year' => 'tahun', 'vin' => 'no. rangka', 'engine_no' => 'no. mesin', 'kir_required' => 'wajib KIR', 'odometer_km' => 'odometer', 'km' => 'kilometer',
+        'asset_code' => 'kode aset', 'room_id' => 'ruang', 'area_id' => 'area', 'brand' => 'merek', 'capacity_pk' => 'kapasitas (PK)', 'installed_at' => 'tanggal pasang', 'pos_x' => 'titik kiri', 'pos_y' => 'titik atas', 'last_wash_at' => 'cuci rutin terakhir', 'last_major_at' => 'servis besar terakhir', 'x' => 'kiri', 'y' => 'atas', 'w' => 'lebar', 'h' => 'tinggi', 'pic_name' => 'nama PIC', 'pic_phone' => 'WhatsApp PIC', 'pic_email' => 'e-mail PIC', 'plan' => 'denah',
         'plans' => 'rencana perawatan', 'plans.*.name' => 'nama pekerjaan', 'plans.*.interval_km' => 'interval km', 'plans.*.interval_months' => 'interval bulan',
         'doc_type' => 'jenis dokumen', 'paid_at' => 'tanggal bayar', 'valid_until' => 'berlaku sampai', 'doc_no' => 'no. dokumen', 'cost' => 'biaya', 'attachment' => 'lampiran', 'serviced_at' => 'tanggal servis', 'workshop' => 'bengkel', 'jobs' => 'pekerjaan', 'jobs.*' => 'pekerjaan', 'photo' => 'foto', 'read_at' => 'tanggal', 'recorded_by' => 'dicatat oleh',
     ],
