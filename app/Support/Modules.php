@@ -21,6 +21,7 @@ final class Modules
         'MST' => ['Data Master', 'fa-solid fa-boxes-stacked'],
         'TRX' => ['Transaksi', 'fa-solid fa-right-left'],
         'RPT' => ['Laporan', 'fa-solid fa-chart-column'],
+        'GA' => ['GA', 'fa-solid fa-building-user'],
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
 
@@ -48,6 +49,8 @@ final class Modules
             'R-OUT' => ['RPT', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.issuance', 'entry', ['reports.issuance']],
             'R-EXP' => ['RPT', 'Laporan Kedaluwarsa', 'fa-solid fa-hourglass-end', 'report', 'reports.expiry', 'entry', ['reports.expiry']],
             'R-ADJ' => ['RPT', 'Laporan Opname & Penyesuaian', 'fa-solid fa-file-circle-check', 'report', 'reports.adjustment', 'supervisor', ['reports.adjustment']],
+            'GVK' => ['GA', 'Master Kendaraan', 'fa-solid fa-truck-pickup', 'grid', 'vehicles.index', 'entry', ['vehicles.']],
+            'GVT' => ['GA', 'Jenis Kendaraan', 'fa-solid fa-list-check', 'grid', 'vehicle-types.index', 'entry', ['vehicle-types.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
@@ -65,10 +68,10 @@ final class Modules
         return self::LEVELS[$level] >= self::LEVELS[$min];
     }
 
-    // Modul bawaan satu peran (dipakai Grup bawaan dan pengguna tanpa Grup).
+    // Modul bawaan satu peran (dipakai Grup bawaan dan pengguna tanpa Grup). Keamanan dan GA tidak otomatis: GA hanya lewat hak Grup (Administrator penuh).
     public static function defaults(string $level): array
     {
-        return array_keys(array_filter(self::all(), fn ($m) => $m[0] !== 'SEC' && self::levelAllows($m[5], $level)));
+        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA'], true) && self::levelAllows($m[5], $level)));
     }
 
     // Kode modul yang menjaga rute ini (null = rute bebas, mis. beranda, logout, lookup).

@@ -7,6 +7,7 @@
  * Status       : Aktif.
  */
 return [
+    'after' => ':Attribute harus setelah :date.',
     'after_or_equal' => ':Attribute tidak boleh sebelum :date.',
     'array' => ':Attribute harus berupa daftar.',
     'before_or_equal' => ':Attribute tidak boleh setelah hari ini.',
@@ -36,6 +37,7 @@ return [
         'numeric' => ':Attribute tidak boleh lebih dari :max.',
         'string' => ':Attribute tidak boleh lebih dari :max karakter.',
     ],
+    'mimes' => ':Attribute harus berjenis :values.',
     'mimetypes' => 'Jenis berkas :attribute tidak didukung.',
     'min' => [
         'array' => ':Attribute minimal :min item.',
@@ -45,6 +47,7 @@ return [
     ],
     'not_in' => ':Attribute yang dipilih tidak valid.',
     'numeric' => ':Attribute harus berupa angka.',
+    'prohibited' => ':Attribute tidak boleh diisi.',
     'qty_scale' => ':Attribute paling banyak 3 angka desimal (mis. 1,125); tidak dibulatkan otomatis.',
     'regex' => 'Format :attribute tidak valid.',
     'required' => ':Attribute wajib diisi.',
@@ -53,6 +56,7 @@ return [
     'required_without' => ':Attribute wajib diisi bila :values tidak diisi.',
     'string' => ':Attribute harus berupa teks.',
     'unique' => ':Attribute sudah dipakai.',
+    'uploaded' => ':Attribute gagal diunggah (mungkin terlalu besar).',
 
     'attributes' => [
         'login' => 'username / e-mail', 'password' => 'password', 'password_confirmation' => 'konfirmasi password',
@@ -65,5 +69,8 @@ return [
         'lines.*.batch_id' => 'barang', 'lines.*.item_id' => 'barang', 'lines.*.qty' => 'jumlah', 'lines.*.unit' => 'satuan', 'lines.*.unit_cost' => 'harga', 'lines.*.counted_qty' => 'jumlah hitung', 'lines.*.note' => 'catatan baris',
         'lines.*.expiry_date' => 'tanggal kedaluwarsa',
         'conversions.*.to_unit' => 'satuan tujuan', 'conversions.*.factor' => 'faktor',
+        'plate' => 'plat nomor', 'vehicle_id' => 'kendaraan', 'vehicle_type_id' => 'jenis kendaraan', 'year' => 'tahun', 'vin' => 'no. rangka', 'engine_no' => 'no. mesin', 'kir_required' => 'wajib KIR', 'odometer_km' => 'odometer', 'km' => 'kilometer',
+        'plans' => 'rencana perawatan', 'plans.*.name' => 'nama pekerjaan', 'plans.*.interval_km' => 'interval km', 'plans.*.interval_months' => 'interval bulan',
+        'doc_type' => 'jenis dokumen', 'paid_at' => 'tanggal bayar', 'valid_until' => 'berlaku sampai', 'doc_no' => 'no. dokumen', 'cost' => 'biaya', 'attachment' => 'lampiran', 'serviced_at' => 'tanggal servis', 'workshop' => 'bengkel', 'jobs' => 'pekerjaan', 'jobs.*' => 'pekerjaan', 'photo' => 'foto', 'read_at' => 'tanggal', 'recorded_by' => 'dicatat oleh',
     ],
 ];

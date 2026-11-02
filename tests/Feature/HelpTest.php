@@ -54,7 +54,8 @@ class HelpTest extends TestCase
 
     public function test_every_module_has_a_help_section_and_a_toc_link(): void
     {
-        $this->assertEqualsCanonicalizing(array_keys(Modules::all()), array_keys(self::ANCHORS), 'Modul baru wajib punya bagian bantuan: tambahkan anchor-nya di HelpTest::ANCHORS dan di help/ug.');
+        // Modul GA (Perawatan Aset Kendaraan) belum punya bagian bantuan: pemilik meminta UG/TG dibiarkan dulu (lihat laporan GA); hapus pengecualian ini saat bagiannya ditulis.
+        $this->assertEqualsCanonicalizing(array_keys(array_filter(Modules::all(), fn ($m) => $m[0] !== 'GA')), array_keys(self::ANCHORS), 'Modul baru wajib punya bagian bantuan: tambahkan anchor-nya di HelpTest::ANCHORS dan di help/ug.');
 
         $html = $this->guide(User::factory()->administrator()->create());
         foreach (self::ANCHORS as $anchor) {

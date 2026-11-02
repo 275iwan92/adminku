@@ -28,6 +28,8 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VehicleTypeController;
 use Illuminate\Support\Facades\Route;
 
 // Pilihan tampilan HP / Desktop (cookie ui): juga dipakai tamu (popup dan halaman login HP); tanpa login karena hanya menyimpan cookie.
@@ -54,8 +56,8 @@ Route::get('company/logo', [CompanyController::class, 'logo'])->name('company.lo
 
 Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
-    // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung, Kendaraan, AC; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'kendaraan', 'ac', 'employee', 'recruitment', 'pr', 'po', 'pv'])->name('soon');
+    // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung dan AC; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'ac', 'employee', 'recruitment', 'pr', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
@@ -192,6 +194,20 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::post('{count}/items', 'addItem')->name('stock-counts.items');
         Route::post('{count}/finish', 'finish')->name('stock-counts.finish');
     });
+
+    // GA Perawatan Aset Kendaraan: master Kendaraan (GVK) dan Jenis Kendaraan beserta rencana perawatannya (GVT); hak per modul lewat Grup.
+    Route::get('vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
+    Route::get('vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
+    Route::post('vehicles', [VehicleController::class, 'store'])->name('vehicles.store');
+    Route::get('vehicles/{vehicle}', [VehicleController::class, 'show'])->name('vehicles.show');
+    Route::put('vehicles/{vehicle}', [VehicleController::class, 'update'])->name('vehicles.update');
+    Route::post('vehicles/{vehicle}/toggle', [VehicleController::class, 'toggle'])->name('vehicles.toggle');
+    Route::get('vehicle-types', [VehicleTypeController::class, 'index'])->name('vehicle-types.index');
+    Route::get('vehicle-types/create', [VehicleTypeController::class, 'create'])->name('vehicle-types.create');
+    Route::post('vehicle-types', [VehicleTypeController::class, 'store'])->name('vehicle-types.store');
+    Route::get('vehicle-types/{type}', [VehicleTypeController::class, 'show'])->name('vehicle-types.show');
+    Route::put('vehicle-types/{type}', [VehicleTypeController::class, 'update'])->name('vehicle-types.update');
+    Route::post('vehicle-types/{type}/toggle', [VehicleTypeController::class, 'toggle'])->name('vehicle-types.toggle');
 
     Route::prefix('reports')->controller(ReportController::class)->group(function () {
         Route::get('stock-card', 'stockCard')->name('reports.stock-card');
