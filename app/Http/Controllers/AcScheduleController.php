@@ -46,13 +46,14 @@ class AcScheduleController extends Controller
         $over = AcCare::overview($units);
         $areaId = (int) Text::of($request->query('area'));
         $all = Text::of($request->query('show')) === 'semua';
+        $pick = (int) Text::of($request->query('pick'));   // AC yang ditandai dari kartu Denah AC
         $rows = $units->filter(fn ($u) => ! $areaId || $u->room->area_id === $areaId)
-            ->filter(fn ($u) => $all || $over[$u->id]['open'] || $over[$u->id]['status'] !== 'aman')
+            ->filter(fn ($u) => $all || $u->id === $pick || $over[$u->id]['open'] || $over[$u->id]['status'] !== 'aman')
             ->sortBy([fn ($a, $b) => (bool) $over[$a->id]['open'] <=> (bool) $over[$b->id]['open'], fn ($a, $b) => $over[$a->id]['days'] <=> $over[$b->id]['days'], fn ($a, $b) => strcmp($a->asset_code, $b->asset_code)])
             ->map(fn (AcUnit $u) => ['unit' => $u, 'o' => $over[$u->id]])->values();
 
         return view('ac-schedule.index', [
-            'vendors' => $vendors, 'vendorId' => $vendorId, 'calendar' => $calendar, 'week' => $week, 'selected' => $selected, 'cap' => $cap, 'rows' => $rows,
+            'vendors' => $vendors, 'vendorId' => $vendorId, 'calendar' => $calendar, 'week' => $week, 'selected' => $selected, 'cap' => $cap, 'rows' => $rows, 'pick' => $pick,
             'areas' => AcArea::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id')->all(), 'areaId' => $areaId, 'all' => $all,
             'time' => AcCare::startTime(), 'days' => AcCare::dayNames($allowed), 'window' => AcCare::timeText(AcCare::startTime()).' - '.AcCare::timeText(AcCare::endTime()),
             'summary' => [

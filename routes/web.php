@@ -8,6 +8,7 @@
  */
 
 use App\Http\Controllers\AcAreaController;
+use App\Http\Controllers\AcPlanController;
 use App\Http\Controllers\AcRoomController;
 use App\Http\Controllers\AcScheduleController;
 use App\Http\Controllers\AcUnitController;
@@ -234,6 +235,9 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('ac-schedule', [AcScheduleController::class, 'store'])->name('ac-schedule.store');
     Route::post('ac-schedule/auto', [AcScheduleController::class, 'auto'])->name('ac-schedule.auto');
     Route::post('ac-schedule/capacity', [AcScheduleController::class, 'capacity'])->name('ac-schedule.capacity');
+    // GA Perawatan AC, Denah (GAD): denah per area dengan titik AC; gambar denah hanya lewat controller.
+    Route::get('ac-plan', [AcPlanController::class, 'index'])->name('ac-plan.index');
+    Route::get('ac-plan/image/{area}', [AcPlanController::class, 'image'])->whereNumber('area')->name('ac-plan.image');
     // GA Perawatan AC, Kunjungan (GAV): daftar, layar satu pesanan, tahap berurutan, foto bukti, Berita Acara cetak.
     Route::get('ac-visits', [AcVisitController::class, 'index'])->name('ac-visits.index');
     Route::get('ac-visits/file/{line}/{kind}', [AcVisitController::class, 'file'])->whereNumber('line')->whereIn('kind', ['before', 'after'])->name('ac-visits.file');

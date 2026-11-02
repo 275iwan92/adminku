@@ -57,6 +57,7 @@ final class Modules
             'GVT' => ['GA', 'Jenis Kendaraan', 'fa-solid fa-list-check', 'grid', 'vehicle-types.index', 'entry', ['vehicle-types.']],
             'GAS' => ['GA', 'Penjadwalan AC', 'fa-solid fa-calendar-check', 'form', 'ac-schedule.index', 'entry', ['ac-schedule.']],
             'GAV' => ['GA', 'Kunjungan AC', 'fa-solid fa-truck-fast', 'grid', 'ac-visits.index', 'entry', ['ac-visits.']],
+            'GAD' => ['GA', 'Denah AC', 'fa-solid fa-map-location-dot', 'form', 'ac-plan.index', 'entry', ['ac-plan.']],
             'GAK' => ['GA', 'Master AC', 'fa-solid fa-snowflake', 'grid', 'ac-units.index', 'entry', ['ac-units.']],
             'GAA' => ['GA', 'Area dan Gedung AC', 'fa-solid fa-building', 'grid', 'ac-areas.index', 'entry', ['ac-areas.']],
             'GAR' => ['GA', 'Ruang AC', 'fa-solid fa-door-open', 'grid', 'ac-rooms.index', 'entry', ['ac-rooms.']],

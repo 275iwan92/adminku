@@ -1,7 +1,7 @@
 {{-- REMARK
  Tujuan       : Penjadwalan AC (GA, modul GAS), satu layar: kotak ringkasan (total AC, terlambat dicuci, jatuh tempo dalam ambang, terjadwal minggu ini), kalender minggu Senin-Sabtu dengan isi / kapasitas per hari (klik hari = tanggal
                 kunjungan terpilih; hari penuh bertanda), daftar AC yang perlu dibersihkan (centang, paling terlambat dulu, saring per area), tombol Jadwalkan yang dipilih, Susun otomatis, dan pemilih kapasitas harian.
- Sumber hulu  : AcScheduleController@index (vendors, vendorId, calendar, week, selected, cap, rows, areas, areaId, all, time, days, window, summary, canWrite, canVisits, dateText, left).
+ Sumber hulu  : AcScheduleController@index (vendors, vendorId, calendar, week, selected, cap, rows, pick, areas, areaId, all, time, days, window, summary, canWrite, canVisits, dateText, left).
  Input        : lihat sumber hulu.
  Output       : GET saring (vendor, area, tampilan); POST ac-schedule.store / auto / capacity.
  Dipakai oleh : route ac-schedule.index (menu GA > Penjadwalan AC).
@@ -96,7 +96,7 @@
                             @php($o = $r['o'])
                             <tr>
                                 <td data-label="Pilih">
-                                    <input type="checkbox" name="units[]" value="{{ $u->id }}" aria-label="Pilih {{ $u->label() }}" @checked(in_array($u->id, $oldUnits)) @disabled($o['open'] || ! $canWrite)>
+                                    <input type="checkbox" name="units[]" value="{{ $u->id }}" aria-label="Pilih {{ $u->label() }}" @checked(in_array($u->id, $oldUnits) || $u->id === $pick) @disabled($o['open'] || ! $canWrite)>
                                 </td>
                                 <td data-label="AC dan lokasi"><b>{{ $u->label() }}</b><br><small>{{ $u->room->area->name }} · {{ $u->room->name }} · {{ $u->typeText() }}</small></td>
                                 <td data-label="Terakhir dicuci">{{ $o['last_wash']?->format('d-m-Y') ?? 'Belum tercatat' }}</td>
