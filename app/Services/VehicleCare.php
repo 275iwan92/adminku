@@ -153,14 +153,16 @@ final class VehicleCare
             ];
         }
 
+        // Pemakaian rata-rata (km per hari) sejak odometer awal: dipakai mengubah sisa km menjadi perkiraan hari, supaya butir "terdekat" bisa dibandingkan antara butir berbasis km dan berbasis bulan.
+        $rate = $base ? max(0, ($v->odometer_km - $base->km) / max(1, self::days(Carbon::parse($base->read_at->toDateString()), $today))) : 0;
         $items = [];
         foreach ($v->type->plans as $plan) {
             /** @var VehicleTypePlan $plan */
-            $item = self::item($v, $plan, $last[$plan->id] ?? null, $base, $today, $soonDays, $soonKm);
+            $item = self::item($v, $plan, $last[$plan->id] ?? null, $base, $today, $soonDays, $soonKm, $rate);
             $rank[] = $item['status'];
             $items[] = $item;
         }
-        $next = collect($items)->sortByDesc(fn ($i) => [self::RANK[$i['status']], $i['ratio']])->first();
+        $next = collect($items)->sortBy([fn ($a, $b) => self::RANK[$b['status']] <=> self::RANK[$a['status']], fn ($a, $b) => $a['eta'] <=> $b['eta']])->first();   // terburuk dulu, lalu yang paling cepat jatuh tempo
 
         return [
             'status' => collect($rank)->sortByDesc(fn ($s) => self::RANK[$s])->first() ?? 'aman',
@@ -168,7 +170,7 @@ final class VehicleCare
         ];
     }
 
-    private static function item(Vehicle $v, VehicleTypePlan $plan, ?array $last, ?VehicleOdometer $base, Carbon $today, int $soonDays, int $soonKm): array
+    private static function item(Vehicle $v, VehicleTypePlan $plan, ?array $last, ?VehicleOdometer $base, Carbon $today, int $soonDays, int $soonKm, float $rate): array
     {
         // Dasar hitungan: servis terakhir butir ini; belum pernah = catatan odometer awal; tanpa keduanya = hari ini (belum ada yang jatuh tempo).
         $baseAt = $last['at'] ?? ($base ? Carbon::parse($base->read_at->toDateString()) : $today->copy());
@@ -191,7 +193,7 @@ final class VehicleCare
             'plan' => $plan, 'name' => $plan->name, 'interval' => $plan->intervalLabel(), 'done' => $last !== null,
             'last_at' => $last['at'] ?? null, 'last_km' => $last['km'] ?? null, 'base_at' => $baseAt, 'base_km' => $baseKm,
             'next_km' => $nextKm, 'next_at' => $nextAt, 'km_left' => $kmLeft, 'days_left' => $daysLeft,
-            'ratio' => $ratio, 'progress' => (int) round(max(0, min(1, $ratio)) * 100), 'status' => $status,
+            'ratio' => $ratio, 'eta' => min(array_filter([$daysLeft, $kmLeft !== null && $rate > 0 ? $kmLeft / $rate : null], fn ($d) => $d !== null) ?: [PHP_INT_MAX]), 'progress' => (int) round(max(0, min(1, $ratio)) * 100), 'status' => $status,
             'text' => $plan->name.' · '.$left, 'left' => $left,
         ];
     }

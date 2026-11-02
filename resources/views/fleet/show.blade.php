@@ -89,7 +89,7 @@
                             </td>
                             <td data-label="Berikutnya">{{ collect([$i['next_km'] !== null ? VehicleCare::km($i['next_km']) : null, $i['next_at']?->format('d-m-Y')])->filter()->implode(' / ') }}</td>
                             <td data-label="Sisa">{{ $i['left'] }}</td>
-                            <td data-label="Kemajuan"><x-dl::progress :value="$i['progress']" :tone="$badge($i['status'])" :label="$i['progress'].'%'" /></td>
+                            <td data-label="Kemajuan"><x-dl::progress :value="$i['progress']" :tone="$badge($i['status'])" label="Terpakai" /></td>
                             <td data-label="Status"><x-dl::badge :tone="$badge($i['status'])" :label="$label($i['status'])" /></td>
                         </tr>
                     @endforeach
