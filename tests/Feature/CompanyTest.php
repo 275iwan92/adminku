@@ -32,7 +32,7 @@ class CompanyTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->storage = sys_get_temp_dir().DIRECTORY_SEPARATOR.'stoku-test-'.bin2hex(random_bytes(4));
+        $this->storage = sys_get_temp_dir().DIRECTORY_SEPARATOR.'adminku-test-'.bin2hex(random_bytes(4));
         mkdir($this->storage.DIRECTORY_SEPARATOR.'app', 0777, true);
         $this->app->useStoragePath($this->storage);
     }
@@ -212,11 +212,11 @@ class CompanyTest extends TestCase
         $this->get(route('stock-counts.sheet', $count))->assertOk()->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi');
     }
 
-    public function test_the_application_name_stays_stoku_on_the_login_page(): void
+    public function test_the_application_name_stays_adminku_on_the_login_page(): void
     {
         $this->save(['name' => 'PT Lain Sekali']);
         auth()->logout();
-        $this->get(route('login'))->assertOk()->assertSee('STOKU')->assertDontSee('PT Lain Sekali');
+        $this->get(route('login'))->assertOk()->assertSee('ADMINKU')->assertDontSee('PT Lain Sekali');
     }
 
     public function test_the_company_module_is_granted_to_supervisor_level_groups_only(): void

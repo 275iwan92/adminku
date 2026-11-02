@@ -1,7 +1,7 @@
 <?php
 
 /* REMARK
- * Tujuan       : Pengaturan khas Stoku. sample_refresh = layar Administrator "Data Contoh" boleh menghapus seluruh data lalu mengisi ulang data contoh.
+ * Tujuan       : Pengaturan khas AdminKU. sample_refresh = layar Administrator "Data Contoh" boleh menghapus seluruh data lalu mengisi ulang data contoh.
  *                Bawaan: aktif selain di production; di production wajib dinyalakan sengaja lewat SSTOCK_SAMPLE_REFRESH=true.
  *                super_admin = satu akun (username + hash kata sandi, dari .env) yang SATU-SATUNYA boleh menyegarkan data contoh, di lingkungan mana pun termasuk production;
  *                dibuat ulang oleh UserSeeder setiap penyegaran. Kosong = aturan lama (sakelar sample_refresh, semua Administrator).

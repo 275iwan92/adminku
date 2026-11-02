@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Layar Master Data > Perusahaan (Single Form kind=master, satu data): nama, nama PT / CV, NPWP, telepon, e-mail, alamat, logo (unggah, pratinjau, Hapus logo) dan tampilan kop (tiga pilihan) dengan PRATINJAU KOP langsung di browser.
-                Datanya menjadi satu-satunya sumber kop semua cetakan (App\Support\Company). Aplikasi tetap bernama STOKU; hanya kop cetakan yang berubah.
+                Datanya menjadi satu-satunya sumber kop semua cetakan (App\Support\Company). Aplikasi tetap bernama ADMINKU; hanya kop cetakan yang berubah.
  Sumber hulu  : CompanyController@edit (company = Company::get(), logoUrl).
  Input        : company, logoUrl.
  Output       : PUT company.update (multipart: logo).

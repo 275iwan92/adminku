@@ -16,7 +16,7 @@ final class Indonesian
 {
     public static function register(): void
     {
-        Lang::extend(['pr_printed_from' => ['Dicetak dari Stoku', 'Printed from Stoku']]);
+        Lang::extend(['pr_printed_from' => ['Dicetak dari AdminKU', 'Printed from AdminKU']]);
         Lang::translateUsing(fn (string $en, string $lang) => $lang === 'id' ? (self::WORDS[$en] ?? null) : null);
     }
 
@@ -34,7 +34,7 @@ final class Indonesian
         // Judul halaman
         'Home' => 'Beranda', 'Sign in' => 'Masuk', 'Items' => 'Barang', 'Item' => 'Barang', 'Suppliers' => 'Supplier', 'Supplier' => 'Supplier', 'Units' => 'Satuan', 'Unit' => 'Satuan',
         'Stock Card' => 'Kartu Stok', 'Summary Stock' => 'Ringkasan Stok', 'Receiving Report' => 'Laporan Penerimaan', 'Issuance Report' => 'Laporan Pengeluaran',
-        'Opname & Adjustment Report' => 'Laporan Opname & Penyesuaian', 'Stoku' => 'Stoku',
+        'Opname & Adjustment Report' => 'Laporan Opname & Penyesuaian', 'AdminKU' => 'AdminKU',
         'Supplier · ' => 'Supplier · ',
 
         // Beranda

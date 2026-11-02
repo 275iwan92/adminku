@@ -9,7 +9,7 @@ use App\Models\StockMovement;
 use Devlib\Engine\LeadTime;
 
 /* REMARK
- * Tujuan       : Menyambung engine LeadTime DevLib ke Stoku: lead time per barang dari pesanan nyata (i_reorder_order: tanggal pesan sampai tanggal masuk), dengan lead time manual barang (m_item.lead_time_days) sebagai cadangan.
+ * Tujuan       : Menyambung engine LeadTime DevLib ke AdminKU: lead time per barang dari pesanan nyata (i_reorder_order: tanggal pesan sampai tanggal masuk), dengan lead time manual barang (m_item.lead_time_days) sebagai cadangan.
  *                Tanggal masuk = penerimaan PERTAMA (first_received_at), juga untuk pesanan yang masih diterima sebagian. Pesanan tanpa penerimaan (termasuk yang ditutup manual tanpa penerimaan) tidak dihitung; bila penerimaan dibatalkan, ReorderOrders::reconcile mengosongkannya lagi.
  *                Hanya SARAN dan keterangan: tidak mengubah lead time manual, titik pesan ulang, aturan penutupan pesanan, maupun perhitungan peringatan.
  * Sumber hulu  : i_reorder_order, m_item.lead_time_days (0 = belum diisi, dianggap tanpa cadangan), rm_stockcard (pemakaian harian).

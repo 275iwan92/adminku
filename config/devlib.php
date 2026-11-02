@@ -1,15 +1,15 @@
 <?php
 
 /* REMARK
- * Tujuan       : Konfigurasi DevLib untuk Stoku (stok sederhana) (identitas, bahasa, zona waktu, media login, hak akses komponen).
+ * Tujuan       : Konfigurasi DevLib untuk AdminKU (stok, GA, HR, purchase; perusahaan Jays) (identitas, bahasa, zona waktu, media login, hak akses komponen).
  * Dipakai oleh : Devlib\* (Brand, Frame, Locale, Access, Report/PrintOut).
  * Status       : Aktif.
  */
 return [
-    'brand' => ['name' => 'STOKU', 'tagline' => 'STOK SEDERHANA', 'logo' => '/media/brand/stoku.svg'],
+    'brand' => ['name' => 'ADMINKU', 'tagline' => 'STOK, GA, HR, PURCHASE', 'logo' => '/media/brand/adminku.svg'],
 
     // Kop laporan cetak.
-    'company' => ['name' => 'Stoku', 'tagline' => 'Gudang Maintenance & ATK'],
+    'company' => ['name' => 'Jays', 'tagline' => 'Gudang Maintenance & ATK'],
 
     'lang' => env('DEVLIB_LANG', 'id'),
 

@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="{{ \Devlib\Device::viewport(request()) }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ \Devlib\Lang::text($title ?? 'Stoku') }} — Stoku</title>
+    <title>{{ \Devlib\Lang::text($title ?? config('app.name')) }} — {{ config('app.name') }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ \Devlib\DevlibServiceProvider::asset('devlib.css') }}">

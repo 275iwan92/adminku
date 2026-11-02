@@ -41,8 +41,8 @@
 
 .sstock-name .dl-input { font-size: 1.5rem; font-weight: 600; height: 3rem; }
 
-/* Logo Stoku (SVG berwarna) menggantikan kotak gradasi bawaan DevLib di semua tempat lencana logo tampil (sidebar, kotak login, pojok login). */
-.dl-logo-badge { background: url('/media/brand/stoku.svg') center / contain no-repeat; }
+/* Logo AdminKU (SVG berwarna) menggantikan kotak gradasi bawaan DevLib di semua tempat lencana logo tampil (sidebar, kotak login, pojok login). */
+.dl-logo-badge { background: url('/media/brand/adminku.svg') center / contain no-repeat; }
 .dl-logo-badge > img { width: 100%; height: 100%; object-fit: contain; display: block; background: transparent; border-radius: 0; }
 
 /* Layar di dalam tab Layer Shell diberi jarak kiri / kanan / bawah supaya tidak menempel ke menu. Login dan layar utama (shell) memakai kelas sstock-bare: tanpa jarak. */
@@ -174,7 +174,7 @@ body.dl-body:has(.sstock-guide) { overflow-y: auto; }
 .dl-psheet__tbl td.sstock-write { height: 9mm; }
 
 /* REMARK
- * Tujuan       : Tampilan HP Stoku (smartphone potret): kartu Beranda / daftar modul dan layar Hitung Opname satu barang per kartu. Hanya token DevLib; sasaran sentuh >= 44px, isian 16px ke atas.
+ * Tujuan       : Tampilan HP AdminKU (smartphone potret): kartu Beranda / daftar modul dan layar Hitung Opname satu barang per kartu. Hanya token DevLib; sasaran sentuh >= 44px, isian 16px ke atas.
  * Sumber hulu  : x-dl::phone-shell (DevLib), token --dl-*.
  * Dipakai oleh : resources/views/hp/*.
  */

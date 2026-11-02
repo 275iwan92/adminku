@@ -7,7 +7,7 @@ use Illuminate\Validation\ValidationException;
 
 /* REMARK
  * Tujuan       : Data perusahaan untuk KOP SEMUA cetakan (dokumen stok, Lembar Hitung, Berita Acara, enam laporan): nama, nama PT / CV, alamat, telepon, e-mail, NPWP, logo, dan gaya kop.
- *                Satu-satunya sumber kop: kop() dipasang ke DevLib (Document::companyUsing) dan report() dikirim ke x-dl::report. Aplikasi tetap bernama STOKU (login, menu, judul); hanya kop cetakan yang berubah.
+ *                Satu-satunya sumber kop: kop() dipasang ke DevLib (Document::companyUsing) dan report() dikirim ke x-dl::report. Aplikasi tetap bernama ADMINKU (login, menu, judul); hanya kop cetakan yang berubah.
  *                Data ada di tabel sys_constant (company.name, legal_name, address, phone, email, npwp, logo, kop_style). Belum pernah diisi: nama = config devlib.company.name, gaya = logo + nama bila ada logo, selain itu nama saja.
  *                Logo: PNG / JPG / WebP (bukan SVG), diperiksa menurut ISI berkas, diubah ke PNG selebar paling 600 px dan disimpan sebagai storage/app/company/logo.png (nama tidak pernah dari pengguna); disajikan rute company.logo.
  *                Cuaca Beranda: Kota / Lintang / Bujur (company.weather_city, weather_lat, weather_lon) = tempat CADANGAN cuaca, dipakai bila lokasi perangkat tidak bisa dipakai (izin ditolak, situs belum HTTPS, timeout). Kosong = tanpa cadangan.
