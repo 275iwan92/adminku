@@ -5,7 +5,8 @@
  Input        : lihat sumber hulu.
  Output       : GET saring area; tautan titik ?area=&unit=; tombol Jadwalkan membuka Penjadwalan AC dengan AC itu terpilih.
  Dipakai oleh : route ac-plan.index (menu GA > Denah AC).
- Status       : Aktif.
+ Komponen     : x-dl::floor-plan (DevLib): rooms, pins (href), image, aspect, selected, legend; slot summary (empat angka) dan detail (kartu AC).
+ Status      : Aktif.
 --}}
 @extends('layout', ['title' => 'Denah AC'])
 @section('body')
@@ -23,31 +24,33 @@
                 <x-dl::field.select name="area" label="Area / Lantai" :options="$areas" :value="$area->id" />
             </x-dl::form.row>
             <x-dl::action-bar>
-                <x-dl::button type="submit" icon="fa-filter" label="Tampilkan" size="sm" />
+                <x-dl::button class="sstock-btn-teal" type="submit" icon="fa-filter" label="Tampilkan" size="sm" />
             </x-dl::action-bar>
         </x-dl::action-form>
+        @php
+            $pins = $dots->map(fn ($d) => [
+                'id' => (string) $d['unit']->id, 'x' => $d['x'], 'y' => $d['y'], 'tone' => ['aman' => 'success', 'segera' => 'warn', 'terlambat' => 'danger'][$d['o']['status']] ?? 'neutral',
+                'label' => raw($d['unit']->label()), 'status' => $d['o']['label'], 'number' => substr($d['unit']->asset_code, -2),
+                'href' => route('ac-plan.index', ['area' => $area->id, 'unit' => $d['unit']->id]),
+            ])->all();
+            $planRooms = $rooms->map(fn ($r) => ['code' => $r->code, 'label' => raw($r->name), 'x' => $r->x, 'y' => $r->y, 'w' => $r->w, 'h' => $r->h])->all();
+            $legend = [['tone' => 'success', 'label' => 'Aman'], ['tone' => 'warn', 'label' => 'Segera (jatuh tempo dalam '.AcCare::soonDays().' hari)'], ['tone' => 'danger', 'label' => 'Terlambat']];
+        @endphp
+        {{-- Denah = x-dl::floor-plan (DevLib): titik berupa tautan, server merender ulang dengan selected + kartu detail. --}}
+        <x-dl::floor-plan :label="raw('Denah '.$area->name)" :rooms="$planRooms" :pins="$pins" :image="$area->plan_path ? route('ac-plan.image', $area) : null"
+            :aspect="$area->plan_w.'/'.$area->plan_h" :selected="$pick ? (string) $pick['unit']->id : null" :legend="$legend">
+        <x-slot:summary>
         <x-dl::kpi-row>
             <x-dl::stat-box label="AC di area ini" :value="(string) $dots->count()" tone="accent" :sub="$area->plan_path ? 'Denah gambar unggahan' : 'Denah skematis (asumsi)'" />
             <x-dl::stat-box label="Aman" :value="(string) $counts['aman']" tone="success" />
             <x-dl::stat-box label="Segera" :value="(string) $counts['segera']" :tone="$counts['segera'] ? 'warn' : 'success'" :sub="'Dalam '.AcCare::soonDays().' hari'" />
             <x-dl::stat-box label="Terlambat" :value="(string) $counts['terlambat']" :tone="$counts['terlambat'] ? 'danger' : 'success'" />
         </x-dl::kpi-row>
-
-        <div class="sstock-plan" style="aspect-ratio: {{ $area->plan_w }} / {{ $area->plan_h }}" role="img" aria-label="Denah {{ $area->name }}">
-            @if ($area->plan_path)
-                <img class="sstock-plan__img" src="{{ route('ac-plan.image', $area) }}" alt="Denah {{ $area->name }}">
-            @else
-                @foreach ($rooms as $r)
-                    <div class="sstock-plan__room" style="left: {{ $r->x }}%; top: {{ $r->y }}%; width: {{ $r->w }}%; height: {{ $r->h }}%"><b>{{ $r->code }}</b> {{ $r->name }}</div>
-                @endforeach
-            @endif
-            @foreach ($dots as $d)
-                @php($u = $d['unit'])
-                <a class="sstock-plan__dot is-{{ $d['o']['status'] }}{{ $pick && $pick['unit']->id === $u->id ? ' is-on' : '' }}" style="left: {{ $d['x'] }}%; top: {{ $d['y'] }}%"
-                   href="{{ route('ac-plan.index', ['area' => $area->id, 'unit' => $u->id]) }}" title="{{ $u->label() }} · {{ $d['o']['label'] }}" aria-label="{{ $u->label() }}, {{ $d['o']['label'] }}">{{ substr($u->asset_code, -2) }}</a>
-            @endforeach
-        </div>
-        <p class="dl-note">Titik hijau = Aman, kuning = Segera (jatuh tempo dalam {{ AcCare::soonDays() }} hari), merah = Terlambat. Klik titik untuk melihat kartu AC.@unless ($area->plan_path) Denah ini skematis, digambar dari persegi ruang, sampai denah asli diunggah di Area dan Gedung AC.@endunless</p>
+        </x-slot:summary>
+        <x-slot:detail>
+        @unless ($area->plan_path)
+            <p class="dl-note">Denah ini skematis, digambar dari persegi ruang, sampai denah asli diunggah di Area dan Gedung AC.</p>
+        @endunless
 
         @if ($pick)
             @php($u = $pick['unit'])
@@ -74,13 +77,13 @@
             </x-dl::form.row>
             <x-dl::action-bar align="start">
                 @if ($canSchedule && ! $o['open'])
-                    <x-dl::button icon="fa-calendar-plus" label="Jadwalkan" :href="route('ac-schedule.index', ['pick' => $u->id, 'show' => 'semua'])" />
+                    <x-dl::button class="sstock-btn-teal" icon="fa-calendar-plus" label="Jadwalkan" :href="route('ac-schedule.index', ['pick' => $u->id, 'show' => 'semua'])" />
                 @endif
                 @if ($o['open'] && $canVisits)
-                    <x-dl::button variant="secondary" icon="fa-truck-fast" label="Buka kunjungan" :href="route('ac-visits.show', $o['open']['order_id'])" />
+                    <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-truck-fast" label="Buka kunjungan" :href="route('ac-visits.show', $o['open']['order_id'])" />
                 @endif
                 @if ($canUnit)
-                    <x-dl::button variant="secondary" icon="fa-snowflake" label="Master AC" :href="route('ac-units.show', $u)" />
+                    <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-snowflake" label="Master AC" :href="route('ac-units.show', $u)" />
                 @endif
             </x-dl::action-bar>
 
@@ -111,5 +114,7 @@
         @else
             <p class="dl-note">Klik sebuah titik AC pada denah untuk membuka kartunya.</p>
         @endif
+        </x-slot:detail>
+        </x-dl::floor-plan>
     @endif
 @endsection
