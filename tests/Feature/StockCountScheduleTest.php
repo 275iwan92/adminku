@@ -136,7 +136,7 @@ class StockCountScheduleTest extends TestCase
         $this->actingAs($this->sup)->get(route('stock.home'))->assertOk()->assertSee('Stok Opname terakhir: 30-09-2026')->assertSee('Mulai Opname');
 
         $group = UserGroup::create(['code' => 'GD', 'name' => 'Gudang']);
-        $group->syncAccess(['ISS' => 'rw']);
+        $group->syncAccess(['ISS' => 'rw', 'STB' => 'ro']);
         $this->actingAs(User::factory()->create(['group_id' => $group->id]))->get(route('stock.home'))->assertOk()->assertDontSee('Stok Opname terakhir');   // tanpa modul SO: tanpa pengingat
     }
 
