@@ -39,6 +39,7 @@ class CandidateRequest extends FormRequest
             'departments.*' => [Rule::exists('m_department', 'id')],
             'note' => ['nullable', 'string', 'max:255'],
             'ktp' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            'photo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'cv' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf,doc,docx', 'max:5120'],
             'events' => ['nullable', 'array'],
             'events.*.step_id' => ['required', Rule::exists('m_recruit_step', 'id')],

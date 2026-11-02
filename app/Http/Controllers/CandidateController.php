@@ -51,7 +51,7 @@ class CandidateController extends Controller
             $passed = $c->events->where('result', 'pass')->pluck('step_id')->all();
             $before = $c->events->filter(fn ($e) => $e->result !== 'waiting' && $e->step_id !== $c->step_id && $steps->firstWhere('id', $e->step_id)?->kind === 'mid')->last();
             $nik = substr($c->nik, 0, 4).' **** **** '.substr($c->nik, -4);
-            $meta[(string) $c->id] = ['src' => $c->source ?: 'other', 'assessor' => $due?->assessor ?? $c->events->pluck('assessor')->filter()->last(), 'att' => (bool) ($c->ktp_path || $c->cv_path), 'applied' => $c->applied_at->toDateString(), 'pending' => (bool) ($steps->firstWhere('id', $c->step_id)?->needs_schedule && $last?->result === 'waiting'), 'stepName' => $steps->firstWhere('id', $c->step_id)?->name];
+            $meta[(string) $c->id] = ['src' => $c->source ?: 'other', 'assessor' => $due?->assessor ?? $c->events->pluck('assessor')->filter()->last(), 'att' => (bool) ($c->ktp_path || $c->cv_path), 'applied' => $c->applied_at->toDateString(), 'photo' => $c->photo_path ? route('candidates.file', [$c, 'photo']) : null, 'pending' => (bool) ($steps->firstWhere('id', $c->step_id)?->needs_schedule && $last?->result === 'waiting'), 'stepName' => $steps->firstWhere('id', $c->step_id)?->name];
 
             return array_filter([
                 'id' => (string) $c->id, 'col' => (string) $c->step_id, 'title' => $c->name, 'desc' => ($c->position ? $c->position.' · ' : '').$nik,
@@ -100,7 +100,7 @@ class CandidateController extends Controller
     public function store(CandidateRequest $request): RedirectResponse
     {
         $candidate = DB::transaction(function () use ($request) {
-            $data = $request->safe()->except(['departments', 'ktp', 'cv', 'events']);
+            $data = $request->safe()->except(['departments', 'ktp', 'cv', 'photo', 'events']);
             $data['step_id'] = RecruitStep::where('kind', 'start')->value('id');   // kandidat baru selalu mulai dari Daftar
             $data['status'] = 'active';
             $candidate = Candidate::create($data + ['created_by' => $request->user()->id]);
@@ -117,7 +117,7 @@ class CandidateController extends Controller
     public function update(CandidateRequest $request, Candidate $candidate): RedirectResponse
     {
         DB::transaction(function () use ($request, $candidate) {
-            $data = $request->safe()->except(['departments', 'ktp', 'cv', 'events']);
+            $data = $request->safe()->except(['departments', 'ktp', 'cv', 'photo', 'events']);
             $data['step_id'] = $data['step_id'] ?? $candidate->step_id;
             $data['status'] = $data['status'] ?? $candidate->status;
             $candidate->update($data);
@@ -179,7 +179,7 @@ class CandidateController extends Controller
 
     private function saveFiles(Candidate $candidate, CandidateRequest $request): void
     {
-        foreach (['ktp', 'cv'] as $kind) {
+        foreach (['ktp', 'cv', 'photo'] as $kind) {
             if (! $request->hasFile($kind)) {
                 continue;
             }

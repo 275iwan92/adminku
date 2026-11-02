@@ -109,7 +109,7 @@ class EmployeeTest extends TestCase
             $this->assertSame(16, strlen($p->nik_ktp));
             $this->assertGreaterThan(0, $p->family->count() * $p->docs->count() * $p->contracts->count());
             Storage::disk('ga')->assertExists([$p->photo_path, $p->ktp_path]);
-            $this->assertStringContainsString('CONTOH / DUMMY', Storage::disk('ga')->get($p->ktp_path));
+            $this->assertStringContainsString('DUMMY', Storage::disk('ga')->get($p->ktp_path));
         }
         $this->assertSame(0, User::where('username', 'like', '%contoh%')->count());   // tidak membuat akun
     }

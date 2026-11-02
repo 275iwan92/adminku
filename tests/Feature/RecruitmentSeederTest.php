@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Candidate;
 use Database\Seeders\RecruitmentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /* REMARK
@@ -18,6 +19,7 @@ class RecruitmentSeederTest extends TestCase
 
     public function test_seeds_two_marked_candidates_once(): void
     {
+        Storage::fake('ga');
         $this->seed(RecruitmentSeeder::class);
         $this->seed(RecruitmentSeeder::class);
 
@@ -31,5 +33,10 @@ class RecruitmentSeederTest extends TestCase
         $this->assertSame([16, 16], [strlen($dedi->nik), strlen($maya->nik)]);
         $this->assertStringContainsString('Contoh', $maya->note);
         $this->assertGreaterThanOrEqual(1, $maya->departments->count());
+        foreach ([$dedi, $maya] as $c) {   // foto profil dan KTP tiruan bertanda DUMMY
+            Storage::disk('ga')->assertExists([$c->photo_path, $c->ktp_path]);
+            $this->assertStringContainsString('DUMMY', Storage::disk('ga')->get($c->ktp_path));
+            $this->assertStringContainsString($c->nik, Storage::disk('ga')->get($c->ktp_path));
+        }
     }
 }

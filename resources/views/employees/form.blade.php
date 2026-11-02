@@ -137,4 +137,5 @@
             </x-slot:discipline>
         @endunless
     </x-dl::form>
+    @include('partials.lightbox')
 @endsection

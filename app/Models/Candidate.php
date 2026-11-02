@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 // Kandidat / pelamar. Kunci = NIK KTP (16 angka, wajib); melamar lagi = baris baru dengan NIK sama (diberi peringatan). step_id = tahap sekarang; riwayat tahap ada di events.
-#[Fillable(['nik', 'name', 'phone', 'email', 'birth_date', 'education', 'position', 'source', 'applied_at', 'step_id', 'status', 'ktp_path', 'ktp_name', 'cv_path', 'cv_name', 'note', 'created_by'])]
+#[Fillable(['nik', 'name', 'phone', 'email', 'birth_date', 'education', 'position', 'source', 'applied_at', 'step_id', 'status', 'ktp_path', 'ktp_name', 'cv_path', 'cv_name', 'photo_path', 'photo_name', 'note', 'created_by'])]
 class Candidate extends Model
 {
     protected $table = 'h_recruit_candidate';

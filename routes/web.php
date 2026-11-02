@@ -270,7 +270,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('candidates/{candidate}/result', [CandidateController::class, 'result'])->whereNumber('candidate')->name('candidates.result');
     Route::get('candidates/{candidate}', [CandidateController::class, 'show'])->whereNumber('candidate')->name('candidates.show');
     Route::put('candidates/{candidate}', [CandidateController::class, 'update'])->whereNumber('candidate')->name('candidates.update');
-    Route::get('candidates/{candidate}/file/{kind}', [CandidateController::class, 'file'])->whereNumber('candidate')->whereIn('kind', ['ktp', 'cv'])->name('candidates.file');
+    Route::get('candidates/{candidate}/file/{kind}', [CandidateController::class, 'file'])->whereNumber('candidate')->whereIn('kind', ['ktp', 'cv', 'photo'])->name('candidates.file');
     // Purchase, Permintaan Pembelian (PUP): daftar, form satu PP banyak barang, siklus lewat PUT (save, confirm, approve, reject, cancel, delete, duplicate).
     Route::get('pr', [PurchaseRequestController::class, 'index'])->name('pr.index');
     Route::get('pr/create', [PurchaseRequestController::class, 'create'])->name('pr.create');

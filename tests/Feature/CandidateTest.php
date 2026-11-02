@@ -202,6 +202,17 @@ class CandidateTest extends TestCase
         $this->get(route('candidates.show', $c))->assertOk()->assertSee('dipindah tanpa hasil');
     }
 
+    public function test_candidate_photo_is_a_private_file_shown_as_board_avatar_and_forms_have_the_lightbox(): void
+    {
+        $this->actingAs($this->admin)->post(route('candidates.store'), $this->payload(['photo' => UploadedFile::fake()->image('foto.jpg'), 'ktp' => UploadedFile::fake()->image('ktp.png')]))->assertRedirect();
+        $c = Candidate::firstOrFail();
+        Storage::disk('ga')->assertExists([$c->photo_path, $c->ktp_path]);
+        $this->get(route('candidates.file', [$c, 'photo']))->assertOk();
+        $this->assertSame(route('candidates.file', [$c, 'photo']), $this->get(route('candidates.index'))->viewData('meta')[(string) $c->id]['photo']);
+        $this->get(route('candidates.show', $c))->assertOk()->assertSee('lb-ov', false)->assertSee('foto.jpg');   // lightbox terpasang
+        $this->put(route('candidates.update', $c), $this->payload(['photo' => UploadedFile::fake()->create('x.exe', 10)]))->assertSessionHasErrors('photo');
+    }
+
     public function test_access_follows_the_group(): void
     {
         $this->actingAs(User::factory()->supervisor()->create())->get(route('candidates.index'))->assertForbidden();

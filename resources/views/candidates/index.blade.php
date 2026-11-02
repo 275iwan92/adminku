@@ -48,6 +48,8 @@
             .rk-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--dl-muted, #666); margin: 0 0 8px; }
             .rk-legend i { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
             .rk-strip { height: 6px; margin: -10px -10px 2px; border-radius: 8px 8px 0 0; }
+            .rk-photo { align-self: flex-end; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; margin: 0 0 -38px; border: 1px solid var(--dl-border, #ddd); }
+            .dl-kcard:has(.rk-photo) .dl-kcard__title { padding-right: 42px; }
             .rk-att { color: var(--dl-muted, #777); font-size: 11px; }
             .rk-colmenu { border: none; background: none; cursor: pointer; color: var(--dl-muted, #777); padding: 0 4px; font-size: 15px; line-height: 1; }
             .rk-menu { position: absolute; z-index: 9998; background: var(--dl-surface, #fff); border: 1px solid var(--dl-border, #ddd); border-radius: 8px; padding: 4px; min-width: 170px; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
@@ -170,6 +172,7 @@
                         const id = el.dataset.kCard, m = META[id];
                         if (! m) { return; }
                         if (! el.querySelector('.rk-strip')) { const s = document.createElement('div'); s.className = 'rk-strip'; s.style.background = COLORS[m.src] || COLORS.other; el.prepend(s); }
+                        if (m.photo && ! el.querySelector('.rk-photo')) { const t = el.querySelector('.dl-kcard__title'); if (t) { t.insertAdjacentHTML('beforebegin', `<img class="rk-photo" src="${m.photo}" alt="">`); } }
                         if (m.att && ! el.querySelector('.rk-att')) { el.querySelector('.dl-kcard__spacer')?.insertAdjacentHTML('beforebegin', '<span class="rk-att" title="Ada lampiran"><i class="fa-solid fa-paperclip"></i></span>'); }
                         const show = (! flt.src || m.src === flt.src) && (! flt.who || m.assessor === flt.who);
                         if (el.hidden === show) { el.hidden = ! show; }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Department;
 use App\Models\Employee;
+use App\Support\SampleImages;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -61,42 +62,9 @@ class EmployeeSampleSeeder extends Seeder
             $e->contracts()->createMany($p['contracts']);
 
             $disk = Storage::disk('ga');
-            $disk->put("employee/{$e->id}/foto-contoh.svg", $this->avatar($p['avatar'][0], $p['avatar'][1], $p['e']['gender']));
-            $disk->put("employee/{$e->id}/ktp-contoh.svg", $this->ktp($e));
+            $disk->put("employee/{$e->id}/foto-contoh.svg", SampleImages::avatar($p['avatar'][0], $p['avatar'][1], $p['e']['gender']));
+            $disk->put("employee/{$e->id}/ktp-contoh.svg", SampleImages::ktp(['nik' => $e->nik_ktp, 'name' => $e->name, 'birth_place' => $e->birth_place, 'birth_date' => $e->birth_date->format('d-m-Y'), 'gender' => $e->gender, 'address' => $e->ktp_address, 'religion' => $e->religion, 'marital' => $e->marital]));
             $e->update(['photo_path' => "employee/{$e->id}/foto-contoh.svg", 'photo_name' => 'foto-contoh.svg', 'ktp_path' => "employee/{$e->id}/ktp-contoh.svg", 'ktp_name' => 'ktp-contoh.svg']);
         }
-    }
-
-    // Avatar ilustrasi netral (lingkaran, kepala, bahu); bukan foto orang nyata.
-    private function avatar(string $bg, string $skin, string $gender): string
-    {
-        $hair = $gender === 'P' ? '<path d="M70 118c-8-48 18-70 50-70s58 22 50 70c-6-26-22-34-50-34s-44 8-50 34z" fill="#2b2118"/><rect x="62" y="110" width="22" height="70" rx="10" fill="#2b2118"/><rect x="156" y="110" width="22" height="70" rx="10" fill="#2b2118"/>'
-            : '<path d="M78 104c-4-38 20-52 42-52s46 14 42 52c-6-18-20-24-42-24s-36 6-42 24z" fill="#2b2118"/>';
-
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Foto contoh"><rect width="240" height="240" fill="'.$bg.'"/>'
-            .'<circle cx="120" cy="120" r="120" fill="'.$bg.'" opacity=".15"/><path d="M30 240c0-52 38-84 90-84s90 32 90 84z" fill="#e8eef3"/>'
-            .'<rect x="104" y="128" width="32" height="36" rx="10" fill="'.$skin.'"/><ellipse cx="120" cy="106" rx="38" ry="44" fill="'.$skin.'"/>'.$hair
-            .'<circle cx="106" cy="108" r="3.5" fill="#2b2118"/><circle cx="134" cy="108" r="3.5" fill="#2b2118"/><path d="M108 128q12 9 24 0" fill="none" stroke="#7a4a3a" stroke-width="3" stroke-linecap="round"/>'
-            .'<text x="120" y="232" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#ffffff" opacity=".9">ILUSTRASI CONTOH</text></svg>';
-    }
-
-    // KTP tiruan: jelas bertuliskan CONTOH / DUMMY, data sama dengan karyawan (fiktif).
-    private function ktp(Employee $e): string
-    {
-        $x = fn (string $t) => htmlspecialchars($t, ENT_XML1);
-        $rows = ['NIK' => $e->nik_ktp, 'Nama' => $e->name, 'Tempat/Tgl Lahir' => $e->birth_place.', '.$e->birth_date->format('d-m-Y'), 'Jenis Kelamin' => $e->gender === 'L' ? 'LAKI-LAKI' : 'PEREMPUAN', 'Alamat' => $e->ktp_address,
-            'Agama' => strtoupper($e->religion), 'Status Perkawinan' => $e->marital === 'kawin' ? 'KAWIN' : 'BELUM KAWIN', 'Pekerjaan' => 'KARYAWAN SWASTA', 'Kewarganegaraan' => 'WNI'];
-        $y = 108;
-        $lines = '';
-        foreach ($rows as $k => $v) {
-            $lines .= '<text x="28" y="'.$y.'" font-size="13" fill="#222">'.$x($k).'</text><text x="190" y="'.$y.'" font-size="13" fill="#222">: '.$x((string) $v).'</text>';
-            $y += 24;
-        }
-
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" font-family="Arial,sans-serif" role="img" aria-label="KTP contoh"><rect width="640" height="400" rx="18" fill="#dbe9f5" stroke="#6b8fb0" stroke-width="3"/>'
-            .'<text x="320" y="38" text-anchor="middle" font-size="18" font-weight="700" fill="#1d3f66">PROVINSI CONTOH</text><text x="320" y="62" text-anchor="middle" font-size="16" font-weight="700" fill="#1d3f66">KOTA CONTOH</text>'
-            .$lines.'<rect x="470" y="100" width="140" height="180" fill="#b9cfe3" stroke="#6b8fb0"/><circle cx="540" cy="168" r="30" fill="#8fb0cf"/><path d="M490 280c0-40 22-56 50-56s50 16 50 56z" fill="#8fb0cf"/>'
-            .'<g transform="rotate(-18 320 220)"><text x="320" y="236" text-anchor="middle" font-size="64" font-weight="700" fill="#c0392b" opacity=".42">CONTOH / DUMMY</text></g>'
-            .'<text x="320" y="388" text-anchor="middle" font-size="11" fill="#444">Data fiktif untuk uji aplikasi. Bukan dokumen asli.</text></svg>';
     }
 }

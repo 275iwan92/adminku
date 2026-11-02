@@ -47,6 +47,9 @@
                     <x-dl::field.select name="status" label="Status" :options="\App\Models\Candidate::STATUSES" :value="$v('status')" required :error="$e('status')" hint="Ditolak atau Mundur menyembunyikan kartu dari papan." />
                 @endunless
             </x-dl::form.row>
+            <x-dl::form.row :cols="3">
+                <x-dl::field.upload name="photo" label="Foto Profil" accept="image/jpeg,image/png,image/webp" :value="$candidate->photo_path ? ['url' => route('candidates.file', [$candidate, 'photo']), 'name' => $candidate->photo_name] : null" :error="$e('photo')" hint="JPG, PNG, atau WEBP, paling besar 5 MB. Tampil sebagai avatar di kartu papan." />
+            </x-dl::form.row>
             <x-dl::form.row :cols="2">
                 <x-dl::field.upload name="ktp" label="Foto KTP" accept="image/*,application/pdf" :value="$candidate->ktp_path ? ['url' => route('candidates.file', [$candidate, 'ktp']), 'name' => $candidate->ktp_name] : null" :error="$e('ktp')" hint="Di HP, Pilih File bisa langsung membuka kamera. Hanya disimpan sebagai lampiran; NIK dan nama diketik. JPG, PNG, atau PDF, paling besar 5 MB." />
                 <x-dl::field.upload name="cv" label="CV" accept="image/*,application/pdf,.doc,.docx" :value="$candidate->cv_path ? ['url' => route('candidates.file', [$candidate, 'cv']), 'name' => $candidate->cv_name] : null" :error="$e('cv')" hint="Opsional. PDF, gambar, atau Word, paling besar 5 MB." />
@@ -86,4 +89,5 @@
             </x-slot:proses>
         @endunless
     </x-dl::form>
+    @include('partials.lightbox')
 @endsection
