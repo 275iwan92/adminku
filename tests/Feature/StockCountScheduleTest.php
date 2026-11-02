@@ -132,21 +132,21 @@ class StockCountScheduleTest extends TestCase
         $this->makeCount('done', '2026-09-30');
         Carbon::setTestNow('2026-11-02 08:00:00');
 
-        $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('Stok Opname terakhir: 30-09-2026')->assertSee('Terlambat 2 hari')->assertSee('Buka Stok Opname')->assertDontSee('Mulai Opname');
-        $this->actingAs($this->sup)->get(route('home'))->assertOk()->assertSee('Stok Opname terakhir: 30-09-2026')->assertSee('Mulai Opname');
+        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertSee('Stok Opname terakhir: 30-09-2026')->assertSee('Terlambat 2 hari')->assertSee('Buka Stok Opname')->assertDontSee('Mulai Opname');
+        $this->actingAs($this->sup)->get(route('stock.home'))->assertOk()->assertSee('Stok Opname terakhir: 30-09-2026')->assertSee('Mulai Opname');
 
         $group = UserGroup::create(['code' => 'GD', 'name' => 'Gudang']);
         $group->syncAccess(['ISS' => 'rw']);
-        $this->actingAs(User::factory()->create(['group_id' => $group->id]))->get(route('home'))->assertOk()->assertDontSee('Stok Opname terakhir');   // tanpa modul SO: tanpa pengingat
+        $this->actingAs(User::factory()->create(['group_id' => $group->id]))->get(route('stock.home'))->assertOk()->assertDontSee('Stok Opname terakhir');   // tanpa modul SO: tanpa pengingat
     }
 
     public function test_home_reminder_when_never_counted_and_when_a_count_is_running(): void
     {
-        $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('Belum pernah ada Stok Opname')->assertSee('Jadwal: Bulanan, akhir bulan');
+        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertSee('Belum pernah ada Stok Opname')->assertSee('Jadwal: Bulanan, akhir bulan');
 
         $running = $this->makeCount('counting', today()->toDateString());
         $running->lines()->createMany([]);
-        $this->get(route('home'))->assertOk()->assertSee("Stok Opname {$running->doc_no} sedang berjalan")->assertSee('terisi 0 dari 0')->assertDontSee('Belum pernah ada')->assertDontSee('Mulai Opname');
+        $this->get(route('stock.home'))->assertOk()->assertSee("Stok Opname {$running->doc_no} sedang berjalan")->assertSee('terisi 0 dari 0')->assertDontSee('Belum pernah ada')->assertDontSee('Mulai Opname');
     }
 
     public function test_only_supervisor_changes_the_schedule(): void

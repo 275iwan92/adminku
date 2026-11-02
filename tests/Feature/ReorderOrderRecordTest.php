@@ -51,7 +51,7 @@ class ReorderOrderRecordTest extends TestCase
 
     public function test_the_popup_saves_supplier_quantity_date_ref_and_note(): void
     {
-        $this->post(route('reorder-orders.store'), $this->order(['ordered_at' => today()->subDay()->toDateString()]))->assertRedirect(route('home'));
+        $this->post(route('reorder-orders.store'), $this->order(['ordered_at' => today()->subDay()->toDateString()]))->assertRedirect(route('stock.home'));
 
         $o = ReorderOrder::firstOrFail();
         $this->assertSame([$this->supplier->id, 25.0, 'PO-5', 'kirim pagi', $this->sup->id, today()->subDay()->toDateString()], [$o->supplier_id, $o->qty, $o->ref_no, $o->note, $o->created_by, $o->ordered_at->toDateString()]);
@@ -81,11 +81,11 @@ class ReorderOrderRecordTest extends TestCase
 
     public function test_the_alert_shows_supplier_and_quantity_and_the_report_has_the_columns(): void
     {
-        $this->get(route('home'))->assertOk()->assertSee('name="supplier_id"', false)->assertSee('Jumlah Dipesan', false)->assertSee('Toko Maju', false)->assertSee('data-reorder-unit', false)->assertSee('No. Referensi Pemesanan', false)->assertDontSee('Referensi Pemesanan (PO)', false);   // popup (hanya ada selama ada barang yang belum dipesan)
+        $this->get(route('stock.home'))->assertOk()->assertSee('name="supplier_id"', false)->assertSee('Jumlah Dipesan', false)->assertSee('Toko Maju', false)->assertSee('data-reorder-unit', false)->assertSee('No. Referensi Pemesanan', false)->assertDontSee('Referensi Pemesanan (PO)', false);   // popup (hanya ada selama ada barang yang belum dipesan)
         $this->post(route('reorder-orders.store'), $this->order());
         $expected = 'Sudah dipesan 25 pcs ke Toko Maju pada '.today()->format('d/m/Y').', ref PO-5 oleh Sari Supervisor. Diterima sejak dipesan: 3 dari 25 pcs.';
 
-        $this->get(route('home'))->assertOk()->assertSee($expected, false)->assertSee('Catatan: kirim pagi', false);
+        $this->get(route('stock.home'))->assertOk()->assertSee($expected, false)->assertSee('Catatan: kirim pagi', false);
         $this->get(route('products.show', $this->item->item))->assertOk()->assertSee($expected, false);
         $html = $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk()->getContent();
         foreach (['Supplier Pesanan', 'Jumlah Dipesan', 'Toko Maju', '25 pcs'] as $text) {
@@ -98,7 +98,7 @@ class ReorderOrderRecordTest extends TestCase
         ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today(), 'ref_no' => 'PO-OLD', 'created_by' => $this->sup->id]);
 
         $this->assertStringStartsWith('Sudah dicatat dipesan pada '.today()->format('d/m/Y').', ref PO-OLD oleh Sari Supervisor.', ReorderOrder::firstOrFail()->note());
-        $this->get(route('home'))->assertOk()->assertSee('Sudah dicatat dipesan pada', false)->assertSee('PO-OLD', false);
+        $this->get(route('stock.home'))->assertOk()->assertSee('Sudah dicatat dipesan pada', false)->assertSee('PO-OLD', false);
         $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk();
         $this->get(route('products.show', $this->item->item))->assertOk();
     }
@@ -110,7 +110,7 @@ class ReorderOrderRecordTest extends TestCase
         $other->delete();
 
         $this->assertNull(ReorderOrder::firstOrFail()->supplier_id);   // null on delete
-        $this->get(route('home'))->assertOk()->assertSee('Sudah dipesan 25 pcs pada', false);
+        $this->get(route('stock.home'))->assertOk()->assertSee('Sudah dipesan 25 pcs pada', false);
     }
 
     public function test_a_partial_receiving_keeps_the_order_open_until_the_ordered_quantity_arrives(): void

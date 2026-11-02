@@ -82,7 +82,7 @@ class ReorderOrderInfoTest extends TestCase
     {
         $this->scenario();
 
-        $html = $this->get(route('home'))->assertOk()->getContent();
+        $html = $this->get(route('stock.home'))->assertOk()->getContent();
         $this->assertStringContainsString('Sudah dicatat dipesan pada '.today()->subDays(2)->format('d/m/Y').', ref PO-77 oleh Sari Supervisor. Diterima sejak dipesan: 10 pcs.', $html);
         $this->assertStringNotContainsString('Sudah dipesan ', $html);   // baris lama tanpa jumlah / supplier: bagian itu dilewati
     }
@@ -101,14 +101,14 @@ class ReorderOrderInfoTest extends TestCase
         $this->receive(10);   // 10 > titik 5: tidak ada peringatan
         ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today(), 'ref_no' => 'PO-1', 'created_by' => $this->sup->id]);
 
-        $this->get(route('home'))->assertOk()->assertDontSee('Sudah dicatat dipesan', false);
+        $this->get(route('stock.home'))->assertOk()->assertDontSee('Sudah dicatat dipesan', false);
         $this->get(route('products.show', $this->item->item))->assertOk()->assertDontSee('Sudah dicatat dipesan', false);
 
         $this->issue(8);   // sekarang 2 <= 5, tetapi pesanan di atas sudah ada (terbuka)
-        $this->get(route('home'))->assertSee('Sudah dicatat dipesan', false);
+        $this->get(route('stock.home'))->assertSee('Sudah dicatat dipesan', false);
 
         ReorderOrder::query()->update(['closed_at' => now()]);   // pesanan tertutup: kembali "Belum dipesan"
-        $this->get(route('home'))->assertOk()->assertDontSee('Sudah dicatat dipesan', false)->assertSee('Belum dipesan', false);
+        $this->get(route('stock.home'))->assertOk()->assertDontSee('Sudah dicatat dipesan', false)->assertSee('Belum dipesan', false);
     }
 
     public function test_the_note_changes_neither_the_closing_rule_nor_the_alert(): void

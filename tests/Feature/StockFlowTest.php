@@ -136,7 +136,7 @@ class StockFlowTest extends TestCase
         $this->receive($item, 10, 5);
         $this->issue($item, 5)->assertSessionHas('reorder');
         $this->assertTrue($item->item->fresh()->isBelowReorderPoint());
-        $this->actingAs($this->supervisor)->get(route('home'))->assertOk()->assertSee('di bawah titik pesan ulang');
+        $this->actingAs($this->supervisor)->get(route('stock.home'))->assertOk()->assertSee('di bawah titik pesan ulang');
     }
 
     public function test_data_entry_cannot_open_supervisor_screens(): void
@@ -267,8 +267,8 @@ class StockFlowTest extends TestCase
         $item = $this->item('V2', rop: 5);
         $this->receive($item, 3, 10);
 
-        $this->actingAs($this->supervisor)->get(route('home'))->assertOk()->assertSee('data-dl-chart', false);
-        $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertDontSee('data-dl-chart', false);
+        $this->actingAs($this->supervisor)->get(route('stock.home'))->assertOk()->assertSee('data-dl-chart', false);
+        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertDontSee('data-dl-chart', false);
     }
 
     public function test_reorder_order_is_recorded_shown_on_the_opening_screen_and_closed_when_the_quantity_is_received(): void
@@ -278,11 +278,11 @@ class StockFlowTest extends TestCase
         $this->receive($item, 3, 10);
         $this->receive($fine, 50, 10);
 
-        $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('Belum dipesan')->assertDontSee('Item R2');
+        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertSee('Belum dipesan')->assertDontSee('Item R2');
 
         $order = ['item_id' => $item->item_id, 'supplier_id' => Supplier::create(['code' => 'S9', 'name' => 'Toko Sembilan'])->id, 'qty' => 25, 'ordered_at' => today()->toDateString(), 'ref_no' => 'PO-77'];
-        $this->post(route('reorder-orders.store'), $order)->assertRedirect(route('home'));
-        $this->get(route('home'))->assertSee('Diterima sebagian')->assertSee('PO-77')->assertDontSee('Belum dipesan');   // 3 dari 25: penerimaan hari yang sama dengan tanggal pesan ikut dihitung
+        $this->post(route('reorder-orders.store'), $order)->assertRedirect(route('stock.home'));
+        $this->get(route('stock.home'))->assertSee('Diterima sebagian')->assertSee('PO-77')->assertDontSee('Belum dipesan');   // 3 dari 25: penerimaan hari yang sama dengan tanggal pesan ikut dihitung
 
         $this->post(route('reorder-orders.store'), $order)->assertStatus(422);                                   // sudah terbuka
         $this->post(route('reorder-orders.store'), ['item_id' => $fine->item_id] + $order)->assertStatus(422);        // stok masih cukup
