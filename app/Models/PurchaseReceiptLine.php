@@ -21,11 +21,6 @@ class PurchaseReceiptLine extends Model
         return ['expiry_date' => 'date'];
     }
 
-    public function orderLine(): BelongsTo
-    {
-        return $this->belongsTo(PurchaseOrderLine::class, 'order_line_id');
-    }
-
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
