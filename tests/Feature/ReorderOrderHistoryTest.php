@@ -65,7 +65,7 @@ class ReorderOrderHistoryTest extends TestCase
         $legacy = $this->order(null, 3, 'PO-LAMA');
         $this->receive(12);   // PO-OPEN penuh (10), sisa 2 ke PO-PART
         $manual = $this->order(8, 2, 'PO-MANUAL');
-        $this->post(route('reorder-orders.close', $manual), ['note' => 'tidak dikirim'])->assertRedirect(route('home'));
+        $this->post(route('reorder-orders.close', $manual), ['note' => 'tidak dikirim'])->assertRedirect(route('stock.home'));
 
         $res = $this->get(route('reorder-orders.index'))->assertOk();
         foreach (['PO-OPEN', 'PO-PART', 'PO-LAMA', 'PO-MANUAL', 'Selesai', 'Diterima sebagian', 'Ditutup manual', 'Toko Maju', 'Kertas HVS', 'Riwayat Pemesanan'] as $text) {
@@ -213,7 +213,7 @@ class ReorderOrderHistoryTest extends TestCase
         $this->assertSame(1, ReorderOrder::count());
 
         $this->actingAs($rw)->post(route('reorder-orders.store'), ['supplier_id' => 0] + $payload)->assertSessionHasErrors('supplier_id');   // lolos penjaga modul, ditolak validasi
-        $this->post(route('reorder-orders.close', $open), ['note' => 'x'])->assertRedirect(route('home'));
+        $this->post(route('reorder-orders.close', $open), ['note' => 'x'])->assertRedirect(route('stock.home'));
         $this->assertSame('manual', $open->fresh()->close_reason);
         $this->actingAs($this->entry)->post(route('reorder-orders.store'), ['supplier_id' => 0] + $payload)->assertSessionHasErrors('supplier_id');   // Data Entry tanpa grup tetap bisa
     }

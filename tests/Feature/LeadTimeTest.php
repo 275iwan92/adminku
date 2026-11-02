@@ -123,7 +123,7 @@ class LeadTimeTest extends TestCase
         $this->assertStringContainsString('Perkiraan tiba', $note);
         $this->assertStringContainsString(\Devlib\DateValue::of($expected->format('Y-m-d'))->display(), $note);
         $this->assertStringContainsString('Sudah 9 hari, biasanya 5. Periksa pesanan.', $note);
-        $this->get(route('home'))->assertOk()->assertSee('Sudah 9 hari, biasanya 5. Periksa pesanan.', false)->assertSee('Sari Supervisor. Diterima sejak dipesan: 0 dari 25 pcs. Perkiraan tiba', false);
+        $this->get(route('stock.home'))->assertOk()->assertSee('Sudah 9 hari, biasanya 5. Periksa pesanan.', false)->assertSee('Sari Supervisor. Diterima sejak dipesan: 0 dari 25 pcs. Perkiraan tiba', false);
 
         $late->update(['ordered_at' => today()->subDays(2)]);   // belum terlambat: perkiraan saja
         $this->assertStringContainsString('Perkiraan tiba', $late->fresh()->note());
@@ -136,7 +136,7 @@ class LeadTimeTest extends TestCase
         $order = ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays(9), 'ref_no' => 'P', 'created_by' => $this->sup->id]);
 
         $this->assertStringEndsWith('Diterima sejak dipesan: 3 pcs.', $order->note());   // tanpa data dan tanpa manual: tidak ada kalimat tambahan
-        $this->assertDoesNotMatchRegularExpression('/Perkiraan tiba \d{1,2}-/', $this->get(route('home'))->assertOk()->getContent());   // (kamus bahasa halaman memuat teks 'Perkiraan tiba {date}', jadi yang dicari kalimat bertanggal)
+        $this->assertDoesNotMatchRegularExpression('/Perkiraan tiba \d{1,2}-/', $this->get(route('stock.home'))->assertOk()->getContent());   // (kamus bahasa halaman memuat teks 'Perkiraan tiba {date}', jadi yang dicari kalimat bertanggal)
         $this->get(route('products.show', $this->item->item))->assertOk()->assertDontSee('Lead time otomatis', false)->assertDontSee('Saran Titik Pesan Ulang', false);
         $this->get(route('reports.summary', ['from' => today()->subDays(3)->toDateString(), 'to' => today()->toDateString()]))->assertOk();
     }

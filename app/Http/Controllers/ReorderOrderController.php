@@ -67,18 +67,18 @@ class ReorderOrderController extends Controller
         ReorderOrder::create($data + ['created_by' => $request->user()->id]);
         $this->orders->reconcile($product->id);   // penerimaan sejak tanggal pesan (termasuk hari yang sama) langsung dihitung
 
-        return redirect()->route('home')->with('status', "Pemesanan {$product->name} dicatat.");
+        return redirect()->route('stock.home')->with('status', "Pemesanan {$product->name} dicatat.");
     }
 
     // Pesanan yang tidak akan dipenuhi penuh (supplier mengirim kurang): ditutup tanpa menghapus apa pun; hanya yang masih terbuka.
-    // Dari Riwayat Pemesanan (return=history) kembali ke detail pesanan; dari Beranda kembali ke Beranda.
+    // Dari Riwayat Pemesanan (return=history) kembali ke detail pesanan; dari Beranda Stok kembali ke Beranda Stok.
     public function close(Request $request, ReorderOrder $order): RedirectResponse
     {
         $data = $request->validate(['note' => ['nullable', 'string', 'max:150']]);
         $this->orders->closeManually($order, $data['note'] ?? null);
         $status = "Pesanan {$order->item->name} ditutup.";
 
-        return $request->input('return') === 'history' ? redirect()->route('reorder-orders.show', $order)->with('status', $status) : redirect()->route('home')->with('status', $status);
+        return $request->input('return') === 'history' ? redirect()->route('reorder-orders.show', $order)->with('status', $status) : redirect()->route('stock.home')->with('status', $status);
     }
 
     /** @return array<string, mixed> satu baris grid / detail; jumlah, diterima, dan sisa kosong ("-") untuk pesanan lama tanpa jumlah. */

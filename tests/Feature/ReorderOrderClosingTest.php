@@ -167,7 +167,7 @@ class ReorderOrderClosingTest extends TestCase
         $order = $this->order(25);
         $order->update(['note' => 'kirim pagi']);
 
-        $this->post(route('reorder-orders.close', $order), ['note' => 'supplier kirim kurang'])->assertRedirect(route('home'));
+        $this->post(route('reorder-orders.close', $order), ['note' => 'supplier kirim kurang'])->assertRedirect(route('stock.home'));
 
         $o = $order->fresh();
         $this->assertSame(['manual', 'Ditutup manual', 'kirim pagi Ditutup: supplier kirim kurang'], [$o->close_reason, $o->statusLabel(), $o->note]);
@@ -224,7 +224,7 @@ class ReorderOrderClosingTest extends TestCase
         $order = $this->order(25, 0);
         $this->receive(1);   // penerimaan hari yang sama dengan tanggal pesan ikut dihitung: 3 + 1
 
-        $this->get(route('home'))->assertOk()->assertSee('Diterima sebagian', false)->assertSee('Diterima sejak dipesan: 4 dari 25 pcs.', false)
+        $this->get(route('stock.home'))->assertOk()->assertSee('Diterima sebagian', false)->assertSee('Diterima sejak dipesan: 4 dari 25 pcs.', false)
             ->assertSee(route('reorder-orders.close', $order), false)->assertSee('Tutup Pesanan', false);
     }
 }

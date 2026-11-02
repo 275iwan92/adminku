@@ -38,6 +38,23 @@ class HpController extends Controller
     {
         $user = $request->user();
         $below = Item::query()->belowReorderPoint()->withAvailable()->count();
+
+        return view('hp.home', [
+            'title' => 'Beranda', 'brandTitle' => true, 'active' => 'home',
+            'hero' => HomeHero::build($user, $user->canAccess('ITM') ? $below : null, $user->isSupervisor() && $user->canAccess('ADJ') ? StockDocument::query()->whereIn('status', ['approval', 'cancel_pending'])->count() : null),
+            ...$this->stockCards($user, $below),
+        ]);
+    }
+
+    // Beranda Stok HP (modul STB): ubin ringkasan stok dan pengingat Stok Opname (isi Beranda HP lama).
+    public function stockHome(Request $request)
+    {
+        return view('hp.stock-home', ['title' => 'Beranda Stok', 'active' => 'stock', 'back' => route('home')] + $this->stockCards($request->user(), Item::query()->belowReorderPoint()->withAvailable()->count()));
+    }
+
+    /** @return array{cards: list<array>, countReminder: ?array} */
+    private function stockCards(\App\Models\User $user, int $below): array
+    {
         $expiring = Batch::query()->nearExpiry()->get();
         $docs = fn (StockDocumentType $t) => StockDocument::query()->where('type', $t)->whereIn('status', ['confirmed', 'cancel_pending'])->whereDate('doc_at', today())->count();
         $cards = array_values(array_filter([
@@ -49,12 +66,10 @@ class HpController extends Controller
             $user->isSupervisor() ? ['label' => 'Menunggu persetujuan', 'value' => StockDocument::query()->whereIn('status', ['approval', 'cancel_pending'])->count(), 'icon' => 'fa-solid fa-scale-balanced', 'code' => 'ADJ'] : null,
         ]));
 
-        return view('hp.home', [
-            'title' => 'Beranda', 'brandTitle' => true, 'active' => 'home',
-            'hero' => HomeHero::build($user, $user->canAccess('ITM') ? $below : null, $user->isSupervisor() && $user->canAccess('ADJ') ? StockDocument::query()->whereIn('status', ['approval', 'cancel_pending'])->count() : null),
+        return [
             'cards' => array_values(array_filter($cards, fn ($c) => $user->canAccess($c['code']))),
             'countReminder' => $user->canAccess('SO') && CountSchedule::available() ? CountSchedule::state() : null,
-        ]);
+        ];
     }
 
     // Tab Transaksi (dan kelompok lain): daftar modul yang boleh dibuka.

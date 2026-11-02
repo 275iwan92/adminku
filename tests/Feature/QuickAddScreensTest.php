@@ -87,13 +87,13 @@ class QuickAddScreensTest extends TestCase
 
     public function test_record_order_popup_has_a_supplier_plus_but_not_for_the_item(): void
     {
-        $html = $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('id="reorder-modal"', false)->getContent();
+        $html = $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertSee('id="reorder-modal"', false)->getContent();
         $this->assertSame(1, $this->plus($html, '/suppliers'));
         $this->assertSame(1, substr_count($html, 'data-dl-select-add'));   // item_id tidak diberi plus
 
         $group = UserGroup::create(['code' => 'ISSO', 'name' => 'Pengeluaran']);
-        $group->syncAccess(['ISS' => 'rw', 'SUP' => 'ro']);
-        $html = $this->actingAs(User::factory()->create(['group_id' => $group->id]))->get(route('home'))->assertOk()->getContent();
+        $group->syncAccess(['ISS' => 'rw', 'SUP' => 'ro', 'STB' => 'ro']);
+        $html = $this->actingAs(User::factory()->create(['group_id' => $group->id]))->get(route('stock.home'))->assertOk()->getContent();
         $this->assertSame(0, substr_count($html, 'data-dl-select-add'));
     }
 

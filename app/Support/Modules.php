@@ -43,6 +43,7 @@ final class Modules
             'ADJ' => ['TRX', 'Penyesuaian Stok', 'fa-solid fa-scale-balanced', 'grid', ['docs.index', 'adjustment'], 'supervisor', []],
             'SO' => ['TRX', 'Stok Opname', 'fa-solid fa-clipboard-check', 'grid', 'stock-counts.index', 'entry', ['stock-counts.', 'hp.count']],
             'ORD' => ['TRX', 'Riwayat Pemesanan', 'fa-solid fa-clock-rotate-left', 'grid', 'reorder-orders.index', 'entry', ['reorder-orders.']],
+            'STB' => ['RPT', 'Beranda Stok', 'fa-solid fa-gauge-high', 'form', 'stock.home', 'entry', ['stock.']],
             'R-CARD' => ['RPT', 'Kartu Stok', 'fa-solid fa-clipboard-list', 'report', 'reports.stock-card', 'entry', ['reports.stock-card']],
             'R-SUM' => ['RPT', 'Ringkasan Stok', 'fa-solid fa-table-list', 'report', 'reports.summary', 'entry', ['reports.summary']],
             'R-IN' => ['RPT', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.receiving', 'entry', ['reports.receiving']],

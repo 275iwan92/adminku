@@ -212,7 +212,7 @@ class ItemCodeTest extends TestCase
         $this->assertSame(['Uji Lama', 'Uji Sebentar'], Batch::nearExpiry()->orderBy('expiry_date')->pluck('name')->all());
 
         $this->actingAs(User::factory()->supervisor()->create());
-        $this->get(route('home'))->assertOk()->assertSee('Pisahkan dari rak');
+        $this->get(route('stock.home'))->assertOk()->assertSee('Pisahkan dari rak');
         $report = $this->get(route('reports.expiry'))->assertOk()->assertSee('KEDALUWARSA')->assertSee('HAMPIR')->getContent();
         $this->assertStringNotContainsString('Uji Jauh', $report);
         $this->assertStringContainsString('Uji Jauh', $this->get(route('reports.expiry', ['days' => 120]))->getContent());
@@ -227,6 +227,6 @@ class ItemCodeTest extends TestCase
         $this->assertSame(Location::count(), Location::whereIn('code', Batch::pluck('location'))->count());
         $this->assertSame(2, Batch::nearExpiry()->count());  // satu sudah lewat, satu hampir; dua batch lain masih lama
         $this->assertSame(2, Item::where('name', 'Lem Kayu Fox 100 ml')->firstOrFail()->batches()->count());   // satu produk, dua batch
-        $this->actingAs(User::where('username', 'supervisor')->firstOrFail())->get(route('home'))->assertOk()->assertSee('Lem Kayu Fox 100 ml');
+        $this->actingAs(User::where('username', 'supervisor')->firstOrFail())->get(route('stock.home'))->assertOk()->assertSee('Lem Kayu Fox 100 ml');
     }
 }

@@ -26,9 +26,12 @@ class MenuLayersTest extends TestCase
         $this->assertSame(['Monitoring Kendaraan', 'Perpanjang Dokumen Kendaraan', 'Catat Servis Kendaraan', 'Catat Odometer', 'Master Kendaraan', 'Jenis Kendaraan', 'Penjadwalan AC', 'Kunjungan AC', 'Denah AC', 'Master AC', 'Area dan Gedung AC', 'Ruang AC', 'Vendor AC', 'Pengaturan GA', 'Perawatan Gedung'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
         $this->assertSame(['PR', 'PO', 'PV'], collect($layers->firstWhere('code', 'PUR')['children'])->map(fn ($c) => substr($c['label'], -3, 2))->all());
         $stok = $layers->firstWhere('code', 'STK');
-        $this->assertSame(['Transaksi', 'Laporan'], collect($stok['children'])->pluck('label')->all());
-        $this->assertContains('RCV', collect($stok['children'][0]['items'])->pluck('code')->all());
-        $this->assertContains('R-SUM', collect($stok['children'][1]['items'])->pluck('code')->all());
+        $this->assertSame(['Beranda Stok', 'Transaksi', 'Laporan'], collect($stok['children'])->pluck('label')->all());   // Beranda Stok = butir pertama, lalu dua subkelompok
+        $this->assertSame(route('stock.home'), $stok['children'][0]['url']);
+        $this->assertSame('STB', $stok['children'][0]['code']);
+        $this->assertContains('RCV', collect($stok['children'][1]['items'])->pluck('code')->all());
+        $this->assertContains('R-SUM', collect($stok['children'][2]['items'])->pluck('code')->all());
+        $this->assertNotContains('STB', collect($stok['children'][2]['items'])->pluck('code')->all());
     }
 
     public function test_entry_keeps_only_allowed_items_and_no_security(): void
@@ -36,7 +39,7 @@ class MenuLayersTest extends TestCase
         $layers = collect(Menu::layers(User::factory()->create()));
 
         $this->assertSame(['MST', 'STK'], $layers->pluck('code')->all());
-        $items = collect($layers->firstWhere('code', 'STK')['children'])->flatMap(fn ($g) => collect($g['items'])->pluck('code'))->all();
+        $items = collect($layers->firstWhere('code', 'STK')['children'])->flatMap(fn ($g) => isset($g['items']) ? collect($g['items'])->pluck('code') : [$g['code']])->all();
         $this->assertContains('RCV', $items);
         $this->assertNotContains('OPN', $items);
     }

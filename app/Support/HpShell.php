@@ -16,7 +16,7 @@ use Devlib\Device;
 final class HpShell
 {
     // Modul yang punya tampilan HP sendiri: kode => nama rute.
-    private const OWN = ['SO' => 'hp.counts'];
+    private const OWN = ['SO' => 'hp.counts', 'STB' => 'stock.home'];
 
     // Perangkat ini ponsel asli menurut UA (bukan jendela komputer yang dipersempit): ponsel selalu Tampilan HP, tanpa tombol Tampilan Desktop.
     public static function isRealPhone(): bool

@@ -32,6 +32,7 @@ use App\Http\Controllers\ReorderOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SampleDataController;
 use App\Http\Controllers\StockCountController;
+use App\Http\Controllers\StockHomeController;
 use App\Http\Controllers\StockDocumentController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SupplierController;
@@ -68,6 +69,8 @@ Route::get('company/logo', [CompanyController::class, 'logo'])->name('company.lo
 
 Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
+    // Beranda Stok (modul STB): isi Beranda lama (pengingat opname, angka stok, titik pesan ulang, kedaluwarsa); Beranda global ada di route home.
+    Route::get('stok', StockHomeController::class)->name('stock.home');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
     Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'employee', 'recruitment', 'pr', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');

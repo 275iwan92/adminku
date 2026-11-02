@@ -46,8 +46,11 @@ final class Menu
     {
         $stok = ['TRX', 'RPT'];
         $parents = collect(self::modules($user))->keyBy('code');
+        // Beranda Stok (STB, modul Laporan) menjadi butir pertama induk Stok, di atas subkelompok Transaksi dan Laporan.
+        $home = collect($parents->get('RPT')['children'] ?? [])->firstWhere('code', 'STB');
         $groups = collect($stok)->filter(fn ($c) => $parents->has($c))
-            ->map(fn ($c) => ['label' => $parents[$c]['label'], 'icon' => $parents[$c]['icon'], 'items' => $parents[$c]['children']])->values()->all();
+            ->map(fn ($c) => ['label' => $parents[$c]['label'], 'icon' => $parents[$c]['icon'], 'items' => array_values(array_filter($parents[$c]['children'], fn ($m) => $m['code'] !== 'STB'))])
+            ->filter(fn ($g) => $g['items'])->values()->all();
 
         // Induk GA: modul nyata (Perawatan Aset Kendaraan dan Perawatan AC) dari Modules, lalu layar sementara Perawatan Gedung yang belum dibuat: belum punya modul/hak Grup, jadi hanya Administrator yang melihat.
         $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
@@ -58,8 +61,8 @@ final class Menu
             }
             if (! in_array($code, $stok)) {
                 $out[] = $p;
-            } elseif ($groups && ! collect($out)->contains('code', 'STK')) {
-                $out[] = ['code' => 'STK', 'short' => 'STK', 'label' => 'Stok', 'icon' => 'fa-solid fa-boxes-packing', 'children' => $groups];
+            } elseif (($groups || $home) && ! collect($out)->contains('code', 'STK')) {
+                $out[] = ['code' => 'STK', 'short' => 'STK', 'label' => 'Stok', 'icon' => 'fa-solid fa-boxes-packing', 'children' => [...($home ? [$home] : []), ...$groups]];
             }
         }
 
