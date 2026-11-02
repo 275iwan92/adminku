@@ -202,10 +202,10 @@ class GaSettingsTest extends TestCase
         $this->assertSame(4, AcCare::capacity());
     }
 
-    public function test_the_menu_lists_it_under_ga_only_for_those_with_access(): void
+    public function test_the_menu_has_no_separate_item_and_setup_screens_link_to_it(): void
     {
         $layers = collect(Menu::layers($this->admin));
-        $this->assertContains('Pengaturan GA', collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
+        $this->assertNotContains('Pengaturan GA', collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());   // dibuka dari tombol Setup, bukan menu samping
 
         $this->assertNull(collect(Menu::layers(User::factory()->supervisor()->create()))->firstWhere('code', 'GA'));
     }

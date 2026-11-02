@@ -41,7 +41,7 @@
     <li>Tombol yang tidak boleh Anda pakai tidak tampil. Contoh: tanpa hak RW pada Catat Servis Kendaraan, tombol <span class="g-btn">Catat Servis</span> tidak ada di Monitoring Kendaraan.</li>
     <li>Pembagian yang lazim: petugas admin GA mendapat semua modul GA, sopir hanya <b>Catat Odometer</b>. Administrator mengatur ini di menu {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</li>
     <li><b>Pengaturan GA</b> hanya untuk peran Supervisor ke atas: Data Entry tidak bisa memakainya walau Grup-nya dicentang.</li>
-    <li><b>Menu GA ringkas:</b> satu butir <b>Perawatan AC</b> dan satu butir <b>Monitoring Kendaraan</b>. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
+    <li><b>Menu GA ringkas:</b> satu butir <b>Perawatan Kendaraan</b> dan satu butir <b>Perawatan AC</b>, tanpa butir Pengaturan terpisah. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
     <li>Menu GA milik Administrator juga memuat <b>Perawatan Gedung</b>. Itu layar sementara bertuliskan "Segera hadir"; belum bisa dipakai.</li>
 </ul>
 
@@ -69,7 +69,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Monitoring Kendaraan</b> (RO sudah cukup). Detail kendaraan dan lampirannya ikut modul ini.</p>
 <h4>Langkah: membaca Monitoring Kendaraan</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Monitoring Kendaraan</b>.</li>
+    <li>Buka <b>GA</b> lalu <b>Perawatan Kendaraan</b>.</li>
     <li>Baca empat kotak di atas: <b>Kendaraan aktif</b>; <b>Terlambat</b> (dokumen atau servis sudah lewat); <b>Segera</b> (dalam 30 hari atau 1.000 km); dan <b>Biaya servis</b> tahun ini.</li>
     <li>Baca tabelnya. Kolom yang tampil: <b>Kendaraan</b> (plat dan nama), <b>Pajak tahunan</b>, <b>KIR</b>, <b>Servis berikutnya</b>, dan <b>Status</b>. Urutannya Terlambat dulu, lalu Segera, lalu Aman.</li>
     <li>Kolom <b>Jenis</b>, <b>Odometer (km)</b>, <b>STNK dan plat</b>, dan <b>Asuransi</b> tersembunyi. Tampilkan lewat tombol <span class="g-btn">Kolom</span>.</li>
@@ -560,7 +560,7 @@
 <p>Peran Supervisor atau Administrator yang Grup-nya punya hak <b>RW</b> pada modul Pengaturan GA. Data Entry tidak bisa memakainya. Hak ini sengaja tidak dibagikan otomatis; Administrator menunjuk Supervisor yang boleh lewat {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Pengaturan GA</b>. Isian terisi nilai yang sedang berlaku.</li>
+    <li>Buka <b>GA</b>, lalu <b>Perawatan Kendaraan</b> atau <b>Perawatan AC</b>, tekan <span class="g-btn">Setup</span>, lalu pilih <b>Pengaturan Kendaraan</b> atau <b>Pengaturan AC</b>. Isian terisi nilai yang sedang berlaku.</li>
     <li>Bagian <b>Kendaraan</b>: <b>Segera Jatuh Tempo (hari)</b> (1 sampai 365, bawaan 30) dan <b>Segera Servis (km)</b> (100 sampai 50.000, bawaan 1.000).</li>
     <li>Bagian <b>Perawatan AC</b>: <b>Cuci Rutin Tiap (bulan)</b> (bawaan 3), <b>Servis Besar Tiap (bulan)</b> (bawaan 12), dan <b>Segera Jatuh Tempo (hari)</b> (bawaan 30).</li>
     <li>Centang <b>Hari Kunjungan</b> (minimal satu; bawaan Senin sampai Jumat). Isi <b>Jam Mulai Kunjungan</b> (bawaan 09:00) dan <b>Jam Akhir Kunjungan</b> (bawaan 16:00).</li>

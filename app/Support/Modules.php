@@ -25,8 +25,13 @@ final class Modules
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
 
-    // Modul GA yang dibuka lewat tombol di panel Monitoring (kode => panel: GVM Kendaraan, GAM AC) dan tidak tampil di menu samping bagi yang punya panelnya; pengguna tanpa panel (mis. sopir hanya GVO) tetap melihatnya. Hak Grup dan penjagaan rute tetap per kode.
-    public const MENU_UNDER = ['GVD' => 'GVM', 'GVS' => 'GVM', 'GVO' => 'GVM', 'GVK' => 'GVM', 'GVT' => 'GVM', 'GAS' => 'GAM', 'GAV' => 'GAM', 'GAD' => 'GAM', 'GAK' => 'GAM', 'GAA' => 'GAM', 'GAR' => 'GAM', 'GAE' => 'GAM'];
+    // Modul GA yang dibuka lewat tombol di panel (kode => panel yang membukanya: GVM Perawatan Kendaraan, GAM Perawatan AC) dan tidak tampil di menu samping bagi yang punya salah satu panelnya;
+    // pengguna tanpa panel (mis. sopir hanya GVO) tetap melihatnya. Pengaturan GA (GAP) dibuka dari Setup kedua panel. Hak Grup dan penjagaan rute tetap per kode.
+    public const MENU_UNDER = [
+        'GVD' => ['GVM'], 'GVS' => ['GVM'], 'GVO' => ['GVM'], 'GVK' => ['GVM'], 'GVT' => ['GVM'],
+        'GAS' => ['GAM'], 'GAV' => ['GAM'], 'GAD' => ['GAM'], 'GAK' => ['GAM'], 'GAA' => ['GAM'], 'GAR' => ['GAM'], 'GAE' => ['GAM'],
+        'GAP' => ['GVM', 'GAM'],
+    ];
 
     // kode => [induk, label, ikon, tipe tab, nama rute daftar, peran minimal, awalan rute yang dijaga]
     public static function all(): array
@@ -53,7 +58,7 @@ final class Modules
             'R-OUT' => ['RPT', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.issuance', 'entry', ['reports.issuance']],
             'R-EXP' => ['RPT', 'Laporan Kedaluwarsa', 'fa-solid fa-hourglass-end', 'report', 'reports.expiry', 'entry', ['reports.expiry']],
             'R-ADJ' => ['RPT', 'Laporan Opname & Penyesuaian', 'fa-solid fa-file-circle-check', 'report', 'reports.adjustment', 'supervisor', ['reports.adjustment']],
-            'GVM' => ['GA', 'Monitoring Kendaraan', 'fa-solid fa-car-side', 'grid', 'fleet.index', 'entry', ['fleet.']],
+            'GVM' => ['GA', 'Perawatan Kendaraan', 'fa-solid fa-car-side', 'grid', 'fleet.index', 'entry', ['fleet.']],
             'GVD' => ['GA', 'Perpanjang Dokumen Kendaraan', 'fa-solid fa-file-signature', 'form', 'vehicle-docs.create', 'entry', ['vehicle-docs.']],
             'GVS' => ['GA', 'Catat Servis Kendaraan', 'fa-solid fa-screwdriver-wrench', 'form', 'vehicle-services.create', 'entry', ['vehicle-services.']],
             'GVO' => ['GA', 'Catat Odometer', 'fa-solid fa-gauge-high', 'form', 'vehicle-odometers.create', 'entry', ['vehicle-odometers.']],

@@ -228,7 +228,7 @@ class VehicleFormsTest extends TestCase
 
         $this->assertSame(['Catat Odometer'], collect($labels($this->user(['GVO' => 'rw'])))->pluck('label')->all(), 'sopir: hanya Catat Odometer, tanpa layar sementara');
         $this->assertSame([], $labels($this->user(['ITM' => 'rw'])));
-        $this->assertSame(['Monitoring Kendaraan', 'Perawatan AC', 'Pengaturan GA', 'Perawatan Gedung'],   // menu ringkas: layar lain lewat tombol di panel
+        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'],   // menu ringkas: layar lain lewat tombol di panel
             collect($labels(User::factory()->administrator()->create()))->pluck('label')->all());
     }
 

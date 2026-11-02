@@ -1,8 +1,8 @@
 {{-- REMARK
- Tujuan       : Setup Perawatan Kendaraan (GA, tombol Setup di Monitoring Kendaraan): ubin ke Master Kendaraan (GVK) dan Jenis Kendaraan beserta rencana perawatannya (GVT); tiap ubin tampil hanya bila pengguna punya hak modulnya.
+ Tujuan       : Setup Perawatan Kendaraan (GA, tombol Setup di Monitoring Kendaraan): ubin ke Master Kendaraan (GVK), Jenis Kendaraan beserta rencana perawatannya (GVT), dan Pengaturan (GAP); tiap ubin tampil hanya bila pengguna punya hak modulnya.
  Sumber hulu  : FleetController@setup; hak lewat User::canAccess.
  Input        : tidak ada.
- Output       : tautan ke vehicles.index dan vehicle-types.index.
+ Output       : tautan ke vehicles.index, vehicle-types.index, ga-settings.edit.
  Dipakai oleh : tombol Setup di layar Monitoring Kendaraan (fleet.index).
  Status       : Aktif.
 --}}
@@ -13,6 +13,7 @@
         $tiles = [
             ['GVK', 'vehicles.index', 'fa-truck-pickup', 'Master Kendaraan', 'Plat, jenis, tahun, odometer awal'],
             ['GVT', 'vehicle-types.index', 'fa-list-check', 'Jenis Kendaraan', 'Jenis dan rencana perawatannya'],
+            ['GAP', 'ga-settings.edit', 'fa-sliders', 'Pengaturan Kendaraan', 'Ambang Segera dan aturan perawatan'],
         ];
     @endphp
     @include('partials.flash')

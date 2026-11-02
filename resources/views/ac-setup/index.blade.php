@@ -16,7 +16,7 @@
             ['GAA', 'ac-areas.index', 'fa-building', 'Area dan Gedung', 'Gedung, lantai, gambar denah'],
             ['GAR', 'ac-rooms.index', 'fa-door-open', 'Ruang', 'Kode ruang dan PIC'],
             ['GAE', 'ac-vendors.index', 'fa-handshake', 'Vendor AC', 'Kontak, e-mail, WhatsApp'],
-            ['GAP', 'ga-settings.edit', 'fa-sliders', 'Pengaturan', 'Interval cuci dan servis, hari, jam, kapasitas'],
+            ['GAP', 'ga-settings.edit', 'fa-sliders', 'Pengaturan AC', 'Interval cuci dan servis, hari, jam, kapasitas'],
         ];
     @endphp
     @include('partials.flash')

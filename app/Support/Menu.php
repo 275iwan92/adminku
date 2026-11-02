@@ -17,7 +17,7 @@ final class Menu
     {
         $parents = [];
         foreach (Modules::all() as $code => [$parent, $label, $icon, $type, $route]) {
-            if (! $user->canAccess($code) || (isset(Modules::MENU_UNDER[$code]) && $user->canAccess(Modules::MENU_UNDER[$code]))) {
+            if (! $user->canAccess($code) || (isset(Modules::MENU_UNDER[$code]) && collect(Modules::MENU_UNDER[$code])->contains(fn ($panel) => $user->canAccess($panel)))) {
                 continue;
             }
             $url = is_array($route) ? route($route[0], $route[1]) : route($route);
