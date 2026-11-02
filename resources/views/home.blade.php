@@ -9,7 +9,7 @@
 @extends('layout', ['title' => 'Home', 'bodyClass' => 'sstock-bare'])
 @section('body')
     {{-- Help & support (semua peran) membuka User's Guide; Technical Guide hanya tampil sebagai tab untuk Administrator. --}}
-    <x-dl::layer-shell :classic="false" :without="['chat', 'ai', 'theme']" :help-url="route('help.user-guide')" :modules="$modules" :user="$user" :logout-action="route('logout')" :device-action="route('ui.set')" :open="$open" :fresh="$fresh" menu-source="App\Support\Menu">
+    <x-dl::layer-shell :classic="false" :without="['chat', 'ai', 'theme']" :help-url="route('help.user-guide')" :modules="$modules" :user="$user" :logout-action="route('logout')" :open="$open" :fresh="$fresh" menu-source="App\Support\Menu">
         <x-slot:dashboard>
             @include('partials.flash')
             @include('partials.home-hero', ['hero' => $hero])

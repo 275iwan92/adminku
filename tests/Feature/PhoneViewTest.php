@@ -43,7 +43,7 @@ class PhoneViewTest extends TestCase
         $this->assertStringContainsString('dl-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->get('/login')->getContent());
     }
 
-    public function test_a_real_phone_is_always_the_phone_view_with_no_desktop_switch_but_a_narrowed_pc_window_keeps_the_way_back(): void
+    public function test_a_real_phone_is_always_the_phone_view_with_no_desktop_switch_and_a_narrowed_pc_window_has_no_visible_switch_either(): void
     {
         $user = User::factory()->create();
         $phone = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/')->assertOk()->getContent();
@@ -52,7 +52,8 @@ class PhoneViewTest extends TestCase
         $this->assertStringNotContainsString('action="'.route('ui.set').'"', $phone);
 
         $pc = $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->get('/')->assertOk()->getContent();
-        $this->assertStringContainsString('action="'.route('ui.set').'"', $pc);
+        $this->assertStringContainsString('action="'.route('ui.set').'"', $pc, 'formulir tetap ada untuk peralihan otomatis; tombolnya disembunyikan lewat CSS (.dl-phone__dev)');
+        $this->assertStringContainsString('.dl-phone__dev', file_get_contents(resource_path('css/app.css')));
     }
 
     public function test_guest_can_save_the_view_choice_from_the_popup_and_the_phone_login(): void
@@ -117,11 +118,11 @@ class PhoneViewTest extends TestCase
         $this->actingAs($user)->withCookie('ui', 'phone')->get('/')->assertDontSee('data-auto-return', false);
     }
 
-    public function test_desktop_home_gets_one_extra_profile_action_phone_view(): void
+    public function test_desktop_home_has_no_manual_phone_view_action(): void
     {
         $html = $this->actingAs(User::factory()->supervisor()->create())->withHeader('User-Agent', self::PC)->get('/')->getContent();
-        $this->assertStringContainsString('data-lm-act="device"', $html);
-        $this->assertStringContainsString('data-dl-device', $html);
+        $this->assertStringNotContainsString('data-lm-act="device"', $html);
+        $this->assertStringNotContainsString('data-dl-device', $html);
     }
 
     public function test_switch_saves_the_cookie_and_rejects_other_values(): void

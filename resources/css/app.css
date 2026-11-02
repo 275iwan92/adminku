@@ -441,3 +441,6 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 .sstock-otile b { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .sstock-otile__n { font-size: 12px; opacity: .7; }
 @media (max-width: 600px) { .sstock-ohead { flex-wrap: wrap; } .sstock-ohead__hak { margin-left: 0; } }
+
+/* Pindah tampilan HP/Desktop otomatis (deteksi perangkat): tombol manual disembunyikan; formulirnya tetap ada karena DevLib memakainya untuk kembali ke desktop saat jendela dilebarkan. */
+.dl-phone__dev, .dl-plogin__desk { display: none !important; }
