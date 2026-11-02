@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\StockDocument;
 use App\Enums\StockDocumentType;
 use App\Services\CountSchedule;
+use App\Support\HomeHero;
 use App\Support\HpShell;
 use App\Support\Modules;
 use App\Support\Search;
@@ -50,6 +51,7 @@ class HpController extends Controller
 
         return view('hp.home', [
             'title' => 'Beranda', 'brandTitle' => true, 'active' => 'home',
+            'hero' => HomeHero::build($user, $user->canAccess('ITM') ? $below : null, $user->isSupervisor() && $user->canAccess('ADJ') ? StockDocument::query()->whereIn('status', ['approval', 'cancel_pending'])->count() : null),
             'cards' => array_values(array_filter($cards, fn ($c) => $user->canAccess($c['code']))),
             'countReminder' => $user->canAccess('SO') && CountSchedule::available() ? CountSchedule::state() : null,
         ]);

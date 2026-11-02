@@ -1,7 +1,7 @@
 {{-- REMARK
- Tujuan       : Beranda tampilan HP: ringkasan stok sebagai kartu besar (angka + nama) yang membuka modulnya, dan pengingat Stok Opname.
+ Tujuan       : Beranda tampilan HP: banner hero (partial home-hero), ringkasan stok sebagai kartu besar (angka + nama) yang membuka modulnya, dan pengingat Stok Opname.
  Sumber hulu  : HpController@home (cards, countReminder).
- Input        : cards (label, value, icon, code, tone), countReminder (CountSchedule::state atau null).
+ Input        : hero (HomeHero::build), cards (label, value, icon, code, tone), countReminder (CountSchedule::state atau null).
  Output       : kartu tautan ke hp.open / hp.counts, pengingat opname.
  Dipakai oleh : HomeController bila perangkat = hp.
  Status       : Aktif.
@@ -9,7 +9,7 @@
 @extends('hp.layout')
 @section('content')
     @include('partials.flash')
-    @include('partials.hello', ['name' => auth()->user()->name])
+    @include('partials.home-hero', ['hero' => $hero])
     @if ($countReminder)
         @php $r = $countReminder; @endphp
         <x-dl::phone-link icon="fa-solid fa-clipboard-check" :url="route('hp.counts')" :tone="$r['running'] ? 'info' : ($r['tone'] === 'neutral' ? 'info' : $r['tone'])"
