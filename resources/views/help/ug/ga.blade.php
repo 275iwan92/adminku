@@ -230,7 +230,7 @@
 <ul class="g-list">
     <li>Setelah disimpan, odometer <b>tidak bisa diketik</b> di master (tampil sebagai <b>Odometer Terakhir</b>). Ia berubah lewat {!! $ref('GVO', 'ga-gvo', 'Catat Odometer') !!} atau {!! $ref('GVS', 'ga-gvs', 'Catat Servis Kendaraan') !!}.</li>
     <li><b>Jenis Kendaraan tidak bisa diganti</b> setelah kendaraan punya riwayat servis, karena jadwalnya mengikuti jenis.</li>
-    <li>Menonaktifkan (tombol Aksi di grid atau <b>Nonaktifkan</b> di form) menyembunyikan kendaraan dari Monitoring Kendaraan dan dari pilihan form pencatatan. Riwayatnya tetap.</li>
+    <li>Menonaktifkan (tombol <b>Nonaktifkan</b> di form) menyembunyikan kendaraan dari Monitoring Kendaraan dan dari pilihan form pencatatan. Riwayatnya tetap.</li>
     <li>Kolom <b>No. Rangka</b> dan <b>No. Mesin</b> di grid tersembunyi; tampilkan lewat tombol <span class="g-btn">Kolom</span>. Kotak di atas grid menyaring <b>Semua kendaraan</b> atau <b>Nonaktif</b>.</li>
 </ul>
 <h4>Masalah umum</h4>

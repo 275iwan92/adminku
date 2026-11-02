@@ -9,7 +9,7 @@
 @extends('layout', ['title' => 'Karyawan'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="employees" :rows="$rows" actions="master" :new-url="route('employees.create')" :open-url="url('employees/{id}')"
+    <x-dl::grid id="employees" :rows="$rows" actions="edit" :new-url="route('employees.create')" :open-url="url('employees/{id}')"
         search="Cari kode, nama, jabatan, bagian..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['position', 'department', 'status', 'attention']]"
         :columns="[

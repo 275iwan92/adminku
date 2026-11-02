@@ -187,7 +187,7 @@
 </table>
 <h3>Kolom Aksi dan Aktif / Nonaktif</h3>
 <ul class="g-list">
-    <li>Grid <b>master</b> punya ikon di awal baris. Pensil berarti <b>Edit</b>. Lingkaran coret berarti <b>Nonaktifkan</b>. Untuk data nonaktif, ikon itu berubah menjadi <b>Aktifkan</b>.</li>
+    <li>Grid <b>master</b> punya ikon pensil di awal baris: <b>Edit</b>. <b>Nonaktifkan</b> dan <b>Aktifkan</b> hanya ada di dalam form (bilah form), tidak di baris grid.</li>
     <li>Data <b>tidak pernah dihapus</b>. Data yang tidak dipakai lagi dinonaktifkan. Ia hilang dari pilihan di form baru, tetapi riwayatnya tetap utuh. Lihat yang nonaktif lewat kotak <b>Nonaktif</b> di atas grid.</li>
     <li>Grid <b>transaksi</b> (dokumen stok) hanya punya ikon <b>Buka</b> di awal baris. Dokumen tidak dinonaktifkan. <b>Konfirmasi</b>, <b>Setujui</b>, <b>Batalkan</b>, dan <b>Hapus</b> hanya ada di form dokumen.</li>
 </ul>

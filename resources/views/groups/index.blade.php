@@ -9,7 +9,7 @@
 @extends('layout', ['title' => 'Groups'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="groups" :rows="$rows" actions="master" :new-url="route('groups.create')" :open-url="url('groups/{id}')" :toggle-url="url('groups/{id}/toggle')"
+    <x-dl::grid id="groups" :rows="$rows" actions="edit" :new-url="route('groups.create')" :open-url="url('groups/{id}')" :toggle-url="url('groups/{id}/toggle')"
         search="Search code, name..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['users', 'modules']]"
         :columns="[

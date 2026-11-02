@@ -2,7 +2,7 @@
  Tujuan       : Daftar master Satuan (Grid Master) beserta jumlah item pemakainya.
  Sumber hulu  : UnitController@index (units, items_count).
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form satuan; saklar Aktif / Nonaktif.
+ Output       : x-dl::grid; klik 2x / Edit membuka form satuan.
  Dipakai oleh : route units.index (menu Master Data > Units, Supervisor).
  Status       : Aktif.
 --}}
@@ -11,7 +11,7 @@
     @include('partials.flash')
     {{-- Lebar dibatasi supaya kolom Unit, Conversions, dan jumlah item tidak terpisah jauh di layar lebar. --}}
     <div style="max-width: 820px">
-    <x-dl::grid id="units" :rows="$rows" actions="master" :new-url="route('units.create')" :open-url="url('units/{id}')" :toggle-url="url('units/{id}/toggle')"
+    <x-dl::grid id="units" :rows="$rows" actions="edit" :new-url="route('units.create')" :open-url="url('units/{id}')" :toggle-url="url('units/{id}/toggle')"
         search="Search code or name..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['kind', 'conv', 'items']]"
         :columns="[

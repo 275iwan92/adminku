@@ -2,14 +2,14 @@
  Tujuan       : Daftar master Unit AC (Grid Master, modul GAK): kode aset + ruang dalam kotak berwarna menurut area, area, merek / tipe / PK, tanggal pasang, cuci rutin dan servis besar terakhir (awal).
  Sumber hulu  : AcUnitController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form unit; saklar Aktif / Nonaktif.
+ Output       : x-dl::grid; klik 2x / Edit membuka form unit.
  Dipakai oleh : route ac-units.index (menu GA > Master AC).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Master AC'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="ac-units" :rows="$rows" actions="master" :new-url="route('ac-units.create')" :open-url="url('ac-units/{id}')" :toggle-url="url('ac-units/{id}/toggle')"
+    <x-dl::grid id="ac-units" :rows="$rows" actions="edit" :new-url="route('ac-units.create')" :open-url="url('ac-units/{id}')" :toggle-url="url('ac-units/{id}/toggle')"
         search="Cari kode aset, ruang, area, merek..."
         :phone-cards="['title' => 'asset_code', 'sub' => 'room', 'meta' => ['type', 'area']]"
         :columns="[

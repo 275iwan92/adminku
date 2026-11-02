@@ -2,7 +2,7 @@
  Tujuan       : Daftar master Kategori barang (Grid Master): awalan kode + nama, jumlah barang.
  Sumber hulu  : CategoryController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form kategori; saklar Aktif / Nonaktif.
+ Output       : x-dl::grid; klik 2x / Edit membuka form kategori.
  Dipakai oleh : route categories.index (menu Data Master > Kategori, Supervisor).
  Status       : Aktif.
 --}}
@@ -10,7 +10,7 @@
 @section('body')
     @include('partials.flash')
     <div style="max-width: 820px">
-    <x-dl::grid id="categories" :rows="$rows" actions="master" :new-url="route('categories.create')" :open-url="url('categories/{id}')" :toggle-url="url('categories/{id}/toggle')"
+    <x-dl::grid id="categories" :rows="$rows" actions="edit" :new-url="route('categories.create')" :open-url="url('categories/{id}')" :toggle-url="url('categories/{id}/toggle')"
         search="Search code or name..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['items']]"
         :columns="[

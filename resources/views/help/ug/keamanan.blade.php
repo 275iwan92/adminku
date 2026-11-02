@@ -47,7 +47,7 @@
     <li>Buka <b>Grup</b>, tekan <b>+ Data Baru</b>. Isi <b>Kode Grup</b> dan <b>Nama Grup</b>.</li>
     <li>Pada tabel <b>Akses per modul</b>, pilih hak akses tiap modul. Kolom <b>Peran Minimal</b> menunjukkan peran terendah yang masih bisa memakai modul itu. Lalu tekan <b>Simpan</b>.</li>
     <li>Di form <b>Pengguna</b>, pilih Grup untuk orang yang bersangkutan.</li>
-    <li>Grup tidak dihapus. Pakai <b>Nonaktifkan</b> atau <b>Aktifkan</b> (tombol di form atau ikon di grid). Grup nonaktif tidak muncul di pilihan Grup untuk pengguna. Anggota yang sudah ada tidak berubah.</li>
+    <li>Grup tidak dihapus. Pakai <b>Nonaktifkan</b> atau <b>Aktifkan</b> (tombol di form). Grup nonaktif tidak muncul di pilihan Grup untuk pengguna. Anggota yang sudah ada tidak berubah.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <div class="g-tip">Akses nyata = modul diberikan Grup <b>dan</b> peran pengguna cukup tinggi. Modul khusus Supervisor tetap tertutup bagi Data Entry walau diberi RW. Administrator selalu punya akses penuh.</div>
