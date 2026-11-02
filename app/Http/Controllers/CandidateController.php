@@ -100,7 +100,7 @@ class CandidateController extends Controller
     public function store(CandidateRequest $request): RedirectResponse
     {
         $candidate = DB::transaction(function () use ($request) {
-            $data = $request->safe()->except(['departments', 'ktp', 'cv', 'photo', 'events']);
+            $data = $request->safe()->except(['departments', 'ktp', 'ktp_crop', 'cv', 'photo', 'events']);
             $data['step_id'] = RecruitStep::where('kind', 'start')->value('id');   // kandidat baru selalu mulai dari Daftar
             $data['status'] = 'active';
             $candidate = Candidate::create($data + ['created_by' => $request->user()->id]);
@@ -117,7 +117,7 @@ class CandidateController extends Controller
     public function update(CandidateRequest $request, Candidate $candidate): RedirectResponse
     {
         DB::transaction(function () use ($request, $candidate) {
-            $data = $request->safe()->except(['departments', 'ktp', 'cv', 'photo', 'events']);
+            $data = $request->safe()->except(['departments', 'ktp', 'ktp_crop', 'cv', 'photo', 'events']);
             $data['step_id'] = $data['step_id'] ?? $candidate->step_id;
             $data['status'] = $data['status'] ?? $candidate->status;
             $candidate->update($data);
@@ -179,11 +179,11 @@ class CandidateController extends Controller
 
     private function saveFiles(Candidate $candidate, CandidateRequest $request): void
     {
-        foreach (['ktp', 'cv', 'photo'] as $kind) {
-            if (! $request->hasFile($kind)) {
+        foreach (['ktp' => 'ktp', 'ktp_crop' => 'ktp', 'cv' => 'cv', 'photo' => 'photo'] as $input => $kind) {   // hasil crop KTP (diproses setelah berkas biasa) menggantikannya
+            if (! $request->hasFile($input)) {
                 continue;
             }
-            $file = $request->file($kind);
+            $file = $request->file($input);
             $old = $candidate->{$kind.'_path'};
             $candidate->update([$kind.'_path' => $file->store("recruit/{$candidate->id}", 'ga'), $kind.'_name' => mb_substr($file->getClientOriginalName(), 0, 150)]);
             $old && Storage::disk('ga')->delete($old);

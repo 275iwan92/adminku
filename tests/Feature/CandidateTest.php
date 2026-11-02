@@ -213,6 +213,15 @@ class CandidateTest extends TestCase
         $this->put(route('candidates.update', $c), $this->payload(['photo' => UploadedFile::fake()->create('x.exe', 10)]))->assertSessionHasErrors('photo');
     }
 
+    public function test_candidate_ktp_crop_wins_over_the_plain_file_and_form_uses_the_photo_boxes(): void
+    {
+        $this->actingAs($this->admin)->post(route('candidates.store'), $this->payload(['ktp' => UploadedFile::fake()->create('lama.pdf', 50, 'application/pdf'), 'ktp_crop' => UploadedFile::fake()->image('profile.jpg', 856, 540)]))->assertRedirect();
+        $c = Candidate::firstOrFail();
+        $this->assertSame('profile.jpg', $c->ktp_name);
+        $this->get(route('candidates.show', $c))->assertOk()->assertSee('data-out-w="856"', false)->assertSee('data-out-h="540"', false);
+        $this->put(route('candidates.update', $c), $this->payload(['ktp_crop' => UploadedFile::fake()->image('x.png')]))->assertSessionHasErrors('ktp_crop');
+    }
+
     public function test_access_follows_the_group(): void
     {
         $this->actingAs(User::factory()->supervisor()->create())->get(route('candidates.index'))->assertForbidden();

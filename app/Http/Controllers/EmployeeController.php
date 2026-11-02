@@ -103,7 +103,7 @@ class EmployeeController extends Controller
     // Berkas privat (disk 'ga', folder employee/{id}): foto profil dan scan KTP; berkas baru mengganti yang lama.
     private function saveFiles(Employee $employee, EmployeeRequest $request): void
     {
-        foreach (['photo' => 'photo', 'ktp_file' => 'ktp'] as $input => $col) {
+        foreach (['photo' => 'photo', 'ktp_file' => 'ktp', 'ktp_crop' => 'ktp'] as $input => $col) {   // hasil crop KTP (diproses terakhir) menggantikan berkas yang diunggah apa adanya
             if (! $request->hasFile($input)) {
                 continue;
             }

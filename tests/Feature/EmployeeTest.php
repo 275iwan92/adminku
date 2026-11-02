@@ -114,6 +114,24 @@ class EmployeeTest extends TestCase
         $this->assertSame(0, User::where('username', 'like', '%contoh%')->count());   // tidak membuat akun
     }
 
+    public function test_cropped_ktp_replaces_the_plain_upload_and_a_pdf_is_kept_as_is(): void
+    {
+        Storage::fake('ga');
+        $this->actingAs($this->admin)->post(route('employees.store'), $this->payload(['photo' => UploadedFile::fake()->image('profile.jpg', 600, 800), 'ktp_crop' => UploadedFile::fake()->image('profile.jpg', 856, 540)]))->assertRedirect();
+        $e = Employee::firstOrFail();
+        $this->assertSame('profile.jpg', $e->ktp_name);   // hasil crop dari kotak foto DevLib
+        $this->get(route('employees.show', $e))->assertOk()->assertSee('data-out-w="856"', false)->assertSee('data-out-w="600"', false)->assertSee('data-lightbox', false);
+
+        $this->put(route('employees.update', $e), $this->payload(['ktp_file' => UploadedFile::fake()->create('ktp.pdf', 100, 'application/pdf')]))->assertRedirect();
+        $this->assertSame('ktp.pdf', $e->refresh()->ktp_name);   // PDF tanpa crop
+        $this->get(route('employees.show', $e))->assertOk()->assertSee('Buka PDF');
+
+        $both = ['ktp_file' => UploadedFile::fake()->create('lama.pdf', 50, 'application/pdf'), 'ktp_crop' => UploadedFile::fake()->image('profile.jpg', 856, 540)];
+        $this->put(route('employees.update', $e), $this->payload($both))->assertRedirect();
+        $this->assertSame('profile.jpg', $e->refresh()->ktp_name);   // crop menang bila keduanya dikirim
+        $this->put(route('employees.update', $e), $this->payload(['ktp_crop' => UploadedFile::fake()->image('x.png')]))->assertSessionHasErrors('ktp_crop');
+    }
+
     public function test_nik_must_be_sixteen_digits_and_unique(): void
     {
         $this->employee(['code' => 'E-0001']);

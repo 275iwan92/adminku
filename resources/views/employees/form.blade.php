@@ -24,10 +24,27 @@
         :action="$isNew ? route('employees.store') : route('employees.update', $employee)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :created-at="$employee->created_at?->format('Y-m-d H:i:s')" :updated-at="$employee->updated_at?->format('Y-m-d H:i:s')">
         <x-slot:profile>
-            <x-dl::form.row :cols="2">
-                <x-dl::field.upload name="photo" label="Foto Profil" accept="image/jpeg,image/png,image/webp" :value="$employee->photo_path ? ['url' => route('employees.file', [$employee, 'photo']), 'name' => $employee->photo_name] : null" :error="$e('photo')" hint="JPG, PNG, atau WEBP, paling besar 5 MB. Pilih berkas baru untuk mengganti." />
-                <x-dl::field.upload name="ktp_file" label="Scan KTP" accept="image/jpeg,image/png,image/webp,application/pdf" :value="$employee->ktp_path ? ['url' => route('employees.file', [$employee, 'ktp']), 'name' => $employee->ktp_name] : null" :error="$e('ktp_file')" hint="JPG, PNG, WEBP, atau PDF, paling besar 5 MB. Data pribadi: hanya terlihat oleh pemegang hak Karyawan." />
-            </x-dl::form.row>
+            <div class="rk-photos">
+                <div class="rk-photo-cell">
+                    <label class="rk-photo-label">Foto Profil</label>
+                    <x-dl::photo-box name="photo" :photo="$employee->photo_path ? route('employees.file', [$employee, 'photo']) : null" :label="$employee->name ?: 'Foto'" size="lg" caption="Klik untuk menambah foto" />
+                    @if ($employee->photo_path)<a href="#" class="rk-zoom" data-lightbox="{{ route('employees.file', [$employee, 'photo']) }}" data-name="{{ $employee->photo_name }}"><i class="fa-solid fa-magnifying-glass-plus"></i> Perbesar</a>@endif
+                    <small class="rk-photo-hint">Klik kotak untuk memilih, menggeser, dan memperbesar; hasil dipotong 3:4 (600 x 800 px).</small>
+                    @if ($e('photo'))<span class="rk-photo-err">{{ $e('photo') }}</span>@endif
+                </div>
+                <div class="rk-photo-cell rk-photo-cell--ktp">
+                    <label class="rk-photo-label">Scan KTP</label>
+                    @php $ktpPdf = $employee->ktp_name && str_ends_with(strtolower($employee->ktp_name), '.pdf'); @endphp
+                    <x-dl::photo-box name="ktp_crop" :photo="$employee->ktp_path && ! $ktpPdf ? route('employees.file', [$employee, 'ktp']) : null" label="KTP" :out-w="856" :out-h="540" size="lg" style="--pb-w:280px" caption="Klik untuk menambah scan KTP" />
+                    @if ($employee->ktp_path)
+                        @if ($ktpPdf)<a href="{{ route('employees.file', [$employee, 'ktp']) }}" target="_blank" rel="noopener" class="rk-zoom"><i class="fa-regular fa-file-pdf"></i> Buka PDF ({{ $employee->ktp_name }})</a>
+                        @else<a href="#" class="rk-zoom" data-lightbox="{{ route('employees.file', [$employee, 'ktp']) }}" data-name="{{ $employee->ktp_name }}"><i class="fa-solid fa-magnifying-glass-plus"></i> Perbesar</a>@endif
+                    @endif
+                    <small class="rk-photo-hint">Dipotong sebesar kartu (856 x 540 px). Punya PDF? Unggah apa adanya di bawah.</small>
+                    <x-dl::field.upload name="ktp_file" label="Atau unggah PDF / gambar apa adanya" accept="application/pdf,image/jpeg,image/png,image/webp" :error="$e('ktp_file')" hint="JPG, PNG, WEBP, atau PDF, paling besar 5 MB. Data pribadi: hanya terlihat oleh pemegang hak Karyawan." />
+                    @if ($e('ktp_crop'))<span class="rk-photo-err">{{ $e('ktp_crop') }}</span>@endif
+                </div>
+            </div>
             <x-dl::form.row :cols="3">
                 <x-dl::field.text name="code" label="Kode Karyawan" :value="$v('code')" code :case-toggle="false" required :readonly="! $isNew" maxlength="20" :error="$e('code')" hint="Unik. Tidak bisa diubah setelah disimpan." />
                 <x-dl::field.text name="name" label="Nama Lengkap" :value="$v('name')" required maxlength="150" :error="$e('name')" />

@@ -9,6 +9,13 @@
 --}}
 <style>
     .dl-upload__thumb { cursor: zoom-in; }
+    .rk-photos { display: flex; flex-wrap: wrap; gap: 24px; margin: 4px 0 12px; }
+    .rk-photo-cell { display: flex; flex-direction: column; gap: 4px; max-width: 320px; }
+    .rk-photo-cell--ktp { max-width: 340px; }
+    .rk-photo-label { font-size: 12.5px; font-weight: 600; }
+    .rk-photo-hint { font-size: 11.5px; color: var(--dl-muted, #666); }
+    .rk-photo-err { font-size: 11.5px; color: var(--dl-danger, #c0392b); }
+    .rk-zoom { font-size: 12px; text-decoration: none; }
     .lb-ov { position: fixed; inset: 0; z-index: 10000; background: rgba(10, 12, 18, .88); display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; }
     .lb-img { max-width: 92vw; max-height: 86vh; transform-origin: center; user-select: none; -webkit-user-drag: none; background: #fff; border-radius: 6px; cursor: grab; }
     .lb-bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; }
@@ -54,6 +61,25 @@
             img.addEventListener('pointerup', up); img.addEventListener('pointercancel', up);
             document.body.appendChild(ov);
         };
+
+        // Tautan "Perbesar" di bawah kotak foto membuka pratinjau yang sama.
+        document.addEventListener('click', (e) => {
+            const a = e.target.closest('[data-lightbox]');
+            if (! a) { return; }
+            e.preventDefault();
+            open(a.dataset.lightbox, a.dataset.name || '');
+        });
+
+        // Dialog crop DevLib (x-dl::photo-box) bertitle "Profile photo" dan berteks 3:4 bawaan; judul disesuaikan per kotak, teks KTP (856 x 540) juga.
+        setTimeout(() => document.querySelectorAll('[data-dl-photobox]').forEach((box) => {
+            const layer = window.Devlib?.h?.layer?.(box.dataset.cropId) || document.getElementById(box.dataset.cropId);
+            if (! layer) { return; }
+            const ktp = box.dataset.outW === '856';
+            const title = [...layer.querySelectorAll('*')].find((el) => el.children.length === 0 && el.textContent.trim() === 'Profile photo');
+            if (title) { title.textContent = ktp ? 'Scan KTP' : 'Foto profil'; }
+            const hint = layer.querySelector('.dl-photobox__hint');
+            if (hint && ktp) { hint.textContent = 'Geser gambar KTP di dalam bingkai dan atur zoom. Hasilnya 856 x 540 px, seukuran kartu (rasio 1,586 : 1).'; }
+        }), 600);
 
         // Klik gambar kecil: unggahan tersimpan (tautan ke berkas) atau berkas yang baru dipilih (gambar sementara). PDF tidak punya gambar kecil, jadi tetap tab baru.
         document.addEventListener('click', (e) => {

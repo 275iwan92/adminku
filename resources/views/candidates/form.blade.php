@@ -47,11 +47,28 @@
                     <x-dl::field.select name="status" label="Status" :options="\App\Models\Candidate::STATUSES" :value="$v('status')" required :error="$e('status')" hint="Ditolak atau Mundur menyembunyikan kartu dari papan." />
                 @endunless
             </x-dl::form.row>
-            <x-dl::form.row :cols="3">
-                <x-dl::field.upload name="photo" label="Foto Profil" accept="image/jpeg,image/png,image/webp" :value="$candidate->photo_path ? ['url' => route('candidates.file', [$candidate, 'photo']), 'name' => $candidate->photo_name] : null" :error="$e('photo')" hint="JPG, PNG, atau WEBP, paling besar 5 MB. Tampil sebagai avatar di kartu papan." />
-            </x-dl::form.row>
+            <div class="rk-photos">
+                <div class="rk-photo-cell">
+                    <label class="rk-photo-label">Foto Profil</label>
+                    <x-dl::photo-box name="photo" :photo="$candidate->photo_path ? route('candidates.file', [$candidate, 'photo']) : null" :label="$candidate->name ?: 'Foto'" size="lg" caption="Klik untuk menambah foto" />
+                    @if ($candidate->photo_path)<a href="#" class="rk-zoom" data-lightbox="{{ route('candidates.file', [$candidate, 'photo']) }}" data-name="{{ $candidate->photo_name }}"><i class="fa-solid fa-magnifying-glass-plus"></i> Perbesar</a>@endif
+                    <small class="rk-photo-hint">Klik kotak untuk memilih, menggeser, dan memperbesar; hasil dipotong 3:4. Tampil sebagai avatar di kartu papan.</small>
+                    @if ($e('photo'))<span class="rk-photo-err">{{ $e('photo') }}</span>@endif
+                </div>
+                <div class="rk-photo-cell rk-photo-cell--ktp">
+                    <label class="rk-photo-label">Foto KTP</label>
+                    @php $ktpPdf = $candidate->ktp_name && str_ends_with(strtolower($candidate->ktp_name), '.pdf'); @endphp
+                    <x-dl::photo-box name="ktp_crop" :photo="$candidate->ktp_path && ! $ktpPdf ? route('candidates.file', [$candidate, 'ktp']) : null" label="KTP" :out-w="856" :out-h="540" size="lg" style="--pb-w:280px" caption="Klik untuk menambah foto KTP" />
+                    @if ($candidate->ktp_path)
+                        @if ($ktpPdf)<a href="{{ route('candidates.file', [$candidate, 'ktp']) }}" target="_blank" rel="noopener" class="rk-zoom"><i class="fa-regular fa-file-pdf"></i> Buka PDF ({{ $candidate->ktp_name }})</a>
+                        @else<a href="#" class="rk-zoom" data-lightbox="{{ route('candidates.file', [$candidate, 'ktp']) }}" data-name="{{ $candidate->ktp_name }}"><i class="fa-solid fa-magnifying-glass-plus"></i> Perbesar</a>@endif
+                    @endif
+                    <small class="rk-photo-hint">Dipotong sebesar kartu (856 x 540 px). Di HP, pilih berkas bisa langsung memakai kamera. Punya PDF? Unggah apa adanya di bawah.</small>
+                    <x-dl::field.upload name="ktp" label="Atau unggah PDF / gambar apa adanya" accept="application/pdf,image/jpeg,image/png,image/webp" :error="$e('ktp')" hint="JPG, PNG, WEBP, atau PDF, paling besar 5 MB." />
+                    @if ($e('ktp_crop'))<span class="rk-photo-err">{{ $e('ktp_crop') }}</span>@endif
+                </div>
+            </div>
             <x-dl::form.row :cols="2">
-                <x-dl::field.upload name="ktp" label="Foto KTP" accept="image/*,application/pdf" :value="$candidate->ktp_path ? ['url' => route('candidates.file', [$candidate, 'ktp']), 'name' => $candidate->ktp_name] : null" :error="$e('ktp')" hint="Di HP, Pilih File bisa langsung membuka kamera. Hanya disimpan sebagai lampiran; NIK dan nama diketik. JPG, PNG, atau PDF, paling besar 5 MB." />
                 <x-dl::field.upload name="cv" label="CV" accept="image/*,application/pdf,.doc,.docx" :value="$candidate->cv_path ? ['url' => route('candidates.file', [$candidate, 'cv']), 'name' => $candidate->cv_name] : null" :error="$e('cv')" hint="Opsional. PDF, gambar, atau Word, paling besar 5 MB." />
             </x-dl::form.row>
             <x-dl::form.row>
