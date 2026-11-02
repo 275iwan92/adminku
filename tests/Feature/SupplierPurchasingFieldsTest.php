@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Batch;
 use App\Models\Category;
 use App\Models\StockDocument;
 use App\Models\Supplier;
