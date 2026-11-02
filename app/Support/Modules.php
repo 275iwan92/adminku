@@ -62,6 +62,7 @@ final class Modules
             'GAA' => ['GA', 'Area dan Gedung AC', 'fa-solid fa-building', 'grid', 'ac-areas.index', 'entry', ['ac-areas.']],
             'GAR' => ['GA', 'Ruang AC', 'fa-solid fa-door-open', 'grid', 'ac-rooms.index', 'entry', ['ac-rooms.']],
             'GAE' => ['GA', 'Vendor AC', 'fa-solid fa-handshake', 'grid', 'ac-vendors.index', 'entry', ['ac-vendors.']],
+            'GAP' => ['GA', 'Pengaturan GA', 'fa-solid fa-sliders', 'form', 'ga-settings.edit', 'supervisor', ['ga-settings.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
