@@ -20,6 +20,19 @@
         <x-dl::stat-box label="Segera" :value="(string) $soon" :tone="$soon ? 'warn' : 'success'" :sub="'Dalam '.\App\Services\VehicleCare::soonDays().' hari atau '.number_format(\App\Services\VehicleCare::soonKm(), 0, ',', '.').' km'" />
         <x-dl::stat-box :label="'Biaya servis '.$year" :value="\App\Services\VehicleCare::rp($yearCost)" tone="neutral" />
     </x-dl::kpi-row>
+    @if ($u->canWrite('GVD') || $u->canWrite('GVS') || $u->canWrite('GVO'))
+        <x-dl::action-bar align="start">
+        @if ($u->canWrite('GVD'))
+            <x-dl::button variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create')" />
+        @endif
+        @if ($u->canWrite('GVS'))
+            <x-dl::button variant="secondary" icon="fa-screwdriver-wrench" label="Catat Servis" :href="route('vehicle-services.create')" />
+        @endif
+        @if ($u->canWrite('GVO'))
+            <x-dl::button variant="secondary" icon="fa-gauge-high" label="Catat Odometer" :href="route('vehicle-odometers.create')" />
+        @endif
+        </x-dl::action-bar>
+    @endif
     <x-dl::grid id="fleet" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('fleet/{id}')" search="Cari plat, nama, jenis, status..."
         :columns="[
             ['key' => 'plate', 'label' => 'Kendaraan', 'type' => 'identity', 'code' => 'name', 'avatar' => false],

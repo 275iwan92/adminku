@@ -30,6 +30,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VehicleDocController;
+use App\Http\Controllers\VehicleOdometerController;
+use App\Http\Controllers\VehicleServiceController;
 use App\Http\Controllers\VehicleTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -200,6 +203,13 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('fleet', [FleetController::class, 'index'])->name('fleet.index');
     Route::get('fleet/file/{kind}/{id}', [FleetController::class, 'file'])->whereIn('kind', ['doc', 'odometer'])->whereNumber('id')->name('fleet.file');
     Route::get('fleet/{vehicle}', [FleetController::class, 'show'])->whereNumber('vehicle')->name('fleet.show');
+    // Tiga form input: Perpanjang Dokumen (GVD), Catat Servis (GVS), Catat Odometer (GVO, satu-satunya modul sopir); menulis butuh akses RW modulnya.
+    Route::get('vehicle-docs/create', [VehicleDocController::class, 'create'])->name('vehicle-docs.create');
+    Route::post('vehicle-docs', [VehicleDocController::class, 'store'])->name('vehicle-docs.store');
+    Route::get('vehicle-services/create', [VehicleServiceController::class, 'create'])->name('vehicle-services.create');
+    Route::post('vehicle-services', [VehicleServiceController::class, 'store'])->name('vehicle-services.store');
+    Route::get('vehicle-odometers/create', [VehicleOdometerController::class, 'create'])->name('vehicle-odometers.create');
+    Route::post('vehicle-odometers', [VehicleOdometerController::class, 'store'])->name('vehicle-odometers.store');
     Route::get('vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
     Route::get('vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
     Route::post('vehicles', [VehicleController::class, 'store'])->name('vehicles.store');

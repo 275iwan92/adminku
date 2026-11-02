@@ -29,7 +29,17 @@
     </x-dl::kpi-row>
     <x-dl::action-bar align="start">
         <x-dl::button variant="secondary" icon="back" label="Kembali" :href="route('fleet.index')" />
-        {{-- tombol input ditambah di bagian 4 (form Perpanjang dokumen, Catat servis, Catat odometer) --}}
+        @if ($vehicle->is_active)
+        @if ($u->canWrite('GVD'))
+            <x-dl::button variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create', ['vehicle' => $vehicle->id])" />
+        @endif
+        @if ($u->canWrite('GVS'))
+            <x-dl::button variant="secondary" icon="fa-screwdriver-wrench" label="Catat Servis" :href="route('vehicle-services.create', ['vehicle' => $vehicle->id])" />
+        @endif
+        @if ($u->canWrite('GVO'))
+            <x-dl::button variant="secondary" icon="fa-gauge-high" label="Catat Odometer" :href="route('vehicle-odometers.create', ['vehicle' => $vehicle->id])" />
+        @endif
+        @endif
     </x-dl::action-bar>
 
     <x-dl::divider label="Dokumen dan masa berlaku" />

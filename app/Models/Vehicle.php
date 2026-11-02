@@ -28,6 +28,12 @@ class Vehicle extends Model
         return $this->hasMany(VehicleService::class);
     }
 
+    // Kendaraan aktif untuk pilihan di form input, urut plat.
+    public function scopeForInput($query)
+    {
+        return $query->where('is_active', true)->orderBy('plate');
+    }
+
     // Teks pilihan: "N 1234 AB · Daihatsu Gran Max".
     public function label(): string
     {
