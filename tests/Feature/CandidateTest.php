@@ -133,7 +133,7 @@ class CandidateTest extends TestCase
     {
         $start = RecruitStep::firstWhere('kind', 'start');
         $end = RecruitStep::firstWhere('kind', 'end');
-        $this->actingAs($this->admin)->get(route('recruit-steps.index'))->assertOk();
+        $this->actingAs($this->admin)->get(route('recruit-steps.index'))->assertOk()->assertSee('Kembali')->assertSee(route('candidates.index'), false);
         $this->put(route('recruit-steps.update', $start), ['name' => 'Lain', 'sort' => 999])->assertRedirect();
         $this->assertSame('Daftar', $start->refresh()->name);
         $this->put(route('recruit-steps.update', $end), ['_action' => 'deactivate'])->assertSessionHasErrors('name');
