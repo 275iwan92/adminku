@@ -23,7 +23,7 @@ class SupplierController extends Controller
         $suppliers = Supplier::query()->orderBy('code')->get();
         $areas = GeoArea::findMany($suppliers->map->areaKey()->all());
         $rows = $suppliers->map(fn (Supplier $s) => [
-            'id' => $s->id, 'code' => $s->code, 'name' => $s->name, 'phone' => $s->phone, 'contact' => $s->contact_name, 'mobile' => $s->contact_mobile,
+            'id' => $s->id, 'code' => $s->code, 'name' => $s->name, 'phone' => $s->phone, 'contact' => $s->contact_name, 'mobile' => $s->contact_mobile, 'email' => $s->email, 'term' => $s->termLabel(),
             'place' => ($a = $areas[$s->areaKey()] ?? null) ? $a['city'].', '.$a['country'] : null, 'address' => $s->address, 'active' => $s->is_active,
         ])->all();
 
@@ -37,7 +37,7 @@ class SupplierController extends Controller
 
     public function show(Supplier $supplier)
     {
-        return view('suppliers.form', ['supplier' => $supplier]);
+        return view('suppliers.form', ['supplier' => $supplier, 'history' => $supplier->purchaseHistory()]);
     }
 
     public function store(SupplierRequest $request): RedirectResponse|JsonResponse

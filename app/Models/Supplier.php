@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use LogicException;
 
 // is_system = supplier bawaan (Kontan): tak bisa dinonaktifkan, diganti nama / kodenya, atau dihapus; selalu pertama di dropdown. Hanya diisi migrasi / seeder (tidak mass-assignable).
 // phone = telepon kantor (PSTN); contact_mobile = HP kontak; address = nama jalan; area_level + area_id = wilayah (lihat App\Support\GeoArea).
-#[Fillable(['code', 'name', 'phone', 'contact_name', 'contact_mobile', 'address', 'area_level', 'area_id', 'postal_code', 'is_active'])]
+#[Fillable(['code', 'name', 'phone', 'contact_name', 'contact_mobile', 'email', 'payment_term_days', 'note', 'address', 'area_level', 'area_id', 'postal_code', 'is_active'])]
 class Supplier extends Model
 {
     protected $table = 'm_supplier';
@@ -52,7 +54,24 @@ class Supplier extends Model
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'is_system' => 'boolean', 'area_id' => 'integer'];
+        return ['is_active' => 'boolean', 'is_system' => 'boolean', 'area_id' => 'integer', 'payment_term_days' => 'integer'];
+    }
+
+    public function termLabel(): string
+    {
+        return $this->payment_term_days === null ? '-' : ($this->payment_term_days === 0 ? 'Tunai' : $this->payment_term_days.' hari');
+    }
+
+    // Riwayat beli per barang dari Penerimaan terkonfirmasi (tidak dibatalkan): terakhir beli, harga terakhir, berapa kali (jumlah dokumen). Satuan = satuan stok barang.
+    public function purchaseHistory(): Collection
+    {
+        return DB::table('rm_stockcard as c')
+            ->join('rm_stock as d', 'd.id', '=', 'c.stock_document_id')->join('i_batch as b', 'b.id', '=', 'c.batch_id')->join('m_item as i', 'i.id', '=', 'b.item_id')
+            ->where('d.supplier_id', $this->id)->where('c.type', 'IN')->whereNull('c.reversal_of')->whereIn('d.status', ['confirmed', 'cancel_pending'])
+            ->orderByDesc('c.moved_at')->orderByDesc('c.id')
+            ->get(['i.id as item_id', 'i.code', 'i.name', 'i.unit', 'c.stock_document_id', 'c.moved_at', 'c.unit_cost'])
+            ->groupBy('item_id')->map(fn ($g) => (object) ['code' => $g[0]->code, 'name' => $g[0]->name, 'unit' => $g[0]->unit, 'last_at' => $g[0]->moved_at, 'last_price' => $g[0]->unit_cost, 'times' => $g->pluck('stock_document_id')->unique()->count()])
+            ->sortByDesc('last_at')->values();
     }
 
     // Kunci wilayah "LEVEL:id" untuk GeoArea / kotak cari.

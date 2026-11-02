@@ -45,6 +45,9 @@ class SupplierRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:40'],
             'contact_name' => ['nullable', 'string', 'max:100'],
             'contact_mobile' => ['nullable', 'string', 'max:40'],
+            'email' => ['nullable', 'email', 'max:150'],
+            'payment_term_days' => ['nullable', 'integer', 'min:0', 'max:365', fn ($attr, $value, $fail) => $system && (int) $value !== (int) $system->payment_term_days ? $fail(Supplier::SYSTEM_MESSAGE) : null],
+            'note' => ['nullable', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'area' => [GeoArea::available() ? 'required' : 'nullable', 'string', fn ($attr, $value, $fail) => GeoArea::find($value) ? null : $fail('Pilih wilayah dari daftar (minimal sampai kota).')],
         ];
