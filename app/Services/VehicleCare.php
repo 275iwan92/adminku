@@ -227,10 +227,10 @@ final class VehicleCare
     // ---- Pencatatan -------------------------------------------------------------------------------------------------------------
 
     /** Odometer awal saat kendaraan didaftarkan: dasar jadwal bagi butir yang belum pernah diservis. */
-    public static function startOdometer(Vehicle $vehicle, User $by): VehicleOdometer
+    public static function startOdometer(Vehicle $vehicle, User $by, ?CarbonInterface $at = null): VehicleOdometer
     {
         return VehicleOdometer::create([
-            'vehicle_id' => $vehicle->id, 'read_at' => today(), 'km' => $vehicle->odometer_km, 'source' => 'awal', 'recorded_by' => $by->name, 'created_by' => $by->id,
+            'vehicle_id' => $vehicle->id, 'read_at' => $at ?? today(), 'km' => $vehicle->odometer_km, 'source' => 'awal', 'recorded_by' => $by->name, 'created_by' => $by->id,
         ]);
     }
 
