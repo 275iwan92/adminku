@@ -46,7 +46,7 @@ class AcVisitController extends Controller
 
         return view('ac-visits.show', [
             'order' => $order, 'lines' => $lines, 'vendorMsg' => $vendor, 'pic' => AcVisits::picNotices($order, $sender), 'canWrite' => $request->user()->canWrite('GAV'),
-            'defaultDone' => $order->visit_date->gt(today()) ? today() : $order->visit_date, 'newDate' => $first, 'canSchedule' => $request->user()->canAccess('GAS'),
+            'defaultDone' => $order->visit_date->gt(today()) ? today() : $order->visit_date, 'newDate' => $first,
             'waNumber' => AcMessage::waNumber($order->vendor->phone), 'window' => AcCare::timeText(AcCare::startTime()).' - '.AcCare::timeText(AcCare::endTime()), 'days' => AcCare::dayNames(AcCare::visitDays()),
         ]);
     }

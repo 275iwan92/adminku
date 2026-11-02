@@ -23,11 +23,6 @@ class VehicleDoc extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
     public function typeLabel(): string
     {
         return VehicleCare::DOCS[$this->doc_type][0] ?? $this->doc_type;

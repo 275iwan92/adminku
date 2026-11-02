@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 // Satu butir rencana perawatan sebuah jenis kendaraan: pekerjaan dengan interval km dan/atau bulan (mana yang tercapai lebih dulu).
 #[Fillable(['vehicle_type_id', 'name', 'interval_km', 'interval_months', 'sort'])]
@@ -15,11 +14,6 @@ class VehicleTypePlan extends Model
     protected function casts(): array
     {
         return ['interval_km' => 'integer', 'interval_months' => 'integer', 'sort' => 'integer'];
-    }
-
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(VehicleType::class, 'vehicle_type_id');
     }
 
     // Teks interval untuk layar: "5.000 km / 6 bln".

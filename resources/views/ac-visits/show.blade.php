@@ -2,7 +2,7 @@
  Tujuan       : Layar satu Kunjungan AC (GA, modul GAV): empat tahap berurutan (Draf, Terkirim, Dikonfirmasi vendor, Selesai) beserta waktu dan petugasnya, data kunjungan, tombol tahap berikutnya (Kirim dengan konfirmasi,
                 Tandai dikonfirmasi vendor, Tandai selesai), Jadwal ulang, Batalkan, cetak Berita Acara; pratinjau pesan vendor (tautan Buka WhatsApp) dan pesan salinan PIC (siap kirim sehari sebelumnya pukul 15.00);
                 daftar AC dengan foto sebelum / sesudah (opsional) dan riwayat jadwal ulang.
- Sumber hulu  : AcVisitController@show (order, lines, vendorMsg, pic, canWrite, defaultDone, newDate, canSchedule, waNumber, window, days).
+ Sumber hulu  : AcVisitController@show (order, lines, vendorMsg, pic, canWrite, defaultDone, newDate, waNumber, window, days).
  Input        : lihat sumber hulu.
  Output       : POST ac-visits.send / confirm / complete / reschedule / cancel / photo.
  Dipakai oleh : route ac-visits.show (Buka dari Kunjungan AC; tautan dari Penjadwalan AC).
