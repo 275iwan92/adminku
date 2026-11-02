@@ -75,6 +75,7 @@ final class Modules
             'GAP' => ['GA', 'Pengaturan GA', 'fa-solid fa-sliders', 'form', 'ga-settings.edit', 'supervisor', ['ga-settings.']],
             'HRE' => ['HR', 'Karyawan', 'fa-solid fa-id-card', 'grid', 'employees.index', 'supervisor', ['employees.']],
             'HRR' => ['HR', 'Rekrutmen', 'fa-solid fa-user-plus', 'grid', 'candidates.index', 'supervisor', ['candidates.', 'recruit-steps.']],
+            'HRD' => ['HR', 'Kedisiplinan', 'fa-solid fa-gavel', 'grid', 'disciplines.index', 'supervisor', ['disciplines.']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],

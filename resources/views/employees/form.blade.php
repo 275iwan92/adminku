@@ -19,7 +19,7 @@
     @endphp
     @include('partials.flash')
     <x-dl::form :title="$isNew ? 'Karyawan · Baru' : 'Karyawan · '.raw($employee->code)" :subtitle="$isNew ? null : raw($employee->name)" panel="top" kind="master"
-        :tabs="['profile' => 'Profil', 'job' => 'Pekerjaan', 'docs' => 'Dokumen', 'family' => 'Keluarga', 'contracts' => 'Kontrak']"
+        :tabs="['profile' => 'Profil', 'job' => 'Pekerjaan', 'docs' => 'Dokumen', 'family' => 'Keluarga', 'contracts' => 'Kontrak'] + ($isNew ? [] : ['discipline' => 'Disiplin'])"
         :status="$isNew ? 'new' : ($employee->is_active ? 'active' : 'inactive')" :back="route('employees.index')" :new-url="route('employees.create')"
         :action="$isNew ? route('employees.store') : route('employees.update', $employee)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :created-at="$employee->created_at?->format('Y-m-d H:i:s')" :updated-at="$employee->updated_at?->format('Y-m-d H:i:s')">
@@ -114,5 +114,23 @@
                 ]" />
             <p class="dl-note">Kontrak terbaru (mulai paling akhir) yang dipantau: 60 hari sebelum Selesai, karyawan muncul di kolom Perhatian. Kosongkan Selesai untuk karyawan tetap. Tanpa gaji.</p>
         </x-slot:contracts>
+        @unless ($isNew)
+            <x-slot:discipline>
+                @php $dall = $disciplines; @endphp
+                <table class="dl-table" style="width:100%">
+                    <thead><tr><th>No. Surat</th><th>Tanggal</th><th>Jenis</th><th>Berlaku s/d</th><th>Status</th><th>Alasan</th></tr></thead>
+                    <tbody>
+                    @forelse ($dall as $d)
+                        <tr><td><a href="{{ route('disciplines.show', $d) }}">{{ $d->doc_no }}</a></td><td>{{ $d->issued_on->format('d-m-Y') }}</td><td>{{ \App\Models\Discipline::TYPES[$d->type] }}</td><td>{{ $d->until_on?->format('d-m-Y') ?? '-' }}</td><td>{{ $d->stateLabel($dall) }}</td><td>{{ $d->reason }}</td></tr>
+                    @empty
+                        <tr><td colspan="6">Belum ada SP atau PHK.</td></tr>
+                    @endforelse
+                    </tbody>
+                </table>
+                @if (auth()->user()->canWrite('HRD') && $employee->is_active)
+                    <p style="margin-top:10px"><x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-gavel" label="Terbitkan SP" :href="route('disciplines.create', ['employee' => $employee->id])" /></p>
+                @endif
+            </x-slot:discipline>
+        @endunless
     </x-dl::form>
 @endsection

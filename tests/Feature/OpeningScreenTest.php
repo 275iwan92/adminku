@@ -76,13 +76,13 @@ class OpeningScreenTest extends TestCase
 
         $page = $this->actingAs($admin)->get(route('opening', 'hr'))->assertOk()->assertDontSee('Hak Anda: Baca')->viewData('page');
         $this->assertFalse($page['soon']);
-        $this->assertSame(['0', '0', '0', null], array_column($page['tiles'], 'n'));   // Kedisiplinan belum ada layanannya
-        $this->assertSame([false, false, false, true], array_column($page['tiles'], 'soon'));
+        $this->assertSame(['0', '0', '0', '0'], array_column($page['tiles'], 'n'));
+        $this->assertSame([false, false, false, false], array_column($page['tiles'], 'soon'));
 
         $page = $this->get(route('opening', 'purchase'))->assertOk()->assertSee('Segera hadir')->viewData('page');
         $this->assertSame([], $page['stats']);
         $this->assertSame([null], array_unique(array_column($page['tiles'], 'n')));
-        $this->get(route('soon', 'kedisiplinan'))->assertOk()->assertSee('Kedisiplinan');
+        $this->get(route('soon', 'pr'))->assertOk();
     }
 
     public function test_ga_summary_shows_only_the_panels_of_the_user(): void

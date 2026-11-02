@@ -1,8 +1,8 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 9a HR (kepegawaian, tanpa gaji): Karyawan (profil, pekerjaan, dokumen, keluarga, kontrak, Nonaktifkan dengan alasan), Rekrutmen (kandidat dengan kunci NIK, papan kanban, Setup tahap), Bagian (layar Departemen), dan hak akses lewat Grup.
+ Tujuan       : Panduan Pengguna bagian 9a HR (kepegawaian, tanpa gaji): Karyawan (profil, pekerjaan, dokumen, keluarga, kontrak, Nonaktifkan dengan alasan), Rekrutmen (kandidat dengan kunci NIK, papan kanban, Setup tahap), Kedisiplinan (SP 1, SP 2, SP 3, PHK dengan surat cetak), Bagian (layar Departemen), dan hak akses lewat Grup.
                 Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
  Sumber hulu  : EmployeeController / employees, Employee, EmployeeRequest, Modules (kode HRE, peran minimal), User::canAccess / canWrite, Menu::layers (Bagian = departments.index; Rekrutmen dan Kedisiplinan sementara).
- Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya modul HRE atau HRR). Tidak ada diagram.
+ Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya modul HRE, HRR, atau HRD). Tidak ada diagram.
  Status       : Aktif.
 --}}
 @if ($anyHr)
@@ -13,12 +13,12 @@
     <tbody>
         <tr><td><a href="#hr-hre">Karyawan</a></td><td>Daftar karyawan dan kartunya: profil, pekerjaan, dokumen, keluarga, kontrak</td></tr>
         @if ($can('HRR'))<tr><td><a href="#hr-hrr">Rekrutmen</a></td><td>Kandidat dengan kunci NIK KTP: papan kanban per tahap, daftar dengan pencarian, jadwal dan hasil tiap tahap</td></tr>@endif
+        @if ($can('HRD'))<tr><td><a href="#hr-hrd">Kedisiplinan</a></td><td>Penerbitan SP 1, SP 2, SP 3, dan PHK kepada karyawan, dengan nomor surat otomatis dan surat cetak</td></tr>@endif
         <tr><td>Bagian</td><td>Sama dengan <b>Departemen</b> di Data Master (satu daftar yang sama); jumlah karyawan tiap bagian ikut tampil</td></tr>
     </tbody>
 </table>
 <ul class="g-list">
     <li><b>Hak HR datang dari Grup, bukan dari peran.</b> Menu HR hanya tampil bila Grup Anda diberi modul <b>Karyawan</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
-    <li>Menu HR milik Administrator juga memuat <b>Kedisiplinan</b>. Itu layar sementara bertuliskan "Segera hadir"; belum bisa dipakai.</li>
     <li>Data karyawan (NIK KTP, NPWP, alamat) bersifat pribadi: berikan modul Karyawan hanya kepada petugas HR.</li>
 </ul>
 
@@ -87,6 +87,33 @@
 <ul class="g-list">
     <li><b>Kandidat tidak muncul di papan.</b> Statusnya Ditolak atau Mundur (lihat di Daftar), atau tahapnya dinonaktifkan di Setup.</li>
     <li><b>Simpan ditolak.</b> NIK bukan 16 angka, atau belum ada bagian yang dipilih.</li>
+</ul>
+@endif
+@if ($can('HRD'))
+<h3 id="hr-hrd">Kedisiplinan</h3>
+<h4>Untuk apa</h4>
+<p>Menerbitkan Surat Peringatan (SP 1, SP 2, SP 3) dan Surat Pemutusan Hubungan Kerja (PHK) kepada karyawan, masing-masing dengan nomor surat otomatis dan surat yang bisa dicetak.</p>
+<h4>Siapa yang bisa</h4>
+<p>Peran Supervisor ke atas yang Grup-nya punya modul <b>Kedisiplinan</b> (RO untuk membaca dan mencetak, RW untuk menerbitkan dan mencabut).</p>
+<h4>Langkah: menerbitkan surat</h4>
+<ol class="g-steps">
+    <li>Buka karyawannya, tab <b>Disiplin</b>, tekan <span class="g-btn">Terbitkan SP</span>. Atau buka <b>HR</b> lalu <b>Kedisiplinan</b> dan tekan <span class="g-btn">New</span>, lalu pilih karyawan.</li>
+    <li>Jenis yang sesuai urutan sudah terpilih (SP 1 bila belum ada SP yang berlaku, lalu SP 2, SP 3, PHK). Isi <b>Tanggal Terbit</b>, <b>Pelanggaran / Alasan</b>, rujukan aturan, serta nama dan jabatan penandatangan (bawaan dari penerbitan terakhir).</li>
+    <li><b>Berlaku s/d</b> boleh kosong: SP berlaku 6 bulan sejak terbit. Untuk PHK isi <b>Tanggal Efektif</b> (wajib).</li>
+    <li>Tekan <span class="g-btn">Save</span>. Surat mendapat nomor (mis. 012/SP2/XI/2026). Tekan <span class="g-btn">Cetak</span> untuk surat A4 dengan kop perusahaan dan kotak tanda tangan.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Urutan hanya disarankan: memilih jenis yang lebih tinggi dari yang disarankan (mis. langsung PHK) tetap bisa, dengan peringatan.</li>
+    <li>Status: <b>Aktif</b> (dalam masa berlaku), <b>Diganti</b> (ada SP yang lebih tinggi), <b>Kedaluwarsa</b> (lewat Berlaku s/d), <b>Dicabut</b>, dan <b>Terbit</b> (PHK). Kolom <b>SP aktif</b> di daftar Karyawan menampilkan SP tertinggi yang berlaku.</li>
+    <li>Surat yang sudah terbit tidak diubah. Bila keliru, buka penerbitannya, isi alasan, dan tekan <span class="g-btn">Cabut surat</span>, lalu terbitkan ulang. Nomor yang sudah dipakai tidak dipakai ulang.</li>
+    <li>PHK tidak menonaktifkan karyawan otomatis: di detail PHK tekan <span class="g-btn">Nonaktifkan karyawan</span>, alasan PHK sudah terisi, lalu Deactivate di form Karyawan.</li>
+    <li>NIK di surat tercetak disamarkan.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Karyawan tidak ada di pilihan.</b> Hanya karyawan aktif yang bisa diberi surat.</li>
+    <li><b>Simpan ditolak.</b> Alasan, penandatangan, atau (untuk PHK) tanggal efektif belum diisi.</li>
 </ul>
 @endif
 @endif

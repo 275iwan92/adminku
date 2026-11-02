@@ -6,6 +6,7 @@ use App\Enums\StockDocumentType;
 use App\Models\AcOrder;
 use App\Models\Batch;
 use App\Models\Candidate;
+use App\Models\Discipline;
 use App\Models\Employee;
 use App\Models\ReorderOrder;
 use App\Models\StockDocument;
@@ -117,6 +118,9 @@ final class Opening
         }
         if ($user->canAccess('HRR')) {
             $out['HRR'] = ['n' => Locale::number(Candidate::query()->where('status', 'active')->whereHas('step', fn ($q) => $q->where('kind', '!=', 'end'))->count(), 0), 'note' => 'kandidat diproses'];
+        }
+        if ($user->canAccess('HRD')) {
+            $out['HRD'] = ['n' => Locale::number(Discipline::query()->inForce()->count(), 0), 'note' => 'SP berlaku'];
         }
         if ($user->canAccess('DEP')) {
             $out['HR-DEP'] = ['n' => Locale::number(DB::table('m_department')->where('is_active', true)->count(), 0), 'note' => 'bagian aktif'];

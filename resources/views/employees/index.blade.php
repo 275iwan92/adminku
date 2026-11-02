@@ -19,6 +19,7 @@
             ['key' => 'employment', 'label' => 'Status kerja'],
             ['key' => 'join_date', 'label' => 'Masuk', 'type' => 'date'],
             ['key' => 'status', 'label' => 'Status'],
+            ['key' => 'sp', 'label' => 'SP aktif'],
             ['key' => 'attention', 'label' => 'Perhatian'],
         ]"
         :stats="[['label' => 'Semua karyawan'], ['label' => 'Perlu perhatian', 'where' => ['attn' => true], 'tone' => 'warn'], ['label' => 'Keluar', 'where' => ['active' => false]]]" />

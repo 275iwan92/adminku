@@ -58,11 +58,10 @@ final class Menu
             if ($code === 'GA' && $user->isAdministrator()) {
                 $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];
             }
-            if ($code === 'HR') {   // Karyawan nyata (HRE), lalu Bagian = layar Departemen (hak DEP); Kedisiplinan belum dibuat: hanya Administrator yang melihat.
+            if ($code === 'HR') {   // Karyawan nyata (HRE), lalu Bagian = layar Departemen (hak DEP); Rekrutmen dan Kedisiplinan dari Modules.
                 $bagian = $user->canAccess('DEP') ? [['code' => 'HR-DEP', 'label' => 'Bagian', 'url' => route('departments.index'), 'type' => 'grid', 'icon' => 'fa-solid fa-sitemap']] : [];
-                $later = $user->isAdministrator() ? [$soon('HR-DIS', 'Kedisiplinan', 'fa-solid fa-gavel', 'kedisiplinan')] : [];
                 $own = collect($p['children']);   // urutan: Karyawan, Bagian, Rekrutmen, Kedisiplinan
-                $p['children'] = [...$own->where('code', 'HRE')->all(), ...$bagian, ...$own->where('code', '!=', 'HRE')->all(), ...$later];
+                $p['children'] = [...$own->where('code', 'HRE')->all(), ...$bagian, ...$own->where('code', '!=', 'HRE')->all()];
             }
             if (! in_array($code, $stok)) {
                 $out[] = $p;

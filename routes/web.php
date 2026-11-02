@@ -19,6 +19,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DisciplineController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\RecruitStepController;
@@ -78,7 +79,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
     Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
-    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'kedisiplinan', 'pr', 'po', 'pv'])->name('soon');
+    Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung', 'pr', 'po', 'pv'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
     // Riwayat Pemesanan (modul ORD): daftar semua status dan detail; Catat Pemesanan dan Tutup Pesanan (dari Beranda) juga milik modul ORD: menulis butuh RW.
     Route::get('reorder-orders', [ReorderOrderController::class, 'index'])->name('reorder-orders.index');
@@ -247,6 +248,14 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
     Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
     Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+
+    // HR Kedisiplinan (HRD): penerbitan SP 1 / SP 2 / SP 3 / PHK dengan nomor surat otomatis dan cetak; tidak diubah setelah terbit, hanya dicabut.
+    Route::get('disciplines', [DisciplineController::class, 'index'])->name('disciplines.index');
+    Route::get('disciplines/create', [DisciplineController::class, 'create'])->name('disciplines.create');
+    Route::post('disciplines', [DisciplineController::class, 'store'])->name('disciplines.store');
+    Route::get('disciplines/{discipline}', [DisciplineController::class, 'show'])->whereNumber('discipline')->name('disciplines.show');
+    Route::get('disciplines/{discipline}/print', [DisciplineController::class, 'print'])->whereNumber('discipline')->name('disciplines.print');
+    Route::post('disciplines/{discipline}/revoke', [DisciplineController::class, 'revoke'])->whereNumber('discipline')->name('disciplines.revoke');
 
     // HR Rekrutmen (HRR): papan kanban + daftar kandidat (kunci NIK), pindah tahap bebas; Setup = urutan tahap (recruit-steps.*, satu-satunya tombol Setup).
     Route::get('candidates', [CandidateController::class, 'index'])->name('candidates.index');
