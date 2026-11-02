@@ -165,7 +165,13 @@ class CandidateTest extends TestCase
         $this->assertStringContainsString(today()->toDateString().' 10:00', $card['due']);
         $this->assertSame(['Produksi'], collect($card['tags'])->where('tone', 'accent')->pluck('label')->all());
         $this->assertSame(['Interview 1', 'Tes', 'Interview 2', 'TTD penawaran', 'Diterima'], array_column($card['checklist'], 'text'));
-        $this->assertStringContainsString('3273010101010001 · Operator', $card['desc']);
+        $this->assertSame('Operator · 3273 **** **** 0001', $card['desc']);   // NIK samar di kartu
+        $meta = $page->viewData('meta')[$card['id']];
+        $this->assertSame(['src' => 'other', 'assessor' => 'Bu Sari', 'att' => false], collect($meta)->only(['src', 'assessor', 'att'])->all());
+        $kpi = $page->viewData('kpi');
+        $this->assertSame([1, 1, 1, 0], [$kpi['active'], $kpi['interviews'], $kpi['waiting'], $kpi['hired']]);
+        $this->step('Tes')->update(['wip_limit' => 5]);
+        $this->assertSame(5, collect($this->get(route('candidates.index'))->viewData('columns'))->firstWhere('label', 'Tes')['limit']);
 
         $this->put(route('recruit-steps.update', $this->step('Tes')), ['name' => 'Tes', 'sort' => 30, 'tone' => 'pink'])->assertSessionHasErrors('tone');
         $this->put(route('recruit-steps.update', $this->step('Tes')), ['name' => 'Tes', 'sort' => 30, 'tone' => 'danger', 'needs_schedule' => 1])->assertRedirect();

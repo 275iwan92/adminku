@@ -40,32 +40,50 @@ class CandidateController extends Controller
             ];
         })->all();
 
-        // Kartu mengikuti desain kanban DevLib: label bagian, label hasil, tenggat = jadwal terdekat (merah bila lewat), penilai (avatar), jumlah tahap yang sudah Lulus (centang), prioritas = kedekatan jadwal.
+        // Kartu mengikuti desain kanban DevLib: label bagian, hasil tahap sebelumnya, tenggat = jadwal terdekat, penilai (avatar), jumlah tahap lulus, prioritas = kedekatan jadwal, jumlah catatan.
+        // meta[id] = sumber lamaran, penilai, lampiran: dipakai skrip papan (strip warna sumber, ikon lampiran, filter Sumber dan Penilai).
         $midSteps = $steps->where('kind', '!=', 'start');
-        $cards = $candidates->where('status', 'active')->map(function (Candidate $c) use ($midSteps) {
+        $meta = [];
+        $cards = $candidates->where('status', 'active')->map(function (Candidate $c) use ($midSteps, $steps, &$meta) {
             $last = $c->lastEvent();
             $due = $c->events->filter(fn ($e) => $e->scheduled_on && $e->result === 'waiting')->sortBy('scheduled_on')->first();
             $days = $due ? (int) today()->diffInDays($due->scheduled_on, false) : null;
             $passed = $c->events->where('result', 'pass')->pluck('step_id')->all();
+            $before = $c->events->filter(fn ($e) => $e->result !== 'waiting' && $e->step_id !== $c->step_id && $steps->firstWhere('id', $e->step_id)?->kind === 'mid')->last();
+            $nik = substr($c->nik, 0, 4).' **** **** '.substr($c->nik, -4);
+            $meta[(string) $c->id] = ['src' => $c->source ?: 'other', 'assessor' => $due?->assessor ?? $c->events->pluck('assessor')->filter()->last(), 'att' => (bool) ($c->ktp_path || $c->cv_path), 'applied' => $c->applied_at->toDateString()];
 
             return array_filter([
-                'id' => (string) $c->id, 'col' => (string) $c->step_id, 'title' => $c->name, 'desc' => $c->nik.($c->position ? ' · '.$c->position : ''),
-                'tags' => [...$c->departments->take(3)->map(fn ($d) => ['label' => $d->name, 'tone' => 'accent'])->all(), ...($last && $last->result !== 'waiting' ? [['label' => Candidate::RESULTS[$last->result], 'tone' => $last->result === 'pass' ? 'success' : 'danger']] : ($last && $c->step->kind === 'mid' ? [['label' => Candidate::RESULTS['waiting'], 'tone' => 'warn']] : []))],
+                'id' => (string) $c->id, 'col' => (string) $c->step_id, 'title' => $c->name, 'desc' => ($c->position ? $c->position.' · ' : '').$nik,
+                'tags' => [...$c->departments->take(3)->map(fn ($d) => ['label' => $d->name, 'tone' => 'accent'])->all(),
+                    ...($before ? [['label' => $steps->firstWhere('id', $before->step_id)->name.': '.Candidate::RESULTS[$before->result], 'tone' => $before->result === 'pass' ? 'success' : 'danger']] : []),
+                    ...($last && $last->result === 'waiting' && $c->step->kind === 'mid' ? [['label' => Candidate::RESULTS['waiting'], 'tone' => 'warn']] : [])],
                 'priority' => $days === null ? 'Low' : ($days <= 0 ? 'High' : ($days <= 7 ? 'Medium' : 'Low')),
                 'due' => $due ? $due->scheduled_on->format('Y-m-d').' '.($due->scheduled_time ?: '00:00') : null,
-                'assignee' => $due?->assessor,
+                'assignee' => $meta[(string) $c->id]['assessor'],
                 'checklist' => $midSteps->map(fn ($s) => ['text' => $s->name, 'done' => in_array($s->id, $passed, true)])->values()->all(),
+                'comments' => $c->note && ! str_starts_with($c->note, 'Contoh') ? [['by' => 'Catatan', 'at' => '', 'text' => $c->note]] : [],
             ]);
         })->values()->all();
 
         $tones = ['accent', 'violet', 'warn'];
-        $columns = $steps->values()->map(fn ($s, $i) => ['key' => (string) $s->id, 'label' => $s->name, 'tone' => $s->tone ?: ($s->kind === 'start' ? 'neutral' : ($s->kind === 'end' ? 'success' : $tones[$i % 3]))] + ($s->kind === 'end' ? ['done' => true] : []))->all();
+        $columns = $steps->values()->map(fn ($s, $i) => ['key' => (string) $s->id, 'label' => $s->name, 'tone' => $s->tone ?: ($s->kind === 'start' ? 'neutral' : ($s->kind === 'end' ? 'success' : $tones[$i % 3]))] + ($s->kind === 'end' ? ['done' => true] : []) + ($s->wip_limit ? ['limit' => $s->wip_limit] : []))->all();
+
+        $active = $candidates->where('status', 'active');
+        $weekEnd = today()->endOfWeek();
+        $kpi = [
+            'active' => $active->count(),
+            'interviews' => $active->sum(fn (Candidate $c) => $c->events->filter(fn ($e) => $e->result === 'waiting' && $e->scheduled_on && $e->scheduled_on->between(today()->startOfWeek(), $weekEnd))->count()),
+            'waiting' => $active->filter(fn (Candidate $c) => $c->step->kind === 'mid' && $c->lastEvent()?->result === 'waiting')->count(),
+            'hired' => \App\Models\CandidateMove::query()->whereIn('to_step_id', $steps->where('kind', 'end')->pluck('id'))->where('moved_at', '>=', today()->startOfMonth())->count(),
+        ];
 
         return view('candidates.index', [
-            'view' => $view, 'rows' => $rows, 'cards' => $cards, 'columns' => $columns,
+            'view' => $view, 'rows' => $rows, 'cards' => $cards, 'columns' => $columns, 'meta' => $meta, 'kpi' => $kpi,
             'steps' => $steps->pluck('name', 'id')->all(), 'scheduled' => $steps->where('needs_schedule', true)->pluck('name', 'id')->all(),
             'assessors' => Employee::query()->where('is_active', true)->orderBy('name')->pluck('name')->all(),
             'departments' => Department::query()->whereIn('id', DB::table('h_recruit_candidate_dept')->pluck('department_id'))->orderBy('name')->pluck('name')->all(),
+            'sources' => Candidate::SOURCES,
         ]);
     }
 

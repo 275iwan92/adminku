@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 // Tahap rekrutmen (kolom papan). start (Daftar) selalu pertama dan end (Diterima) selalu terakhir; tahap tengah bebas ditambah, diubah, dan diurutkan lewat sort.
-#[Fillable(['name', 'sort', 'kind', 'needs_schedule', 'tone', 'is_active'])]
+#[Fillable(['name', 'sort', 'kind', 'needs_schedule', 'tone', 'wip_limit', 'is_active'])]
 class RecruitStep extends Model
 {
     protected $table = 'm_recruit_step';
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'needs_schedule' => 'boolean', 'sort' => 'integer'];
+        return ['is_active' => 'boolean', 'needs_schedule' => 'boolean', 'sort' => 'integer', 'wip_limit' => 'integer'];
     }
 
     public const TONES = ['neutral' => 'Abu-abu', 'accent' => 'Biru', 'violet' => 'Ungu', 'warn' => 'Kuning', 'success' => 'Hijau', 'danger' => 'Merah'];
