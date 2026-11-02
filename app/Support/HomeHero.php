@@ -26,8 +26,9 @@ final class HomeHero
     /**
      * @param  int|null  $below  jumlah barang di / bawah titik pesan ulang; null = tidak ditampilkan
      * @param  int|null  $pending  dokumen menunggu persetujuan; null = pengguna tidak berhak
+     * @param  int|null  $vehicles  kendaraan Segera + Terlambat bila sudah dihitung pemanggil (kartu modul memakai hitungan yang sama); null = dihitung di sini
      */
-    public static function build(User $user, ?int $below, ?int $pending, ?CarbonInterface $now = null): array
+    public static function build(User $user, ?int $below, ?int $pending, ?CarbonInterface $now = null, ?int $vehicles = null): array
     {
         $now = ($now ?? now())->copy()->timezone(config('devlib.timezone'));
         $name = strtok(trim((string) $user->name), ' ') ?: $user->username;
@@ -36,7 +37,7 @@ final class HomeHero
         $stats = array_values(array_filter([
             $below !== null ? ['label' => 'Di titik pesan ulang', 'value' => $below, 'alert' => $below > 0] : null,
             $pending !== null ? ['label' => 'Menunggu persetujuan', 'value' => $pending, 'alert' => $pending > 0] : null,
-            $user->canAccess('GVM') ? ['label' => 'Kendaraan perlu tindakan', 'value' => self::vehiclesNeedingAction(), 'alert' => true] : null,
+            $user->canAccess('GVM') ? ['label' => 'Kendaraan perlu tindakan', 'value' => $vehicles ?? self::vehiclesNeedingAction(), 'alert' => true] : null,
             $user->canAccess('GAS') ? ['label' => 'AC terjadwal minggu ini', 'value' => AcCare::scheduledBetween(today()->startOfWeek(), today()->startOfWeek()->addDays(6)), 'alert' => false] : null,
         ]));
         foreach ($stats as &$s) {

@@ -222,11 +222,11 @@ class ReorderOrderHistoryTest extends TestCase
     {
         $this->order(10, 3, 'PO-H');
         $group = UserGroup::create(['code' => 'RO', 'name' => 'RO']);
-        $group->syncAccess(['ORD' => 'ro', 'ITM' => 'rw']);
+        $group->syncAccess(['ORD' => 'ro', 'ITM' => 'rw', 'STB' => 'ro']);
         $ro = User::factory()->create(['group_id' => $group->id]);
 
-        $this->actingAs($ro)->get(route('home'))->assertOk()->assertDontSee('reorder-modal', false)->assertDontSee('close-order-', false);
-        $this->actingAs($this->entry)->get(route('home'))->assertOk()->assertSee('close-order-', false);
+        $this->actingAs($ro)->get(route('stock.home'))->assertOk()->assertDontSee('reorder-modal', false)->assertDontSee('close-order-', false);
+        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertSee('close-order-', false);
     }
 
     public function test_migration_follows_receiving_rights(): void

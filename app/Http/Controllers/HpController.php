@@ -7,7 +7,7 @@ use App\Models\Item;
 use App\Models\StockDocument;
 use App\Enums\StockDocumentType;
 use App\Services\CountSchedule;
-use App\Support\HomeHero;
+use App\Support\HomeCards;
 use App\Support\HpShell;
 use App\Support\Modules;
 use App\Support\Search;
@@ -33,17 +33,10 @@ class HpController extends Controller
 
     private const FIND_LIMIT = 30;
 
-    // Beranda HP: ringkasan sebagai kartu yang membuka modulnya. Angka sama dengan Beranda desktop (kecuali nilai stok & menunggu persetujuan hanya Supervisor).
+    // Beranda HP (global): banner dan satu kartu per modul yang boleh dilihat; angka sama dengan Beranda desktop (HomeCards).
     public function home(Request $request)
     {
-        $user = $request->user();
-        $below = Item::query()->belowReorderPoint()->withAvailable()->count();
-
-        return view('hp.home', [
-            'title' => 'Beranda', 'brandTitle' => true, 'active' => 'home',
-            'hero' => HomeHero::build($user, $user->canAccess('ITM') ? $below : null, $user->isSupervisor() && $user->canAccess('ADJ') ? StockDocument::query()->whereIn('status', ['approval', 'cancel_pending'])->count() : null),
-            ...$this->stockCards($user, $below),
-        ]);
+        return view('hp.home', ['title' => 'Beranda', 'brandTitle' => true, 'active' => 'home'] + HomeCards::page($request->user()));
     }
 
     // Beranda Stok HP (modul STB): ubin ringkasan stok dan pengingat Stok Opname (isi Beranda HP lama).

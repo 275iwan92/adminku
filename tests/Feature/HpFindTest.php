@@ -123,7 +123,7 @@ class HpFindTest extends TestCase
 
     public function test_phone_home_and_menu_link_to_find(): void
     {
-        $html = $this->actingAs(User::factory()->create())->withCookie('ui', 'hp')->get('/')->assertOk()->assertSee('Cari Barang')->getContent();
+        $html = $this->actingAs(User::factory()->create())->withCookie('ui', 'hp')->get(route('stock.home'))->assertOk()->assertSee('Cari Barang')->getContent();
         $this->assertGreaterThanOrEqual(2, substr_count($html, route('hp.find')), 'tautan di Beranda dan di menu');
     }
 }

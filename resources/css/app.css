@@ -371,3 +371,23 @@ body.dl-on-phone .dl-brand span:not(.dl-logo-badge), body.dl-on-phone .dl-envbad
 .dl-btn.sstock-btn-amber { background: #E0A21A; color: #1B2545; }
 .dl-btn.sstock-btn-red { background: #C2413B; color: #fff; }
 body.dl-on-phone .dl-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-coral, .sstock-btn-amber, .sstock-btn-red) { min-height: 44px; }
+
+/* REMARK
+ * Tujuan       : Kartu modul Beranda global (partial home-cards): satu kartu per modul (Stok, GA Kendaraan, GA AC), tiga angka, garis warna di atas (toska / slate / koral), tautan ke layar pembuka modul.
+ * Output       : hanya .sstock-mod*; tiga kolom di desktop, satu kolom di jendela sempit dan HP.
+ */
+.sstock-mods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 14px; }
+.sstock-mod { --c: #2dd4bf; container-type: inline-size; display: flex; flex-direction: column; gap: 12px; min-width: 0; box-sizing: border-box; padding: 16px 18px; background: var(--dl-surface); border: 1px solid var(--dl-border); border-top: 3px solid var(--c); border-radius: 14px; color: var(--dl-ink); text-decoration: none; }
+.sstock-mod--teal { --c: #2dd4bf; }
+.sstock-mod--slate { --c: #17414a; }
+.sstock-mod--coral { --c: #ff7a59; }
+.sstock-mod__title { margin: 0; font-size: 16px; font-weight: 700; }
+.sstock-mod__stats { display: flex; justify-content: space-between; gap: 8px 12px; margin: 0; padding: 0; list-style: none; }
+.sstock-mod__stats li { display: flex; flex-direction: column; gap: 2px; }
+.sstock-mod__stats b { font-size: 22px; line-height: 1.15; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sstock-mod__stats b.is-alert { color: #d9552f; }
+.sstock-mod__stats span { font-size: 12px; opacity: .7; }
+.sstock-mod__go { margin-top: auto; font-size: 13px; font-weight: 600; color: var(--dl-accent); }
+.sstock-mods-empty { margin: 0 0 14px; padding: 14px 16px; border: 1px dashed var(--dl-border); border-radius: 12px; font-size: 14px; opacity: .8; }
+@container (max-width: 270px) { .sstock-mod__stats b { font-size: 18px; } }
+@media (max-width: 900px) { .sstock-mods { grid-template-columns: minmax(0, 1fr); } }
