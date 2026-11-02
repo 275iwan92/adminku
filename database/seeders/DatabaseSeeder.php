@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             ItemSeeder::class,
             OrganizationSeeder::class,
             VehicleSeeder::class,
+            AcSeeder::class,
             SampleTransactionSeeder::class,
         ]);
     }

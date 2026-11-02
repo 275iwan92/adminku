@@ -116,6 +116,7 @@ class AcPlanTest extends TestCase
         $this->get(route('ac-plan.index', ['area' => $b->id]))->assertOk()->assertSee($inB->asset_code)->assertSee('Ruang B');
         $this->get(route('ac-plan.index', ['area' => 99999]))->assertOk()->assertSee('Ruang A')->assertDontSee('Ruang B');
         $this->get(route('ac-plan.index', ['area' => $a->id, 'unit' => $inB->id]))->assertOk()->assertDontSee('Kartu AC')->assertSee('Klik sebuah titik');   // AC area lain: tidak dibuka
+        $this->get(route('ac-plan.index', ['unit' => $inB->id]))->assertOk()->assertSee('Kartu AC · RB · '.$inB->asset_code, false)->assertSee('Ruang B');   // tanpa area: area milik AC itu
         foreach (['area=abc', 'unit=-5', 'area[]=1', 'unit=99999999999999999999'] as $q) {
             $this->get(route('ac-plan.index').'?'.$q)->assertOk();
         }

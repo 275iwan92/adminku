@@ -24,8 +24,12 @@ class AcPlanController extends Controller
 
     public function index(Request $request)
     {
-        $areas = AcArea::query()->where('is_active', true)->orderBy('name')->get(['id', 'code', 'name', 'plan_path', 'plan_w', 'plan_h']);
-        $area = $areas->firstWhere('id', (int) Text::of($request->query('area'))) ?? $areas->first();
+        $areas = AcArea::query()->where('is_active', true)->orderBy('id')->get(['id', 'code', 'name', 'plan_path', 'plan_w', 'plan_h']);
+        $area = $areas->firstWhere('id', (int) Text::of($request->query('area')));
+        if (! $area && ($unitId = (int) Text::of($request->query('unit')))) {   // tautan dari kartu / layar lain: area milik AC itu
+            $area = $areas->firstWhere('id', AcUnit::query()->join('m_ac_room', 'm_ac_room.id', '=', 'm_ac_unit.room_id')->where('m_ac_unit.id', $unitId)->value('m_ac_room.area_id'));
+        }
+        $area ??= $areas->first();
 
         $units = $area ? AcUnit::query()->with('room.area')->where('is_active', true)->whereHas('room', fn ($q) => $q->where('area_id', $area->id))->orderBy('asset_code')->get() : collect();
         $over = AcCare::overview($units);
