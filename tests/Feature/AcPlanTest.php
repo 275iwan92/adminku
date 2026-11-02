@@ -53,13 +53,41 @@ class AcPlanTest extends TestCase
         $res = $this->actingAs($this->admin)->get(route('ac-plan.index'))->assertOk();
         $res->assertSee('Denah AC')->assertSee('Denah skematis (asumsi)')->assertSee('AC di area ini');
         $res->assertSee('left: 10%; top: 20%; width: 30%; height: 20%', false)->assertSee('Ruang Meeting');
-        $res->assertSee('sstock-plan__dot is-terlambat', false)->assertSee('style="left: 25%; top: 40%"', false);
-        $res->assertSee('sstock-plan__dot is-segera', false)->assertSee('style="left: 30%; top: 35%"', false);
-        $res->assertSee('sstock-plan__dot is-aman', false)->assertSee('style="left: 25%; top: 30%"', false);
+        $res->assertSee('dl-floorplan__pin is-danger', false)->assertSee('style="left: 25%; top: 40%"', false);
+        $res->assertSee('dl-floorplan__pin is-warn', false)->assertSee('style="left: 30%; top: 35%"', false);
+        $res->assertSee('dl-floorplan__pin is-success', false)->assertSee('style="left: 25%; top: 30%"', false);
         $res->assertSee('aspect-ratio: 100 / 60', false);
         $res->assertSee('href="'.e(route('ac-plan.index', ['area' => $room->area_id, 'unit' => $late->id])).'"', false)->assertSee($safe->asset_code);
         $res->assertSee('Klik sebuah titik AC pada denah');
         $this->assertNotNull($soon);
+    }
+
+    public function test_the_plan_is_the_devlib_floor_plan_with_numbered_coloured_pins_legend_and_the_selected_card(): void
+    {
+        $room = $this->acRoom(null, 'Ruang Meeting');
+        $late = $this->acLate($room);
+        $safe = $this->acUnit($room, 5);
+
+        $res = $this->actingAs($this->admin)->get(route('ac-plan.index'))->assertOk();
+        $res->assertSee('data-dl-floorplan', false)->assertSee('class="dl-floorplan__plan"', false)->assertSee('dl-floorplan__legend', false)->assertSee('dl-floorplan__summary', false);
+        $res->assertSee('>'.substr($late->asset_code, -2).'</a>', false);
+        $this->assertMatchesRegularExpression('/aria-label="[^"]*'.preg_quote($safe->asset_code, '/').'[^"]*, Aman"/u', $res->getContent());   // raw() menyisipkan penanda tak terlihat
+        $this->assertMatchesRegularExpression('/aria-label="[^"]*'.preg_quote($late->asset_code, '/').'[^"]*, Terlambat"/u', $res->getContent());
+        $res->assertDontSee('is-selected', false)->assertDontSee('Kartu AC ·');
+
+        $res = $this->get(route('ac-plan.index', ['unit' => $late->id]))->assertOk();
+        $this->assertSame(1, substr_count($res->getContent(), 'dl-floorplan__pin is-danger is-selected'));
+        $res->assertSee('data-selected="'.$late->id.'"', false)->assertSee('aria-current="true"', false)->assertSee('Kartu AC · ', false)->assertSee($late->asset_code);
+        $this->assertStringContainsString('dl-floorplan__detail', $res->getContent());
+    }
+
+    public function test_the_old_plan_css_is_gone(): void
+    {
+        $css = file_get_contents(resource_path('css/app.css'));
+        $this->assertStringNotContainsString('sstock-plan', $css);
+        foreach (glob(resource_path('views/ac-plan/*.php')) as $view) {
+            $this->assertStringNotContainsString('sstock-plan', file_get_contents($view));
+        }
     }
 
     public function test_clicking_a_dot_opens_the_card_with_codes_dates_schedule_and_history(): void
@@ -100,7 +128,7 @@ class AcPlanTest extends TestCase
 
         $res = $this->get(route('ac-plan.index', ['area' => $area->id]))->assertOk();
         $res->assertSee('aspect-ratio: 1200 / 600', false)->assertSee('src="'.route('ac-plan.image', $area).'"', false)->assertSee('Denah gambar unggahan');
-        $res->assertDontSee('sstock-plan__room', false)->assertSee('style="left: 60%; top: 45%"', false);
+        $res->assertDontSee('dl-floorplan__room', false)->assertSee('style="left: 60%; top: 45%"', false);
         $this->get(route('ac-plan.image', $area))->assertOk()->assertHeader('X-Content-Type-Options', 'nosniff');
         $this->get(route('ac-plan.image', $this->acArea('Workshop')))->assertNotFound();   // tanpa gambar
     }

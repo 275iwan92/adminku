@@ -213,6 +213,9 @@ class VehicleFormsTest extends TestCase
         $this->actingAs($admin);
         $this->get(route('fleet.show', $this->truck))->assertOk()->assertSee('Perpanjang Dokumen')->assertSee('Catat Servis')->assertSee('Catat Odometer');
         $this->get(route('fleet.index'))->assertOk()->assertSee('Catat Odometer');
+        // tombol aksi berwarna (teal / koral / kuning / slate); bilah form bawaan DevLib tidak memakainya
+        $this->get(route('fleet.show', $this->truck))->assertSee('sstock-btn-slate', false)->assertSee('sstock-btn-teal', false)->assertSee('sstock-btn-coral', false)->assertSee('sstock-btn-amber', false);
+        $this->get(route('vehicle-docs.create'))->assertOk()->assertDontSee('sstock-btn-', false);
         $this->assertSame(0, VehicleDoc::count() + VehicleService::count());
 
         $this->actingAs(User::factory()->supervisor()->create());   // tanpa Grup: GA tidak otomatis, walau Supervisor

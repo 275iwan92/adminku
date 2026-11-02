@@ -60,7 +60,7 @@ class BrandScreensTest extends TestCase
         }
 
         $css = file_get_contents(resource_path('css/app.css'));
-        foreach (['body.dl-on-phone .dl-pager__goto { min-height: 44px; }', 'body.dl-on-phone .sstock-plan__dot::after', '.dl-field__trigger:is(.dl-numtg, .dl-case)'] as $rule) {
+        foreach (['body.dl-on-phone .dl-pager__goto { min-height: 44px; }', 'body.dl-on-phone .dl-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-coral, .sstock-btn-amber, .sstock-btn-red) { min-height: 44px; }','.dl-field__trigger:is(.dl-numtg, .dl-case)'] as $rule) {
             $this->assertStringContainsString($rule, $css);
         }
     }
