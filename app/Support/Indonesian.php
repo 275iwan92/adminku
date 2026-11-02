@@ -40,7 +40,6 @@ final class Indonesian
         'Home' => 'Beranda', 'Sign in' => 'Masuk', 'Items' => 'Barang', 'Item' => 'Barang', 'Suppliers' => 'Pemasok', 'Supplier' => 'Pemasok', 'Units' => 'Satuan', 'Unit' => 'Satuan',
         'Stock Card' => 'Kartu Stok', 'Summary Stock' => 'Ringkasan Stok', 'Receiving Report' => 'Laporan Penerimaan', 'Issuance Report' => 'Laporan Pengeluaran',
         'Opname & Adjustment Report' => 'Laporan Opname & Penyesuaian', 'AdminKU' => 'AdminKU',
-        'Supplier · ' => 'Pemasok · ',
 
         // Beranda
         'Active items' => 'Barang aktif', 'At / below reorder point' => 'Di / bawah titik pesan ulang', 'Receiving today' => 'Penerimaan hari ini', 'Issuance today' => 'Pengeluaran hari ini',
