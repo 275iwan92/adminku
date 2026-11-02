@@ -50,6 +50,16 @@ class AcOrder extends Model
         return $this->belongsTo(User::class, 'confirmed_by');
     }
 
+    public function finisher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'done_by');
+    }
+
+    public function canceller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
+    }
+
     public function isOpen(): bool
     {
         return in_array($this->status, self::OPEN, true);

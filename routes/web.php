@@ -12,6 +12,7 @@ use App\Http\Controllers\AcRoomController;
 use App\Http\Controllers\AcScheduleController;
 use App\Http\Controllers\AcUnitController;
 use App\Http\Controllers\AcVendorController;
+use App\Http\Controllers\AcVisitController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
@@ -233,6 +234,14 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('ac-schedule', [AcScheduleController::class, 'store'])->name('ac-schedule.store');
     Route::post('ac-schedule/auto', [AcScheduleController::class, 'auto'])->name('ac-schedule.auto');
     Route::post('ac-schedule/capacity', [AcScheduleController::class, 'capacity'])->name('ac-schedule.capacity');
+    // GA Perawatan AC, Kunjungan (GAV): daftar, layar satu pesanan, tahap berurutan, foto bukti, Berita Acara cetak.
+    Route::get('ac-visits', [AcVisitController::class, 'index'])->name('ac-visits.index');
+    Route::get('ac-visits/file/{line}/{kind}', [AcVisitController::class, 'file'])->whereNumber('line')->whereIn('kind', ['before', 'after'])->name('ac-visits.file');
+    Route::get('ac-visits/{order}', [AcVisitController::class, 'show'])->whereNumber('order')->name('ac-visits.show');
+    Route::get('ac-visits/{order}/print', [AcVisitController::class, 'print'])->whereNumber('order')->name('ac-visits.print');
+    foreach (['send', 'confirm', 'complete', 'reschedule', 'cancel', 'photo'] as $action) {
+        Route::post("ac-visits/{order}/{$action}", [AcVisitController::class, $action])->whereNumber('order')->name("ac-visits.{$action}");
+    }
     // GA Perawatan AC, master: Unit AC (GAK), Area dan Gedung (GAA, termasuk gambar denah), Ruang (GAR), Vendor (GAE); hak per modul lewat Grup.
     foreach (['ac-units' => [AcUnitController::class, 'unit'], 'ac-areas' => [AcAreaController::class, 'area'], 'ac-rooms' => [AcRoomController::class, 'room'], 'ac-vendors' => [AcVendorController::class, 'vendor']] as $path => [$controller, $param]) {
         Route::get($path, [$controller, 'index'])->name("{$path}.index");
