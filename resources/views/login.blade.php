@@ -15,4 +15,5 @@
     </x-dl::frame>
     {{-- Layar sempit (< 600 px) tanpa pilihan tampilan: langsung Tampilan HP (auto); popup tetap sebagai cadangan; di layar lebar tidak pernah terlihat. --}}
     <x-dl::phone-offer :action="route('ui.set')" auto />
+    @include('partials.csrf-keepalive')
 @endsection

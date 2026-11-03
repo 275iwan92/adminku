@@ -40,4 +40,11 @@ class ExpiredPageTest extends TestCase
     {
         $this->postJson('/_t419-json')->assertStatus(419);
     }
+
+    public function test_login_pages_keep_their_token_fresh(): void
+    {
+        $this->get(route('login'))->assertOk()->assertSee(route('login.token'), false)->assertSee('visibilitychange', false);
+        $this->get(route('login.token'))->assertOk()->assertJsonStructure(['token'])->assertHeader('Cache-Control', 'no-store, private');
+        $this->withHeader('User-Agent', 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36')->get(route('login'))->assertOk()->assertSee(route('login.token'), false);
+    }
 }

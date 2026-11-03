@@ -14,4 +14,5 @@
             <x-dl::env-badge part="version" variant="loginver" />
         </x-dl::phone-login>
     </x-hp-wallpaper>
+    @include('partials.csrf-keepalive')
 @endsection

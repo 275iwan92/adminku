@@ -65,6 +65,8 @@ Route::view('ukur', 'ukur')->name('ukur');
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'show'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.attempt');
+    // Token formulir segar untuk halaman masuk yang dibiarkan terbuka (lihat partials/csrf-keepalive); hanya token, tanpa data.
+    Route::get('login/token', fn () => response()->json(['token' => csrf_token()])->header('Cache-Control', 'no-store'))->name('login.token');
 
     // Lupa password: tautan reset lewat e-mail (maks 5 permintaan / menit / IP).
     Route::get('forgot-password', [PasswordResetController::class, 'request'])->name('password.request');
