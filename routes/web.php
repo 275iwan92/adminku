@@ -123,6 +123,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::get('modules', [ModuleController::class, 'index'])->name('modules.index');
         Route::get('sample', [SampleDataController::class, 'index'])->name('sample.index');
         Route::post('sample', [SampleDataController::class, 'refresh'])->name('sample.refresh');
+        Route::post('sample/hr', [SampleDataController::class, 'resetHr'])->name('sample.hr');
         Route::view('help/technical-guide', 'help.technical-guide')->name('help.technical-guide');
     });
 

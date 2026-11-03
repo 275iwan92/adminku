@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\SampleData;
+use App\Services\SampleHr;
+use App\Support\ActivityLog;
 use Devlib\Locale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,6 +33,16 @@ class SampleDataController extends Controller
             'last' => $last ? Locale::stamp(Carbon::parse($last['at'])).' oleh '.$last['by'] : 'Belum pernah',
             'summary' => SampleData::summary(),
         ]);
+    }
+
+    // Reset data contoh HR (karyawan dan kandidat contoh) ke snapshot kanonik; data nyata dan bagian lain database tidak disentuh, pengguna tidak perlu keluar.
+    public function resetHr(Request $request): RedirectResponse
+    {
+        $request->validate(['confirm_hr' => ['required', 'in:RESET']], ['confirm_hr.in' => 'Ketik RESET (huruf besar) untuk melanjutkan.', 'confirm_hr.required' => 'Ketik RESET untuk melanjutkan.']);
+        $log = SampleHr::apply(true);
+        ActivityLog::write((string) $request->user()->username, (string) $request->ip(), 'Reset data contoh HR', implode('; ', $log));
+
+        return redirect()->route('sample.index')->with('status', 'Data contoh HR dikembalikan ke snapshot: '.implode('; ', $log).'.');
     }
 
     public function refresh(Request $request): RedirectResponse

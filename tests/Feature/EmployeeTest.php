@@ -148,7 +148,7 @@ class EmployeeTest extends TestCase
         $this->assertSame(route('employees.file', [Employee::firstWhere('code', 'E-C001'), 'photo']), $rows['E-C001']['photo']);
         $this->assertSame('5 th 8 bln', $rows['E-C001']['tenure']);   // masuk 03-02-2021, hari ini (uji) 02-11-2026
         $this->assertSame('2 th 5 bln', collect($rows)->firstWhere('name', 'Rani Keluar')['tenure']);   // dihitung sampai tanggal keluar
-        $page->assertSee('<a class="em-card', false)->assertSee('Perlu perhatian')->assertSee('Budi Contoh')->assertSee('em-photo', false);
+        $page->assertSee('<a class="em-card', false)->assertSee('Perlu perhatian')->assertSee('David')->assertSee('em-photo', false);
 
         $list = $this->get(route('employees.index', ['view' => 'list']))->assertOk();
         $this->assertSame('list', $list->viewData('view'));

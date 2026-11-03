@@ -27,6 +27,17 @@
         </ul>
         <p class="dl-note"><b>Dipertahankan:</b> data wilayah (negara sampai kelurahan) dan berkas gambar latar login.</p>
 
+        <x-dl::divider label="Reset data contoh HR" />
+        <p class="dl-note">Mengembalikan karyawan dan kandidat contoh (David, Detta, Maya Denada, Dedi Sandiaga, lengkap dengan foto, KTP tiruan, dokumen, keluarga, kontrak, dan riwayat tes) ke keadaan snapshot di repo, dan membuang karyawan atau kandidat contoh tambahan (kode E-C* atau catatan diawali "Contoh"). Data nyata dan bagian lain database <b>tidak disentuh</b>; Anda tidak perlu keluar. Perintah setara: <code>php artisan sample:hr --reset</code>.</p>
+        <x-dl::action-form :action="route('sample.hr')">
+            <x-dl::form.row :cols="3">
+                <x-dl::field.text name="confirm_hr" label="Ketik RESET untuk melanjutkan" required maxlength="20" :case-toggle="false" :error="$errors->first('confirm_hr') ?: null" />
+            </x-dl::form.row>
+            <x-dl::action-bar>
+                <x-dl::button type="submit" variant="secondary" icon="fa-rotate-left" label="Reset Data Contoh HR" />
+            </x-dl::action-bar>
+        </x-dl::action-form>
+
         <x-dl::divider label="Segarkan" />
         @if ($enabled)
             <x-dl::alert tone="danger" message="Semua data saat ini akan hilang dan tidak bisa dikembalikan. Anda akan keluar dan harus masuk lagi dengan akun contoh (admin / supervisor / entry)." />

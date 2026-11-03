@@ -101,6 +101,7 @@
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <div class="g-warn"><b>Seluruh data saat ini hilang</b> (barang, transaksi, pemasok, akun, grup) dan tidak bisa dikembalikan. Data wilayah dan gambar latar login dipertahankan. Jangan pakai di server yang berisi data sungguhan.</div>
+<p><b>Reset data contoh HR</b> (di layar yang sama, tidak perlu fitur segarkan aktif): mengembalikan karyawan dan kandidat contoh (David, Detta, Maya Denada, Dedi Sandiaga, dengan foto dan KTP tiruan) ke keadaan snapshot dan membuang karyawan atau kandidat contoh tambahan; data nyata tidak disentuh dan Anda tidak keluar. Ketik <b>RESET</b>, lalu tekan <b>Reset Data Contoh HR</b>. Setara dengan <code>php artisan sample:hr --reset</code>.</p>
 <h4>Masalah umum</h4>
 <ul class="g-list">
     <li><b>Tombol Segarkan tidak ada.</b> Fitur dimatikan di lingkungan ini.</li>

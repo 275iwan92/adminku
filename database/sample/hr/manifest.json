@@ -1,0 +1,276 @@
+{
+    "employees": [
+        {
+            "code": "E-C001",
+            "name": "David",
+            "nickname": "David",
+            "gender": "L",
+            "birth_place": "Malang",
+            "birth_date": "2000-10-10",
+            "religion": "Islam",
+            "marital": "kawin",
+            "nik_ktp": "3573011704920001",
+            "npwp": "09.876.543.2-651.000",
+            "phone": "0812-0000-0101",
+            "email": "budi.contoh@example.test",
+            "ktp_address": "Jl. Contoh No. 1, RT 01 RW 02",
+            "ktp_area_level": "CITY",
+            "ktp_area_id": 152428,
+            "home_address": null,
+            "home_area_level": null,
+            "home_area_id": null,
+            "emergency_name": "Rina Contoh",
+            "emergency_relation": "Istri",
+            "emergency_phone": "0812-0000-0102",
+            "position": "Staf gudang",
+            "employment": "tetap",
+            "join_date": "2021-02-03",
+            "work_status": "working",
+            "is_active": true,
+            "exit_reason": null,
+            "exit_date": null,
+            "exit_note": null,
+            "department": {
+                "name": "Maintenance",
+                "code": "MNT"
+            },
+            "photo": "e-c001-photo.jpg",
+            "ktp": "e-c001-ktp.svg",
+            "family": [
+                {
+                    "relation": "istri",
+                    "name": "Rina Contoh",
+                    "birth_date": "1993-08-09",
+                    "nik": "3573014908930002",
+                    "is_deceased": false
+                },
+                {
+                    "relation": "anak",
+                    "name": "Raka Contoh",
+                    "birth_date": "2018-03-12",
+                    "nik": null,
+                    "is_deceased": false
+                }
+            ],
+            "docs": [
+                {
+                    "doc_type": "ktp",
+                    "doc_no": "3573011704920001",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "kk",
+                    "doc_no": "3573010000000001",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "npwp",
+                    "doc_no": "09.876.543.2-651.000",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "sim",
+                    "doc_no": "SIM-C-0001",
+                    "expiry_date": "+25d",
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "bpjs_kes",
+                    "doc_no": "0001234567890",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                }
+            ],
+            "contracts": [
+                {
+                    "contract_no": "T-2022/014",
+                    "employment": "tetap",
+                    "start_date": "2022-02-03",
+                    "end_date": null,
+                    "probation_end": null
+                },
+                {
+                    "contract_no": "K-2021/001",
+                    "employment": "kontrak",
+                    "start_date": "2021-02-03",
+                    "end_date": "2022-02-02",
+                    "probation_end": "2021-05-03"
+                }
+            ]
+        },
+        {
+            "code": "E-C002",
+            "name": "Detta",
+            "nickname": "Detta",
+            "gender": "P",
+            "birth_place": "Surabaya",
+            "birth_date": "1988-09-09",
+            "religion": "Islam",
+            "marital": "belum",
+            "nik_ktp": "3578016311950003",
+            "npwp": "08.765.432.1-501.000",
+            "phone": "0857-0000-0201",
+            "email": "siti.contoh@example.test",
+            "ktp_address": "Jl. Contoh Raya No. 22, RT 03 RW 04",
+            "ktp_area_level": "CITY",
+            "ktp_area_id": 152458,
+            "home_address": null,
+            "home_area_level": null,
+            "home_area_id": null,
+            "emergency_name": "Hadi Contoh",
+            "emergency_relation": "Ayah",
+            "emergency_phone": "0857-0000-0202",
+            "position": "Admin HR",
+            "employment": "kontrak",
+            "join_date": "2025-05-10",
+            "work_status": "working",
+            "is_active": true,
+            "exit_reason": null,
+            "exit_date": null,
+            "exit_note": null,
+            "department": {
+                "name": "HR",
+                "code": "HR"
+            },
+            "photo": "e-c002-photo.jpg",
+            "ktp": "e-c002-ktp.svg",
+            "family": [
+                {
+                    "relation": "orang_tua",
+                    "name": "Hadi Contoh",
+                    "birth_date": "1965-01-05",
+                    "nik": "3578010501650004",
+                    "is_deceased": false
+                },
+                {
+                    "relation": "orang_tua",
+                    "name": "Lastri Contoh",
+                    "birth_date": "1968-06-14",
+                    "nik": null,
+                    "is_deceased": false
+                }
+            ],
+            "docs": [
+                {
+                    "doc_type": "ktp",
+                    "doc_no": "3578016311950003",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "kk",
+                    "doc_no": "3578010000000002",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "ijazah",
+                    "doc_no": "S1-2017/0456",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "skck",
+                    "doc_no": "SKCK-2025/0099",
+                    "expiry_date": "+150d",
+                    "note": "Contoh (data fiktif)"
+                },
+                {
+                    "doc_type": "bpjs_tk",
+                    "doc_no": "0009876543210",
+                    "expiry_date": null,
+                    "note": "Contoh (data fiktif)"
+                }
+            ],
+            "contracts": [
+                {
+                    "contract_no": "K-2025/031",
+                    "employment": "kontrak",
+                    "start_date": "2025-05-10",
+                    "end_date": "+40d",
+                    "probation_end": "2025-08-10"
+                }
+            ]
+        }
+    ],
+    "candidates": [
+        {
+            "nik": "3273019901010001",
+            "name": "Dedi Sandiaga",
+            "phone": "0812-0000-0001",
+            "email": "dedi.contoh@example.test",
+            "birth_date": "1999-01-01",
+            "education": "SMA/SMK",
+            "position": "Operator mesin",
+            "source": "walkin",
+            "applied_at": "-1d",
+            "status": "active",
+            "note": "Contoh (data fiktif)",
+            "step": "Daftar",
+            "departments": [
+                "Maintenance"
+            ],
+            "photo": "nik0001-photo.jpg",
+            "ktp": "nik0001-ktp.svg",
+            "events": [
+                {
+                    "step": "Daftar",
+                    "scheduled_on": null,
+                    "scheduled_time": null,
+                    "assessor": null,
+                    "result": "pass",
+                    "note": null
+                }
+            ]
+        },
+        {
+            "nik": "3273019902020002",
+            "name": "Maya Denada",
+            "phone": "0857-0000-0002",
+            "email": "maya.contoh@example.test",
+            "birth_date": "1999-02-02",
+            "education": "D3",
+            "position": "Admin gudang",
+            "source": "referral",
+            "applied_at": "-6d",
+            "status": "active",
+            "note": "Contoh (data fiktif)",
+            "step": "Tes",
+            "departments": [
+                "Admin",
+                "Produksi"
+            ],
+            "photo": "nik0002-photo.jpg",
+            "ktp": "nik0002-ktp.svg",
+            "events": [
+                {
+                    "step": "Daftar",
+                    "scheduled_on": null,
+                    "scheduled_time": null,
+                    "assessor": null,
+                    "result": "pass",
+                    "note": null
+                },
+                {
+                    "step": "Interview 1",
+                    "scheduled_on": "-3d",
+                    "scheduled_time": "09:30",
+                    "assessor": "Pak Hadi",
+                    "result": "pass",
+                    "note": "Contoh: komunikasi baik"
+                },
+                {
+                    "step": "Tes",
+                    "scheduled_on": "+3d",
+                    "scheduled_time": "10:00",
+                    "assessor": "Bu Sari",
+                    "result": "waiting",
+                    "note": null
+                }
+            ]
+        }
+    ]
+}
