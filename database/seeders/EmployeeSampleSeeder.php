@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
  * Tujuan       : Data contoh Karyawan: dua karyawan FIKTIF (satu laki-laki, satu perempuan) dengan SEMUA tab terisi (Profil, Pekerjaan, Dokumen, Keluarga, Kontrak), foto profil ilustrasi (SVG buatan sendiri, bukan foto orang nyata)
  *                dan scan KTP tiruan bertuliskan CONTOH / DUMMY dengan data yang sama dengan karyawannya. Tanpa akun Jays (tidak menyentuh pengguna). Idempoten menurut kode karyawan: yang sudah ada tidak diubah.
  *                Karyawan contoh yang sudah ada TIDAK diubah lagi (dicocokkan menurut kode): bila Iwan mengganti datanya (mis. E-C002 jadi nama dan foto sungguhan), menjalankan ulang seeder tidak mengembalikan nama dan foto lama.
- * Sumber hulu  : m_department (bagian aktif pertama; dibuat "Bagian Contoh" bila belum ada), geo_city (wilayah KTP bila data wilayah ada).
+ * Sumber hulu  : m_department (bagian aktif pertama; dibuat "Bagian Contoh" bila belum ada; bagian HR untuk E-C002, dibuat bila belum ada), geo_city (wilayah KTP bila data wilayah ada).
  * Output       : m_employee (+ family, doc, contract), berkas di disk 'ga' folder employee/{id}.
  * Dipakai oleh : DatabaseSeeder; dijalankan tersendiri dengan --class=EmployeeSampleSeeder.
  * Status       : Aktif (data contoh).
@@ -23,6 +23,9 @@ class EmployeeSampleSeeder extends Seeder
     public function run(): void
     {
         $dept = Department::query()->where('is_active', true)->orderBy('id')->first() ?? Department::create(['code' => 'CONTOH', 'name' => 'Bagian Contoh']);
+        // Karyawan kedua (Admin HR) di bagian HR; dibuat (kode HR, aktif) bila belum ada, dicocokkan menurut kode atau nama.
+        $hr = Department::query()->where('code', 'HR')->orWhere('name', 'HR')->first() ?? Department::create(['code' => 'HR', 'name' => 'HR']);
+
         // Wilayah KTP = kota yang namanya sama dengan tempat lahir bila ada, kalau tidak kota pertama; kosong bila data wilayah belum diimpor.
         $area = function (string $place) {
             $city = DB::table('geo_city')->where('activate', true)->whereIn('city_name', [strtoupper($place), 'KOTA '.strtoupper($place)])->orderBy('id_city')->first() ?? DB::table('geo_city')->where('activate', true)->orderBy('id_city')->first();
@@ -34,7 +37,7 @@ class EmployeeSampleSeeder extends Seeder
             [
                 'e' => ['code' => 'E-C001', 'name' => 'Budi Contoh', 'nickname' => 'Budi', 'gender' => 'L', 'birth_place' => 'Malang', 'birth_date' => '1992-04-17', 'religion' => 'Islam', 'marital' => 'kawin', 'nik_ktp' => '3573011704920001', 'npwp' => '09.876.543.2-651.000',
                     'phone' => '0812-0000-0101', 'email' => 'budi.contoh@example.test', 'ktp_address' => 'Jl. Contoh No. 1, RT 01 RW 02', 'emergency_name' => 'Rina Contoh', 'emergency_relation' => 'Istri', 'emergency_phone' => '0812-0000-0102',
-                    'position' => 'Staf gudang (Contoh)', 'employment' => 'tetap', 'join_date' => '2021-02-03', 'work_status' => 'working'],
+                    'position' => 'Staf gudang', 'employment' => 'tetap', 'join_date' => '2021-02-03', 'work_status' => 'working'],
                 'avatar' => ['#2f6f9f', '#f1c9a5'],
                 'family' => [['relation' => 'istri', 'name' => 'Rina Contoh', 'birth_date' => '1993-08-09', 'nik' => '3573014908930002'], ['relation' => 'anak', 'name' => 'Raka Contoh', 'birth_date' => '2018-03-12', 'nik' => null]],
                 'docs' => [['doc_type' => 'ktp', 'doc_no' => '3573011704920001', 'expiry_date' => null], ['doc_type' => 'kk', 'doc_no' => '3573010000000001', 'expiry_date' => null], ['doc_type' => 'npwp', 'doc_no' => '09.876.543.2-651.000', 'expiry_date' => null],
@@ -44,7 +47,7 @@ class EmployeeSampleSeeder extends Seeder
             [
                 'e' => ['code' => 'E-C002', 'name' => 'Siti Contoh', 'nickname' => 'Siti', 'gender' => 'P', 'birth_place' => 'Surabaya', 'birth_date' => '1995-11-23', 'religion' => 'Islam', 'marital' => 'belum', 'nik_ktp' => '3578016311950003', 'npwp' => '08.765.432.1-501.000',
                     'phone' => '0857-0000-0201', 'email' => 'siti.contoh@example.test', 'ktp_address' => 'Jl. Contoh Raya No. 22, RT 03 RW 04', 'emergency_name' => 'Hadi Contoh', 'emergency_relation' => 'Ayah', 'emergency_phone' => '0857-0000-0202',
-                    'position' => 'Admin HR (Contoh)', 'employment' => 'kontrak', 'join_date' => '2025-05-10', 'work_status' => 'working'],
+                    'position' => 'Admin HR', 'employment' => 'kontrak', 'join_date' => '2025-05-10', 'work_status' => 'working'],
                 'avatar' => ['#a14b7a', '#f3d2b8'],
                 'family' => [['relation' => 'orang_tua', 'name' => 'Hadi Contoh', 'birth_date' => '1965-01-05', 'nik' => '3578010501650004'], ['relation' => 'orang_tua', 'name' => 'Lastri Contoh', 'birth_date' => '1968-06-14', 'nik' => null]],
                 'docs' => [['doc_type' => 'ktp', 'doc_no' => '3578016311950003', 'expiry_date' => null], ['doc_type' => 'kk', 'doc_no' => '3578010000000002', 'expiry_date' => null], ['doc_type' => 'ijazah', 'doc_no' => 'S1-2017/0456', 'expiry_date' => null],
@@ -57,7 +60,7 @@ class EmployeeSampleSeeder extends Seeder
             if (Employee::where('code', $p['e']['code'])->exists()) {
                 continue;
             }
-            $e = Employee::create($p['e'] + $area($p['e']['birth_place']) + ['department_id' => $dept->id]);
+            $e = Employee::create($p['e'] + $area($p['e']['birth_place']) + ['department_id' => $p['e']['code'] === 'E-C002' ? $hr->id : $dept->id]);
             $e->family()->createMany($p['family']);
             $e->docs()->createMany(array_map(fn ($d) => $d + ['note' => 'Contoh (data fiktif)'], $p['docs']));
             $e->contracts()->createMany($p['contracts']);

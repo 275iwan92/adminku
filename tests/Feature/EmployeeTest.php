@@ -112,6 +112,9 @@ class EmployeeTest extends TestCase
             $this->assertStringContainsString('DUMMY', Storage::disk('ga')->get($p->ktp_path));
         }
         $this->assertSame(0, User::where('username', 'like', '%contoh%')->count());   // tidak membuat akun
+        $this->assertSame(['Staf gudang', 'Admin HR'], $people->pluck('position')->all());   // jabatan tanpa penanda (Contoh)
+        $this->assertSame('HR', $people[1]->department->name);   // Admin HR di bagian HR (dibuat bila belum ada)
+        $this->assertSame(1, Department::where('code', 'HR')->count());
     }
 
     public function test_cropped_ktp_replaces_the_plain_upload_and_a_pdf_is_kept_as_is(): void
