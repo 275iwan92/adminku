@@ -446,9 +446,9 @@
 <ol class="g-steps">
     <li>Buka <b>Area dan Gedung AC</b>, tekan <b>+ Data Baru</b>.</li>
     <li>Isi <b>Nama Area / Gedung</b>. <b>Kode Area</b> boleh dikosongkan; sistem membuatnya dari nama.</li>
-    <li>Pilih gambar di <b>Denah (gambar)</b> bila ada (JPG atau PNG, paling besar 5 MB). Tanpa gambar, denah digambar skematis dari persegi ruang.</li>
+    <li>Pilih gambar di <b>Denah (gambar)</b> bila ada (JPG atau PNG, paling besar 5 MB)..</li>
     <li>Tekan <b>Simpan</b>. Tabel <b>Ruang di area ini</b> memuat <b>Kode</b>, <b>Ruang</b>, <b>PIC</b>, dan <b>Status</b>.</li>
-    <li>Mengganti atau membuang gambar: unggah gambar baru, atau ubah <b>Hapus Denah Unggahan</b> menjadi <i>Hapus saat disimpan</i> untuk kembali ke denah skematis.</li>
+    <li>Mengganti atau membuang gambar: unggah gambar baru, atau ubah <b>Hapus Denah Unggahan</b> menjadi <i>Hapus saat disimpan</i> untuk membuang gambar tanpa menggantinya.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">

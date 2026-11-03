@@ -9,6 +9,7 @@
 @extends('layout', ['title' => 'Master AC'])
 @section('body')
     @include('partials.flash')
+    @include('partials.back-to-hub', ['hub' => 'ac'])
     <x-dl::grid id="ac-units" :rows="$rows" actions="edit" :new-url="route('ac-units.create')" :open-url="url('ac-units/{id}')" :toggle-url="url('ac-units/{id}/toggle')"
         search="Cari kode aset, ruang, area, merek..."
         :phone-cards="['title' => 'asset_code', 'sub' => 'room', 'meta' => ['type', 'area']]"

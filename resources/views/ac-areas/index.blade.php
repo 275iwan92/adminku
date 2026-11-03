@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Daftar master Area / Gedung AC (Grid Master, modul GAA): nama + kode dalam kotak berwarna, jumlah ruang, jenis denah (gambar unggahan atau denah skematis).
+ Tujuan       : Daftar master Area / Gedung AC (Grid Master, modul GAA): nama + kode dalam kotak berwarna, jumlah ruang, ada tidaknya gambar denah.
  Sumber hulu  : AcAreaController@index.
  Input        : rows.
  Output       : x-dl::grid; klik 2x / Edit membuka form area.
@@ -9,6 +9,7 @@
 @extends('layout', ['title' => 'Area dan Gedung AC'])
 @section('body')
     @include('partials.flash')
+    @include('partials.back-to-hub', ['hub' => 'ac'])
     <div style="max-width: 820px">
     <x-dl::grid id="ac-areas" :rows="$rows" actions="edit" :new-url="route('ac-areas.create')" :open-url="url('ac-areas/{id}')" :toggle-url="url('ac-areas/{id}/toggle')"
         search="Cari kode atau nama..."

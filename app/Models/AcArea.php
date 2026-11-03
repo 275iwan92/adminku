@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// Area / gedung / lantai AC. Denah: gambar unggahan (plan_path, disk "ga") atau, bila kosong, denah skematis dari persegi ruang. plan_w : plan_h = perbandingan lebar-tinggi denah.
+// Area / gedung / lantai AC. Denah: gambar unggahan (plan_path, disk "ga") atau kosong (layar Denah AC sudah dihapus; gambar dan posisi titik tetap tersimpan). plan_w : plan_h = perbandingan lebar-tinggi denah.
 #[Fillable(['code', 'name', 'plan_path', 'plan_name', 'plan_w', 'plan_h', 'is_active'])]
 class AcArea extends Model
 {

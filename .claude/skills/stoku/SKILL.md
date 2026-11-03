@@ -141,4 +141,4 @@ Setiap form (dokumen maupun master) wajib punya tombol Kembali yang menuju GRID 
 - Heredoc Python di bash gagal bila berisi `\` atau tanda kutip: pakai Write/Edit atau berkas skrip.
 - Tinker satu baris berisi `$` gagal: pakai berkas skrip (`php artisan tinker <berkas.php>`).
 - Widget DevLib: select = `[data-dl-select]` + input tersembunyi `[data-dl-value]`; modal dibuka dengan class `is-on` pada `[data-dl-modal-id]`; validasi form menghitung `.dl-field__req` yang kosong.
-- `database/sql/sstock_mysql_ddl.sql` ketinggalan; migrasi adalah sumber kebenaran.
+- Migrasi adalah sumber kebenaran skema (DDL referensi lama sudah dihapus).

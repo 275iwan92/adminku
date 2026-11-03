@@ -27,9 +27,23 @@ class GaSettingsController extends Controller
         'ac_end_time' => 'ga.ac.end_time', 'ac_capacity' => 'ga.ac.capacity', 'ac_soon_days' => 'ga.ac.soon_days', 'ac_pic_notice_time' => 'ga.ac.pic_notice_time',
     ];
 
+    // ?dari=fleet|ac: layar dibuka dari hub Setup Kendaraan atau AC, jadi Kembali ke hub itu (bila berhak); selain itu ke beranda.
+    private function hub(): array
+    {
+        $hubs = ['fleet' => ['GVM', 'fleet.setup'], 'ac' => ['GAM', 'ac-setup.index']];
+        $from = request()->query('dari');
+        if (isset($hubs[$from]) && request()->user()->canAccess($hubs[$from][0])) {
+            return [route($hubs[$from][1]), ['dari' => $from]];
+        }
+
+        return [route('home'), []];
+    }
+
     public function edit()
     {
-        return view('ga-settings.form', ['s' => [
+        [$back, $keep] = $this->hub();
+
+        return view('ga-settings.form', ['back' => $back, 'keep' => $keep, 's' => [
             'vehicle_soon_days' => VehicleCare::soonDays(), 'vehicle_soon_km' => VehicleCare::soonKm(),
             'ac_wash_months' => AcCare::washMonths(), 'ac_major_months' => AcCare::majorMonths(), 'ac_days' => AcCare::visitDays(), 'ac_start_time' => AcCare::startTime(),
             'ac_end_time' => AcCare::endTime(), 'ac_capacity' => AcCare::capacity(), 'ac_soon_days' => AcCare::soonDays(), 'ac_pic_notice_time' => AcCare::picNoticeTime(),
@@ -53,6 +67,6 @@ class GaSettingsController extends Controller
             ActivityLog::write((string) $request->user()->username, (string) $request->ip(), 'Ubah pengaturan GA', implode('; ', $changes));
         }
 
-        return redirect()->route('ga-settings.edit')->with('status', $changes ? 'Pengaturan GA disimpan. Penjadwalan AC, Monitoring Kendaraan, dan pesan langsung memakai nilai baru; jadwal yang sudah dibuat tidak berubah.' : 'Tidak ada perubahan.');
+        return redirect()->route('ga-settings.edit', $this->hub()[1])->with('status', $changes ? 'Pengaturan GA disimpan. Penjadwalan AC, Monitoring Kendaraan, dan pesan langsung memakai nilai baru; jadwal yang sudah dibuat tidak berubah.' : 'Tidak ada perubahan.');
     }
 }

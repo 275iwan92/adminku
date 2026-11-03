@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /* REMARK
- * Tujuan       : Master Area / Gedung AC (GA, modul GAA): nama, kode (kosong = otomatis dari nama), denah unggahan (jpg / png, maks 5 MB; kosong = denah skematis dari persegi ruang). Aktif / Nonaktif saja.
+ * Tujuan       : Master Area / Gedung AC (GA, modul GAA): nama, kode (kosong = otomatis dari nama), denah unggahan (jpg / png, maks 5 MB; boleh kosong). Aktif / Nonaktif saja.
  *                Denah disimpan di disk privat "ga" dan disajikan lewat rute ac-areas.plan (hak modul Area dan Gedung AC); layar Denah AC dihapus, gambar dan posisi titik tetap tersimpan; ukuran gambar dibaca saat unggah supaya titik AC (persen) tepat.
  * Sumber hulu  : m_ac_area, m_ac_room.
  * Output       : grid Area, form Area.
@@ -26,7 +26,7 @@ class AcAreaController extends Controller
     {
         $rows = AcArea::query()->withCount('rooms')->orderBy('name')->get()->map(fn (AcArea $a) => [
             'id' => $a->id, 'code' => $a->code, 'name' => $a->name, 'hue' => Palette::item('AC', $a->code), 'rooms' => $a->rooms_count,
-            'plan' => $a->plan_path ? 'Gambar unggahan' : 'Denah skematis', 'active' => $a->is_active,
+            'plan' => $a->plan_path ? 'Ada gambar' : 'Tanpa gambar', 'active' => $a->is_active,
         ])->all();
 
         return view('ac-areas.index', ['rows' => $rows]);

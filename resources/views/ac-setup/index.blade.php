@@ -25,7 +25,7 @@
     <div class="sstock-setup">
         @foreach ($tiles as [$module, $route, $icon, $label, $text])
             @if ($u->canAccess($module))
-                <a class="sstock-setup__tile" href="{{ route($route) }}">
+                <a class="sstock-setup__tile" href="{{ route($route, $route === 'ga-settings.edit' ? ['dari' => 'ac'] : []) }}">
                     <i class="fa-solid {{ $icon }}" aria-hidden="true"></i>
                     <b>{{ $label }}</b>
                     <small>{{ $text }}</small>

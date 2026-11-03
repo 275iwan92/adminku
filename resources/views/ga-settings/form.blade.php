@@ -4,7 +4,7 @@
  Sumber hulu  : GaSettingsController@edit (s = nilai berlaku, dayNames).
  Input        : s, dayNames.
  Output       : PUT ga-settings.update.
- Dipakai oleh : route ga-settings.edit (menu GA > Pengaturan GA).
+ Dipakai oleh : route ga-settings.edit (menu GA > Pengaturan GA, atau ubin Pengaturan di hub Setup Kendaraan / AC dengan ?dari=fleet|ac supaya Kembali ke hub itu).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Pengaturan GA'])
@@ -16,7 +16,7 @@
     @endphp
     @include('partials.flash')
     <x-dl::form title="Pengaturan GA" subtitle="Aturan kerja Perawatan Kendaraan dan Perawatan AC. Berlaku segera; jadwal yang sudah dibuat tidak berubah." panel="top" kind="master" status="active"
-        :hide="['activate', 'deactivate', 'new']" :back="route('home')" :action="route('ga-settings.update')" :hidden="['_method' => 'PUT']">
+        :hide="['activate', 'deactivate', 'new']" :back="$back" :action="route('ga-settings.update', $keep)" :hidden="['_method' => 'PUT']">
         <x-dl::divider label="Kendaraan" />
         <x-dl::form.row :cols="3">
             <x-dl::field.number name="vehicle_soon_days" label="Segera Jatuh Tempo (hari)" :min="1" :max="365" :value="$v('vehicle_soon_days')" required :error="$e('vehicle_soon_days')" hint="Dokumen kendaraan berstatus Segera bila jatuh tempo dalam sekian hari (1-365). Bawaan 30." />

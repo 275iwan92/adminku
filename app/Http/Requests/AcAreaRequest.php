@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /* REMARK
- * Tujuan       : Validasi simpan master Area / Gedung AC: kode (kosong = otomatis dari nama), nama, denah unggahan (jpg / png, maks 5 MB; kosong = denah skematis) dan hapus denah unggahan.
+ * Tujuan       : Validasi simpan master Area / Gedung AC: kode (kosong = otomatis dari nama), nama, denah unggahan (jpg / png, maks 5 MB; boleh kosong) dan hapus denah unggahan.
  * Dipakai oleh : AcAreaController@store, @update.
  * Status       : Aktif.
  */

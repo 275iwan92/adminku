@@ -9,6 +9,7 @@
 @extends('layout', ['title' => 'Master Kendaraan'])
 @section('body')
     @include('partials.flash')
+    @include('partials.back-to-hub', ['hub' => 'fleet'])
     <x-dl::grid id="vehicles" :rows="$rows" actions="edit" :new-url="route('vehicles.create')" :open-url="url('vehicles/{id}')" :toggle-url="url('vehicles/{id}/toggle')"
         search="Cari plat, nama, jenis..."
         :phone-cards="['title' => 'plate', 'sub' => 'name', 'meta' => ['type', 'kir', 'odometer']]"

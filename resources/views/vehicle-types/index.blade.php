@@ -9,6 +9,7 @@
 @extends('layout', ['title' => 'Jenis Kendaraan'])
 @section('body')
     @include('partials.flash')
+    @include('partials.back-to-hub', ['hub' => 'fleet'])
     <div style="max-width: 820px">
     <x-dl::grid id="vehicle-types" :rows="$rows" actions="edit" :new-url="route('vehicle-types.create')" :open-url="url('vehicle-types/{id}')" :toggle-url="url('vehicle-types/{id}/toggle')"
         search="Cari kode atau nama..."

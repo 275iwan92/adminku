@@ -9,6 +9,7 @@
 @extends('layout', ['title' => 'Vendor AC'])
 @section('body')
     @include('partials.flash')
+    @include('partials.back-to-hub', ['hub' => 'ac'])
     <x-dl::grid id="ac-vendors" :rows="$rows" actions="edit" :new-url="route('ac-vendors.create')" :open-url="url('ac-vendors/{id}')" :toggle-url="url('ac-vendors/{id}/toggle')"
         search="Cari kode, nama, kontak..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['contact', 'phone']]"

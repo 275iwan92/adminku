@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Form master Area / Gedung AC (Single Form kind=master): kode (kosong = otomatis dari nama), nama, denah unggahan (jpg / png) atau denah skematis, daftar ruang di area ini.
+ Tujuan       : Form master Area / Gedung AC (Single Form kind=master): kode (kosong = otomatis dari nama), nama, denah unggahan (jpg / png), daftar ruang di area ini.
  Sumber hulu  : AcAreaController (area).
  Input        : area (beserta rooms saat ubah).
  Output       : POST ac-areas.store (baru) / PUT ac-areas.update (ubah, Aktifkan, Nonaktifkan), multipart.
@@ -26,11 +26,11 @@
         <x-dl::form.row>
             <x-dl::field.upload name="plan" label="Denah (gambar)" accept=".jpg,.jpeg,.png,image/jpeg,image/png" :error="$e('plan')"
                 :value="$area->plan_path ? ['url' => route('ac-areas.plan', $area), 'name' => $area->plan_name] : null"
-                hint="Opsional. Tanpa gambar, denah digambar skematis dari persegi ruang. Gambar JPG atau PNG, paling besar 5 MB; titik AC mengikuti persen posisi di gambar." />
+                hint="Opsional. Gambar JPG atau PNG, paling besar 5 MB; titik AC mengikuti persen posisi di gambar." />
         </x-dl::form.row>
         @if ($area->plan_path)
             <x-dl::form.row>
-                <x-dl::field.toggle name="remove_plan" label="Hapus Denah Unggahan" on-label="Hapus saat disimpan" off-label="Pertahankan" :value="(bool) old('remove_plan')" hint="Kembali ke denah skematis. Gambar lama dibuang dari penyimpanan." />
+                <x-dl::field.toggle name="remove_plan" label="Hapus Denah Unggahan" on-label="Hapus saat disimpan" off-label="Pertahankan" :value="(bool) old('remove_plan')" hint="Area kembali tanpa gambar denah. Gambar lama dibuang dari penyimpanan." />
             </x-dl::form.row>
         @endif
     </x-dl::form>
