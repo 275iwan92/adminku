@@ -39,4 +39,18 @@ class RecruitmentSeederTest extends TestCase
             $this->assertStringContainsString($c->nik, Storage::disk('ga')->get($c->ktp_path));
         }
     }
+
+    public function test_rerunning_keeps_a_candidate_that_was_replaced(): void
+    {
+        Storage::fake('ga');
+        $this->seed(RecruitmentSeeder::class);
+        $maya = Candidate::firstWhere('name', 'Maya Contoh');
+        Storage::disk('ga')->put("recruit/{$maya->id}/profile.jpg", 'jpeg');
+        $maya->update(['name' => 'Maya Denada', 'photo_path' => "recruit/{$maya->id}/profile.jpg", 'photo_name' => 'profile.jpg']);
+
+        $this->seed(RecruitmentSeeder::class);
+        $maya->refresh();
+        $this->assertSame(['Maya Denada', 'profile.jpg'], [$maya->name, $maya->photo_name]);
+        $this->assertSame(2, Candidate::count());   // tidak dibuat ulang sebagai Maya Contoh
+    }
 }
