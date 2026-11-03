@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 /* REMARK
  * Tujuan       : Data contoh Karyawan: dua karyawan FIKTIF (satu laki-laki, satu perempuan) dengan SEMUA tab terisi (Profil, Pekerjaan, Dokumen, Keluarga, Kontrak), foto profil ilustrasi (SVG buatan sendiri, bukan foto orang nyata)
  *                dan scan KTP tiruan bertuliskan CONTOH / DUMMY dengan data yang sama dengan karyawannya. Tanpa akun Jays (tidak menyentuh pengguna). Idempoten menurut kode karyawan: yang sudah ada tidak diubah.
+ *                Karyawan contoh yang sudah ada TIDAK diubah lagi (dicocokkan menurut kode): bila Iwan mengganti datanya (mis. E-C002 jadi nama dan foto sungguhan), menjalankan ulang seeder tidak mengembalikan nama dan foto lama.
  * Sumber hulu  : m_department (bagian aktif pertama; dibuat "Bagian Contoh" bila belum ada), geo_city (wilayah KTP bila data wilayah ada).
  * Output       : m_employee (+ family, doc, contract), berkas di disk 'ga' folder employee/{id}.
  * Dipakai oleh : DatabaseSeeder; dijalankan tersendiri dengan --class=EmployeeSampleSeeder.

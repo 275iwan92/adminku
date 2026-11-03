@@ -152,6 +152,20 @@ class EmployeeTest extends TestCase
         $list->assertDontSee('<a class="em-card', false);   // tanpa kartu di tampilan Daftar
     }
 
+    public function test_rerunning_the_sample_seeder_keeps_data_that_was_replaced(): void
+    {
+        Storage::fake('ga');
+        $this->seed(EmployeeSampleSeeder::class);
+        $e = Employee::firstWhere('code', 'E-C002');
+        Storage::disk('ga')->put("employee/{$e->id}/profile.jpg", 'jpeg');
+        $e->update(['name' => 'Detta', 'birth_date' => '1988-09-09', 'photo_path' => "employee/{$e->id}/profile.jpg", 'photo_name' => 'profile.jpg']);
+
+        $this->seed(EmployeeSampleSeeder::class);
+        $e->refresh();
+        $this->assertSame(['Detta', '1988-09-09', 'profile.jpg'], [$e->name, $e->birth_date->toDateString(), $e->photo_name]);
+        Storage::disk('ga')->assertExists($e->photo_path);
+    }
+
     public function test_nik_must_be_sixteen_digits_and_unique(): void
     {
         $this->employee(['code' => 'E-0001']);
