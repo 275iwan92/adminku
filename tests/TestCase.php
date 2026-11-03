@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -18,6 +19,8 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         $this->withoutVite();
         Constants::forget();   // cache pengaturan statis tidak boleh bocor antar tes
+        // Disk privat 'ga' (foto, KTP, lampiran) selalu palsu di tes: seeder penuh (DatabaseSeeder) menulis berkas contoh dengan id dari database uji, dan tanpa ini menimpa berkas asli yang beralamat sama (mis. recruit/3).
+        Storage::fake('ga');
         // Log aktivitas ditulis oleh setiap permintaan yang login: tes tidak boleh mengisi log asli (storage/app/activity).
         config(['sstock.activity_dir' => sys_get_temp_dir().'/sstock-activity-'.getmypid(), 'sstock.super_admin' => ['username' => null, 'hash' => null]]);   // super admin di .env pengembang tidak boleh mengubah hasil tes
     }

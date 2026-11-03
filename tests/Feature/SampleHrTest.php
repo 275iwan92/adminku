@@ -59,6 +59,38 @@ class SampleHrTest extends TestCase
         $this->assertSame('Diubah', $david->refresh()->name);   // tanpa reset tidak menimpa
     }
 
+    public function test_every_person_in_the_canonical_set_has_their_own_files_matching_the_manifest(): void
+    {
+        SampleHr::apply();
+        SampleHr::apply(true);   // reset berulang tidak mengacak berkas
+
+        $dir = base_path(SampleHr::DIR);
+        $m = SampleHr::manifest();
+        $people = [];
+        foreach ($m['employees'] as $r) {
+            $people[] = [Employee::firstWhere('code', $r['code']), $r];
+        }
+        foreach ($m['candidates'] as $r) {
+            $people[] = [Candidate::firstWhere('nik', $r['nik']), $r];
+        }
+        $this->assertCount(5, $people);
+
+        $paths = $hashes = [];
+        foreach ($people as [$model, $r]) {
+            $this->assertNotNull($model, $r['name']);
+            foreach (['photo' => 'photo_path', 'ktp' => 'ktp_path'] as $key => $col) {
+                $stored = Storage::disk('ga')->get($model->{$col});
+                $this->assertSame(md5_file($dir.'/'.$r[$key]), md5($stored), "{$r['name']}: berkas {$key} harus sama dengan snapshot");
+                $paths[] = $model->{$col};
+                $hashes[] = md5($stored);
+            }
+            $this->assertStringContainsString($r['name'], Storage::disk('ga')->get($model->ktp_path), 'KTP bernama pemiliknya sendiri');
+        }
+        $this->assertSame(10, count(array_unique($paths)), 'jalur berkas tiap orang unik');
+        $this->assertSame(10, count(array_unique($hashes)), 'isi berkas tiap orang berbeda');
+        $this->assertSame(10, count(array_unique(array_map(fn ($f) => md5_file($dir.'/'.$f), array_merge(array_column($m['employees'], 'photo'), array_column($m['employees'], 'ktp'), array_column($m['candidates'], 'photo'), array_column($m['candidates'], 'ktp'))))), 'berkas snapshot unik');
+    }
+
     public function test_reset_restores_changes_and_removes_only_extra_marked_samples(): void
     {
         SampleHr::apply();
