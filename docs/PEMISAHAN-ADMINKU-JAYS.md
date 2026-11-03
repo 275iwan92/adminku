@@ -67,6 +67,7 @@ Cadangkan DB Biznet ke laptop dulu (prosedur `mysqldump` ke `C:\Users\iwanp\Back
 1. Laptop: `npm run build`; `git bundle create adminku.bundle main`; `pscp` bundle ke `/tmp` dan `public/build/*` ke `/tmp/adminku-build`.
 2. Server: `cd /var/www/adminku && git fetch /tmp/adminku.bundle main && git reset --hard FETCH_HEAD`; ganti `public/build`; `sudo chown -R www-data:www-data storage bootstrap/cache`.
 3. `sudo -u www-data php artisan migrate --force` (data demo tidak berubah) atau `... adminku:reset-demo --force` (kembali ke awal), lalu `optimize:clear && optimize`, `sudo systemctl reload php8.5-fpm`.
+   Jangan memasang `php artisan down` selama `adminku:reset-demo`: seeder Purchase memakai rute aplikasi sendiri dan akan mendapat 503 ("No query results for model PurchaseRequest"). Bila sudah terlanjur: `php artisan up`, lalu ulangi reset.
 4. Uji: masuk sebagai `admin`, buka beberapa layar; `/jays/`, `/stoku/`, `/devlib/` harus tetap 200/302.
 
 `.env` Biznet adminku: `APP_ENV=production`, `APP_URL=http://103.127.135.74/adminku`, `SESSION_DRIVER=database`, `SESSION_COOKIE=adminku_session`, `SESSION_PATH=/adminku`, `CACHE_STORE=file`, `SSTOCK_DEMO=true`, `SSTOCK_SAMPLE_REFRESH=true`, `SSTOCK_IP_LOOKUP=false`, `MAIL_MAILER=log`. Nginx: blok `/adminku/` di `/etc/nginx/sites-enabled/demo` (cadangan: `/etc/nginx/demo.bak-adminku-*`), ditambah `location = /media/brand/adminku.svg` agar logo merek ada (sebelumnya 404 di Biznet).
