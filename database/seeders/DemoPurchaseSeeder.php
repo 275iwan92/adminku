@@ -33,6 +33,9 @@ class DemoPurchaseSeeder extends Seeder
             public $app;
         };
         $http->app = app();
+        // Permintaan di dalam proses meniru PHP-FPM: bila APP_URL berawalan (mis. /adminku di Biznet) awalan itu dibuang dari jalur lewat SCRIPT_NAME, seperti Nginx.
+        $prefix = rtrim((string) parse_url(url('/'), PHP_URL_PATH), '/');
+        $http->withServerVariables(['SCRIPT_NAME' => $prefix.'/index.php', 'SCRIPT_FILENAME' => public_path('index.php'), 'PHP_SELF' => $prefix.'/index.php']);
         $http->withHeaders(['Sec-Fetch-Site' => 'same-origin']);   // lolos pemeriksaan CSRF seperti peramban pada situs yang sama; middleware lain (hak akses, route binding) tetap jalan
         config(['session.driver' => 'array']);
 

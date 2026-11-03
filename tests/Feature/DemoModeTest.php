@@ -11,6 +11,7 @@ use App\Support\Company;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 /* REMARK
@@ -47,6 +48,7 @@ class DemoModeTest extends TestCase
     public function test_seed_demo_lengkap_dan_reset_berulang_sama(): void
     {
         config(['sstock.demo' => true]);
+        URL::forceRootUrl('http://localhost/adminku');   // seperti hosting dengan APP_URL berawalan
         $this->seed(DatabaseSeeder::class);
 
         $this->assertSame('PT Contoh Sejahtera', Company::get()['name']);
