@@ -20,7 +20,7 @@ Pindah ke MySQL kapan saja, hanya dengan mengubah `.env` laptop:
 3. `php artisan optimize:clear`. Berkas SQLite boleh dihapus.
 
 ## Akun demo (hanya di adminku; bukan akun nyata)
-Semua memakai sandi **`Demo-AdminKU-2026`**. Super admin Jays (`johiwan`) tidak ada di adminku.
+Sandi diatur pemilik (2026-11-03): `admin` = `12345678`, `supervisor` = `123456788`, `entry` = `12345677`. Super admin Jays (`johiwan`) tidak ada di adminku.
 
 | Username | Peran | Hak |
 |---|---|---|

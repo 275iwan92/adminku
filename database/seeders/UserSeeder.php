@@ -27,12 +27,13 @@ class UserSeeder extends Seeder
     ];
 
     // Akun produk demo AdminKU (SSTOCK_DEMO=true): bukan akun nyata; sandi dan peran dicatat di docs/PEMISAHAN-ADMINKU-JAYS.md.
+    // Sandi demo diatur pemilik (2026-11-03): admin 12345678, supervisor 123456788, entry 12345677; sengaja sederhana karena data demo dan bisa direset.
     public const DEMO_PASSWORD = 'Demo-AdminKU-2026';
 
     public const DEMO_ACCOUNTS = [
-        ['username' => 'supervisor', 'name' => 'Supervisor Demo', 'email' => 'supervisor@adminku.test', 'role' => User::ROLE_SUPERVISOR, 'password' => self::DEMO_PASSWORD],
-        ['username' => 'entry', 'name' => 'Staf Demo', 'email' => 'entry@adminku.test', 'role' => User::ROLE_DATA_ENTRY, 'password' => self::DEMO_PASSWORD],
-        ['username' => 'admin', 'name' => 'Admin Demo', 'email' => 'admin@adminku.test', 'role' => User::ROLE_ADMINISTRATOR, 'password' => self::DEMO_PASSWORD],
+        ['username' => 'supervisor', 'name' => 'Supervisor Demo', 'email' => 'supervisor@adminku.test', 'role' => User::ROLE_SUPERVISOR, 'password' => '123456788'],
+        ['username' => 'entry', 'name' => 'Staf Demo', 'email' => 'entry@adminku.test', 'role' => User::ROLE_DATA_ENTRY, 'password' => '12345677'],
+        ['username' => 'admin', 'name' => 'Admin Demo', 'email' => 'admin@adminku.test', 'role' => User::ROLE_ADMINISTRATOR, 'password' => '12345678'],
     ];
 
     public static function accounts(): array

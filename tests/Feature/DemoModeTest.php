@@ -55,7 +55,7 @@ class DemoModeTest extends TestCase
 
         $this->assertSame('PT Contoh Sejahtera', Company::get()['name']);
         $this->assertTrue(User::where('username', 'admin')->first()->is_active);
-        $this->assertSame(UserSeeder::DEMO_PASSWORD, UserSeeder::DEMO_ACCOUNTS[0]['password']);
+        $this->assertSame(['supervisor' => '123456788', 'entry' => '12345677', 'admin' => '12345678'], collect(UserSeeder::DEMO_ACCOUNTS)->pluck('password', 'username')->all());
         $this->assertSame('confirmed', PurchaseReceipt::query()->orderBy('id')->firstOrFail()->status);
         $this->assertSame('done', PurchaseOrder::query()->orderBy('id')->firstOrFail()->status);
         $this->assertSame(['done', 'approval', 'approved', 'partial'], PurchaseRequest::orderBy('id')->pluck('status')->all());   // dua PP rantai dasar + dua PP riwayat (menunggu keputusan, sebagian dipesan)
