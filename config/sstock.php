@@ -14,6 +14,7 @@ return [
     // Batch yang kedaluwarsa dalam N hari ke depan tidak dihitung sebagai stok tersedia untuk titik pesan ulang. 0 = hanya yang sudah lewat (bawaan).
     'reorder_exclude_days' => (int) env('SSTOCK_REORDER_EXCLUDE_DAYS', 0),
     'sample_refresh' => (bool) env('SSTOCK_SAMPLE_REFRESH', env('APP_ENV', 'production') !== 'production'),
+    'demo' => (bool) env('SSTOCK_DEMO', false),  // produk demo AdminKU (data dummy, bisa direset): lencana DEMO, teks layar masuk, akun demo, adminku:reset-demo
     'ip_lookup' => (bool) env('SSTOCK_IP_LOOKUP', true),  // Log Aktivitas: cari perkiraan lokasi IP publik ke ipwho.is (false = tidak ada IP yang dikirim keluar)
     'activity_dir' => storage_path('app/activity'),  // log aktivitas (CSV bulanan), di luar database sehingga tidak ikut terhapus saat data contoh disegarkan
     // Hanya dipakai perintah pemasangan (sstock:install, sstock:import-geo); di config agar tetap terbaca saat config:cache dipakai.

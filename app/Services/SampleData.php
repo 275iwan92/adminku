@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Support\Company;
 use Database\Seeders\ItemSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 /* REMARK
  * Tujuan       : Menyegarkan data contoh secara keseluruhan: semua tabel dikosongkan (dibuang lalu dibuat ulang lewat migrasi) dan diisi ulang oleh seeder, supaya tanggal contoh
@@ -45,11 +48,16 @@ final class SampleData
         return is_file($file) ? json_decode((string) file_get_contents($file), true) : null;
     }
 
-    public static function refresh(string $by): void
+    /** $force = dipanggil perintah adminku:reset-demo (penjaganya config sstock.demo di perintah itu, bukan akun). */
+    public static function refresh(string $by, bool $force = false): void
     {
-        abort_unless(self::allowed($by), 403, 'Penyegaran data contoh dimatikan di lingkungan ini.');
+        abort_unless($force || self::allowed($by), 403, 'Penyegaran data contoh dimatikan di lingkungan ini.');
         set_time_limit(0);
         ignore_user_abort(true);
+
+        if (config('sstock.demo')) {
+            self::wipeFiles();   // berkas unggahan demo (foto, KTP, lampiran, logo, log aktivitas) ikut kembali ke awal
+        }
 
         Schema::disableForeignKeyConstraints();
         foreach (array_column(Schema::getTables(), 'name') as $table) {
@@ -69,13 +77,28 @@ final class SampleData
     public static function summary(): array
     {
         return [
-            'Akun uji: admin, supervisor, entry (kata sandi bawaan seeder)',
+            config('sstock.demo') ? 'Akun demo: admin, supervisor, entry (sandi di docs/PEMISAHAN-ADMINKU-JAYS.md); perusahaan fiktif PT Contoh Sejahtera' : 'Akun uji: admin, supervisor, entry (kata sandi bawaan seeder)',
             'Kategori, lokasi penyimpanan, satuan, departemen, penerima, dan 3 pemasok',
             (count(ItemSeeder::ITEMS) + count(array_unique(array_column(ItemSeeder::EXPIRING, 0)))).' barang, termasuk '.count(array_unique(array_column(ItemSeeder::EXPIRING, 0))).' barang berkedaluwarsa dengan '.count(ItemSeeder::EXPIRING).' batch (sudah lewat, hampir, dan masih lama; tanggalnya dihitung dari hari ini)',
             'GA Perawatan Kendaraan: 4 kendaraan fiktif (1 mobil penumpang, 3 small truck) dengan jenis dan rencana perawatan, dokumen, servis, dan odometer bertanggal relatif; status Aman, Segera, dan Terlambat',
             'GA Perawatan AC: 1 vendor, 4 area, 7 ruang dengan PIC, 9 unit AC fiktif (status Aman, Segera, dan Terlambat; tanggal cuci relatif terhadap hari ini) dan satu kunjungan Draf berisi 2 AC',
+            'HR: 2 karyawan contoh (David, Detta) dan 2 kandidat (Maya Denada, Dedi Sandiaga) dengan foto dan KTP tiruan',
+            'Purchase: satu rantai PP, PO, dan PV contoh (stok bertambah otomatis) serta satu PP menunggu persetujuan',
             'Riwayat transaksi: saldo awal bulan lalu, penerimaan, pengeluaran, dan opname, bertanggal relatif terhadap hari ini',
         ];
+    }
+
+    private static function wipeFiles(): void
+    {
+        $ga = Storage::disk('ga');
+        foreach ($ga->directories() as $dir) {
+            $ga->deleteDirectory($dir);
+        }
+        foreach ($ga->files() as $file) {
+            $ga->delete($file);
+        }
+        File::deleteDirectory(Company::dir());
+        File::deleteDirectory(config('sstock.activity_dir'));
     }
 
     private static function file(): string

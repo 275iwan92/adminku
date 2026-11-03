@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="{{ \Devlib\Device::viewport(request()) }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ \Devlib\Lang::text($title ?? config('app.name')) }} — {{ config('app.name') }}</title>
+    <title>{{ \Devlib\Lang::text($title ?? config('app.name')) }} — {{ config('app.name') }}{{ config('sstock.demo') ? ' (DEMO)' : '' }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ \Devlib\DevlibServiceProvider::asset('devlib.css') }}">
@@ -21,6 +21,7 @@
 </head>
 <body class="dl-body {{ $bodyClass ?? '' }} {{ \Devlib\Device::bodyClass(request()) }}">
     @yield('body')
+    @if (config('sstock.demo'))<div class="adminku-demo-badge" title="Data demo, bisa direset" aria-label="Versi demo">DEMO</div>@endif
     {{-- Logout otomatis: hanya halaman berlogin (tamu tidak punya sesi); lamanya = umur sesi server, ping memperpanjang sesi. --}}
     @auth
         <x-dl::idle-logout :minutes="config('session.lifetime')" logout-url="{{ route('logout') }}" ping-url="{{ route('session.ping') }}" login-url="{{ route('login') }}" />

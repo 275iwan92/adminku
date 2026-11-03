@@ -20,5 +20,9 @@ class DatabaseSeeder extends Seeder
             EmployeeSampleSeeder::class,
             SampleTransactionSeeder::class,
         ]);
+
+        if (config('sstock.demo')) {
+            $this->call([DemoSeeder::class, DemoPurchaseSeeder::class]);
+        }
     }
 }

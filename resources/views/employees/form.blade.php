@@ -88,7 +88,7 @@
             <x-dl::form.row :cols="3">
                 <x-dl::field.date name="join_date" label="Tanggal Masuk" :value="$d('join_date')" required :error="$e('join_date')" />
                 <x-dl::field.select name="work_status" label="Status" :options="\App\Models\Employee::WORK_STATUSES" :value="$v('work_status')" required :error="$e('work_status')" />
-                <x-dl::field.select name="user_id" label="Akun Jays" :options="$users" :value="$v('user_id')" :error="$e('user_id')" hint="Opsional. Akun ikut nonaktif saat karyawan dinonaktifkan." />
+                <x-dl::field.select name="user_id" label="Akun AdminKU" :options="$users" :value="$v('user_id')" :error="$e('user_id')" hint="Opsional. Akun ikut nonaktif saat karyawan dinonaktifkan." />
             </x-dl::form.row>
             @if ($exited)
                 <x-dl::form.row :cols="3">

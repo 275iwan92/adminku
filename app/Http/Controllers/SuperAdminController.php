@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Support\ActivityLog;
 use App\Support\IpLocation;
+use App\Support\Text;
 use Database\Seeders\UserSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Support\Text;
 
 /* REMARK
  * Tujuan       : Layar khusus super admin (SSTOCK_SUPER_ADMIN, mis. johiwan): (1) Log Aktivitas: siapa, IP, kapan, buka / input / ubah / hapus apa, per bulan, bisa diunduh sebagai CSV;
@@ -45,7 +45,7 @@ class SuperAdminController extends Controller
 
     public function accounts()
     {
-        $defaults = array_column(UserSeeder::ACCOUNTS, 'password', 'username');
+        $defaults = array_column(UserSeeder::accounts(), 'password', 'username');
         $users = User::visible()->orderBy('username')->get();
 
         return view('super.accounts', ['users' => $users, 'defaults' => $defaults]);

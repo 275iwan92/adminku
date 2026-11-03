@@ -26,9 +26,23 @@ class UserSeeder extends Seeder
         ['username' => 'admin', 'name' => 'Admin UAT', 'email' => 'admin@sstock.test', 'role' => User::ROLE_ADMINISTRATOR, 'password' => 'admin'],
     ];
 
+    // Akun produk demo AdminKU (SSTOCK_DEMO=true): bukan akun nyata; sandi dan peran dicatat di docs/PEMISAHAN-ADMINKU-JAYS.md.
+    public const DEMO_PASSWORD = 'Demo-AdminKU-2026';
+
+    public const DEMO_ACCOUNTS = [
+        ['username' => 'supervisor', 'name' => 'Supervisor Demo', 'email' => 'supervisor@adminku.test', 'role' => User::ROLE_SUPERVISOR, 'password' => self::DEMO_PASSWORD],
+        ['username' => 'entry', 'name' => 'Staf Demo', 'email' => 'entry@adminku.test', 'role' => User::ROLE_DATA_ENTRY, 'password' => self::DEMO_PASSWORD],
+        ['username' => 'admin', 'name' => 'Admin Demo', 'email' => 'admin@adminku.test', 'role' => User::ROLE_ADMINISTRATOR, 'password' => self::DEMO_PASSWORD],
+    ];
+
+    public static function accounts(): array
+    {
+        return config('sstock.demo') ? self::DEMO_ACCOUNTS : self::ACCOUNTS;
+    }
+
     public function run(): void
     {
-        $users = self::ACCOUNTS;
+        $users = self::accounts();
 
         // Grup bawaan dibuat migrasi; akun contoh masuk grup sesuai perannya.
         $groups = UserGroup::query()->pluck('id', 'code');

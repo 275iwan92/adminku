@@ -32,7 +32,7 @@
 <ol class="g-steps">
     <li>Buka <b>HR</b> lalu <b>Karyawan</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Tab <b>Profil</b>: isi nama, jenis kelamin, tanggal lahir, NIK KTP (16 angka), HP, wilayah dan alamat KTP, serta kontak darurat. Kode karyawan (E-0001 dan seterusnya) terisi sendiri.</li>
-    <li>Tab <b>Pekerjaan</b>: pilih <b>Bagian</b>, isi jabatan, <b>Status Kerja</b> (Tetap, Kontrak, Harian, Magang), tanggal masuk, dan <b>Akun Jays</b> bila karyawan ini memakai AdminKU.</li>
+    <li>Tab <b>Pekerjaan</b>: pilih <b>Bagian</b>, isi jabatan, <b>Status Kerja</b> (Tetap, Kontrak, Harian, Magang), tanggal masuk, dan <b>Akun AdminKU</b> bila karyawan ini memakai AdminKU.</li>
     <li>Di tab <b>Profil</b> ada dua kotak foto. Klik kotak <b>Foto Profil</b> atau <b>Scan KTP</b>, pilih gambar (di HP bisa langsung memakai kamera), geser gambar di dalam bingkai, atur zoom, lalu <b>Use Photo</b>; hasilnya dipotong 3:4 (foto) atau seukuran kartu (KTP) dan baru tersimpan saat Anda menekan <span class="g-btn">Save</span>. Tautan <b>Perbesar</b> membuka pratinjau di tengah layar (zoom, geser, unduh, Esc untuk menutup). KTP berbentuk PDF diunggah apa adanya lewat kolom di bawah kotak KTP. Berkas privat: hanya pemegang hak Karyawan yang bisa membukanya.</li>
     <li>Tab <b>Dokumen</b>: tambah KTP, KK, NPWP, SIM, BPJS, dan lainnya dengan nomor dan Berlaku s/d (bila ada). Tab <b>Keluarga</b> dan <b>Kontrak</b> diisi dengan cara sama.</li>
     <li>Tekan <span class="g-btn">Save</span>.</li>
@@ -40,7 +40,7 @@
 <h4>Langkah: karyawan keluar</h4>
 <ol class="g-steps">
     <li>Buka karyawannya, tab <b>Pekerjaan</b>. Pilih <b>Alasan Keluar</b> dan isi <b>Tanggal Efektif Keluar</b> (catatan boleh kosong).</li>
-    <li>Tekan <span class="g-btn">Deactivate</span>. Akun Jays karyawan itu ikut nonaktif (akun Anda sendiri tidak).</li>
+    <li>Tekan <span class="g-btn">Deactivate</span>. Akun AdminKU karyawan itu ikut nonaktif (akun Anda sendiri tidak).</li>
     <li>Salah tekan? <span class="g-btn">Activate</span> mengembalikannya. Alasan <b>Meninggal</b> tidak bisa diaktifkan kembali.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
@@ -54,7 +54,7 @@
 <h4>Masalah umum</h4>
 <ul class="g-list">
     <li><b>Bagian tidak ada di pilihan.</b> Tambahkan dulu di Departemen (Data Master) atau aktifkan kembali.</li>
-    <li><b>Akun Jays tidak ada di pilihan.</b> Akun itu sudah dipakai karyawan lain, atau nonaktif.</li>
+    <li><b>Akun AdminKU tidak ada di pilihan.</b> Akun itu sudah dipakai karyawan lain, atau nonaktif.</li>
     <li><b>Deactivate ditolak.</b> Alasan keluar atau tanggal efektif belum diisi.</li>
 </ul>
 @endif

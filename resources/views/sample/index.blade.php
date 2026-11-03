@@ -39,6 +39,9 @@
         </x-dl::action-form>
 
         <x-dl::divider label="Segarkan" />
+        @if (config('sstock.demo'))
+            <p class="dl-note"><b>Produk demo:</b> Segarkan = mengembalikan SEMUA data demo (termasuk foto, KTP, dan lampiran) ke keadaan awal. Perintah setara: <code>php artisan adminku:reset-demo</code>.</p>
+        @endif
         @if ($enabled)
             <x-dl::alert tone="danger" message="Semua data saat ini akan hilang dan tidak bisa dikembalikan. Anda akan keluar dan harus masuk lagi dengan akun contoh (admin / supervisor / entry)." />
             <x-dl::action-form :action="route('sample.refresh')">
