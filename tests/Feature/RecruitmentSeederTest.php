@@ -24,7 +24,7 @@ class RecruitmentSeederTest extends TestCase
         $this->seed(RecruitmentSeeder::class);
         $this->seed(RecruitmentSeeder::class);
 
-        $this->assertSame(2, Candidate::count());
+        $this->assertSame(3, Candidate::count());   // Dedi, Maya, Lucy
         $dedi = Candidate::with('events', 'departments')->firstWhere('name', 'Dedi Sandiaga');
         $maya = Candidate::with('events', 'departments')->firstWhere('name', 'Maya Denada');
         $this->assertSame(['Daftar', 'Tes'], [RecruitStep::find($dedi->step_id)->name, RecruitStep::find($maya->step_id)->name]);
@@ -49,6 +49,6 @@ class RecruitmentSeederTest extends TestCase
 
         $this->seed(RecruitmentSeeder::class);
         $this->assertSame('Maya Lain', $maya->refresh()->name);
-        $this->assertSame(2, Candidate::count());   // tidak dibuat ulang
+        $this->assertSame(3, Candidate::count());   // tidak dibuat ulang
     }
 }

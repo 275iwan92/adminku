@@ -213,8 +213,8 @@
             "departments": [
                 "Maintenance"
             ],
-            "photo": "nik0001-photo.jpg",
-            "ktp": "nik0001-ktp.svg",
+            "photo": "nik3273019901010001-photo.jpg",
+            "ktp": "nik3273019901010001-ktp.svg",
             "events": [
                 {
                     "step": "Daftar",
@@ -243,8 +243,8 @@
                 "Admin",
                 "Produksi"
             ],
-            "photo": "nik0002-photo.jpg",
-            "ktp": "nik0002-ktp.svg",
+            "photo": "nik3273019902020002-photo.jpg",
+            "ktp": "nik3273019902020002-ktp.svg",
             "events": [
                 {
                     "step": "Daftar",
@@ -268,6 +268,36 @@
                     "scheduled_time": "10:00",
                     "assessor": "Bu Sari",
                     "result": "waiting",
+                    "note": null
+                }
+            ]
+        },
+        {
+            "nik": "3578011505980001",
+            "name": "Lucy Sempi",
+            "phone": null,
+            "email": null,
+            "birth_date": "2002-11-22",
+            "education": null,
+            "position": null,
+            "source": null,
+            "applied_at": "-1d",
+            "status": "active",
+            "note": "Contoh (data fiktif)",
+            "step": "Daftar",
+            "departments": [
+                "Admin",
+                "Maintenance"
+            ],
+            "photo": "nik3578011505980001-photo.jpg",
+            "ktp": "nik3578011505980001-ktp.svg",
+            "events": [
+                {
+                    "step": "Daftar",
+                    "scheduled_on": null,
+                    "scheduled_time": null,
+                    "assessor": null,
+                    "result": "pass",
                     "note": null
                 }
             ]

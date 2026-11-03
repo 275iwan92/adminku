@@ -198,7 +198,7 @@ final class SampleHr
             ];
         }
         foreach (Candidate::with(['departments', 'events'])->where('note', 'like', 'Contoh%')->orderBy('nik')->get() as $c) {
-            $k = 'nik'.substr($c->nik, -4);
+            $k = 'nik'.$c->nik;   // NIK penuh: dua kandidat bisa berakhiran angka sama
             copy($disk->path($c->photo_path), "$dir/$k-photo.jpg");
             copy($disk->path($c->ktp_path), "$dir/$k-ktp.svg");
             $row = Arr::only($c->toArray(), self::CANDIDATE);

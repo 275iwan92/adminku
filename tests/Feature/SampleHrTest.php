@@ -32,7 +32,7 @@ class SampleHrTest extends TestCase
     public function test_apply_creates_the_canonical_set_once_without_overwriting(): void
     {
         $log = SampleHr::apply();
-        $this->assertCount(4, $log);
+        $this->assertCount(5, $log);   // dua karyawan, tiga kandidat
 
         $david = Employee::firstWhere('code', 'E-C001');
         $detta = Employee::firstWhere('code', 'E-C002');
@@ -44,6 +44,10 @@ class SampleHrTest extends TestCase
 
         $maya = Candidate::firstWhere('name', 'Maya Denada');
         $dedi = Candidate::firstWhere('name', 'Dedi Sandiaga');
+        $lucy = Candidate::firstWhere('name', 'Lucy Sempi');
+        $this->assertSame('2002-11-22', $lucy->birth_date->toDateString());
+        $this->assertSame(['Admin', 'Maintenance'], $lucy->departments()->pluck('name')->all());
+        Storage::disk('ga')->assertExists([$lucy->photo_path, $lucy->ktp_path]);
         $this->assertSame(3, $maya->events()->count());
         $this->assertSame('Tes', RecruitStep::find($maya->step_id)->name);
         $this->assertSame(['Maintenance'], $dedi->departments()->pluck('name')->all());
@@ -83,7 +87,7 @@ class SampleHrTest extends TestCase
         $this->assertNotNull(Employee::find($real->id));   // data nyata tidak disentuh
         $this->assertNotNull(Candidate::find($realCandidate->id));
         $this->assertStringContainsString('dibuang', implode(' ', $log));
-        $this->assertSame(2, Candidate::where('note', 'like', 'Contoh%')->count());
+        $this->assertSame(3, Candidate::where('note', 'like', 'Contoh%')->count());
     }
 
     public function test_artisan_command_and_snapshot_export_round_trip(): void
@@ -99,7 +103,7 @@ class SampleHrTest extends TestCase
         SampleHr::export($tmp);
         $m = json_decode(file_get_contents($tmp.'/manifest.json'), true);
         $this->assertSame(['E-C001', 'E-C002'], array_column($m['employees'], 'code'));
-        $this->assertSame(['Dedi Sandiaga', 'Maya Denada'], array_column($m['candidates'], 'name'));
+        $this->assertSame(['Dedi Sandiaga', 'Maya Denada', 'Lucy Sempi'], array_column($m['candidates'], 'name'));
         $this->assertMatchesRegularExpression('/^[+-]\d+d$/', $m['candidates'][1]['events'][2]['scheduled_on']);
         $this->assertFileExists($tmp.'/e-c001-photo.jpg');
         array_map('unlink', glob($tmp.'/*'));
