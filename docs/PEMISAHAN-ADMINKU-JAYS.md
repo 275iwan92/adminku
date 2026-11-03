@@ -4,12 +4,20 @@
 | | **adminku** | **jays** |
 |---|---|---|
 | Apa | Produk AdminKU: sumber kode, data dummy, dijual ke perusahaan lain | Aplikasi nyata perusahaan Jays, pemakai pertama |
-| Laptop | `C:\Users\iwanp\Herd\adminku`, `http://adminku.test`, DB `adminku`, git sendiri | `C:\Users\iwanp\Herd\jays`, `http://jays.test`, DB `jays`, git sendiri |
+| Laptop | `C:\Users\iwanp\Herd\adminku`, `http://adminku.test`, DB `adminku` (SQLite: `database/adminku.sqlite`), git sendiri | `C:\Users\iwanp\Herd\jays`, `http://jays.test`, DB `jays`, git sendiri |
 | Biznet | `/var/www/adminku`, `http://103.127.135.74/adminku/`, DB `adminku` | `/var/www/jays`, `/jays/`, DB `jays` |
 | Data | Demo, bisa direset kapan saja (`SSTOCK_DEMO=true`) | Nyata; tidak pernah di-reset otomatis (`SSTOCK_DEMO` tidak ada) |
 | Kode | **Sumber kebenaran**: modul baru dikerjakan di sini | Menarik rilis `adminku` saat Iwan memutuskan |
 
 Tidak ada yang dipakai bersama: database, `.env`, kunci aplikasi, cookie sesi (`adminku_session` / `jays_session`), berkas `storage`, DB/prefix Redis di laptop (adminku: DB 5 dan 6, awalan `adminku-`; jays: DB 3 dan 4, awalan `jays-`), pengguna MySQL, dan folder Nginx. Data wilayah `geo_*` disalin sekali ke tiap database (tidak dibagi). Satu-satunya yang dipakai bersama adalah pustaka DevLib (lihat di bawah).
+
+## Database laptop: SQLite, bisa pindah ke MySQL
+Di laptop adminku memakai berkas SQLite sendiri, tanpa akun admin MySQL (`.env`: `DB_CONNECTION=sqlite`, `DB_DATABASE=C:\Users\iwanp\Herd\adminku\database\adminku.sqlite`; berkas ini tidak masuk git). Semua migrasi dan tes teruji di SQLite. Data wilayah `geo_*` disalin sekali dari DB `jays` laptop (hanya dibaca). Biznet memakai MySQL.
+
+Pindah ke MySQL kapan saja, hanya dengan mengubah `.env` laptop:
+1. Ganti `DB_CONNECTION=mysql` dan isi `DB_HOST`, `DB_PORT`, `DB_DATABASE=adminku`, `DB_USERNAME=adminku_usr`, `DB_PASSWORD`, `DB_ADMIN_USERNAME`, `DB_ADMIN_PASSWORD` (contohnya sudah ada, dikomentari, di `.env`).
+2. `php artisan sstock:install --no-seed` (membuat DB + user MySQL dengan akun admin, migrate, menyalin `geo_*` dari sumber), lalu `php artisan adminku:reset-demo --force`.
+3. `php artisan optimize:clear`. Berkas SQLite boleh dihapus.
 
 ## Akun demo (hanya di adminku; bukan akun nyata)
 Semua memakai sandi **`Demo-AdminKU-2026`**. Super admin Jays (`johiwan`) tidak ada di adminku.
@@ -23,7 +31,7 @@ Semua memakai sandi **`Demo-AdminKU-2026`**. Super admin Jays (`johiwan`) tidak 
 Perusahaan demo: **PT Contoh Sejahtera** (diubah lewat menu Data Master > Perusahaan, disimpan di data, bukan di kode). Merek AdminKU tetap.
 Penanda demo: judul tab berakhiran `(DEMO)`, lencana `DEMO` kecil di pojok kanan bawah, dan teks "Data demo, bisa direset" di layar masuk. Semuanya muncul hanya bila `SSTOCK_DEMO=true`.
 
-Isi data demo: master Stok + barang/batch contoh dan riwayat transaksi; GA (4 kendaraan, 9 AC, vendor, ruang); HR (David, Detta, kandidat Maya Denada, Dedi Sandiaga, foto dan KTP tiruan dari `database/sample/hr`); Purchase (satu rantai PP, Keputusan Pesanan, PO, PV yang menambah stok, ditambah satu PP menunggu persetujuan).
+Isi data demo: master Stok + barang/batch contoh dan riwayat transaksi; GA (4 kendaraan, 9 AC, vendor, ruang); HR (David, Detta, kandidat Maya Denada, Dedi Sandiaga, Lucy Sempi, foto dan KTP tiruan dari `database/sample/hr`); Purchase (3 pemasok fiktif dengan riwayat beli 6 bulan, satu rantai PP, Keputusan Pesanan, PO, PV yang menambah stok, dan dua PP menunggu persetujuan).
 
 > Foto di `database/sample/hr` adalah foto asli (kata sesi HR). Ganti dengan foto bebas hak sebelum adminku diperlihatkan atau dijual ke pihak lain: timpa berkas JPG di folder itu dengan nama sama lalu `php artisan adminku:reset-demo`.
 
