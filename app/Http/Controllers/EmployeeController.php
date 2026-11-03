@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $sp = Discipline::query()->inForce()->get()->groupBy('employee_id')->map(fn ($g) => Discipline::TYPES[$g->sortByDesc(fn (Discipline $d) => Discipline::RANK[$d->type])->first()->type]);
         $rows = Employee::query()->with(['department', 'contracts', 'docs'])->orderBy('code')->get()->map(function (Employee $e) use ($sp) {
@@ -33,10 +33,28 @@ class EmployeeController extends Controller
                 'id' => $e->id, 'code' => $e->code, 'name' => $e->name, 'position' => $e->position, 'department' => $e->department->name, 'employment' => Employee::EMPLOYMENTS[$e->employment],
                 'join_date' => $e->join_date->format('Y-m-d'), 'status' => $e->is_active ? Employee::WORK_STATUSES[$e->work_status] : 'Keluar: '.(Employee::EXIT_REASONS[$e->exit_reason] ?? '-'),
                 'attention' => $attention, 'attn' => $attention !== null, 'sp' => $sp[$e->id] ?? '', 'active' => $e->is_active,
+                'photo' => $e->photo_path ? route('employees.file', [$e, 'photo']) : null, 'gender' => $e->gender, 'employment_key' => $e->employment, 'work_status' => $e->work_status,
+                'joined' => $e->join_date->translatedFormat('d-M-Y'), 'tenure' => $this->tenure($e->join_date, $e->is_active ? today() : ($e->exit_date ?? today())), 'initials' => collect(preg_split('/\s+/', trim($e->name)))->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode(''),
             ];
         })->all();
 
-        return view('employees.index', ['rows' => $rows]);
+        $rows = collect($rows);
+
+        return view('employees.index', [
+            'rows' => $rows->all(), 'view' => $request->query('view') === 'list' ? 'list' : 'cards',
+            'departments' => $rows->pluck('department')->unique()->sort()->values()->all(),
+            'counts' => ['all' => $rows->count(), 'attn' => $rows->where('attn', true)->count(), 'exited' => $rows->where('active', false)->count()],
+        ]);
+    }
+
+    // Masa kerja "x th y bln" (sampai hari ini, atau sampai tanggal keluar bagi yang sudah keluar).
+    private function tenure(\Carbon\CarbonInterface $from, \Carbon\CarbonInterface $to): string
+    {
+        $months = max(0, (int) $from->diffInMonths($to));
+        $y = intdiv($months, 12);
+        $m = $months % 12;
+
+        return $y > 0 ? $y.' th'.($m ? ' '.$m.' bln' : '') : ($m.' bln');
     }
 
     public function create(Request $request)

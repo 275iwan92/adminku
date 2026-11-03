@@ -132,6 +132,26 @@ class EmployeeTest extends TestCase
         $this->put(route('employees.update', $e), $this->payload(['ktp_crop' => UploadedFile::fake()->image('x.png')]))->assertSessionHasErrors('ktp_crop');
     }
 
+    public function test_index_shows_cards_with_photo_tenure_and_counts_and_a_list_view(): void
+    {
+        Storage::fake('ga');
+        $this->seed(EmployeeSampleSeeder::class);
+        $this->employee(['name' => 'Rani Keluar', 'is_active' => false, 'exit_reason' => 'resigned', 'exit_date' => '2026-06-30', 'join_date' => '2024-01-15']);
+
+        $page = $this->actingAs($this->admin)->get(route('employees.index'))->assertOk();
+        $this->assertSame('cards', $page->viewData('view'));
+        $this->assertSame(['all' => 3, 'attn' => 2, 'exited' => 1], $page->viewData('counts'));
+        $rows = collect($page->viewData('rows'))->keyBy('code');
+        $this->assertSame(route('employees.file', [Employee::firstWhere('code', 'E-C001'), 'photo']), $rows['E-C001']['photo']);
+        $this->assertSame('5 th 8 bln', $rows['E-C001']['tenure']);   // masuk 03-02-2021, hari ini (uji) 02-11-2026
+        $this->assertSame('2 th 5 bln', collect($rows)->firstWhere('name', 'Rani Keluar')['tenure']);   // dihitung sampai tanggal keluar
+        $page->assertSee('<a class="em-card', false)->assertSee('Perlu perhatian')->assertSee('Budi Contoh')->assertSee('em-photo', false);
+
+        $list = $this->get(route('employees.index', ['view' => 'list']))->assertOk();
+        $this->assertSame('list', $list->viewData('view'));
+        $list->assertDontSee('<a class="em-card', false);   // tanpa kartu di tampilan Daftar
+    }
+
     public function test_nik_must_be_sixteen_digits_and_unique(): void
     {
         $this->employee(['code' => 'E-0001']);

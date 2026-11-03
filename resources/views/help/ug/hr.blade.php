@@ -46,6 +46,7 @@
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
     <li>Karyawan <b>tidak dihapus</b>; riwayatnya tetap tersimpan. Karyawan yang keluar tampil di daftar dengan status <b>Keluar: alasan</b>.</li>
+    <li>Layar Karyawan punya dua tampilan lewat segmen <b>Kartu</b> / <b>Daftar</b> (bawaan Kartu; pilihan Anda diingat di browser). Kartu menampilkan foto profil bulat, nama, jabatan dan kode, label bagian, status kerja, status, <b>SP aktif</b>, peringatan (SIM atau dokumen hampir habis berwarna kuning, kontrak habis berwarna merah), serta tanggal masuk dan masa kerja; klik kartu membuka form karyawan. Tab <b>Semua</b>, <b>Perlu perhatian</b>, dan <b>Keluar</b> (dengan jumlahnya), segmen bagian, dan kotak cari menyaring kartu. Daftar adalah tabel dengan foto kecil di kolom pertama.</li>
     <li>Kolom <b>Perhatian</b> menampilkan satu catatan terburuk: kontrak terbaru yang habis dalam 60 hari (atau sudah lewat), dokumen yang habis dalam 30 hari, atau <b>Data belum lengkap</b> (NIK, wilayah KTP, atau HP kosong).</li>
     <li>Kode karyawan tidak bisa diubah setelah disimpan. NIK KTP harus unik.</li>
     <li>Berkas pindaian dokumen belum disimpan di sini; yang dicatat hanya nomor dan masa berlakunya.</li>
