@@ -105,11 +105,10 @@ class StockDocumentController extends Controller
         abort_unless($request->type() === $document->type, 404);
         $action = $request->input('_action', 'save');
         $isAdj = $document->type === StockDocumentType::Adjustment;
-        $sup = $request->user()->isSupervisor();
         $me = $request->user()->id;
-        abort_if(in_array($action, ['approve', 'reject'], true) && ! $sup, 403, 'Hanya Supervisor yang menyetujui atau menolak.');
+        abort_if(in_array($action, ['approve', 'reject'], true) && ! $request->user()->canApprove(), 403, 'Hanya Supervisor yang menyetujui atau menolak.');
         // Menarik penyesuaian yang diajukan / pengajuan pembatalan: hanya pembuat / pengajunya atau Supervisor.
-        abort_if($action === 'cancel' && ! $sup && in_array($document->status, ['approval', 'cancel_pending'], true) && ! in_array($me, [$document->created_by, $document->cancel_requested_by], true), 403, 'Hanya pengaju atau Supervisor.');
+        abort_if($action === 'cancel' && ! $request->user()->canApprove() && in_array($document->status, ['approval', 'cancel_pending'], true) && ! in_array($me, [$document->created_by, $document->cancel_requested_by], true), 403, 'Hanya pengaju atau Supervisor.');
 
         $header = $isAdj ? ['reason', 'note', 'recipient_id', 'department_id'] : ['supplier_id', 'ref_no', 'recipient_id', 'department_id', 'reason', 'note', 'doc_at'];
         $reorder = null;

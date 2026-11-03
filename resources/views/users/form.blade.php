@@ -25,7 +25,7 @@
             <x-dl::field.text name="email" label="Email" :value="$v('email')" required maxlength="150" :error="$e('email')" />
         </x-dl::form.row>
         <x-dl::form.row :cols="3">
-            <x-dl::field.select name="role" label="Role" :options="\App\Models\User::ROLES" :value="$v('role')" required :readonly="$self" :error="$e('role')" tooltip="Data Entry: receiving and issuance. Supervisor: all stock functions. Administrator: Supervisor + Security menu." />
+            <x-dl::field.select name="role" label="Role" :options="\App\Models\User::ROLES" :value="$v('role')" required :readonly="$self" :error="$e('role')" tooltip="Data Entry: receiving and issuance. Admin Data: opens every screen but cannot approve. Supervisor: all stock functions and approval. Administrator: Supervisor + Security menu." />
             <x-dl::field.select name="group_id" label="Group" :options="$groups" :value="$v('group_id')" :error="$e('group_id')" hint="Decides which modules this user can open. Empty = the default modules of the role." />
             <x-dl::field.password name="password" label="Password" autocomplete="new-password" :required="$isNew" :error="$e('password')" :hint="$isNew ? 'At least 8 characters.' : 'Leave empty to keep the current password.'" />
         </x-dl::form.row>

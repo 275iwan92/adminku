@@ -18,7 +18,7 @@
 <ol class="g-steps">
     <li>Buka <b>Pengguna</b>, tekan <b>+ Data Baru</b>.</li>
     <li>Isi <b>Nama Lengkap</b>, <b>Username</b>, dan <b>Email</b>. Username memakai huruf kecil, angka, titik, garis bawah, atau strip. Username tidak bisa diubah setelah disimpan.</li>
-    <li>Pilih <b>Peran</b> (Data Entry, Supervisor, atau Administrator) dan <b>Grup</b> (boleh kosong).</li>
+    <li>Pilih <b>Peran</b> (Data Entry, Admin Data, Supervisor, atau Administrator; Admin Data membuka layar seperti Supervisor tetapi tidak bisa menyetujui) dan <b>Grup</b> (boleh kosong).</li>
     <li>Isi <b>Password</b>, minimal 8 karakter. Saat mengubah pengguna lama, kosongkan password bila tidak diganti.</li>
     <li>Tekan <b>Simpan</b>.</li>
 </ol>
@@ -97,7 +97,7 @@
     <li>Buka <b>Data Contoh</b> dan baca daftar yang akan dihapus dan dibuat.</li>
     <li>Ketik <b>SEGARKAN</b> (huruf besar) pada kotak konfirmasi.</li>
     <li>Tekan <b>Segarkan Data Contoh</b>.</li>
-    <li>Anda keluar otomatis. Masuk lagi dengan akun contoh (<code>admin</code>, <code>supervisor</code>, <code>entry</code>).</li>
+    <li>Anda keluar otomatis. Masuk lagi dengan akun contoh (<code>admin</code>, <code>spv</code>, <code>adm</code>).</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <div class="g-warn"><b>Seluruh data saat ini hilang</b> (barang, transaksi, pemasok, akun, grup) dan tidak bisa dikembalikan. Data wilayah dan gambar latar login dipertahankan. Jangan pakai di server yang berisi data sungguhan.</div>

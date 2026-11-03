@@ -20,13 +20,15 @@ Pindah ke MySQL kapan saja, hanya dengan mengubah `.env` laptop:
 3. `php artisan optimize:clear`. Berkas SQLite boleh dihapus.
 
 ## Akun demo (hanya di adminku; bukan akun nyata)
-Sandi diatur pemilik (2026-11-03): `admin` = `12345678`, `supervisor` = `123456788`, `entry` = `12345677`. Super admin Jays (`johiwan`) tidak ada di adminku.
+Tiga akun yang SAMA di AdminKU, Jays, dan Stoku (perintah pemilik 2026-11-03; sandi sengaja sederhana). Super admin Jays (`johiwan`) tidak ada di adminku.
 
 | Username | Peran | Hak |
 |---|---|---|
-| `admin` | Administrator | Semua modul (Stok, GA, HR, Purchase, Keamanan, Data Contoh) |
-| `supervisor` | Supervisor | Stok, Purchase (PP, Keputusan, PO, PV; menyetujui) |
-| `entry` | Data Entry | Stok harian dan membuat PP |
+| `admin` / `123456788` | Administrator | Semua modul (Stok, GA, HR, Purchase, Keamanan, Data Contoh), menyetujui, kelola pengguna dan Grup |
+| `spv` / `12345678` | Supervisor | Membuka semua modul selain Keamanan, menyetujui (PP, PO, Penyesuaian, Opname, pembatalan); tidak kelola pengguna |
+| `adm` / `12345677` | Admin Data | Membuka semua modul selain Keamanan; TIDAK menyetujui (tombol Setujui/Tolak tidak ada, server 403) dan tidak kelola pengguna |
+
+Peran `Admin Data` (`users.role = admin_data`, Grup `ADMINDATA`) setara Supervisor dalam membuka layar (`isSupervisor()`), tetapi `User::canApprove()` false; aksi setujui/tolak/kembalikan dijaga `canApprove()` dan middleware `approver`. Admin Data yang membatalkan dokumen terproses hanya mengajukan pembatalan; Supervisor yang menyetujui.
 
 Perusahaan demo: **PT Contoh Sejahtera** (diubah lewat menu Data Master > Perusahaan, disimpan di data, bukan di kode). Merek AdminKU tetap.
 Penanda demo: judul tab berakhiran `(DEMO)`, lencana `DEMO` kecil di pojok kanan bawah, dan teks "Data demo, bisa direset" di layar masuk. Semuanya muncul hanya bila `SSTOCK_DEMO=true`.

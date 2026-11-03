@@ -76,8 +76,8 @@ class DemoPurchaseHistorySeeder extends Seeder
         config(['session.driver' => 'array']);
 
         $admin = User::where('username', 'admin')->firstOrFail();
-        $boss = User::where('username', 'supervisor')->firstOrFail();
-        $entry = User::where('username', 'entry')->firstOrFail();
+        $boss = User::where('username', 'spv')->firstOrFail();
+        $entry = User::where('username', 'adm')->firstOrFail();
 
         $suppliers = [];
         foreach (self::SUPPLIERS as [$code, $name, $email, $phone, $contact, $term]) {

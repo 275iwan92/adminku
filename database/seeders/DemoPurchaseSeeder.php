@@ -40,7 +40,7 @@ class DemoPurchaseSeeder extends Seeder
         config(['session.driver' => 'array']);
 
         $admin = User::where('username', 'admin')->firstOrFail();
-        $boss = User::where('username', 'supervisor')->firstOrFail();
+        $boss = User::where('username', 'spv')->firstOrFail();
         $dept = Department::query()->orderBy('id')->firstOrFail();
         $supplier = Supplier::query()->where('is_active', true)->orderBy('id')->firstOrFail();
         $items = Item::query()->where('is_active', true)->where('tracks_expiry', false)->orderBy('id')->limit(3)->get();

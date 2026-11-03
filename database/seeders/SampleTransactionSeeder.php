@@ -28,8 +28,8 @@ class SampleTransactionSeeder extends Seeder
             return;
         }
 
-        $sup = User::where('username', 'supervisor')->firstOrFail();
-        $entry = User::where('username', 'entry')->firstOrFail();
+        $sup = User::where('username', 'spv')->firstOrFail();
+        $entry = User::where('username', 'adm')->firstOrFail();
         $item = fn (string $code) => Batch::where('code', $code)->firstOrFail()->id;
         $recipient = fn (string $name) => Recipient::where('name', $name)->firstOrFail()->id;
         $supplier = fn (string $code) => Supplier::where('code', $code)->firstOrFail()->id;

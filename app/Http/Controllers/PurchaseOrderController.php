@@ -89,7 +89,7 @@ class PurchaseOrderController extends Controller
                 case 'approve':
                 case 'reject':
                     $need(['approval']);
-                    abort_unless($user->isSupervisor(), 403, 'Hanya Supervisor yang menyetujui atau menolak.');
+                    abort_unless($user->canApprove(), 403, 'Hanya Supervisor yang menyetujui atau menolak.');
                     abort_if($owner, 403, 'Pembuat tidak boleh menyetujui atau menolak PO-nya sendiri.');
                     abort_if($action === 'reject' && $reason === '', 422, 'Isi alasan penolakan.');
                     $po->update(['status' => $action === 'approve' ? 'approved' : 'rejected', 'approved_by' => $user->id, 'approved_at' => now(), 'reason' => $action === 'reject' ? $reason : null]);

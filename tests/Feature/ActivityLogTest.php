@@ -160,7 +160,7 @@ class ActivityLogTest extends TestCase
     {
         $this->seed(UserSeeder::class);
 
-        $this->actingAs($this->super())->get(route('super.accounts'))->assertOk()->assertSee('supervisor')->assertSee('1qa2ws3ed')->assertDontSee('johiwan');
+        $this->actingAs($this->super())->get(route('super.accounts'))->assertOk()->assertSee('spv')->assertSee('12345678')->assertDontSee('johiwan');
     }
 
     public function test_super_admin_changes_a_password_and_the_old_sessions_of_that_account_end(): void

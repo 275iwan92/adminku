@@ -227,6 +227,6 @@ class ItemCodeTest extends TestCase
         $this->assertSame(Location::count(), Location::whereIn('code', Batch::pluck('location'))->count());
         $this->assertSame(2, Batch::nearExpiry()->count());  // satu sudah lewat, satu hampir; dua batch lain masih lama
         $this->assertSame(2, Item::where('name', 'Lem Kayu Fox 100 ml')->firstOrFail()->batches()->count());   // satu produk, dua batch
-        $this->actingAs(User::where('username', 'supervisor')->firstOrFail())->get(route('stock.home'))->assertOk()->assertSee('Lem Kayu Fox 100 ml');
+        $this->actingAs(User::where('username', 'spv')->firstOrFail())->get(route('stock.home'))->assertOk()->assertSee('Lem Kayu Fox 100 ml');
     }
 }

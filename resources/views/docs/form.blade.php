@@ -10,7 +10,6 @@
 @section('body')
     @php
         use App\Enums\StockDocumentType as T;
-        $sup = auth()->user()->isSupervisor();
         $isNew = ! $doc->exists;
         $isAdj = $t === T::Adjustment;
         $pendingCancel = ! $isNew && $doc->status === 'cancel_pending';
@@ -66,7 +65,7 @@
     <x-dl::form :title="$title" :subtitle="$isNew ? null : raw($doc->supplier?->name ?? $doc->recipient ?? $doc->reason)" panel="top" kind="document" :status="$status"
         :back="route('docs.index', $t->slug())" :new-url="route('docs.create', $t->slug())"
         :action="$isNew ? route('docs.store', $t->slug()) : route('docs.update', [$t->slug(), $doc])" :hidden="$isNew ? [] : ['_method' => 'PUT']"
-        :pipeline="true" :approval-levels="$isAdj || $pendingCancel ? 1 : 0" :approval-at="1" :can-approve="$sup"
+        :pipeline="true" :approval-levels="$isAdj || $pendingCancel ? 1 : 0" :approval-at="1" :can-approve="auth()->user()->canApprove()"
         :hide="array_merge(['hold', 'email', 'duplicate'], $doc->reversal_of_document_id ? ['cancel'] : [])" :print-url="$isNew ? null : route('docs.print', [$t->slug(), $doc])" :log="$log"
         :created-by="$doc->creator?->name" :created-at="$doc->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$doc->approver?->name ?? $doc->creator?->name" :updated-at="$doc->updated_at?->format('Y-m-d H:i:s')">

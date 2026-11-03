@@ -43,7 +43,7 @@
     <x-dl::form :title="'Permintaan Pembelian · '.($isNew ? 'Baru' : raw($pr->number()))" :subtitle="$isNew ? null : raw($pr->department?->name)" panel="top" kind="document" :status="$status"
         :back="route('pr.index')" :new-url="route('pr.create')"
         :action="$isNew ? route('pr.store') : route('pr.update', $pr)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
-        :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->isSupervisor() && ! $mine"
+        :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
         :hide="array_merge(['hold', 'email', 'print'], $progress ? ['cancel'] : [])" :log="$log"
         :created-by="$pr->creator?->name" :created-at="$pr->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$pr->approver?->name ?? $pr->creator?->name" :updated-at="$pr->updated_at?->format('Y-m-d H:i:s')">

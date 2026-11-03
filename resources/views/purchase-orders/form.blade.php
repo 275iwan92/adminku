@@ -46,7 +46,7 @@
     <x-dl::form :title="'Pesanan Pembelian · '.($isNew ? 'Baru' : raw($po->number()))" :subtitle="$isNew ? null : raw($po->supplier?->name)" panel="top" kind="document" :status="$status"
         :back="route('po.index')" :new-url="route('po.create')" :log="$log"
         :action="$isNew ? route('po.store') : route('po.update', $po)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
-        :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->isSupervisor() && ! $mine"
+        :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
         :hide="$hide" :print-url="$printable ? route('po.print', $po) : null"
         :created-by="$po->creator?->name" :created-at="$po->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$po->approver?->name ?? $po->creator?->name" :updated-at="$po->updated_at?->format('Y-m-d H:i:s')">

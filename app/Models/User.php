@@ -22,12 +22,14 @@ class User extends Authenticatable
 
     public const ROLE_DATA_ENTRY = 'data_entry';
 
+    public const ROLE_ADMIN_DATA = 'admin_data';
+
     public const ROLE_SUPERVISOR = 'supervisor';
 
     public const ROLE_ADMINISTRATOR = 'administrator';
 
-    // Administrator = semua hak Supervisor + menu Keamanan (kelola pengguna).
-    public const ROLES = [self::ROLE_DATA_ENTRY => 'Data Entry', self::ROLE_SUPERVISOR => 'Supervisor', self::ROLE_ADMINISTRATOR => 'Administrator'];
+    // Admin Data = membuka layar setingkat Supervisor tetapi TIDAK menyetujui (canApprove). Administrator = semua hak Supervisor + menu Keamanan (kelola pengguna).
+    public const ROLES = [self::ROLE_DATA_ENTRY => 'Data Entry', self::ROLE_ADMIN_DATA => 'Admin Data', self::ROLE_SUPERVISOR => 'Supervisor', self::ROLE_ADMINISTRATOR => 'Administrator'];
 
     protected function casts(): array
     {
@@ -40,7 +42,13 @@ class User extends Authenticatable
 
     public function isSupervisor(): bool
     {
-        return in_array($this->role, [self::ROLE_SUPERVISOR, self::ROLE_ADMINISTRATOR], true);
+        return in_array($this->role, [self::ROLE_ADMIN_DATA, self::ROLE_SUPERVISOR, self::ROLE_ADMINISTRATOR], true);
+    }
+
+    // Menyetujui / menolak dokumen (PP, PO, Penyesuaian, Opname, pembatalan): Supervisor ke atas; Admin Data hanya membuka.
+    public function canApprove(): bool
+    {
+        return $this->isSupervisor() && $this->role !== self::ROLE_ADMIN_DATA;
     }
 
     public function group(): BelongsTo

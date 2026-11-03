@@ -104,7 +104,7 @@ final class StockDocuments
                 return 'cancelled';
             }
             $this->ledger->assertReversible($doc);
-            if ($user->isSupervisor()) {
+            if ($user->canApprove()) {
                 $this->finishCancel($doc, $user, $reason);
 
                 return 'cancelled';

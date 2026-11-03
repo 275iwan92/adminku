@@ -229,7 +229,7 @@ class GaSettingsTest extends TestCase
 
         $migration->up();
         $migration->up();
-        $this->assertSame(1, DB::table('sys_user_group_module')->where('module', 'GAP')->count());
+        $this->assertSame(1, DB::table('sys_user_group_module')->where(['module' => 'GAP', 'group_id' => $adminGroup->id])->count());
         $this->assertSame('rw', DB::table('sys_user_group_module')->where(['module' => 'GAP', 'group_id' => $adminGroup->id])->value('access'));
         $this->assertSame(0, DB::table('sys_user_group_module')->where(['module' => 'GAP', 'group_id' => $other->id])->count());
 

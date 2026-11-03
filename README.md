@@ -225,11 +225,11 @@ Seeder (`database/seeders/UserSeeder.php`) membuat tiga akun ini. Masuk dengan u
 
 | Peran | Username | E-mail | Password |
 |---|---|---|---|
-| Administrator | `admin` | `admin@sstock.test` | `admin` |
-| Supervisor | `supervisor` | `supervisor@sstock.test` | `1qa2ws3ed` |
-| Data Entry | `entry` | `entry@sstock.test` | `12345678` |
+| Administrator | `admin` | `admin@sstock.test` | `123456788` |
+| Supervisor | `spv` | `spv@sstock.test` | `12345678` |
+| Admin Data | `adm` | `adm@sstock.test` | `12345677` |
 
-Yang boleh dilakukan tiap peran:
+Yang boleh dilakukan tiap peran (**Admin Data**: membuka semua layar seperti Supervisor tetapi tidak menyetujui apa pun dan tidak mengelola pengguna):
 
 - **Data Entry**: Penerimaan dan Pengeluaran Barang, mengisi hasil hitung Stok Opname, menambah barang baru dan Satuan masuk-nya (kemasan saat diterima, mis. 1 dus = 12 pcs; memperbaiki faktor yang belum pernah dipakai di dokumen), mengelola Supplier, Departemen, Penerima, dan melihat laporan (tanpa harga/nilai).
 - **Supervisor**: semua milik Data Entry, ditambah mengubah Barang, Satuan (termasuk faktor Satuan masuk yang sudah dipakai di dokumen), Kategori, Lokasi, data Perusahaan (kop cetak), Saldo Awal, Penyesuaian Stok, memulai, meninjau, dan menyetujui Stok Opname, menyetujui atau menolak, dan melihat harga serta nilai. Pengeluaran dan Penyesuaian selalu dalam satuan stok barang; hanya Penerimaan yang memakai satuan masuk.

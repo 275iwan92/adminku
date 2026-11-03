@@ -212,8 +212,10 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
             Route::post('{count}/review', 'reviewLines')->name('stock-counts.review');
             Route::post('{count}/refresh', 'refreshMoved')->name('stock-counts.refresh');
             Route::post('{count}/lines/{line}/refresh', 'refreshOne')->whereNumber('line')->name('stock-counts.refresh-line');
-            Route::post('{count}/approve', 'approve')->name('stock-counts.approve');
-            Route::post('{count}/reject', 'reject')->name('stock-counts.reject');
+            Route::middleware('approver')->group(function () {
+                Route::post('{count}/approve', 'approve')->name('stock-counts.approve');
+                Route::post('{count}/reject', 'reject')->name('stock-counts.reject');
+            });
             Route::get('{count}/report', 'report')->name('stock-counts.report');
         });
         Route::get('{count}', 'show')->name('stock-counts.show');

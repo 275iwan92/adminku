@@ -42,10 +42,12 @@
 </x-dl::kpi-row>
 @if ($editable)
     <x-dl::action-bar align="start">
+        @if (auth()->user()->canApprove())
         <x-dl::action-form :action="route('stock-counts.approve', $count)">
             <x-dl::button type="submit" icon="fa-check" label="Approve Count" data-dl-confirm="Setujui Stok Opname? Stok akan diubah mengikuti hasil hitung fisik lewat satu Penyesuaian otomatis. Tidak bisa dibatalkan dari layar ini." data-dl-confirm-tone="warn" />
         </x-dl::action-form>
         <x-dl::button variant="secondary" icon="fa-rotate-left" label="Return to Counting" data-dl-open="return-modal" />
+        @endif
     </x-dl::action-bar>
 @endif
 <x-dl::lookup-grid data-reload-on-save :rows="$reviewRows" :add-rows="false" :auto-save="true" :save-url="route('stock-counts.review', $count)" row-tone="tone"
@@ -66,7 +68,7 @@
         $edit(['key' => 'recount_qty', 'label' => 'Recount', 'type' => 'number', 'decimal' => true, 'width' => '100px']),
         $edit(['key' => 'reason', 'label' => 'Reason', 'width' => '240px']),
     ]" />
-@if ($editable)
+@if ($editable && auth()->user()->canApprove())
     <x-dl::modal id="return-modal" title="Return to Counting" icon="fa-rotate-left" size="sm">
         <form id="return-form" method="POST" action="{{ route('stock-counts.reject', $count) }}">
             @csrf
