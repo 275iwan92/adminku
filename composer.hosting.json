@@ -12,7 +12,7 @@
     "php": "^8.3",
     "laravel/framework": "^13.17",
     "laravel/tinker": "^3.0",
-    "jo/devlib": "dev-main#51a74b5f1354e5d42bbb8077cf2ca0a89cebb024"
+    "jo/devlib": "dev-main#2c57d2a2541b748cc8b68bab146b30091991634a"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",

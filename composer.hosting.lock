@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf4a5d3bb213043d659a9845c0266e34",
+    "content-hash": "3083c673883bd5f8dd45d546bcbd57cc",
     "packages": [
         {
             "name": "brick/math",
@@ -1065,12 +1065,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/275iwan92/devlib.git",
-                "reference": "51a74b5f1354e5d42bbb8077cf2ca0a89cebb024"
+                "reference": "2c57d2a2541b748cc8b68bab146b30091991634a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/275iwan92/devlib/zipball/51a74b5f1354e5d42bbb8077cf2ca0a89cebb024",
-                "reference": "51a74b5f1354e5d42bbb8077cf2ca0a89cebb024",
+                "url": "https://api.github.com/repos/275iwan92/devlib/zipball/2c57d2a2541b748cc8b68bab146b30091991634a",
+                "reference": "2c57d2a2541b748cc8b68bab146b30091991634a",
                 "shasum": ""
             },
             "require": {
@@ -1105,7 +1105,7 @@
                 "source": "https://github.com/275iwan92/devlib/tree/main",
                 "issues": "https://github.com/275iwan92/devlib/issues"
             },
-            "time": "2026-11-02T15:20:34+00:00"
+            "time": "2026-11-03T16:28:52+00:00"
         },
         {
             "name": "laravel/framework",
