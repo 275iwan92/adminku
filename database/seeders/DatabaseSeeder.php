@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         if (config('sstock.demo')) {
-            $this->call([DemoSeeder::class, DemoPurchaseSeeder::class]);
+            $this->call([DemoSeeder::class, DemoPurchaseSeeder::class, DemoPurchaseHistorySeeder::class]);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /* REMARK
@@ -25,6 +26,8 @@ return new class extends Migration
     public function down(): void
     {
         foreach (self::TABLES as $name) {
+            // Draf yang belum bernomor diberi nomor sementara supaya kolom bisa kembali wajib diisi.
+            DB::table($name)->whereNull('doc_no')->orderBy('id')->each(fn ($row) => DB::table($name)->where('id', $row->id)->update(['doc_no' => 'DRAF-'.$row->id]));
             Schema::table($name, fn (Blueprint $table) => $table->string('doc_no', 20)->nullable(false)->change());
         }
     }
