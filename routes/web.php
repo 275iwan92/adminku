@@ -16,6 +16,9 @@ use App\Http\Controllers\AcVendorController;
 use App\Http\Controllers\AcVisitController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\CashAccountController;
+use App\Http\Controllers\CashInController;
+use App\Http\Controllers\CashOutController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
@@ -83,7 +86,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Beranda Stok (modul STB): isi Beranda lama (pengingat opname, angka stok, titik pesan ulang, kedaluwarsa); Beranda global ada di route home.
     Route::get('stok', StockHomeController::class)->name('stock.home');
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
-    Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase'])->name('opening');
+    Route::get('buka/{section}', OpeningController::class)->whereIn('section', ['master', 'transaksi', 'laporan', 'ga', 'hr', 'purchase', 'kas'])->name('opening');
     // Layar sementara modul Jays yang belum dibuat (menu GA: Gedung; HR: Employee dan Recruitment; Purchase: PR, PO, PV).
     Route::view('segera/{name}', 'soon')->whereIn('name', ['gedung'])->name('soon');
     Route::post('reorder-orders', [ReorderOrderController::class, 'store'])->name('reorder-orders.store');
@@ -298,6 +301,27 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('pv', [PurchaseReceiptController::class, 'store'])->name('pv.store');
     Route::get('pv/{pv}', [PurchaseReceiptController::class, 'show'])->whereNumber('pv')->name('pv.show');
     Route::put('pv/{pv}', [PurchaseReceiptController::class, 'update'])->whereNumber('pv')->name('pv.update');
+    // Kas, Uang Masuk (KSM): daftar, form satu Uang Masuk, siklus lewat PUT (save, confirm, approve, reject, cancel, delete, duplicate).
+    Route::get('cash-in', [CashInController::class, 'index'])->name('cash-in.index');
+    Route::get('cash-in/create', [CashInController::class, 'create'])->name('cash-in.create');
+    Route::post('cash-in', [CashInController::class, 'store'])->name('cash-in.store');
+    Route::get('cash-in/{cashIn}', [CashInController::class, 'show'])->whereNumber('cashIn')->name('cash-in.show');
+    Route::put('cash-in/{cashIn}', [CashInController::class, 'update'])->whereNumber('cashIn')->name('cash-in.update');
+    Route::get('cash-in/{cashIn}/file', [CashInController::class, 'file'])->whereNumber('cashIn')->name('cash-in.file');
+    // Kas, Uang Keluar (KSK): wajib ditaut ke satu Uang Masuk (sumber dana); siklus sama Uang Masuk.
+    Route::get('cash-out', [CashOutController::class, 'index'])->name('cash-out.index');
+    Route::get('cash-out/create', [CashOutController::class, 'create'])->name('cash-out.create');
+    Route::post('cash-out', [CashOutController::class, 'store'])->name('cash-out.store');
+    Route::get('cash-out/{cashOut}', [CashOutController::class, 'show'])->whereNumber('cashOut')->name('cash-out.show');
+    Route::put('cash-out/{cashOut}', [CashOutController::class, 'update'])->whereNumber('cashOut')->name('cash-out.update');
+    Route::get('cash-out/{cashOut}/file', [CashOutController::class, 'file'])->whereNumber('cashOut')->name('cash-out.file');
+    // Kas, master Kas / Rekening (KSR): dibuka lewat tombol Setup di Uang Masuk / Uang Keluar.
+    Route::get('cash-accounts/create', [CashAccountController::class, 'create'])->name('cash-accounts.create');
+    Route::post('cash-accounts', [CashAccountController::class, 'store'])->name('cash-accounts.store');
+    Route::get('cash-accounts', [CashAccountController::class, 'index'])->name('cash-accounts.index');
+    Route::get('cash-accounts/{account}', [CashAccountController::class, 'show'])->whereNumber('account')->name('cash-accounts.show');
+    Route::put('cash-accounts/{account}', [CashAccountController::class, 'update'])->whereNumber('account')->name('cash-accounts.update');
+    Route::post('cash-accounts/{account}/toggle', [CashAccountController::class, 'toggle'])->whereNumber('account')->name('cash-accounts.toggle');
     Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
     Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
     Route::post('recruit-steps', [RecruitStepController::class, 'store'])->name('recruit-steps.store');

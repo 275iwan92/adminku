@@ -54,7 +54,7 @@ final class Menu
         $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
         $out = [];
         foreach ($parents as $code => $p) {
-            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr'), 'PUR' => Opening::url('purchase')][$code] ?? null;
+            $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr'), 'PUR' => Opening::url('purchase'), 'KAS' => Opening::url('kas')][$code] ?? null;
             if ($code === 'GA' && $user->isAdministrator()) {
                 $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];
             }

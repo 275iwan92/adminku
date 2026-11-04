@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        // Modul Kas: lampiran bukti Uang Masuk / Uang Keluar. Privat (tanpa url), disajikan lewat CashInController@file / CashOutController@file di dalam grup auth dengan hak modul.
+        'kas' => [
+            'driver' => 'local',
+            'root' => storage_path('app/kas'),
+            'serve' => false,
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

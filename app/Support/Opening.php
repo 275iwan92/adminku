@@ -6,6 +6,8 @@ use App\Enums\StockDocumentType;
 use App\Models\AcOrder;
 use App\Models\Batch;
 use App\Models\Candidate;
+use App\Models\CashIn;
+use App\Models\CashOut;
 use App\Models\Discipline;
 use App\Models\Employee;
 use App\Models\PurchaseOrder;
@@ -36,6 +38,7 @@ final class Opening
         'ga' => ['GA', 'GA', 'fa-solid fa-building-user', 'slate', 'Kendaraan, AC, dan gedung'],
         'hr' => ['HR', 'HR', 'fa-solid fa-user-tie', 'slate', 'Karyawan, bagian, rekrutmen, kedisiplinan'],
         'purchase' => ['PUR', 'Purchase', 'fa-solid fa-cart-shopping', 'coral', 'PP, keputusan pesanan, PO, dan penerimaan pembelian'],
+        'kas' => ['KAS', 'Kas', 'fa-solid fa-wallet', 'teal', 'Uang masuk dan keluar per kas, dilacak per sumber dana'],
     ];
 
     // Tabel master yang dihitung: kode modul => tabel.
@@ -86,6 +89,13 @@ final class Opening
             }
             if ($user->canAccess('PUO')) {
                 $facts['PUO'] = ['n' => Locale::number(PurchaseOrder::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
+            }
+        } elseif ($section === 'kas') {
+            if ($user->canAccess('KSM')) {
+                $facts['KSM'] = ['n' => Locale::number(CashIn::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
+            }
+            if ($user->canAccess('KSK')) {
+                $facts['KSK'] = ['n' => Locale::number(CashOut::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
             }
         }
 
