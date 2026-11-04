@@ -38,7 +38,7 @@ final class Opening
         'ga' => ['GA', 'GA', 'fa-solid fa-building-user', 'slate', 'Kendaraan, AC, dan gedung'],
         'hr' => ['HR', 'HR', 'fa-solid fa-user-tie', 'slate', 'Karyawan, bagian, rekrutmen, kedisiplinan'],
         'purchase' => ['PUR', 'Purchase', 'fa-solid fa-cart-shopping', 'coral', 'PP, keputusan pesanan, PO, dan penerimaan pembelian'],
-        'kas' => ['KAS', 'Kas', 'fa-solid fa-wallet', 'teal', 'Uang masuk dan keluar per kas, dilacak per sumber dana'],
+        'kas' => ['KEU', 'Kas', 'fa-solid fa-wallet', 'teal', 'Uang masuk dan keluar per kas, dilacak per sumber dana'],
     ];
 
     // Tabel master yang dihitung: kode modul => tabel.

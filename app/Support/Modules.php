@@ -24,7 +24,7 @@ final class Modules
         'GA' => ['GA', 'fa-solid fa-building-user'],
         'HR' => ['HR', 'fa-solid fa-user-tie'],
         'PUR' => ['Purchase', 'fa-solid fa-cart-shopping'],
-        'KAS' => ['Kas', 'fa-solid fa-wallet'],
+        'KEU' => ['Keuangan', 'fa-solid fa-building-columns'],
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
 
@@ -83,12 +83,12 @@ final class Modules
             'PUK' => ['PUR', 'Keputusan Pesanan', 'fa-solid fa-scale-balanced', 'form', 'po-decision.index', 'entry', ['po-decision.']],
             'PUO' => ['PUR', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'grid', 'po.index', 'entry', ['po.']],
             'PUV' => ['PUR', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'grid', 'pv.index', 'entry', ['pv.']],
-            'KSM' => ['KAS', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.']],
-            'KSK' => ['KAS', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.']],
-            'KSR' => ['KAS', 'Kas / Rekening', 'fa-solid fa-building-columns', 'grid', 'cash-accounts.index', 'supervisor', ['cash-accounts.']],
-            'R-KFLOW' => ['KAS', 'Laporan Arus Kas', 'fa-solid fa-book', 'report', 'reports.cash-flow', 'entry', ['reports.cash-flow']],
-            'R-KIN' => ['KAS', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.cash-receipts', 'entry', ['reports.cash-receipts']],
-            'R-KOUT' => ['KAS', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.cash-disbursements', 'entry', ['reports.cash-disbursements']],
+            'KSM' => ['KEU', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.']],
+            'KSK' => ['KEU', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.']],
+            'KSR' => ['KEU', 'Kas / Rekening', 'fa-solid fa-building-columns', 'grid', 'cash-accounts.index', 'supervisor', ['cash-accounts.']],
+            'R-KFLOW' => ['KEU', 'Laporan Arus Kas', 'fa-solid fa-book', 'report', 'reports.cash-flow', 'entry', ['reports.cash-flow']],
+            'R-KIN' => ['KEU', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.cash-receipts', 'entry', ['reports.cash-receipts']],
+            'R-KOUT' => ['KEU', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.cash-disbursements', 'entry', ['reports.cash-disbursements']],
             'USR' => ['SEC', 'Pengguna', 'fa-solid fa-users-gear', 'grid', 'users.index', 'administrator', ['users.']],
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
@@ -109,7 +109,7 @@ final class Modules
     // Modul bawaan satu peran (dipakai Grup bawaan dan pengguna tanpa Grup). Keamanan, GA, dan HR tidak otomatis: GA dan HR hanya lewat hak Grup (Administrator penuh).
     public static function defaults(string $level): array
     {
-        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA', 'HR', 'PUR', 'KAS'], true) && self::levelAllows($m[5], $level)));
+        return array_keys(array_filter(self::all(), fn ($m) => ! in_array($m[0], ['SEC', 'GA', 'HR', 'PUR', 'KEU'], true) && self::levelAllows($m[5], $level)));
     }
 
     // Kode modul yang menjaga rute ini (null = rute bebas, mis. beranda, logout, lookup).

@@ -21,7 +21,7 @@ class MenuLayersTest extends TestCase
     {
         $layers = collect(Menu::layers(User::factory()->administrator()->create()));
 
-        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'KAS', 'SEC'], $layers->pluck('code')->all());
+        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'KEU', 'SEC'], $layers->pluck('code')->all());
         $this->assertSame(['Karyawan', 'Bagian', 'Rekrutmen', 'Kedisiplinan'], collect($layers->firstWhere('code', 'HR')['children'])->pluck('label')->all());
         $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
         $this->assertSame(['Permintaan Pembelian', 'Keputusan Pesanan', 'Pesanan Pembelian (PO)', 'Penerimaan Pembelian (PV)'], collect($layers->firstWhere('code', 'PUR')['children'])->pluck('label')->all());
@@ -34,6 +34,15 @@ class MenuLayersTest extends TestCase
         $this->assertContains('R-SUM', collect($stok['children'][1]['items'])->pluck('code')->all());
         $this->assertNotContains('STB', collect($stok['children'])->flatMap(fn ($g) => collect($g['items'])->pluck('code'))->all());
         $this->assertSame(['MST' => route('opening', 'master'), 'GA' => route('opening', 'ga'), 'HR' => route('opening', 'hr'), 'PUR' => route('opening', 'purchase')], $layers->whereIn('code', ['MST', 'GA', 'HR', 'PUR'])->pluck('open', 'code')->all());
+
+        // Keuangan membungkus satu subkelompok "Kas" (KSM, KSK, 3 laporan; KSR tersembunyi lewat MENU_UNDER), siap untuk subkelompok keuangan lain nanti tanpa ubah kode Kas.
+        $keu = $layers->firstWhere('code', 'KEU');
+        $this->assertSame(route('opening', 'kas'), $keu['open']);
+        $this->assertSame(['Kas'], collect($keu['children'])->pluck('label')->all());
+        $kas = $keu['children'][0];
+        $this->assertSame('H-KAS', $kas['code']);
+        $this->assertSame(route('opening', 'kas'), $kas['open']);
+        $this->assertSame(['KSM', 'KSK', 'R-KFLOW', 'R-KIN', 'R-KOUT'], collect($kas['items'])->pluck('code')->all());
     }
 
     public function test_entry_keeps_only_allowed_items_and_no_security(): void
@@ -51,6 +60,6 @@ class MenuLayersTest extends TestCase
         $admin = User::factory()->administrator()->create();
 
         $this->actingAs($admin)->get(route('home'))->assertOk()->assertSee('Stok');
-        $this->assertSame(['MST', 'TRX', 'RPT', 'GA', 'HR', 'PUR', 'KAS', 'SEC'], collect(Menu::modules($admin))->pluck('code')->all());
+        $this->assertSame(['MST', 'TRX', 'RPT', 'GA', 'HR', 'PUR', 'KEU', 'SEC'], collect(Menu::modules($admin))->pluck('code')->all());
     }
 }
