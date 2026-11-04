@@ -8,7 +8,7 @@
 --}}
 @if ($anyKas)
 <h2 id="kas">9c. Kas</h2>
-<p>Menu Kas mencatat dana yang masuk ke kas atau rekening perusahaan dan dana yang keluar darinya: <b>Uang Masuk</b>, <b>Uang Keluar</b>, dan master <b>Kas / Rekening</b> (dibuka lewat tombol Setup, bukan butir menu terpisah).</p>
+<p>Menu <b>Keuangan</b> &gt; <b>Kas</b> mencatat dana yang masuk ke kas atau rekening perusahaan dan dana yang keluar darinya: <b>Uang Masuk</b>, <b>Uang Keluar</b>, tiga laporan, dan master <b>Kas / Rekening</b> (dibuka lewat tombol Setup, bukan butir menu terpisah). Kas sekarang satu-satunya sub-kelompok di bawah induk Keuangan; bagian ini menyebutnya singkat sebagai &quot;Kas&quot;.</p>
 <table class="g-table">
     <thead><tr><th>Layar</th><th>Isi singkat</th></tr></thead>
     <tbody>
@@ -135,7 +135,8 @@
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
     <li>Hanya Uang Masuk dan Uang Keluar berstatus <b>Disetujui</b> yang dihitung; draf dan yang diajukan tidak masuk buku kas.</li>
-    <li>Kolom <b>Saldo Berjalan</b> adalah saldo kas itu setelah baris tersebut, dihitung dari saldo awal kas (Saldo Awal di layar Kas / Rekening) ditambah atau dikurangi tiap transaksi secara berurutan.</li>
+    <li>Baris <b>Saldo awal</b> di atas bukan Saldo Awal yang diisi di layar Kas / Rekening: ia sudah mencakup semua Uang Masuk dan Uang Keluar Disetujui <b>sebelum</b> Dari tanggal. Pilih periode yang mencakup sejak kas itu mulai dipakai untuk melihat Saldo Awal aslinya di baris pertama.</li>
+    <li>Kolom <b>Saldo Berjalan</b> adalah saldo kas itu setelah baris tersebut: Saldo awal baris pertama ditambah atau dikurangi tiap transaksi berikutnya secara berurutan.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">

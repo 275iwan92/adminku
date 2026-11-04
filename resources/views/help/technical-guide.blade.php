@@ -53,6 +53,7 @@
         <a class="g-toc-sub" href="#kas-tables">Tables</a>
         <a class="g-toc-sub" href="#kas-lifecycle">Document lifecycle</a>
         <a class="g-toc-sub" href="#kas-modules">Modules, rights and simplifications</a>
+        <a class="g-toc-sub" href="#kas-reports">Reports</a>
     </nav>
 
     <main class="g-body">
@@ -882,7 +883,7 @@ composer test                        # config:clear, then php artisan test</pre>
             <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
             <tbody>
                 <tr><td>Models</td><td><code>CashAccount</code>, <code>CashIn</code>, <code>CashOut</code></td><td><code>app/Models</code></td></tr>
-                <tr><td>Screens</td><td><code>CashAccountController</code> (master, opened via Setup), <code>CashInController</code>, <code>CashOutController</code></td><td><code>app/Http/Controllers</code>, views <code>cash-accounts</code>, <code>cash-in</code>, <code>cash-out</code></td></tr>
+                <tr><td>Screens</td><td><code>CashAccountController</code> (master, opened via Setup), <code>CashInController</code>, <code>CashOutController</code>, <code>CashReportController</code> (<a href="#kas-reports">Reports</a>)</td><td><code>app/Http/Controllers</code>, views <code>cash-accounts</code>, <code>cash-in</code>, <code>cash-out</code>, <code>reports/cash-*</code></td></tr>
                 <tr><td>Form requests</td><td><code>CashAccountRequest</code>, <code>CashInRequest</code>, <code>CashOutRequest</code></td><td><code>app/Http/Requests</code></td></tr>
                 <tr><td>Files</td><td>Private disk <code>kas</code> (<code>in/...</code>, <code>out/...</code>), proof attachment per document, served by <code>CashInController@file</code> / <code>CashOutController@file</code>, same pattern as GA's private disk</td><td><code>config/filesystems.php</code></td></tr>
             </tbody>
@@ -926,6 +927,7 @@ composer test                        # config:clear, then php artisan test</pre>
             </tbody>
         </table>
         <p class="g-note">Migration <code>create_cash_in_out</code> grants KSM/KSK/KSR (RW) to the built-in <code>ADMIN</code> group only, same pattern as every other module. It is dated 2026-11-04, before the <code>sys_</code> rename (2026-11-17); the grant code was patched to detect whichever of <code>user_groups</code>/<code>sys_user_group</code> exists at that point in a fresh migrate, instead of assuming the post-rename name (the earlier hardcoded name broke <code>migrate:fresh</code> and the whole test suite until this was found and fixed).</p>
+        <p class="g-note"><b>Menu parent:</b> all six Kas module codes (KSM, KSK, KSR, R-KFLOW, R-KIN, R-KOUT in <a href="#kas-reports">Reports</a> below) sit under parent code <code>KEU</code>, labelled "Keuangan" (<code>App\Support\Modules::PARENTS</code>; renamed from <code>KAS</code> on 2026-11-04 so other, not-yet-built finance modules can become sibling sub-groups later without touching Kas). On the <b>desktop</b> menu only, <code>Menu::layers()</code> wraps the whole <code>KEU</code> branch in one sub-group labelled "Kas" (the same technique used to wrap Stok's Transaksi and Laporan under one "Stok" parent), so a user actually clicks Keuangan &rarr; Kas &rarr; a screen. The phone menu (<code>Menu::modules()</code>) stays flat under "Keuangan", no sub-group. Module codes, route guards and group rights are unaffected by either the parent rename or the sub-group wrapper.</p>
         <table class="g-table">
             <thead><tr><th>Simplification (on purpose, for now)</th><th>Why / what it means</th></tr></thead>
             <tbody>
@@ -935,6 +937,22 @@ composer test                        # config:clear, then php artisan test</pre>
                 <tr><td>Account balance is always computed, never stored</td><td>Cannot drift from the documents; the cost is a small aggregate query per account view, acceptable at Jays' transaction volume</td></tr>
             </tbody>
         </table>
+
+        <h3 id="kas-reports">Reports</h3>
+        <p>Three <code>x-dl::report</code> screens (<code>CashReportController</code>, views <code>reports/cash-*</code>), built on the same pattern as the Stok reports (<a href="#screens">section 8</a>): a GET filter form, a criteria box, a summary row, a grouped table and a printable A4 landscape sheet. Reviewed and approved by the owner before being built (see commit <code>8e86efa</code>).</p>
+        <table class="g-table">
+            <thead><tr><th>Report</th><th>Rows and grouping</th><th>Filters</th></tr></thead>
+            <tbody>
+                <tr><td><b>Laporan Arus Kas</b> (<code>cashFlow</code>, route <code>reports.cash-flow</code>)</td><td>One book per <code>m_cash_account</code> (or combined into one "Semua Kas" book via the group toggle, <code>group-by="cash_account"</code> vs <code>"all"</code>): an opening-balance row, every <code>approved</code> Uang Masuk / Uang Keluar in the period in chronological order with a running <code>saldo</code>, then a closing-balance row. The opening balance is <b>not</b> <code>m_cash_account.opening_balance</code> read as-is: it is <code>opening_balance</code> plus every <code>approved</code> Uang Masuk / Uang Keluar dated before <code>from</code>, so it already reflects all activity prior to the chosen period &mdash; the same value <code>CashAccount::currentBalance()</code> would give if <code>to</code> were yesterday.</td><td>Period (<code>from</code>/<code>to</code>, default start of this month to today, same <code>period()</code> helper as the Stok reports), Kas (one account or all)</td></tr>
+                <tr><td><b>Laporan Penerimaan</b> (<code>receipts</code>, route <code>reports.cash-receipts</code>)</td><td><code>k_cash_in</code> rows grouped by <code>source_name</code> (<code>group-by="source_name"</code>); columns <code>amount</code>, <code>used</code> (<code>CashIn::usedAmount()</code>) and <code>remaining</code> (<code>CashIn::remainingAmount()</code>) per row, summed in the report footer</td><td>Period (on <code>doc_date</code>), Sumber Dana (exact match against the distinct <code>source_name</code> values seen so far), Status (default <code>approved</code>, see below)</td></tr>
+                <tr><td><b>Laporan Pengeluaran</b> (<code>disbursements</code>, route <code>reports.cash-disbursements</code>)</td><td><code>k_cash_out</code> rows; "Sumber Dana" and "Kas" columns are read through the linked <code>cashIn</code> (<code>$c->cashIn->source_name</code>, <code>$c->cashIn->cashAccount->name</code>), not a column of <code>k_cash_out</code> itself</td><td>Period (on <code>doc_date</code>), Kas, Sumber Dana (filters on the linked Uang Masuk's <code>source_name</code>), Status (default <code>approved</code>)</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Status filter bug and fix:</b> the "Semua" (all statuses) choice posts <code>status=</code> (empty string). Laravel's <code>ConvertEmptyStringsToNull</code> middleware turns that into <code>null</code> before the controller sees it, and a plain <code>$request->query('status', 'approved')</code> then falls back to the default even when the user explicitly chose "Semua". Fixed in <code>CashReportController::statusFilter()</code> by checking <code>$request->has('status')</code> (true whenever the key was sent, regardless of its value) instead of relying on the default parameter of <code>query()</code>.</li>
+            <li><b>Modules:</b> three new codes under the <code>KEU</code> parent (see the menu-parent note above), type <code>report</code> (same <code>type</code> value the Stok report codes use), minimum role Data Entry (read-only, no RW concept for a report) &mdash; <code>R-KFLOW</code> Laporan Arus Kas, <code>R-KIN</code> Laporan Penerimaan, <code>R-KOUT</code> Laporan Pengeluaran. They needed no new grant migration: an existing data migration (2026-12-03, the Admin Data role rollout) grants every module outside <code>SEC</code> from <code>Modules::all()</code> read dynamically, so a fresh migrate picks up these three automatically for the <code>SUPERVISOR</code> and <code>ADMINDATA</code> groups; they also need no Opening/menu wiring, the existing "every module tile shows on its parent's Beranda" mechanism places them on Beranda Kas by itself.</li>
+            <li><b>Tests:</b> <code>CashReportTest</code> (cash-flow running balance across accounts, per-source grouping and used/remaining totals, default-approved vs. "Semua" status, per-account filter, module access).</li>
+        </ul>
     </main>
 </div>
 @endsection
