@@ -21,17 +21,24 @@
 
         <x-dl::divider label="Pemeriksaan lengkap" />
         <x-dl::card title="Apa yang diperiksa" icon="fa-shield-halved">
-            <p class="dl-note">Skrip Python kecil dijalankan sekali di komputer ini atas persetujuan Anda. Ia membaca <b>prosesor, memori, kartu grafis, disk, mainboard/BIOS, sistem operasi, software terpasang, dan patch</b>, lalu mengirimnya ke AdminKU dan berhenti.
-                Ia <b>tidak</b> membaca isi berkas, password, atau riwayat browser. Telepon/tablet tidak didukung (hanya Windows, Linux, Mac; butuh Python 3 terpasang).</p>
+            <p class="dl-note">Skrip kecil dijalankan sekali di komputer ini atas persetujuan Anda. Ia membaca <b>prosesor, memori, kartu grafis, disk, mainboard/BIOS, sistem operasi, software terpasang, dan patch</b>, lalu mengirimnya ke AdminKU dan berhenti.
+                Ia <b>tidak</b> membaca isi berkas, password, atau riwayat browser. Telepon/tablet tidak didukung (hanya Windows, Linux, Mac).</p>
             <x-dl::action-form :action="route('devices.agent')">
                 <input type="hidden" name="consent" value="1">
-                <x-dl::action-bar><x-dl::button type="submit" variant="primary" icon="fa-download" label="Setuju & Lanjutkan (Unduh Skrip)" /></x-dl::action-bar>
+                <x-dl::action-bar>
+                    <x-dl::button type="submit" name="kind" value="cmd" variant="primary" icon="fa-laptop" label="Setuju & Unduh untuk Windows" />
+                    <x-dl::button type="submit" name="kind" value="py" variant="secondary" icon="fa-download" label="Setuju & Unduh untuk Linux / Mac" />
+                </x-dl::action-bar>
             </x-dl::action-form>
-            <p class="dl-note">Setelah diunduh, jalankan di komputer ini: <code>python adminku-perangkat.py</code> (di Windows bisa <code>py adminku-perangkat.py</code>). Berlaku 30 menit dan hanya sekali pakai. Lalu muat ulang layar ini.</p>
+            <p class="dl-note">Windows: klik dua kali <code>adminku-perangkat.cmd</code> (tanpa Python; jika muncul peringatan SmartScreen pilih "Run anyway"). Linux / Mac: <code>python3 adminku-perangkat.py</code>. Berlaku 30 menit dan hanya sekali pakai. Lalu muat ulang layar ini.</p>
         </x-dl::card>
 
         @if ($report)
             <x-dl::divider :label="'Laporan '.$report->checked_at->format('d/m/Y H:i').' · '.$v($report->hostname)" />
+            @if ($history->count() > 1)
+                <x-dl::table :columns="['date' => 'Riwayat pemeriksaan', 'host' => 'Komputer', 'cpu' => 'Prosesor', 'ram' => 'RAM']" :stack="true"
+                    :rows="$history->map(fn ($h) => ['date' => ['href' => route('devices.details', ['r' => $h->id]), 'text' => $h->checked_at->format('d/m/Y H:i').($h->id === $report->id ? ' (ditampilkan)' : '')], 'host' => $v($h->hostname), 'cpu' => $v($h->cpu), 'ram' => $v($h->ram_gb, ' GB')])->all()" />
+            @endif
             @php
                 $cpu = $d['cpu'] ?? []; $mem = $d['memory'] ?? []; $os = $d['os'] ?? []; $b = $d['board'] ?? [];
                 $disks = $d['storage'] ?? [];
@@ -41,7 +48,7 @@
             <x-dl::tabs :tabs="['cpu' => ['CPU', 'fa-microchip'], 'memory' => ['Memori', 'fa-memory'], 'graphics' => ['Grafis', 'fa-display'], 'storage' => ['Penyimpanan', 'fa-hard-drive'], 'board' => ['Mainboard', 'fa-server'], 'software' => ['Software ('.count($swRows).')', 'fa-box-open'], 'patches' => ['Patch ('.count($fixRows).')', 'fa-shield']]">
                 <x-slot:cpu>
                     <x-dl::table :columns="$cols" :rows="$kv(['Nama' => $cpu['name'] ?? null, 'Pembuat' => $cpu['maker'] ?? null, 'Core' => $cpu['cores'] ?? null, 'Thread' => $cpu['threads'] ?? null,
-                        'Kecepatan maks (MHz)' => $cpu['mhz'] ?? null, 'Cache L2 (KB)' => $cpu['l2_kb'] ?? null, 'Cache L3 (KB)' => $cpu['l3_kb'] ?? null])" />
+                        'Kecepatan maks (MHz)' => $cpu['mhz'] ?? null, 'Kecepatan saat diperiksa (MHz)' => $cpu['mhz_now'] ?? null, 'Cache L2 (KB)' => $cpu['l2_kb'] ?? null, 'Cache L3 (KB)' => $cpu['l3_kb'] ?? null])" />
                 </x-slot:cpu>
                 <x-slot:memory>
                     <x-dl::table :columns="$cols" :rows="$kv(['Total' => $v($mem['total_gb'] ?? null, ' GB')])" />

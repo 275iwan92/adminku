@@ -3,7 +3,7 @@
                 daftar sesi login pengguna sendiri (perangkat, IP, terakhir aktif, penanda perangkat ini) dan tombol mengeluarkan perangkat lain.
  Sumber hulu  : DeviceController@index (devices, current); uji kecepatan: devices.speed-down (GET), devices.speed-up (POST).
  Output       : POST devices.destroy (satu perangkat), devices.destroy-others (semua selain ini).
- Catatan      : Browser tidak bisa membaca nama prosesor, RAM terpasang, sisa disk, dan pemakaian bandwidth OS; itu tugas agen Python ("More details", tahap berikut). Kecepatan = ke server aplikasi ini, bukan ke internet.
+ Catatan      : Browser tidak bisa membaca nama prosesor, RAM terpasang, sisa disk, dan pemakaian bandwidth OS; itu dari agen "More details" (baris hasil pemeriksaan lengkap). Kecepatan = ke server aplikasi ini, bukan ke internet.
  Dipakai oleh : route devices.index (menu profil > Perangkat Saya, semua peran).
  Status       : Aktif.
 --}}
@@ -25,7 +25,28 @@
             <x-dl::status-card data-k="gpu" title="Grafis" status="Membaca" tone="accent" icon="fa-display" value="-" desc="-" />
             <x-dl::status-card data-k="screen" title="Layar" status="Membaca" tone="info" icon="fa-desktop" value="-" desc="piksel" />
         </x-dl::kpi-row>
-        <p class="dl-note">Dibaca browser Anda. Nama prosesor, RAM terpasang, dan sisa disk butuh pemeriksaan lengkap (menyusul).</p>
+        @if ($report)
+            @php
+                $r = $report->payload; $cpu = $r['cpu'] ?? []; $mods = $r['memory']['modules'] ?? []; $gpu = $r['graphics'][0] ?? [];
+                $disks = collect($r['storage'] ?? []);
+                $sys = $disks->firstWhere('name', 'C:') ?? $disks->first();
+                $total = (float) ($sys['total_gb'] ?? 0); $usedGb = $total - (float) ($sys['free_gb'] ?? 0); $pct = $total > 0 ? (int) round($usedGb / $total * 100) : 0;
+            @endphp
+            <x-dl::divider :label="'Hasil pemeriksaan lengkap · '.$report->checked_at->format('d/m/Y H:i')" />
+            <x-dl::kpi-row :style="$grid">
+                <x-dl::status-card title="Prosesor" status="Terukur" tone="success" icon="fa-microchip" :value="$cpu['name'] ?? 'Tidak dilaporkan'" :desc="($cpu['cores'] ?? '?').' core · '.($cpu['threads'] ?? '?').' thread'" />
+                <x-dl::status-card title="Memori (RAM)" status="Terukur" tone="success" icon="fa-memory" :value="isset($r['memory']['total_gb']) ? $r['memory']['total_gb'].' GB' : 'Tidak dilaporkan'" :desc="$mods ? count($mods).' modul · '.($mods[0]['speed'] ?? '?').' MT/s' : 'Rincian slot tidak dilaporkan'" />
+                <x-dl::status-card title="Grafis" status="Terukur" tone="success" icon="fa-display" :value="$gpu['name'] ?? 'Tidak dilaporkan'" :desc="isset($gpu['ram_mb']) ? 'Memori grafis '.$gpu['ram_mb'].' MB' : '-'" />
+                <x-dl::card title="Penyimpanan" icon="fa-hard-drive">
+                    @if ($sys)
+                        <x-dl::progress :value="$pct" :tone="$pct >= 90 ? 'danger' : ($pct >= 80 ? 'warn' : 'success')" :label="'Disk '.($sys['name'] ?? '-')" :text="round($usedGb, 1).' / '.$total.' GB ('.$pct.'%)'" />
+                    @else
+                        <p class="dl-note">Tidak dilaporkan.</p>
+                    @endif
+                </x-dl::card>
+            </x-dl::kpi-row>
+        @endif
+        <p class="dl-note">Dibaca browser Anda (baris pertama).@unless ($report) Nama prosesor, RAM terpasang, dan sisa disk butuh pemeriksaan lengkap: klik More Details.@endunless</p>
 
         <x-dl::divider label="Kecepatan jaringan ke server" />
         <x-dl::kpi-row id="device-speed" :style="$grid">

@@ -45,7 +45,7 @@ def read(path):
 
 
 def collect_windows():
-    cpu = (ps("Get-CimInstance Win32_Processor | Select Name,NumberOfCores,NumberOfLogicalProcessors,MaxClockSpeed,L2CacheSize,L3CacheSize,Manufacturer") or [{}])[0]
+    cpu = (ps("Get-CimInstance Win32_Processor | Select Name,NumberOfCores,NumberOfLogicalProcessors,MaxClockSpeed,CurrentClockSpeed,L2CacheSize,L3CacheSize,Manufacturer") or [{}])[0]
     cs = (ps("Get-CimInstance Win32_ComputerSystem | Select Manufacturer,Model,TotalPhysicalMemory,Name") or [{}])[0]
     os_ = (ps("Get-CimInstance Win32_OperatingSystem | Select Caption,Version,OSArchitecture") or [{}])[0]
     board = (ps("Get-CimInstance Win32_BaseBoard | Select Manufacturer,Product") or [{}])[0]
@@ -57,7 +57,7 @@ def collect_windows():
     fixes = ps("Get-HotFix | Select HotFixID,InstalledOn,Description")
     return {
         "cpu": {"name": (cpu.get("Name") or "").strip(), "maker": cpu.get("Manufacturer"), "cores": cpu.get("NumberOfCores"), "threads": cpu.get("NumberOfLogicalProcessors"),
-                "mhz": cpu.get("MaxClockSpeed"), "l2_kb": cpu.get("L2CacheSize"), "l3_kb": cpu.get("L3CacheSize")},
+                "mhz": cpu.get("MaxClockSpeed"), "mhz_now": cpu.get("CurrentClockSpeed"), "l2_kb": cpu.get("L2CacheSize"), "l3_kb": cpu.get("L3CacheSize")},
         "memory": {"total_gb": gb(cs.get("TotalPhysicalMemory")), "modules": [{"slot": m.get("BankLabel"), "size_gb": gb(m.get("Capacity")), "speed": m.get("Speed"), "maker": (m.get("Manufacturer") or "").strip(), "part": (m.get("PartNumber") or "").strip()} for m in mods]},
         "graphics": [{"name": g.get("Name"), "ram_mb": round(g["AdapterRAM"] / 1024 ** 2) if isinstance(g.get("AdapterRAM"), int) and g["AdapterRAM"] > 0 else None, "driver": g.get("DriverVersion")} for g in gpus],
         "storage": [{"name": d.get("DeviceID"), "total_gb": gb(d.get("Size")), "free_gb": gb(d.get("FreeSpace"))} for d in disks],
@@ -75,12 +75,24 @@ def collect_linux():
     mem_kb = next((int(l.split()[1]) for l in read("/proc/meminfo").splitlines() if l.startswith("MemTotal")), 0)
     dmi = lambda k: read("/sys/class/dmi/id/" + k)
     gpus = [{"name": l.split(": ", 1)[-1], "ram_mb": None, "driver": None} for l in run("lspci 2>/dev/null").splitlines() if "VGA" in l or "3D controller" in l]
+    mods, cur = [], {}
+    for line in run(["dmidecode", "-t", "memory"]).splitlines() + [""]:
+        line = line.strip()
+        if ":" in line:
+            k, v = [x.strip() for x in line.split(":", 1)]
+            cur[k] = v
+        elif not line and cur.get("Size", "").endswith(("GB", "MB")):
+            n, unit = cur["Size"].split()[:2]
+            mods.append({"slot": cur.get("Locator"), "size_gb": float(n) if unit == "GB" else round(float(n) / 1024, 1), "speed": cur.get("Speed", "").split()[0] if cur.get("Speed") else None, "maker": cur.get("Manufacturer"), "part": cur.get("Part Number")})
+            cur = {}
+        elif not line:
+            cur = {}
     du = shutil.disk_usage("/")
     sw = [dict(zip(("name", "version"), l.split("\t"))) for l in run(["dpkg-query", "-W", "-f=${Package}\t${Version}\n"]).splitlines() if "\t" in l]
     osr = dict(l.split("=", 1) for l in read("/etc/os-release").splitlines() if "=" in l)
     return {
         "cpu": {"name": name, "cores": None, "threads": threads, "mhz": None},
-        "memory": {"total_gb": gb(mem_kb * 1024), "modules": []},
+        "memory": {"total_gb": gb(mem_kb * 1024), "modules": mods},
         "graphics": gpus,
         "storage": [{"name": "/", "total_gb": gb(du.total), "free_gb": gb(du.free)}],
         "board": {"maker": dmi("board_vendor"), "model": dmi("board_name"), "bios": dmi("bios_version"), "bios_maker": dmi("bios_vendor"), "system_maker": dmi("sys_vendor"), "system_model": dmi("product_name")},

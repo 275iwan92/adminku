@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\DeviceController;
+use App\Models\DeviceReport;
 use App\Models\User;
 use App\Models\UserDevice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -112,6 +113,34 @@ class DeviceTest extends TestCase
         $this->postJson(route('agent.report', 'tokensalah'), $this->report())->assertForbidden();
 
         $this->actingAs($me)->get(route('devices.details'))->assertOk()->assertSee('Intel Core i5-10310U', false)->assertSee('LENOVO-M2', false)->assertSee('Git', false);
+    }
+
+    public function test_windows_download_is_a_cmd_with_crlf_and_embedded_token_and_needs_no_python(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $response = $this->post(route('devices.agent'), ['consent' => 1, 'kind' => 'cmd'])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="adminku-perangkat.cmd"');
+        $script = $response->getContent();
+
+        $this->assertStringNotContainsString('__URL__', $script);
+        $this->assertMatchesRegularExpression('#\$Url = \'http[^\']*/agent/report/[A-Za-z0-9]{48}\'#', $script);
+        $this->assertStringContainsString("\r\n", $script);
+        $this->assertSame(0, preg_match('/(?<!\r)\n/', $script), 'semua akhir baris CRLF');
+        $this->assertStringNotContainsString('python', strtolower(substr($script, 0, strpos($script, '#PS#') + 4)));
+    }
+
+    public function test_history_lists_reports_opens_an_older_one_and_summary_on_main_screen_uses_the_latest(): void
+    {
+        $me = User::factory()->create();
+        $other = User::factory()->create();
+        $mk = fn ($u, $cpu, $at) => DeviceReport::create(['user_id' => $u->id, 'hostname' => 'PC-'.$cpu, 'cpu' => $cpu, 'ram_gb' => 8, 'payload' => ['cpu' => ['name' => $cpu, 'cores' => 2, 'threads' => 4]] + $this->report(), 'checked_at' => $at]);
+        $old = $mk($me, 'CPU-LAMA', now()->subDay());
+        $mk($me, 'CPU-BARU', now());
+        $theirs = $mk($other, 'CPU-ORANG', now());
+
+        $this->actingAs($me)->get(route('devices.details'))->assertOk()->assertSee('CPU-BARU', false)->assertSee('CPU-LAMA', false)->assertDontSee('CPU-ORANG', false);
+        $this->get(route('devices.details', ['r' => $old->id]))->assertOk()->assertSee('PC-CPU-LAMA', false);
+        $this->get(route('devices.details', ['r' => $theirs->id]))->assertNotFound();
+        $this->get(route('devices.index'))->assertOk()->assertSee('CPU-BARU', false)->assertSee('Hasil pemeriksaan lengkap', false);
     }
 
     public function test_report_with_unknown_shape_is_rejected_and_details_empty_state_shows(): void
