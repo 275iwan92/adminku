@@ -101,7 +101,7 @@ class DeviceTest extends TestCase
         $me = User::factory()->create();
         $this->actingAs($me)->post(route('devices.agent'))->assertStatus(422);
 
-        $response = $this->post(route('devices.agent'), ['consent' => 1])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="adminku-perangkat.py"');
+        $response = $this->post(route('devices.agent'), ['consent' => 1])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="Periksa-Komputer-AdminKU.py"');
         $script = $response->getContent();
         $this->assertStringNotContainsString('__URL__', $script);
         preg_match('#"(http[^"]*/agent/report/[A-Za-z0-9]+)"#', $script, $m);
@@ -118,7 +118,7 @@ class DeviceTest extends TestCase
     public function test_windows_download_is_a_cmd_with_crlf_and_embedded_token_and_needs_no_python(): void
     {
         $this->actingAs(User::factory()->create());
-        $response = $this->post(route('devices.agent'), ['consent' => 1, 'kind' => 'cmd'])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="adminku-perangkat.cmd"');
+        $response = $this->post(route('devices.agent'), ['consent' => 1, 'kind' => 'cmd'])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="Periksa-Komputer-AdminKU.cmd"');
         $script = $response->getContent();
 
         $this->assertStringNotContainsString('__URL__', $script);
@@ -141,6 +141,20 @@ class DeviceTest extends TestCase
         $this->get(route('devices.details', ['r' => $old->id]))->assertOk()->assertSee('PC-CPU-LAMA', false);
         $this->get(route('devices.details', ['r' => $theirs->id]))->assertNotFound();
         $this->get(route('devices.index'))->assertOk()->assertSee('CPU-BARU', false)->assertSee('Hasil pemeriksaan lengkap', false);
+    }
+
+    public function test_status_reports_only_my_latest_report_id_so_the_screen_can_reload_itself(): void
+    {
+        $me = User::factory()->create();
+        $other = User::factory()->create();
+        $this->actingAs($me)->getJson(route('devices.status'))->assertOk()->assertExactJson(['latest' => 0]);
+
+        $mk = fn ($u) => DeviceReport::create(['user_id' => $u->id, 'payload' => $this->report(), 'checked_at' => now()]);
+        $mk($other);
+        $mine = $mk($me);
+        $mk($other);
+
+        $this->getJson(route('devices.status'))->assertExactJson(['latest' => $mine->id]);
     }
 
     public function test_report_with_unknown_shape_is_rejected_and_details_empty_state_shows(): void

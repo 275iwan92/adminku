@@ -17,7 +17,7 @@
     <div style="max-width: 1100px">
         <div style="display: flex; justify-content: space-between; align-items: center">
             <x-dl::divider label="Perangkat ini" style="flex: 1" />
-            <x-dl::button href="{{ route('devices.details') }}" variant="secondary" size="sm" icon="fa-circle-info" label="More Details" />
+            <x-dl::button href="{{ route('devices.details') }}" variant="primary" size="lg" icon="fa-circle-info" label="More Details" />
         </div>
         @if ($report)
             @php

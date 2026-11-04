@@ -12,13 +12,13 @@
     <x-dl::grid id="disciplines" :rows="$rows" actions="open" :open-url="url('disciplines/{id}')"
         :new-url="auth()->user()->canWrite('HRD') ? route('disciplines.create') : null"
         search="Cari nomor surat, karyawan, alasan..."
-        :phone-cards="['title' => 'employee', 'sub' => 'doc_no', 'meta' => ['type', 'state', 'department']]"
+        :phone-cards="['title' => 'employee', 'sub' => 'doc_no', 'badge' => 'type', 'tones' => ['SP 1' => 'danger', 'SP 2' => 'tangerine', 'SP 3' => 'violet', 'PHK' => 'neutral'], 'meta' => ['state', 'department']]"
         :columns="[
             ['key' => 'doc_no', 'label' => 'No. Surat'],
             ['key' => 'issued_on', 'label' => 'Tanggal', 'type' => 'date'],
             ['key' => 'employee', 'label' => 'Karyawan', 'type' => 'identity', 'code' => 'code', 'box' => true],
             ['key' => 'department', 'label' => 'Bagian'],
-            ['key' => 'type', 'label' => 'Jenis'],
+            ['key' => 'type', 'label' => 'Jenis', 'type' => 'badge', 'tones' => ['SP 1' => 'danger', 'SP 2' => 'tangerine', 'SP 3' => 'violet', 'PHK' => 'neutral']],
             ['key' => 'until_on', 'label' => 'Berlaku s/d', 'type' => 'date'],
             ['key' => 'state', 'label' => 'Status'],
             ['key' => 'reason', 'label' => 'Alasan'],

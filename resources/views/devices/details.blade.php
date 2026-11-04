@@ -20,18 +20,39 @@
         <x-dl::button href="{{ route('devices.index') }}" variant="secondary" size="sm" icon="fa-arrow-left" label="Kembali" />
 
         <x-dl::divider label="Pemeriksaan lengkap" />
-        <x-dl::card title="Apa yang diperiksa" icon="fa-shield-halved">
-            <p class="dl-note">Skrip kecil dijalankan sekali di komputer ini atas persetujuan Anda. Ia membaca <b>prosesor, memori, kartu grafis, disk, mainboard/BIOS, sistem operasi, software terpasang, dan patch</b>, lalu mengirimnya ke AdminKU dan berhenti.
-                Ia <b>tidak</b> membaca isi berkas, password, atau riwayat browser. Telepon/tablet tidak didukung (hanya Windows, Linux, Mac).</p>
-            <x-dl::action-form :action="route('devices.agent')">
-                <input type="hidden" name="consent" value="1">
-                <x-dl::action-bar>
-                    <x-dl::button type="submit" name="kind" value="cmd" variant="primary" icon="fa-laptop" label="Setuju & Unduh untuk Windows" />
-                    <x-dl::button type="submit" name="kind" value="py" variant="secondary" icon="fa-download" label="Setuju & Unduh untuk Linux / Mac" />
-                </x-dl::action-bar>
-            </x-dl::action-form>
-            <p class="dl-note">Windows: klik dua kali <code>adminku-perangkat.cmd</code> (tanpa Python; jika muncul peringatan SmartScreen pilih "Run anyway"). Linux / Mac: <code>python3 adminku-perangkat.py</code>. Berlaku 30 menit dan hanya sekali pakai. Lalu muat ulang layar ini.</p>
+        <x-dl::card title="Periksa komputer ini" icon="fa-shield-halved">
+            <p class="dl-note">Membaca <b>prosesor, memori, kartu grafis, disk, mainboard, sistem operasi, software, dan patch</b> komputer ini, lalu mengirimnya ke AdminKU. <b>Tidak</b> membaca isi berkas, password, atau riwayat browser. Hanya Windows, Linux, dan Mac.</p>
+            <x-dl::action-bar>
+                <x-dl::button type="button" id="agent-go" variant="primary" icon="fa-download" label="Setuju & Periksa Komputer Ini" />
+            </x-dl::action-bar>
+            <p class="dl-note" id="agent-msg">Langkah 1: klik tombol di atas. Langkah 2: buka berkas yang terunduh. Hasilnya muncul di sini otomatis.</p>
+            <p class="dl-note"><a href="#" id="agent-other">Pakai Linux / Mac? Unduh versi Python</a></p>
         </x-dl::card>
+        <script>
+            (() => {
+                const $ = (s) => document.querySelector(s), btn = $('#agent-go'), msg = $('#agent-msg'), csrf = document.querySelector('meta[name="csrf-token"]').content;
+                const win = /Windows/.test(navigator.userAgent), mobile = /Android|iPhone|iPad|Mobile/.test(navigator.userAgent);
+                let latest = {{ (int) ($history->first()->id ?? 0) }};
+                if (mobile) { btn.disabled = true; msg.textContent = 'Telepon dan tablet tidak didukung. Buka dari komputer.'; }
+                const go = async (kind) => {
+                    msg.textContent = 'Menyiapkan berkas...';
+                    const res = await fetch('{{ route('devices.agent') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'consent=1&kind=' + kind });
+                    if (!res.ok) { msg.textContent = 'Gagal menyiapkan berkas. Coba lagi.'; return; }
+                    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(await res.blob()), download: 'Periksa-Komputer-AdminKU.' + kind });
+                    document.body.appendChild(a); a.click(); a.remove();
+                    msg.textContent = kind === 'cmd'
+                        ? 'Langkah 2: klik berkas "Periksa-Komputer-AdminKU" yang baru muncul di pojok kanan atas browser (atau di folder Downloads). Jika Windows bertanya, klik "More info" lalu "Run anyway". Jendela hitam akan terbuka sebentar dan tertutup sendiri. Menunggu hasil...'
+                        : 'Langkah 2: buka Terminal lalu jalankan: python3 ~/Downloads/Periksa-Komputer-AdminKU.py. Menunggu hasil...';
+                    const timer = setInterval(async () => {
+                        const s = await (await fetch('{{ route('devices.status') }}')).json();
+                        if (s.latest > latest) { clearInterval(timer); location.reload(); }
+                    }, 3000);
+                    setTimeout(() => clearInterval(timer), 30 * 60 * 1000);
+                };
+                btn.addEventListener('click', () => go(win ? 'cmd' : 'py'));
+                $('#agent-other').addEventListener('click', (e) => { e.preventDefault(); go(win ? 'py' : 'cmd'); });
+            })();
+        </script>
 
         @if ($report)
             <x-dl::divider :label="'Laporan '.$report->checked_at->format('d/m/Y H:i').' · '.$v($report->hostname)" />

@@ -51,6 +51,12 @@ class DeviceController extends Controller
         return view('devices.details', ['report' => $report, 'history' => $history]);
     }
 
+    // Dipolling layar More details sesudah skrip diunduh: id laporan terbaru milik pengguna ini (0 = belum ada); layar memuat ulang sendiri saat naik.
+    public function status(Request $request)
+    {
+        return response()->json(['latest' => (int) DeviceReport::where('user_id', $request->user()->id)->max('id')])->header('Cache-Control', 'no-store');
+    }
+
     // Pengguna sudah menekan "Setuju & Lanjutkan": buat token sekali pakai (30 menit) lalu unduh skrip dengan token + alamat laporan tertanam.
     public function agent(Request $request)
     {
@@ -62,7 +68,7 @@ class DeviceController extends Controller
         $script = str_replace('__URL__', route('agent.report', $token), file_get_contents(resource_path('agent/adminku-perangkat.'.($cmd ? 'cmd' : 'py'))));
         $cmd && $script = str_replace("\n", "\r\n", str_replace("\r\n", "\n", $script));
 
-        return response($script, 200, ['Content-Type' => $cmd ? 'application/octet-stream' : 'text/x-python; charset=utf-8', 'Content-Disposition' => 'attachment; filename="adminku-perangkat.'.($cmd ? 'cmd' : 'py').'"', 'Cache-Control' => 'no-store']);
+        return response($script, 200, ['Content-Type' => $cmd ? 'application/octet-stream' : 'text/x-python; charset=utf-8', 'Content-Disposition' => 'attachment; filename="Periksa-Komputer-AdminKU.'.($cmd ? 'cmd' : 'py').'"', 'Cache-Control' => 'no-store']);
     }
 
     // Byte acak (tidak bisa dikompres) sebanyak ?kb (1 sampai 8192 KB) untuk mengukur kecepatan unduh.
