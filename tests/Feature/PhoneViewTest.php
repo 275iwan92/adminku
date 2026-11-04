@@ -233,7 +233,8 @@ class PhoneViewTest extends TestCase
         ];
         foreach ($screens as $name => $params) {
             $html = $this->actingAs($sup)->get(route(trim($name), $params))->assertOk()->getContent();
-            $this->assertStringContainsString('phoneCards', $html, $name.' '.json_encode($params));
+            // kartu khusus HP (phoneCards) atau tampilan kartu bawaan (cards, mis. Bagian): keduanya mencegah tabel menggulir ke samping
+            $this->assertTrue(str_contains($html, 'phoneCards') || str_contains($html, '&quot;cards&quot;:{'), $name.' '.json_encode($params));
         }
     }
 
