@@ -1,43 +1,53 @@
 {{-- REMARK
  Tujuan       : Daftar penerbitan Kedisiplinan (modul HRD): nomor surat, tanggal, karyawan, bagian, jenis (SP 1 / SP 2 / SP 3 / PHK), berlaku s/d, status (Aktif / Diganti / Kedaluwarsa / Dicabut / Terbit) dan alasan.
+                Dua bagian: penerbitan BULAN INI sebagai kartu pita berwarna per jenis (SP 1 kuning, SP 2 jingga, SP 3 merah muda tua, PHK merah), dan BULAN SEBELUMNYA sebagai tabel yang bisa disaring bulan demi bulan (filter Bulan).
  Sumber hulu  : DisciplineController@index.
- Input        : rows.
- Output       : kartu pita warna untuk penerbitan bulan ini + x-dl::grid riwayat bulan sebelumnya; klik 2x membuka penerbitan (detail, cetak, cabut).
+ Input        : current (penerbitan bulan berjalan), history (bulan-bulan sebelumnya), monthName.
+ Output       : dua x-dl::grid; klik 2x membuka penerbitan (detail, cetak, cabut).
  Dipakai oleh : route disciplines.index (menu HR > Kedisiplinan).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Kedisiplinan'])
 @section('body')
     @include('partials.flash')
-    <p class="dl-note"><b>Bulan ini · {{ \Illuminate\Support\Carbon::now()->translatedFormat('F Y') }}</b></p>
-    <x-dl::box>
-        <x-dl::grid id="disciplines-now" :rows="$now" :new-record="null" actions="open" :open-url="url('disciplines/{id}')" search="Cari nomor surat, karyawan, alasan..."
-            :cards="['style' => 'band', 'start' => true, 'title' => 'type', 'sub' => 'doc_no', 'icon' => 'icon', 'hue' => 'hue', 'big' => 'employee', 'meta' => ['department', 'state']]"
-            :columns="[
-                ['key' => 'employee', 'label' => 'Karyawan'],
-                ['key' => 'doc_no', 'label' => 'No. Surat'],
-                ['key' => 'type', 'label' => 'Jenis'],
-                ['key' => 'department', 'label' => 'Bagian'],
-                ['key' => 'state', 'label' => 'Status'],
-            ]" />
-    </x-dl::box>
-    <p class="dl-note"><b>Riwayat</b></p>
-    <x-dl::box>
-    <x-dl::grid id="disciplines" :rows="$rows" actions="open" :open-url="url('disciplines/{id}')"
-        :new-url="auth()->user()->canWrite('HRD') ? route('disciplines.create') : null"
-        search="Cari nomor surat, karyawan, alasan..."
-        :phone-cards="['title' => 'employee', 'sub' => 'doc_no', 'badge' => 'type', 'tones' => ['SP 1' => 'danger', 'SP 2' => 'tangerine', 'SP 3' => 'violet', 'PHK' => 'neutral'], 'meta' => ['state', 'department']]"
-        :columns="[
+    <style>
+        /* Warna SP tegas (bukan pastel): kepala kartu solid dan lencana Jenis solid. SP 1 kuning, SP 2 jingga, SP 3 merah muda tua, PHK merah.
+           DevLib belum punya nada pink; kelas lencana pink hanya dipakai di halaman ini. */
+        #sp-vivid .dl-grid__card--band{--bc:hsl(var(--h) 90% 46%)}
+        #sp-vivid .dl-grid__bandhead{background:var(--bc);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+        #sp-vivid .dl-badge--yellow{background:hsl(48 96% 50%);color:#3a2d00}
+        #sp-vivid .dl-badge--tangerine{background:hsl(28 95% 52%);color:#fff}
+        #sp-vivid .dl-badge--pink{background:hsl(330 80% 42%);color:#fff}
+        #sp-vivid .dl-badge--danger{background:hsl(0 78% 48%);color:#fff}
+    </style>
+    <div id="sp-vivid">
+    @php
+        $columns = [
             ['key' => 'doc_no', 'label' => 'No. Surat'],
             ['key' => 'issued_on', 'label' => 'Tanggal', 'type' => 'date'],
             ['key' => 'employee', 'label' => 'Karyawan', 'type' => 'identity', 'code' => 'code', 'box' => true],
             ['key' => 'department', 'label' => 'Bagian'],
-            ['key' => 'type', 'label' => 'Jenis', 'type' => 'badge', 'tones' => ['SP 1' => 'danger', 'SP 2' => 'tangerine', 'SP 3' => 'violet', 'PHK' => 'neutral']],
+            ['key' => 'type', 'label' => 'Jenis', 'type' => 'badge', 'toneKey' => 'tone'],
             ['key' => 'until_on', 'label' => 'Berlaku s/d', 'type' => 'date'],
             ['key' => 'state', 'label' => 'Status'],
             ['key' => 'reason', 'label' => 'Alasan'],
-        ]"
-        :filters="['type' => 'Jenis', 'state' => 'Status', 'department' => 'Bagian']"
+        ];
+        $head = 'margin:14px 4px 6px;font-weight:700;color:var(--dl-f-label)';
+    @endphp
+
+    <div style="{{ $head }}">Bulan ini &middot; {{ $monthName }}</div>
+    <x-dl::grid id="disciplines-month" :rows="$current" actions="open" :open-url="url('disciplines/{id}')"
+        :new-url="auth()->user()->canWrite('HRD') ? route('disciplines.create') : null"
+        search="Cari nomor surat, karyawan, alasan..."
+        :cards="['style' => 'band', 'start' => true, 'title' => 'employee', 'sub' => 'doc_no', 'icon' => 'icon', 'hue' => 'hue', 'big' => 'type', 'meta' => ['department', 'state']]"
+        :columns="$columns" />
+
+    <div style="{{ $head }}">Bulan sebelumnya</div>
+    <x-dl::grid id="disciplines-history" :rows="$history" actions="open" :open-url="url('disciplines/{id}')" :new-record="null"
+        search="Cari nomor surat, karyawan, alasan..."
+        :phone-cards="['title' => 'employee', 'sub' => 'doc_no', 'meta' => ['type', 'state', 'department']]"
+        :columns="$columns"
+        :filters="['month' => 'Bulan', 'type' => 'Jenis', 'state' => 'Status', 'department' => 'Bagian']"
         :stats="[['label' => 'Semua penerbitan'], ['label' => 'Berlaku sekarang', 'where' => ['now' => true], 'tone' => 'warn']]" />
-    </x-dl::box>
+    </div>
 @endsection

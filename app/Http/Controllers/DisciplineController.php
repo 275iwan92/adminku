@@ -24,19 +24,23 @@ class DisciplineController extends Controller
     {
         $all = Discipline::query()->with('employee.department')->orderByDesc('issued_on')->orderByDesc('id')->get();
         $byEmployee = $all->groupBy('employee_id');
+        // Warna dan ikon per jenis: SP 1 kuning, SP 2 jingga, SP 3 merah muda tua, PHK merah (kartu: hue + ikon; tabel: nada lencana; 'pink' didefinisikan di view ini).
+        $look = ['sp1' => [48, 'fa-triangle-exclamation', 'yellow'], 'sp2' => [28, 'fa-circle-exclamation', 'tangerine'], 'sp3' => [330, 'fa-ban', 'pink'], 'phk' => [0, 'fa-user-slash', 'danger']];
+        $thisMonth = today()->format('Y-m');
         $rows = $all->map(fn (Discipline $d) => [
             'id' => $d->id, 'doc_no' => $d->doc_no, 'issued_on' => $d->issued_on->format('Y-m-d'), 'employee' => $d->employee->name, 'code' => $d->employee->code, 'department' => $d->employee->department->name,
             'type' => Discipline::TYPES[$d->type], 'until_on' => $d->until_on?->format('Y-m-d'), 'state' => $d->stateLabel($byEmployee[$d->employee_id]), 'reason' => $d->reason,
             'now' => in_array($d->state($byEmployee[$d->employee_id]), ['active', 'issued'], true),
-            'hue' => [Discipline::TYPES['sp1'] => 5, Discipline::TYPES['sp2'] => 25, Discipline::TYPES['sp3'] => 270][Discipline::TYPES[$d->type]] ?? 220,
-            'icon' => ['sp1' => 'fa-circle-exclamation', 'sp2' => 'fa-triangle-exclamation', 'sp3' => 'fa-ban', 'phk' => 'fa-user-slash'][$d->type],
-        ])->all();
+            'hue' => $look[$d->type][0], 'icon' => $look[$d->type][1], 'tone' => $look[$d->type][2],
+            'month' => $d->issued_on->format('Y-m').' '.$d->issued_on->translatedFormat('F'),   // diawali tahun-bulan supaya urutan pilihan filter kronologis
+            'this_month' => $d->issued_on->format('Y-m') === $thisMonth,
+        ]);
 
-        // Bulan ini tampil sebagai kartu, bulan-bulan sebelumnya sebagai grid riwayat.
-        $month = today()->format('Y-m');
-        [$now, $history] = collect($rows)->partition(fn ($r) => str_starts_with($r['issued_on'], $month));
-
-        return view('disciplines.index', ['now' => $now->values()->all(), 'rows' => $history->values()->all()]);
+        return view('disciplines.index', [
+            'current' => $rows->where('this_month', true)->values()->all(),
+            'history' => $rows->where('this_month', false)->values()->all(),
+            'monthName' => today()->translatedFormat('F Y'),
+        ]);
     }
 
     public function create(Request $request)

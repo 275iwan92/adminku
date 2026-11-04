@@ -133,4 +133,23 @@ class DisciplineTest extends TestCase
         $group->syncAccess(['HRD' => 'rw']);
         $this->actingAs($reader->fresh())->post(route('disciplines.store'), ['employee_id' => $this->emp->id, 'type' => 'sp1', 'issued_on' => '2026-11-02', 'reason' => 'x', 'signer_name' => 'a', 'signer_title' => 'b'])->assertRedirect();
     }
+
+    public function test_index_splits_this_month_cards_from_earlier_months_with_colour_per_type(): void
+    {
+        $this->issue('sp1', ['issued_on' => '2026-10-15'])->assertRedirect();
+        $this->issue('sp2', ['issued_on' => '2026-11-02'])->assertRedirect();
+
+        $res = $this->get(route('disciplines.index'))->assertOk()->assertSee('Bulan ini')->assertSee('Bulan sebelumnya');
+        $current = $res->viewData('current');
+        $history = $res->viewData('history');
+
+        $this->assertCount(1, $current);
+        $this->assertSame('SP 2', $current[0]['type']);
+        $this->assertCount(1, $history);
+        $this->assertSame('SP 1', $history[0]['type']);
+        $this->assertStringStartsWith('2026-10 ', $history[0]['month']);   // urut kronologis di filter Bulan
+        $this->assertNotSame($current[0]['hue'], $history[0]['hue']);       // tiap jenis punya warna sendiri
+        $this->assertSame('tangerine', $current[0]['tone']);
+        $this->assertSame('yellow', $history[0]['tone']);
+    }
 }
