@@ -306,6 +306,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('pv/create', [PurchaseReceiptController::class, 'create'])->name('pv.create');
     Route::post('pv', [PurchaseReceiptController::class, 'store'])->name('pv.store');
     Route::get('pv/{pv}', [PurchaseReceiptController::class, 'show'])->whereNumber('pv')->name('pv.show');
+    Route::get('pv/{pv}/print', [PurchaseReceiptController::class, 'print'])->whereNumber('pv')->name('pv.print');
     Route::put('pv/{pv}', [PurchaseReceiptController::class, 'update'])->whereNumber('pv')->name('pv.update');
     // Kas, Uang Masuk (KSM): daftar, form satu Uang Masuk, siklus lewat PUT (save, confirm, approve, reject, cancel, delete, duplicate).
     Route::get('cash-in', [CashInController::class, 'index'])->name('cash-in.index');

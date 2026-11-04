@@ -184,6 +184,15 @@ class PurchaseReceiptTest extends TestCase
         $this->assertEquals(8, $this->paper->fresh()->stock_qty);
     }
 
+    public function test_only_a_confirmed_pv_prints_with_po_number_and_supplier(): void
+    {
+        $po = $this->approvedPo();
+        $draft = $this->pv($po, [3, 0]);
+        $this->get(route('pv.print', $draft))->assertForbidden();
+        $pv = $this->pv($po, [8, 24], [null, '2027-05-20'], 'confirm');
+        $this->get(route('pv.print', $pv))->assertOk()->assertSee($pv->doc_no)->assertSee($po->doc_no)->assertSee('Maju');
+    }
+
     public function test_drafts_can_be_deleted_confirmed_cannot_and_screens_follow_group_rights(): void
     {
         $po = $this->approvedPo();

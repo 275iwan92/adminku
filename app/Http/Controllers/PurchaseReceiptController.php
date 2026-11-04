@@ -49,6 +49,13 @@ class PurchaseReceiptController extends Controller
         return view('purchase-receipts.form', $this->formData($pv, $pv->order));
     }
 
+    public function print(Request $request, PurchaseReceipt $pv)
+    {
+        abort_unless($pv->statusNow() === 'confirmed', 403, 'PV dicetak setelah Terkonfirmasi.');
+
+        return view('purchase-receipts.print', ['doc' => \App\Support\PurchaseReceiptPrint::load($pv, $request->user()->name), 'pv' => $pv]);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $order = PurchaseOrder::query()->whereIn('status', ['approved', 'partial'])->findOrFail($request->input('order_id'));

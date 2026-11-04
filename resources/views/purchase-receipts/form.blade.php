@@ -17,7 +17,7 @@
         $d = fn (string $k) => ($x = old($k, $pv->{$k})) ? \Illuminate\Support\Carbon::parse($x)->format('Y-m-d') : null;
         $e = fn (string $k) => $errors->first($k) ?: null;
         $editable = $isNew || $now === 'draft';
-        $hide = array_merge(['hold', 'email', 'print', 'new', 'undo', 'duplicate'], $me->isSupervisor() ? [] : ['cancel']);
+        $hide = array_merge(['hold', 'email', 'new', 'undo', 'duplicate'], $me->isSupervisor() ? [] : ['cancel'], $now === 'confirmed' ? [] : ['print']);
         $n = fn ($x) => \Devlib\Locale::number($x, floor((float) $x) == (float) $x ? 0 : 3);
     @endphp
     @include('partials.flash')
@@ -38,7 +38,7 @@
     <x-dl::form :title="'Penerimaan Pembelian · '.($isNew ? 'Baru' : raw($pv->number()))" :subtitle="$isNew ? null : raw($pv->supplier?->name)" panel="top" kind="document" :status="$now"
         :back="route('pv.index')" :new-url="route('pv.create')" :log="$log"
         :action="$isNew ? route('pv.store') : route('pv.update', $pv)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
-        :pipeline="true" :hide="$hide"
+        :pipeline="true" :hide="$hide" :print-url="$now === 'confirmed' ? route('pv.print', $pv) : null"
         :created-by="$pv->creator?->name" :created-at="$pv->created_at?->format('Y-m-d H:i:s')" :updated-at="$pv->updated_at?->format('Y-m-d H:i:s')">
         <x-dl::form.row :cols="3">
             <x-dl::field.display label="Document No." :value="raw($pv->doc_no ?? '(otomatis)')" />
