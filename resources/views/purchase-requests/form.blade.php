@@ -14,6 +14,7 @@
         $me = auth()->user();
         $progress = in_array($pr->status, ['partial', 'done'], true);   // dipesan sebagian / selesai: DevLib menampilkannya sebagai Approved; Cancel disembunyikan
         $status = $isNew ? 'new' : ($progress ? 'approved' : $pr->status);
+        $printable = in_array($pr->status, ['approved', 'partial', 'done'], true);
         $locked = ! $isNew && $pr->status !== 'draft';
         $mine = $isNew || $me->id === $pr->created_by;
         $v = fn (string $k) => old($k, $pr->{$k});
@@ -44,7 +45,7 @@
         :back="route('pr.index')" :new-url="route('pr.create')"
         :action="$isNew ? route('pr.store') : route('pr.update', $pr)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
-        :hide="array_merge(['hold', 'email', 'print'], $progress ? ['cancel'] : [])" :log="$log"
+        :hide="array_merge(['hold', 'email'], $printable ? [] : ['print'], $progress ? ['cancel'] : [])" :print-url="$printable ? route('pr.print', $pr) : null" :log="$log"
         :created-by="$pr->creator?->name" :created-at="$pr->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$pr->approver?->name ?? $pr->creator?->name" :updated-at="$pr->updated_at?->format('Y-m-d H:i:s')">
         <x-dl::form.row :cols="3">

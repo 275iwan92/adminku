@@ -44,6 +44,13 @@ class PurchaseRequestController extends Controller
         return view('purchase-requests.form', $this->formData($pr));
     }
 
+    public function print(Request $request, PurchaseRequest $pr)
+    {
+        abort_unless(in_array($pr->status, ['approved', 'partial', 'done'], true), 403, 'PP dicetak setelah Disetujui.');
+
+        return view('purchase-requests.print', ['doc' => \App\Support\PurchaseRequestPrint::load($pr, $request->user()->name), 'pr' => $pr]);
+    }
+
     public function store(PurchaseRequestRequest $request): RedirectResponse
     {
         $pr = DB::transaction(function () use ($request) {

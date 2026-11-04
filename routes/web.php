@@ -290,6 +290,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('pr/create', [PurchaseRequestController::class, 'create'])->name('pr.create');
     Route::post('pr', [PurchaseRequestController::class, 'store'])->name('pr.store');
     Route::get('pr/{pr}', [PurchaseRequestController::class, 'show'])->whereNumber('pr')->name('pr.show');
+    Route::get('pr/{pr}/print', [PurchaseRequestController::class, 'print'])->whereNumber('pr')->name('pr.print');
     Route::put('pr/{pr}', [PurchaseRequestController::class, 'update'])->whereNumber('pr')->name('pr.update');
     // Purchase, Keputusan Pesanan (PUK): layar kerja satu barang (Proses = GET), Buat PO menambahkan ke draf PO pemasok.
     Route::get('keputusan-pesanan', [PurchaseDecisionController::class, 'index'])->name('po-decision.index');

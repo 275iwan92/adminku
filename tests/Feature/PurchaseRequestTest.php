@@ -128,6 +128,16 @@ class PurchaseRequestTest extends TestCase
         $this->assertSame(['approved', $other->id], [$pr->fresh()->status, $pr->fresh()->approved_by]);
     }
 
+    public function test_only_an_approved_pp_prints(): void
+    {
+        $pr = $this->create(by: $this->boss);
+        $this->act($pr, 'confirm', $this->boss, $this->payload())->assertSessionHasNoErrors();
+        $this->actingAs($this->boss)->get(route('pr.print', $pr))->assertForbidden();
+        $other = User::factory()->supervisor()->create(['group_id' => $this->staff->group_id]);
+        $this->act($pr, 'approve', $other)->assertRedirect();
+        $this->actingAs($this->boss)->get(route('pr.print', $pr))->assertOk()->assertSee($pr->fresh()->doc_no);
+    }
+
     public function test_reject_needs_a_reason_and_duplicate_makes_a_new_draft(): void
     {
         $pr = $this->create();
