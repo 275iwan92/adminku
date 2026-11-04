@@ -17,7 +17,9 @@ SYSTEM = platform.system()
 
 def run(cmd, timeout=60):
     try:
-        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, shell=isinstance(cmd, str)).stdout
+        # stdin DEVNULL + tanpa jendela: wajib untuk pembantu .exe tanpa konsol (handle standar tidak ada, powershell berkedip)
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, shell=isinstance(cmd, str), stdin=subprocess.DEVNULL,
+                              creationflags=0x08000000 if SYSTEM == "Windows" else 0).stdout
     except Exception:
         return ""
 
@@ -123,18 +125,25 @@ def collect_mac():
     }
 
 
-def main():
-    print("AdminKU - Pemeriksaan Perangkat. Membaca spesifikasi, mohon tunggu (bisa 1 menit)...")
+def collect():
     collectors = {"Windows": collect_windows, "Linux": collect_linux, "Darwin": collect_mac}
     if SYSTEM not in collectors:
-        sys.exit("Sistem operasi ini belum didukung (hanya Windows, Linux, Mac).")
-    data = collectors[SYSTEM]()
-    body = json.dumps(data).encode("utf-8")
-    req = urllib.request.Request(URL, data=body, headers={"Content-Type": "application/json"}, method="POST")
+        raise SystemExit("Sistem operasi ini belum didukung (hanya Windows, Linux, Mac).")
+    return collectors[SYSTEM]()
+
+
+def send(url, data):
+    req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+    urllib.request.urlopen(req, timeout=60).read()
+
+
+def main():
+    print("AdminKU - Pemeriksaan Perangkat. Membaca spesifikasi, mohon tunggu (bisa 1 menit)...")
+    data = collect()
     try:
-        urllib.request.urlopen(req, timeout=60).read()
+        send(URL, data)
     except Exception as e:
-        sys.exit("Gagal mengirim laporan: %s\nKembali ke AdminKU dan ulangi dari tombol More details." % e)
+        sys.exit("Gagal mengirim laporan: %s. Kembali ke AdminKU dan ulangi dari tombol More details." % e)
     print("Selesai. Laporan terkirim. Kembali ke AdminKU dan muat ulang layar Perangkat Saya.")
 
 

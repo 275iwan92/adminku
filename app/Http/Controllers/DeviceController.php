@@ -51,6 +51,15 @@ class DeviceController extends Controller
         return view('devices.details', ['report' => $report, 'history' => $history]);
     }
 
+    // Pemasang AdminKU Pemeriksa (sekali per komputer). Berkas hasil build (agent/build.cmd) ditaruh di storage/app/agent, tidak ikut git.
+    public function helper()
+    {
+        $file = storage_path('app/agent/AdminKU-Pemeriksa.exe');
+        abort_unless(is_file($file), 404, 'Pemasang belum disediakan di server ini.');
+
+        return response()->download($file, 'AdminKU-Pemeriksa.exe', ['Content-Type' => 'application/octet-stream', 'Cache-Control' => 'no-store']);
+    }
+
     // Dipolling layar More details sesudah skrip diunduh: id laporan terbaru milik pengguna ini (0 = belum ada); layar memuat ulang sendiri saat naik.
     public function status(Request $request)
     {
@@ -63,6 +72,10 @@ class DeviceController extends Controller
         abort_unless($request->boolean('consent'), 422, 'Persetujuan diperlukan.');
         $token = Str::random(48);
         Cache::put('agent-token:'.$token, $request->user()->id, now()->addMinutes(30));
+        // Pembantu terpasang (AdminKU Pemeriksa): halaman meneruskan alamat laporan bertoken ke pembantu di komputer itu, tanpa berkas unduhan.
+        if ($request->input('kind') === 'helper') {
+            return response()->json(['url' => route('agent.report', $token)])->header('Cache-Control', 'no-store');
+        }
         // Windows: .cmd memakai PowerShell bawaan (tanpa Python); Linux / Mac: .py. Berkas .cmd wajib akhir baris CRLF.
         $cmd = $request->input('kind') === 'cmd';
         $script = str_replace('__URL__', route('agent.report', $token), file_get_contents(resource_path('agent/adminku-perangkat.'.($cmd ? 'cmd' : 'py'))));

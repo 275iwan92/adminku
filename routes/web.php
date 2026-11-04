@@ -118,6 +118,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('devices/speed', [DeviceController::class, 'speedUp'])->name('devices.speed-up');
     // More details: layar rincian + persetujuan; POST agent = pengguna setuju, token sekali pakai dibuat dan skrip Python diunduh.
     Route::get('devices/details', [DeviceController::class, 'details'])->name('devices.details');
+    Route::get('devices/helper', [DeviceController::class, 'helper'])->name('devices.helper');
     Route::get('devices/status', [DeviceController::class, 'status'])->name('devices.status');
     Route::post('devices/agent', [DeviceController::class, 'agent'])->name('devices.agent');
     Route::post('devices/others', [DeviceController::class, 'destroyOthers'])->name('devices.destroy-others');

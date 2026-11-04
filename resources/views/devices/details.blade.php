@@ -21,43 +21,61 @@
 
         <x-dl::divider label="Pemeriksaan lengkap" />
         <x-dl::card title="Periksa komputer ini" icon="fa-shield-halved">
-            <p class="dl-note">Membaca <b>prosesor, memori, kartu grafis, disk, mainboard, sistem operasi, software, dan patch</b> komputer ini, lalu mengirimnya ke AdminKU. <b>Tidak</b> membaca isi berkas, password, atau riwayat browser. Hanya Windows, Linux, dan Mac.</p>
+            <p class="dl-note">Membaca <b>prosesor, memori, kartu grafis, disk, mainboard, sistem operasi, software, dan patch</b> komputer ini, lalu mengirimnya ke AdminKU. <b>Tidak</b> membaca isi berkas, password, atau riwayat browser. Hanya Windows (Linux dan Mac lewat berkas Python).</p>
             <x-dl::action-bar>
                 <x-dl::button type="button" id="agent-go" variant="primary" icon="fa-download" label="Setuju & Periksa Komputer Ini" />
             </x-dl::action-bar>
-            <p class="dl-note" id="agent-msg">Langkah 1: klik tombol di atas. Langkah 2: buka berkas yang terunduh. Hasilnya muncul di sini otomatis.</p>
-            <p class="dl-note"><a href="#" id="agent-other">Pakai Linux / Mac? Unduh versi Python</a></p>
+            <p class="dl-note" id="agent-msg">Klik tombol di atas. Hasilnya muncul di sini otomatis.</p>
+            <div id="agent-install" hidden>
+                <x-dl::alert tone="info" message="Pasang AdminKU Pemeriksa sekali saja (satu berkas kecil). Sesudah itu tombol Periksa langsung bekerja tanpa unduh lagi." />
+                <x-dl::action-bar>
+                    <x-dl::button href="{{ route('devices.helper') }}" variant="secondary" icon="fa-download" label="Unduh AdminKU Pemeriksa" />
+                </x-dl::action-bar>
+                <p class="dl-note">Buka berkas yang terunduh, klik <b>Ya</b> pada pertanyaan pemasangan (jika Windows bertanya: "More info", lalu "Run anyway"), lalu klik <b>Setuju & Periksa Komputer Ini</b> lagi.</p>
+            </div>
+            <p class="dl-note"><a href="#" id="agent-other">Tidak mau memasang? Unduh berkas sekali jalan</a></p>
         </x-dl::card>
         <script>
             (() => {
                 const $ = (s) => document.querySelector(s), btn = $('#agent-go'), msg = $('#agent-msg'), csrf = document.querySelector('meta[name="csrf-token"]').content;
-                const win = /Windows/.test(navigator.userAgent), mobile = /Android|iPhone|iPad|Mobile/.test(navigator.userAgent);
+                const HELPER = 'http://127.0.0.1:47831', win = /Windows/.test(navigator.userAgent), mobile = /Android|iPhone|iPad|Mobile/.test(navigator.userAgent);
                 let latest = {{ (int) ($history->first()->id ?? 0) }};
                 if (mobile) { btn.disabled = true; msg.textContent = 'Telepon dan tablet tidak didukung. Buka dari komputer.'; }
-                const go = async (kind) => {
-                    msg.textContent = 'Menyiapkan berkas...';
-                    const res = await fetch('{{ route('devices.agent') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'consent=1&kind=' + kind });
+                const token = (kind) => fetch('{{ route('devices.agent') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'consent=1&kind=' + kind });
+                const alive = async () => { try { return (await (await fetch(HELPER + '/ping', { signal: AbortSignal.timeout(1500) })).json()).app === 'adminku-pemeriksa'; } catch (e) { return false; } };
+                const watch = () => {   // hasil masuk = id laporan terbaru naik: muat ulang sendiri
+                    const timer = setInterval(async () => { if ((await (await fetch('{{ route('devices.status') }}')).json()).latest > latest) { clearInterval(timer); location.reload(); } }, 3000);
+                    setTimeout(() => clearInterval(timer), 30 * 60 * 1000);
+                };
+                btn.addEventListener('click', async () => {
+                    $('#agent-install').hidden = true;
+                    msg.textContent = 'Menghubungi AdminKU Pemeriksa...';
+                    if (!(await alive())) { $('#agent-install').hidden = false; msg.textContent = 'AdminKU Pemeriksa belum terpasang di komputer ini.'; return; }
+                    const res = await token('helper');
+                    if (!res.ok) { msg.textContent = 'Gagal menyiapkan pemeriksaan. Coba lagi.'; return; }
+                    msg.textContent = 'Jika muncul pertanyaan izin di layar komputer, klik Ya. Memeriksa komputer (sekitar 1 menit)...';
+                    const scan = await fetch(HELPER + '/scan', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ url: (await res.json()).url }) });
+                    if (scan.status === 403) { msg.textContent = 'Izin ditolak. Klik tombol lagi dan pilih Ya jika ingin memeriksa.'; return; }
+                    if (!scan.ok) { msg.textContent = 'Pemeriksaan gagal dimulai. Coba lagi.'; return; }
+                    watch();
+                });
+                // Cadangan tanpa pemasangan: berkas sekali jalan (.cmd Windows / .py Linux dan Mac).
+                $('#agent-other').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const kind = win ? 'cmd' : 'py', res = await token(kind);
                     if (!res.ok) { msg.textContent = 'Gagal menyiapkan berkas. Coba lagi.'; return; }
                     const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(await res.blob()), download: 'Periksa-Komputer-AdminKU.' + kind });
                     document.body.appendChild(a); a.click(); a.remove();
-                    msg.textContent = kind === 'cmd'
-                        ? 'Langkah 2: klik berkas "Periksa-Komputer-AdminKU" yang baru muncul di pojok kanan atas browser (atau di folder Downloads). Jika Windows bertanya, klik "More info" lalu "Run anyway". Jendela hitam akan terbuka sebentar dan tertutup sendiri. Menunggu hasil...'
-                        : 'Langkah 2: buka Terminal lalu jalankan: python3 ~/Downloads/Periksa-Komputer-AdminKU.py. Menunggu hasil...';
-                    const timer = setInterval(async () => {
-                        const s = await (await fetch('{{ route('devices.status') }}')).json();
-                        if (s.latest > latest) { clearInterval(timer); location.reload(); }
-                    }, 3000);
-                    setTimeout(() => clearInterval(timer), 30 * 60 * 1000);
-                };
-                btn.addEventListener('click', () => go(win ? 'cmd' : 'py'));
-                $('#agent-other').addEventListener('click', (e) => { e.preventDefault(); go(win ? 'py' : 'cmd'); });
+                    msg.textContent = kind === 'cmd' ? 'Klik berkas "Periksa-Komputer-AdminKU" yang baru muncul di pojok kanan atas browser. Menunggu hasil...' : 'Jalankan: python3 ~/Downloads/Periksa-Komputer-AdminKU.py. Menunggu hasil...';
+                    watch();
+                });
             })();
         </script>
 
         @if ($report)
             <x-dl::divider :label="'Laporan '.$report->checked_at->format('d/m/Y H:i').' · '.$v($report->hostname)" />
             @if ($history->count() > 1)
-                <x-dl::table :columns="['date' => 'Riwayat pemeriksaan', 'host' => 'Komputer', 'cpu' => 'Prosesor', 'ram' => 'RAM']" :stack="true"
+                <x-dl::table :columns="['date' => 'Riwayat pemeriksaan', 'host' => 'Komputer', 'cpu' => 'Prosesor', 'ram' => 'RAM']"
                     :rows="$history->map(fn ($h) => ['date' => ['href' => route('devices.details', ['r' => $h->id]), 'text' => $h->checked_at->format('d/m/Y H:i').($h->id === $report->id ? ' (ditampilkan)' : '')], 'host' => $v($h->hostname), 'cpu' => $v($h->cpu), 'ram' => $v($h->ram_gb, ' GB')])->all()" />
             @endif
             @php

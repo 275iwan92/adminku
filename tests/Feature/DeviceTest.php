@@ -143,6 +143,24 @@ class DeviceTest extends TestCase
         $this->get(route('devices.index'))->assertOk()->assertSee('CPU-BARU', false)->assertSee('Hasil pemeriksaan lengkap', false);
     }
 
+    public function test_installed_helper_gets_a_one_time_report_url_and_the_installer_download_is_served_only_when_built(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $url = $this->postJson(route('devices.agent'), ['consent' => 1, 'kind' => 'helper'])->assertOk()->json('url');
+        $this->assertMatchesRegularExpression('#/agent/report/[A-Za-z0-9]{48}$#', $url);
+        $this->postJson($url, $this->report())->assertOk();   // URL-nya benar-benar dipakai pembantu (tanpa sesi, token sekali pakai)
+
+        $exe = storage_path('app/agent/AdminKU-Pemeriksa.exe');
+        $had = is_file($exe);
+        $had || $this->get(route('devices.helper'))->assertNotFound();
+        if (! $had) {
+            @mkdir(dirname($exe), 0777, true);
+            file_put_contents($exe, 'MZ-uji');
+            $this->get(route('devices.helper'))->assertOk()->assertHeader('Content-Disposition', 'attachment; filename=AdminKU-Pemeriksa.exe');
+            unlink($exe);
+        }
+    }
+
     public function test_status_reports_only_my_latest_report_id_so_the_screen_can_reload_itself(): void
     {
         $me = User::factory()->create();
