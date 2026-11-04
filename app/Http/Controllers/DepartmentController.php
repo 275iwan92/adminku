@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
+use App\Support\Palette;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 
@@ -19,7 +20,7 @@ class DepartmentController extends Controller
     public function index()
     {
         $rows = Department::query()->withCount(['recipients', 'documents', 'employees'])->orderBy('code')->get()->map(fn (Department $d) => [
-            'id' => $d->id, 'code' => $d->code, 'name' => $d->name, 'recipients' => $d->recipients_count, 'documents' => $d->documents_count, 'employees' => $d->employees_count, 'active' => $d->is_active,
+            'id' => $d->id, 'code' => $d->code, 'name' => $d->name, 'recipients' => $d->recipients_count, 'documents' => $d->documents_count, 'employees' => $d->employees_count, 'active' => $d->is_active, 'hue' => crc32($d->code) % 360, 'icon' => Palette::departmentIcon($d->name),
         ])->all();
 
         return view('departments.index', ['rows' => $rows]);

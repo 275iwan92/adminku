@@ -2,7 +2,7 @@
  Tujuan       : Daftar master Departemen (Grid Master): kode + nama, jumlah penerima dan dokumen pengeluaran.
  Sumber hulu  : DepartmentController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form departemen.
+ Output       : x-dl::grid (awal tampilan kartu pita warna, bisa ke tabel); klik 2x / Edit membuka form departemen.
  Dipakai oleh : route departments.index (menu Data Master > Departemen).
  Status       : Aktif.
 --}}
@@ -11,7 +11,7 @@
     @include('partials.flash')
     <x-dl::grid id="departments" :rows="$rows" actions="edit" :new-url="route('departments.create')" :open-url="url('departments/{id}')" :toggle-url="url('departments/{id}/toggle')"
         search="Search code, name..."
-        :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['recipients', 'documents']]"
+        :cards="['style' => 'band', 'start' => true, 'title' => 'name', 'sub' => 'code', 'icon' => 'icon', 'hue' => 'hue', 'big' => 'employees', 'meta' => ['recipients', 'documents']]"
         :columns="[
             ['key' => 'name', 'label' => 'Department', 'type' => 'identity', 'code' => 'code', 'box' => true],
             ['key' => 'recipients', 'label' => 'Recipients', 'type' => 'number'],

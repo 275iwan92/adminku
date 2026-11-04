@@ -24,6 +24,14 @@ final class Palette
         return ($base + (crc32($seed) % 37) - 18 + 360) % 360;
     }
 
+    private const DEPT_ICON = ['admin' => 'fa-building', 'gudang' => 'fa-warehouse', 'hr' => 'fa-users', 'hrd' => 'fa-users', 'maintenance' => 'fa-screwdriver-wrench', 'produksi' => 'fa-industry', 'quality' => 'fa-circle-check', 'qc' => 'fa-circle-check', 'finance' => 'fa-coins', 'keuangan' => 'fa-coins', 'purchasing' => 'fa-cart-shopping', 'ga' => 'fa-toolbox'];
+
+    // Ikon FA departemen menurut kata pertama namanya; bawaan fa-sitemap.
+    public static function departmentIcon(string $name): string
+    {
+        return self::DEPT_ICON[mb_strtolower(strtok($name, ' ') ?: '')] ?? 'fa-sitemap';
+    }
+
     public static function unit(string $kind): int
     {
         return self::UNIT_KIND[$kind] ?? self::UNIT_KIND['other'];
