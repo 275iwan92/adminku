@@ -28,9 +28,15 @@ class DisciplineController extends Controller
             'id' => $d->id, 'doc_no' => $d->doc_no, 'issued_on' => $d->issued_on->format('Y-m-d'), 'employee' => $d->employee->name, 'code' => $d->employee->code, 'department' => $d->employee->department->name,
             'type' => Discipline::TYPES[$d->type], 'until_on' => $d->until_on?->format('Y-m-d'), 'state' => $d->stateLabel($byEmployee[$d->employee_id]), 'reason' => $d->reason,
             'now' => in_array($d->state($byEmployee[$d->employee_id]), ['active', 'issued'], true),
+            'hue' => [Discipline::TYPES['sp1'] => 5, Discipline::TYPES['sp2'] => 25, Discipline::TYPES['sp3'] => 270][Discipline::TYPES[$d->type]] ?? 220,
+            'icon' => ['sp1' => 'fa-circle-exclamation', 'sp2' => 'fa-triangle-exclamation', 'sp3' => 'fa-ban', 'phk' => 'fa-user-slash'][$d->type],
         ])->all();
 
-        return view('disciplines.index', ['rows' => $rows]);
+        // Bulan ini tampil sebagai kartu, bulan-bulan sebelumnya sebagai grid riwayat.
+        $month = today()->format('Y-m');
+        [$now, $history] = collect($rows)->partition(fn ($r) => str_starts_with($r['issued_on'], $month));
+
+        return view('disciplines.index', ['now' => $now->values()->all(), 'rows' => $history->values()->all()]);
     }
 
     public function create(Request $request)

@@ -2,13 +2,27 @@
  Tujuan       : Daftar penerbitan Kedisiplinan (modul HRD): nomor surat, tanggal, karyawan, bagian, jenis (SP 1 / SP 2 / SP 3 / PHK), berlaku s/d, status (Aktif / Diganti / Kedaluwarsa / Dicabut / Terbit) dan alasan.
  Sumber hulu  : DisciplineController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x membuka penerbitan (detail, cetak, cabut).
+ Output       : kartu pita warna untuk penerbitan bulan ini + x-dl::grid riwayat bulan sebelumnya; klik 2x membuka penerbitan (detail, cetak, cabut).
  Dipakai oleh : route disciplines.index (menu HR > Kedisiplinan).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Kedisiplinan'])
 @section('body')
     @include('partials.flash')
+    <p class="dl-note"><b>Bulan ini · {{ \Illuminate\Support\Carbon::now()->translatedFormat('F Y') }}</b></p>
+    <x-dl::box>
+        <x-dl::grid id="disciplines-now" :rows="$now" :new-record="null" actions="open" :open-url="url('disciplines/{id}')" search="Cari nomor surat, karyawan, alasan..."
+            :cards="['style' => 'band', 'start' => true, 'title' => 'type', 'sub' => 'doc_no', 'icon' => 'icon', 'hue' => 'hue', 'big' => 'employee', 'meta' => ['department', 'state']]"
+            :columns="[
+                ['key' => 'employee', 'label' => 'Karyawan'],
+                ['key' => 'doc_no', 'label' => 'No. Surat'],
+                ['key' => 'type', 'label' => 'Jenis'],
+                ['key' => 'department', 'label' => 'Bagian'],
+                ['key' => 'state', 'label' => 'Status'],
+            ]" />
+    </x-dl::box>
+    <p class="dl-note"><b>Riwayat</b></p>
+    <x-dl::box>
     <x-dl::grid id="disciplines" :rows="$rows" actions="open" :open-url="url('disciplines/{id}')"
         :new-url="auth()->user()->canWrite('HRD') ? route('disciplines.create') : null"
         search="Cari nomor surat, karyawan, alasan..."
@@ -25,4 +39,5 @@
         ]"
         :filters="['type' => 'Jenis', 'state' => 'Status', 'department' => 'Bagian']"
         :stats="[['label' => 'Semua penerbitan'], ['label' => 'Berlaku sekarang', 'where' => ['now' => true], 'tone' => 'warn']]" />
+    </x-dl::box>
 @endsection
