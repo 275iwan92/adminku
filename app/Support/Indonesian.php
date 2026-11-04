@@ -163,6 +163,6 @@ final class Indonesian
         'Supervisor Gudang' => 'Supervisor Gudang',
 
         // Tampilan HP (x-dl::phone-shell, x-dl::device-pick)
-        'Phone view' => 'Tampilan HP', 'Desktop view' => 'Tampilan Desktop', 'Display' => 'Tampilan', 'Apply' => 'Terapkan', 'Sign out' => 'Keluar',
+        'Phone view' => 'Tampilan HP', 'My devices' => 'Perangkat Saya', 'Desktop view' => 'Tampilan Desktop', 'Display' => 'Tampilan', 'Apply' => 'Terapkan', 'Sign out' => 'Keluar',
     ];
 }

@@ -23,10 +23,10 @@ use App\Http\Controllers\CashReportController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DisciplineController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetController;
-use App\Http\Controllers\RecruitStepController;
 use App\Http\Controllers\GaSettingsController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
@@ -41,12 +41,13 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseReceiptController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\RecipientController;
+use App\Http\Controllers\RecruitStepController;
 use App\Http\Controllers\ReorderOrderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SampleDataController;
 use App\Http\Controllers\StockCountController;
-use App\Http\Controllers\StockHomeController;
 use App\Http\Controllers\StockDocumentController;
+use App\Http\Controllers\StockHomeController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
@@ -106,6 +107,10 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('session/ping', fn () => response()->noContent())->name('session.ping');
     // HELP: User's Guide (Indonesia) untuk semua yang login; Technical Guide (English) hanya Administrator (grup di bawah).
     Route::view('help', 'help.user-guide')->name('help.user-guide');
+    // Perangkat Saya (menu profil): sesi login milik sendiri, semua peran, rute bebas (tanpa kode modul / hak Grup).
+    Route::get('devices', [DeviceController::class, 'index'])->name('devices.index');
+    Route::post('devices/others', [DeviceController::class, 'destroyOthers'])->name('devices.destroy-others');
+    Route::post('devices/{device}', [DeviceController::class, 'destroy'])->name('devices.destroy');
 
     // Keamanan: kelola pengguna, hanya Administrator.
     Route::middleware('administrator')->prefix('users')->controller(UserController::class)->group(function () {

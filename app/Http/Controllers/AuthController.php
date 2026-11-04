@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserDevice;
 use App\Support\Wallpapers;
 use Devlib\Device;
 use Illuminate\Http\RedirectResponse;
@@ -58,6 +59,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        UserDevice::where('session_id', $request->session()->getId())->delete();
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
