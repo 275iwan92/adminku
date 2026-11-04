@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Layar Perangkat Saya: ringkasan ringan perangkat ini (dibaca browser: thread CPU, RAM kira-kira, layar, kartu grafis), dua speedometer hasil uji nyata ke server (Unduh dan Unggah, plus latensi),
+ Tujuan       : Layar Perangkat Saya: ringkasan hasil pemeriksaan lengkap terakhir (More Details), dua speedometer hasil uji nyata ke server (Unduh dan Unggah, plus latensi),
                 daftar sesi login pengguna sendiri (perangkat, IP, terakhir aktif, penanda perangkat ini) dan tombol mengeluarkan perangkat lain.
  Sumber hulu  : DeviceController@index (devices, current); uji kecepatan: devices.speed-down (GET), devices.speed-up (POST).
  Output       : POST devices.destroy (satu perangkat), devices.destroy-others (semua selain ini).
@@ -19,12 +19,6 @@
             <x-dl::divider label="Perangkat ini" style="flex: 1" />
             <x-dl::button href="{{ route('devices.details') }}" variant="secondary" size="sm" icon="fa-circle-info" label="More Details" />
         </div>
-        <x-dl::kpi-row id="device-summary" :style="$grid">
-            <x-dl::status-card data-k="cpu" title="Prosesor" status="Membaca" tone="accent" icon="fa-microchip" value="-" desc="thread CPU" />
-            <x-dl::status-card data-k="ram" title="Memori (RAM)" status="Membaca" tone="accent" icon="fa-memory" value="-" desc="perkiraan browser" />
-            <x-dl::status-card data-k="gpu" title="Grafis" status="Membaca" tone="accent" icon="fa-display" value="-" desc="-" />
-            <x-dl::status-card data-k="screen" title="Layar" status="Membaca" tone="info" icon="fa-desktop" value="-" desc="piksel" />
-        </x-dl::kpi-row>
         @if ($report)
             @php
                 $r = $report->payload; $cpu = $r['cpu'] ?? []; $mods = $r['memory']['modules'] ?? []; $gpu = $r['graphics'][0] ?? [];
@@ -46,7 +40,9 @@
                 </x-dl::card>
             </x-dl::kpi-row>
         @endif
-        <p class="dl-note">Dibaca browser Anda (baris pertama).@unless ($report) Nama prosesor, RAM terpasang, dan sisa disk butuh pemeriksaan lengkap: klik More Details.@endunless</p>
+        @unless ($report)
+            <p class="dl-note">Belum ada pemeriksaan lengkap. Klik More Details untuk membaca prosesor, RAM, grafis, dan disk komputer ini.</p>
+        @endunless
 
         <x-dl::divider label="Kecepatan jaringan ke server" />
         <x-dl::kpi-row id="device-speed" :style="$grid">
@@ -66,21 +62,6 @@
                 const n = navigator, $ = (s) => document.querySelector(s);
                 const card = (id, k) => $(id + ' [data-k="' + k + '"]');
                 const tone = (v) => (v <= 5 ? 'danger' : v <= 20 ? 'warn' : 'success');
-                const fill = (k, ok, v, desc) => {
-                    const box = card('#device-summary', k);
-                    box.querySelector('.dl-scard__value').textContent = v;
-                    if (desc) box.querySelector('.dl-scard__desc').textContent = desc;
-                    box.querySelector('.dl-badge').lastChild.textContent = ok ? 'Terbaca' : 'Tidak dilaporkan';
-                };
-                let gpu = null;
-                try {
-                    const gl = document.createElement('canvas').getContext('webgl'), x = gl?.getExtension('WEBGL_debug_renderer_info');
-                    gpu = x ? gl.getParameter(x.UNMASKED_RENDERER_WEBGL).replace(/^ANGLE \((?:[^,]+, )?/, '').replace(/ \(0x[0-9A-Fa-f]+\).*$|,? Direct3D.*$|\)$/g, '') : null;
-                } catch (e) {}
-                fill('cpu', n.hardwareConcurrency, n.hardwareConcurrency ?? 'n/a');
-                fill('ram', n.deviceMemory, n.deviceMemory ? '≥ ' + n.deviceMemory + ' GB' : 'n/a');
-                fill('gpu', gpu, gpu ? gpu.split(' ').slice(0, 3).join(' ') : 'n/a', gpu || 'browser tidak melaporkan');
-                fill('screen', screen.width, screen.width + '×' + screen.height);
 
                 // Speedometer: jarum digeser ke nilai Mbps (skala 0-100); sudut sama dengan Gauge::point di server.
                 const needle = (k, v) => {
