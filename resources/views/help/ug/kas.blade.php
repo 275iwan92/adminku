@@ -1,8 +1,9 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 9c Kas: Uang Masuk (sumber dana ke satu Kas/Rekening), Uang Keluar (wajib ditaut ke satu Uang Masuk, jumlah dibatasi sisa saldo), dan Kas/Rekening (master, dibuka lewat Setup).
-                Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
- Sumber hulu  : CashInController / cash-in.*, CashOutController / cash-out.*, CashAccountController / cash-accounts.*, CashIn, CashOut, CashAccount, Modules (kode KSM, KSK, KSR), User::canAccess / canWrite / canApprove.
- Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya modul KSM, KSK, atau KSR). Diagram: ug-kas-alur.
+ Tujuan       : Panduan Pengguna bagian 9c Kas: Uang Masuk (sumber dana ke satu Kas/Rekening), Uang Keluar (wajib ditaut ke satu Uang Masuk, jumlah dibatasi sisa saldo), Kas/Rekening (master, dibuka lewat Setup),
+                dan tiga laporan (Arus Kas, Penerimaan, Pengeluaran) per Sumber Dana. Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
+ Sumber hulu  : CashInController / cash-in.*, CashOutController / cash-out.*, CashAccountController / cash-accounts.*, CashReportController / reports.cash-*, CashIn, CashOut, CashAccount,
+                Modules (kode KSM, KSK, KSR, R-KFLOW, R-KIN, R-KOUT), User::canAccess / canWrite / canApprove.
+ Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya salah satu modul Kas). Diagram: ug-kas-alur.
  Status       : Aktif.
 --}}
 @if ($anyKas)
@@ -14,6 +15,9 @@
         @if ($can('KSM'))<tr><td><a href="#kas-ksm">Uang Masuk</a></td><td>Dana diterima ke satu Kas/Rekening dari satu sumber dana (teks bebas)</td></tr>@endif
         @if ($can('KSK'))<tr><td><a href="#kas-ksk">Uang Keluar</a></td><td>Pengeluaran yang wajib ditaut ke satu Uang Masuk sebagai sumber dananya</td></tr>@endif
         @if ($can('KSR'))<tr><td><a href="#kas-ksr">Kas / Rekening</a></td><td>Daftar kas tunai dan rekening bank beserta saldo berjalan</td></tr>@endif
+        @if ($can('R-KFLOW'))<tr><td><a href="#kas-rflow">Laporan Arus Kas</a></td><td>Buku kas per kas/rekening: saldo awal, baris kronologis, saldo akhir</td></tr>@endif
+        @if ($can('R-KIN'))<tr><td><a href="#kas-rkin">Laporan Penerimaan</a></td><td>Uang Masuk per sumber dana: diterima, terpakai, sisa</td></tr>@endif
+        @if ($can('R-KOUT'))<tr><td><a href="#kas-rkout">Laporan Pengeluaran</a></td><td>Uang Keluar per sumber dana (lewat Uang Masuk yang ditaut)</td></tr>@endif
     </tbody>
 </table>
 <ul class="g-list">
@@ -113,6 +117,72 @@
 <ul class="g-list">
     <li><b>Kas / Rekening tidak ada di pilihan Kas Tujuan.</b> Sudah dinonaktifkan. Aktifkan kembali di Setup bila masih dipakai.</li>
     <li><b>Simpan ditolak.</b> Nama kosong, atau Jenis belum dipilih.</li>
+</ul>
+@endif
+
+@if ($can('R-KFLOW'))
+<h3 id="kas-rflow">Laporan Arus Kas</h3>
+<h4>Untuk apa</h4>
+<p>Buku kas: saldo awal periode, baris Uang Masuk dan Uang Keluar yang sudah <b>Disetujui</b> secara kronologis, dan saldo akhir — per <b>Kas / Rekening</b>, atau digabung jadi satu buku <b>Semua Kas</b>.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Laporan Arus Kas</b> (RO cukup, laporan ini hanya membaca).</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Kas</b> lalu <b>Laporan Arus Kas</b>.</li>
+    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, pilih <b>Kas</b> (atau biarkan Semua kas), lalu tekan <b>Terapkan</b>.</li>
+    <li>Pilih kelompok <b>Per Kas / Rekening</b> (satu buku per kas) atau <b>Gabungan Semua Kas</b> lewat tombol Grup di atas tabel.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Hanya Uang Masuk dan Uang Keluar berstatus <b>Disetujui</b> yang dihitung; draf dan yang diajukan tidak masuk buku kas.</li>
+    <li>Kolom <b>Saldo Berjalan</b> adalah saldo kas itu setelah baris tersebut, dihitung dari saldo awal kas (Saldo Awal di layar Kas / Rekening) ditambah atau dikurangi tiap transaksi secara berurutan.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Buku kosong.</b> Tidak ada Uang Masuk atau Uang Keluar Disetujui dalam periode itu untuk kas yang dipilih. Perluas periodenya atau pilih Semua kas.</li>
+</ul>
+@endif
+
+@if ($can('R-KIN'))
+<h3 id="kas-rkin">Laporan Penerimaan</h3>
+<h4>Untuk apa</h4>
+<p>Semua Uang Masuk dikelompokkan per <b>Sumber Dana</b>: jumlah diterima, jumlah terpakai (lewat Uang Keluar yang ditaut dan disetujui), dan sisanya.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Laporan Penerimaan</b> (RO cukup).</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Kas</b> lalu <b>Laporan Penerimaan</b>.</li>
+    <li>Atur periode, pilih <b>Sumber Dana</b> (atau Semua sumber dana) dan <b>Status</b> (bawaan: Disetujui), lalu tekan <b>Terapkan</b>.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Status bawaan adalah <b>Disetujui</b>; pilih <b>Semua</b> di isian Status untuk ikut melihat Draf, Diajukan, Ditolak, dan Dibatalkan.</li>
+    <li>Kolom <b>Terpakai</b> dan <b>Sisa</b> dihitung dari Uang Keluar yang disetujui, berapa pun status Uang Masuk itu sendiri.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Daftar kosong.</b> Tidak ada Uang Masuk yang cocok dengan filter Periode, Sumber Dana, dan Status. Ubah Status jadi Semua untuk ikut melihat Draf dan Diajukan.</li>
+</ul>
+@endif
+
+@if ($can('R-KOUT'))
+<h3 id="kas-rkout">Laporan Pengeluaran</h3>
+<h4>Untuk apa</h4>
+<p>Semua Uang Keluar dikelompokkan per <b>Sumber Dana</b>, lewat Uang Masuk yang ditautnya: untuk apa saja dana dari satu sumber sudah dipakai.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Laporan Pengeluaran</b> (RO cukup).</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Kas</b> lalu <b>Laporan Pengeluaran</b>.</li>
+    <li>Atur periode, pilih <b>Kas</b>, <b>Sumber Dana</b>, dan <b>Status</b> (bawaan: Disetujui, atau Semua), lalu tekan <b>Terapkan</b>.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Sumber Dana di sini ikut <b>Uang Masuk yang ditaut</b>, bukan kolom milik Uang Keluar itu sendiri.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Daftar kosong.</b> Tidak ada Uang Keluar yang cocok dengan filter Periode, Kas, Sumber Dana, dan Status. Ubah Status jadi Semua untuk ikut melihat Draf dan Diajukan.</li>
 </ul>
 @endif
 @endif

@@ -19,6 +19,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CashAccountController;
 use App\Http\Controllers\CashInController;
 use App\Http\Controllers\CashOutController;
+use App\Http\Controllers\CashReportController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
@@ -366,5 +367,10 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::get('receiving', 'receiving')->name('reports.receiving');
         Route::get('issuance', 'issuance')->name('reports.issuance');
         Route::get('adjustment', 'adjustment')->middleware('supervisor')->name('reports.adjustment');
+    });
+    Route::prefix('reports')->controller(CashReportController::class)->group(function () {
+        Route::get('cash-flow', 'cashFlow')->name('reports.cash-flow');
+        Route::get('cash-receipts', 'receipts')->name('reports.cash-receipts');
+        Route::get('cash-disbursements', 'disbursements')->name('reports.cash-disbursements');
     });
 });

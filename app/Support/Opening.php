@@ -44,7 +44,7 @@ final class Opening
     // Tabel master yang dihitung: kode modul => tabel.
     private const MASTER_TABLES = ['ITM' => 'm_item', 'SUP' => 'm_supplier', 'DEP' => 'm_department', 'RCP' => 'm_recipient', 'UOM' => 'm_unit', 'CAT' => 'm_category', 'LOC' => 'm_location'];
 
-    private const REPORT_NOTES = ['R-CARD' => 'Riwayat satu barang', 'R-SUM' => 'Saldo dan nilai', 'R-IN' => 'Per periode', 'R-OUT' => 'Per periode', 'R-ADJ' => 'Per periode'];
+    private const REPORT_NOTES = ['R-CARD' => 'Riwayat satu barang', 'R-SUM' => 'Saldo dan nilai', 'R-IN' => 'Per periode', 'R-OUT' => 'Per periode', 'R-ADJ' => 'Per periode', 'R-KFLOW' => 'Buku kas per kas/rekening', 'R-KIN' => 'Per sumber dana', 'R-KOUT' => 'Per sumber dana'];
 
     /** Alamat layar pembuka suatu induk menu. */
     public static function url(string $section): string

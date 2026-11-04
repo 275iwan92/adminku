@@ -20,7 +20,7 @@
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
     $anyHr = $can('HRE') || $can('HRR') || $can('HRD');
     $anyPur = $can('PUP') || $can('PUK') || $can('PUO') || $can('PUV');
-    $anyKas = $can('KSM') || $can('KSK') || $can('KSR');
+    $anyKas = $can('KSM') || $can('KSK') || $can('KSR') || $can('R-KFLOW') || $can('R-KIN') || $can('R-KOUT');
     $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
@@ -109,6 +109,9 @@
             @if ($can('KSM'))<a class="g-toc-sub" href="#kas-ksm">Uang Masuk</a>@endif
             @if ($can('KSK'))<a class="g-toc-sub" href="#kas-ksk">Uang Keluar</a>@endif
             @if ($can('KSR'))<a class="g-toc-sub" href="#kas-ksr">Kas / Rekening</a>@endif
+            @if ($can('R-KFLOW'))<a class="g-toc-sub" href="#kas-rflow">Laporan Arus Kas</a>@endif
+            @if ($can('R-KIN'))<a class="g-toc-sub" href="#kas-rkin">Laporan Penerimaan</a>@endif
+            @if ($can('R-KOUT'))<a class="g-toc-sub" href="#kas-rkout">Laporan Pengeluaran</a>@endif
         @endif
         @if ($anySec)
             <a href="#keamanan">10. Keamanan</a>
