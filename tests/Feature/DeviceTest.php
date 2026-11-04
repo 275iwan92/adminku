@@ -31,7 +31,7 @@ class DeviceTest extends TestCase
             $this->other($user, "sid-$role");
 
             $this->actingAs($user)->withHeader('User-Agent', 'Mozilla/5.0 (Windows NT 10.0) Chrome/120 Safari/537')->get(route('devices.index'))
-                ->assertOk()->assertSee('perangkat ini', false)->assertSee('Firefox di Windows', false)->assertSee('10.0.0.9', false);
+                ->assertOk()->assertSee('Perangkat ini', false)->assertSee('Firefox di Windows', false)->assertSee('10.0.0.9', false);
         }
     }
 
