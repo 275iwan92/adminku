@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserDevice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
@@ -86,6 +87,40 @@ class DeviceTest extends TestCase
         $this->assertSame(2048, strlen($this->get(route('devices.speed-down', ['kb' => 2]))->assertOk()->getContent()));
         $this->assertSame(8192 * 1024, strlen($this->get(route('devices.speed-down', ['kb' => 999999]))->getContent()));
         $this->call('POST', route('devices.speed-up'), [], [], [], [], str_repeat('x', 4096))->assertNoContent();
+    }
+
+    private function report(): array
+    {
+        return ['cpu' => ['name' => 'Intel Core i5-10310U', 'threads' => 8], 'memory' => ['total_gb' => 16.0, 'modules' => []], 'os' => ['system' => 'Windows', 'hostname' => 'LENOVO-M2'],
+            'storage' => [['name' => 'C:', 'total_gb' => 238, 'free_gb' => 12]], 'software' => [['name' => 'Git', 'version' => '2.45']], 'patches' => []];
+    }
+
+    public function test_agent_needs_consent_then_report_arrives_once_and_shows_in_details(): void
+    {
+        $me = User::factory()->create();
+        $this->actingAs($me)->post(route('devices.agent'))->assertStatus(422);
+
+        $response = $this->post(route('devices.agent'), ['consent' => 1])->assertOk()->assertHeader('Content-Disposition', 'attachment; filename="adminku-perangkat.py"');
+        $script = $response->getContent();
+        $this->assertStringNotContainsString('__URL__', $script);
+        preg_match('#"(http[^"]*/agent/report/[A-Za-z0-9]+)"#', $script, $m);
+        $this->assertNotEmpty($m, 'alamat laporan tertanam di skrip');
+
+        auth()->logout();   // agen tidak membawa sesi: hanya token
+        $this->postJson($m[1], $this->report())->assertOk();
+        $this->postJson($m[1], $this->report())->assertForbidden();   // token sekali pakai
+        $this->postJson(route('agent.report', 'tokensalah'), $this->report())->assertForbidden();
+
+        $this->actingAs($me)->get(route('devices.details'))->assertOk()->assertSee('Intel Core i5-10310U', false)->assertSee('LENOVO-M2', false)->assertSee('Git', false);
+    }
+
+    public function test_report_with_unknown_shape_is_rejected_and_details_empty_state_shows(): void
+    {
+        $me = User::factory()->create();
+        Cache::put('agent-token:abc', $me->id, now()->addMinutes(5));
+        $this->postJson(route('agent.report', 'abc'), ['foo' => 'bar'])->assertStatus(422);
+
+        $this->actingAs($me)->get(route('devices.details'))->assertOk()->assertSee('Belum ada pemeriksaan', false);
     }
 
     public function test_describe_reads_browser_and_system(): void

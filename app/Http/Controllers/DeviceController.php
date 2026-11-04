@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DeviceReport;
 use App\Models\UserDevice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 /* REMARK
  * Tujuan       : Layar Perangkat Saya (menu profil, semua peran, tanpa hak Grup): sesi login milik pengguna sendiri dan mengeluarkan perangkat lain.
@@ -36,6 +39,23 @@ class DeviceController extends Controller
         $this->kick(UserDevice::where('user_id', $request->user()->id)->where('session_id', '!=', $request->session()->getId())->get());
 
         return back()->with('status', 'Semua perangkat lain dikeluarkan.');
+    }
+
+    // Laporan terakhir pengguna ini (bila ada) bertab gaya CPU-X; selalu menampilkan persetujuan + tombol unduh agen untuk memeriksa ulang.
+    public function details(Request $request)
+    {
+        return view('devices.details', ['report' => DeviceReport::where('user_id', $request->user()->id)->latest('checked_at')->first()]);
+    }
+
+    // Pengguna sudah menekan "Setuju & Lanjutkan": buat token sekali pakai (30 menit) lalu unduh skrip dengan token + alamat laporan tertanam.
+    public function agent(Request $request)
+    {
+        abort_unless($request->boolean('consent'), 422, 'Persetujuan diperlukan.');
+        $token = Str::random(48);
+        Cache::put('agent-token:'.$token, $request->user()->id, now()->addMinutes(30));
+        $script = str_replace('__URL__', route('agent.report', $token), file_get_contents(resource_path('agent/adminku-perangkat.py')));
+
+        return response($script, 200, ['Content-Type' => 'text/x-python; charset=utf-8', 'Content-Disposition' => 'attachment; filename="adminku-perangkat.py"', 'Cache-Control' => 'no-store']);
     }
 
     // Byte acak (tidak bisa dikompres) sebanyak ?kb (1 sampai 8192 KB) untuk mengukur kecepatan unduh.

@@ -14,6 +14,7 @@ use App\Http\Controllers\AcScheduleController;
 use App\Http\Controllers\AcUnitController;
 use App\Http\Controllers\AcVendorController;
 use App\Http\Controllers\AcVisitController;
+use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CashAccountController;
@@ -67,6 +68,9 @@ Route::get('ui', fn () => redirect()->route('home'));
 // Ukur layar (x-dl::screen-info): publik, murni sisi klien, tanpa data server; dibuka dari HP untuk mengukur layar sungguhan.
 Route::view('ukur', 'ukur')->name('ukur');
 
+// Laporan agen Python "More details" (Perangkat Saya): publik tanpa CSRF, dijaga token sekali pakai buatan pengguna yang sudah setuju (lihat AgentReportController).
+Route::post('agent/report/{token}', [AgentReportController::class, 'store'])->middleware('throttle:10,1')->name('agent.report');
+
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'show'])->name('login');
     Route::post('login', [AuthController::class, 'login'])->name('login.attempt');
@@ -112,6 +116,9 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Uji kecepatan ke server ini (unduh: byte acak; unggah: badan permintaan dibuang), dipakai speedometer di layar Perangkat Saya.
     Route::get('devices/speed', [DeviceController::class, 'speedDown'])->name('devices.speed-down');
     Route::post('devices/speed', [DeviceController::class, 'speedUp'])->name('devices.speed-up');
+    // More details: layar rincian + persetujuan; POST agent = pengguna setuju, token sekali pakai dibuat dan skrip Python diunduh.
+    Route::get('devices/details', [DeviceController::class, 'details'])->name('devices.details');
+    Route::post('devices/agent', [DeviceController::class, 'agent'])->name('devices.agent');
     Route::post('devices/others', [DeviceController::class, 'destroyOthers'])->name('devices.destroy-others');
     Route::post('devices/{device}', [DeviceController::class, 'destroy'])->name('devices.destroy');
 

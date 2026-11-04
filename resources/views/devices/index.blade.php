@@ -15,7 +15,10 @@
         $bands = [[5, 'danger'], [20, 'warn'], [100, 'success']];
     @endphp
     <div style="max-width: 1100px">
-        <x-dl::divider label="Perangkat ini" />
+        <div style="display: flex; justify-content: space-between; align-items: center">
+            <x-dl::divider label="Perangkat ini" style="flex: 1" />
+            <x-dl::button href="{{ route('devices.details') }}" variant="secondary" size="sm" icon="fa-circle-info" label="More Details" />
+        </div>
         <x-dl::kpi-row id="device-summary" :style="$grid">
             <x-dl::status-card data-k="cpu" title="Prosesor" status="Membaca" tone="accent" icon="fa-microchip" value="-" desc="thread CPU" />
             <x-dl::status-card data-k="ram" title="Memori (RAM)" status="Membaca" tone="accent" icon="fa-memory" value="-" desc="perkiraan browser" />
