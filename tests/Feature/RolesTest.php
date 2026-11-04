@@ -88,7 +88,7 @@ class RolesTest extends TestCase
         $this->assertContains('SEC', $codes($this->admin));
         foreach ([$this->adm, $this->spv] as $u) {
             $this->assertNotContains('SEC', $codes($u));
-            $this->assertEqualsCanonicalizing(['MST', 'STK', 'GA', 'HR', 'PUR'], $codes($u));   // semua modul selain Keamanan
+            $this->assertEqualsCanonicalizing(['MST', 'STK', 'GA', 'HR', 'PUR', 'KAS'], $codes($u));   // semua modul selain Keamanan
         }
     }
 

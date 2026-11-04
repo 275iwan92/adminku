@@ -21,7 +21,7 @@ class MenuLayersTest extends TestCase
     {
         $layers = collect(Menu::layers(User::factory()->administrator()->create()));
 
-        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'SEC'], $layers->pluck('code')->all());
+        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'KAS', 'SEC'], $layers->pluck('code')->all());
         $this->assertSame(['Karyawan', 'Bagian', 'Rekrutmen', 'Kedisiplinan'], collect($layers->firstWhere('code', 'HR')['children'])->pluck('label')->all());
         $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
         $this->assertSame(['Permintaan Pembelian', 'Keputusan Pesanan', 'Pesanan Pembelian (PO)', 'Penerimaan Pembelian (PV)'], collect($layers->firstWhere('code', 'PUR')['children'])->pluck('label')->all());
@@ -51,6 +51,6 @@ class MenuLayersTest extends TestCase
         $admin = User::factory()->administrator()->create();
 
         $this->actingAs($admin)->get(route('home'))->assertOk()->assertSee('Stok');
-        $this->assertSame(['MST', 'TRX', 'RPT', 'GA', 'HR', 'PUR', 'SEC'], collect(Menu::modules($admin))->pluck('code')->all());
+        $this->assertSame(['MST', 'TRX', 'RPT', 'GA', 'HR', 'PUR', 'KAS', 'SEC'], collect(Menu::modules($admin))->pluck('code')->all());
     }
 }
