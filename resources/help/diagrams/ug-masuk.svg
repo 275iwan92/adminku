@@ -1,5 +1,5 @@
 <svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 250" role="img" aria-labelledby="ug-masuk-t ug-masuk-d">
-<title id="ug-masuk-t">Alur masuk ke Stoku</title>
+<title id="ug-masuk-t">Alur masuk ke AdminKU</title>
 <desc id="ug-masuk-d">Isi username atau e-mail dan password untuk masuk ke Beranda. Bila lupa password, minta tautan reset lewat e-mail, lalu pilih password baru. Dari Beranda, pilih menu di panel kiri untuk membuka tab kerja.</desc>
 <defs><marker id="m-ug-masuk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <rect class="n n-in"  x="20" y="30" width="200" height="70" rx="9"/>

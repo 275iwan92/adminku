@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Technical Guide Stoku (HTML, English); bagian 13 GA (AdminKU untuk Jays): tabel m_/g_ GA, perhitungan jatuh tempo, kapasitas dan kunci, mesin status Kunjungan AC, pesan dan WhatsApp, lampiran, pengaturan, modul dan hak, keputusan. Flow besar sistem, siklus dokumen (termasuk Stok Opname), buku besar stok, model data, akses dan sesi, tambah cepat, pesanan dan lead time, konvensi, operasional (pasang, konfigurasi, tes).
+ Tujuan       : Technical Guide AdminKU (HTML, English); bagian 13 GA, 14 HR, 15 Purchase, 16 Kas: tabel, siklus dokumen/approval, modul dan hak, keputusan tiap modul. Flow besar sistem Stok, siklus dokumen (termasuk Stok Opname), buku besar stok, model data, akses dan sesi, tambah cepat, pesanan dan lead time, konvensi, operasional (pasang, konfigurasi, tes).
                 Halaman dokumentasi murni, jadi memakai HTML biasa (kelas sstock-guide di resources/css/app.css), bukan komponen x-dl.
  Sumber hulu  : kode (StockDocuments, StockLedger, Modules, routes/web.php) dan HANDOVER.md; ubah halaman ini bila perilaku itu berubah.
  Output       : tab Help (menu profil > Help & support) di Layer Shell.
@@ -40,14 +40,27 @@
         <a class="g-toc-sub" href="#ga-routes">Routes</a>
         <a class="g-toc-sub" href="#ga-decisions">GA decisions</a>
         <a class="g-toc-sub" href="#ga-open">GA open items</a>
+        <a href="#hr">14. HR: employees, recruitment, discipline</a>
+        <a class="g-toc-sub" href="#hr-tables">Tables</a>
+        <a class="g-toc-sub" href="#hr-recruit">Recruitment board and moves</a>
+        <a class="g-toc-sub" href="#hr-discipline">Discipline letters</a>
+        <a class="g-toc-sub" href="#hr-modules">Modules and rights</a>
+        <a href="#purchase">15. Purchase: PR, PO, PV</a>
+        <a class="g-toc-sub" href="#pur-tables">Tables</a>
+        <a class="g-toc-sub" href="#pur-lifecycle">Document lifecycle</a>
+        <a class="g-toc-sub" href="#pur-modules">Modules and rights</a>
+        <a href="#kas">16. Kas: cash in, cash out, accounts</a>
+        <a class="g-toc-sub" href="#kas-tables">Tables</a>
+        <a class="g-toc-sub" href="#kas-lifecycle">Document lifecycle</a>
+        <a class="g-toc-sub" href="#kas-modules">Modules, rights and simplifications</a>
     </nav>
 
     <main class="g-body">
-        <h1>Stoku Technical Guide</h1>
-        <p class="g-lead">How Stoku works from login to report: where stock is entered, how it is posted, who may do what, and where each rule lives in the code. Administrator access only.</p>
+        <h1>AdminKU Technical Guide</h1>
+        <p class="g-lead">How AdminKU works from login to report: where stock is entered, how it is posted, who may do what, and where each rule lives in the code. Administrator access only.</p>
 
         <h2 id="overview">1. System overview</h2>
-        <p>Stoku is a simple inventory application. <b>Master data</b> is defined once, <b>stock documents</b> record every change, the <b>ledger</b> holds the balances, and <b>reports plus the dashboard</b> read the result.</p>
+        <p>AdminKU started as a simple inventory application (module Stok) and now also covers GA, HR, Purchase and Kas for Jays. <b>Master data</b> is defined once, <b>stock documents</b> record every change, the <b>ledger</b> holds the balances, and <b>reports plus the dashboard</b> read the result.</p>
         <table class="g-table">
             <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
             <tbody>
@@ -145,7 +158,7 @@
             <li><b>Automatic two-way switching (DevLib, opt-in):</b> sign-in and the desktop opening screen use <code>x-dl::phone-offer auto</code>. When no choice is stored and the screen is phone-sized (<code>Devlib.phoneScreen()</code>: under 600 px wide, or sideways with height under 480 px, coarse pointer, width under 1000 px; also when the window is dragged narrower, through <code>change</code> and <code>resize</code>) it posts <code>ui=phone&amp;auto=1</code>. <code>setDevice</code> then also writes the marker cookie <code>ui_auto=1</code> (<code>Devlib\Device::AUTO_COOKIE</code>); any choice made without <code>auto</code> removes it. While the marker is present the stored <code>ui</code> counts as "not chosen by the user". <code>hp/layout</code> passes <code>auto-return</code> to <code>x-dl::phone-shell</code>: when the phone view is automatic (marker) or the page was opened directly while <code>Device::view</code> says desktop, and the screen is wide again, the Menu sheet form posts <code>ui=desktop&amp;auto=1</code> by itself. A real phone (guessed <code>phone</code>) and a user's own choice are never switched. Both scripts allow one submit per 10 seconds per tab so a browser that refuses cookies cannot loop.</li>
             <li><b>A real phone stays on the phone view:</b> <code>App\Http\Middleware\PhoneStaysPhone</code> (web group) ignores the cookie <code>ui=desktop</code> when the User-Agent is a phone (<code>HpShell::isRealPhone</code>), and <code>HpShell::deviceAction()</code> hides the "Desktop view" control on phones (phone shell menu and phone sign-in). A narrowed desktop window keeps both, so it can return to desktop. <code>GET /ui</code> redirects to Home (only POST sets the device). Test: <code>PhoneViewTest</code>.</li>
             <li><b>Scrolling:</b> DevLib makes <code>body.dl-body</code> a fixed 100vh box. One rule in <code>resources/css/app.css</code> lets the body scroll instead on pages without their own scrolling form (<code>body.dl-body:not(.sstock-bare):not(:has(.dl-form))</code>) and on every page inside the phone frame (<code>body.dl-phone-shelled</code>); desktop forms keep the scroll of the form itself. Phone frame pages hide their own page title (<code>.sstock-pagetitle</code>). Rebuild with <code>npm run build</code>.</li>
-            <li><b>Sign-out with an expired token:</b> a <code>419</code> on <code>POST /logout</code> goes to Login instead of the error page (<code>bootstrap/app.php</code>). The favicon follows the application base address (<code>asset('favicon.svg')</code>), so the app also works under a path prefix such as <code>/stoku/</code>.</li>
+            <li><b>Sign-out with an expired token:</b> a <code>419</code> on <code>POST /logout</code> goes to Login instead of the error page (<code>bootstrap/app.php</code>). The favicon follows the application base address (<code>asset('favicon.svg')</code>), so the app also works under a path prefix such as <code>/adminku/</code>.</li>
         </ul>
 
         <h3 id="phone-shell">Phone view: shell, routes and native screens</h3>
@@ -229,36 +242,42 @@
         </table>
 
         <h3 id="table-prefix">Table naming convention (prefix)</h3>
-        <p>Decided by the owner on 2026-11-01 for Jays, which keeps every module (Stok, GA, HR, Purchase) in one database. The prefix says what kind of table it is and which module owns it, and sorts tables into groups in any database tool. Names are <b>singular</b>, as in tmmockup.</p>
+        <p>Decided by the owner on 2026-11-01 for Jays, which keeps every module (Stok, GA, HR, Purchase, Kas) in one database. The prefix says what kind of table it is and which module owns it, and sorts tables into groups in any database tool. Names are <b>singular</b>, as in tmmockup. Status (2026-11-30): every prefix below is applied; nothing is pending any more.</p>
         <table class="g-table">
             <thead><tr><th>Prefix</th><th>Holds</th><th>Examples</th></tr></thead>
             <tbody>
-                <tr><td><code>m_</code></td><td>All master data, whichever module uses it</td><td><code>m_item</code>, <code>m_supplier</code>, <code>m_unit</code>, <code>m_category</code>, <code>m_location</code>, <code>m_recipient</code>, <code>m_department</code>; later <code>m_employee</code></td></tr>
-                <tr><td><code>s_</code></td><td>Stok transactions and stock state</td><td><code>s_batch</code>, <code>s_document</code>, <code>s_movement</code>, <code>s_count</code></td></tr>
-                <tr><td><code>p_</code>, <code>g_</code>, <code>h_</code></td><td>Transactions of Purchase, General Affairs and HR (modules not built yet)</td><td><code>p_order</code>, <code>g_maintenance_order</code>, <code>h_application</code></td></tr>
+                <tr><td><code>m_</code></td><td>All master data, whichever module uses it</td><td><code>m_item</code>, <code>m_supplier</code>, <code>m_unit</code>, <code>m_category</code>, <code>m_location</code>, <code>m_recipient</code>, <code>m_department</code>, <code>m_employee</code>, <code>m_recruit_step</code>, <code>m_vehicle</code>, <code>m_ac_unit</code>, <code>m_cash_account</code></td></tr>
+                <tr><td><code>i_</code></td><td>Stok inventory state: batches and the re-order log (not <code>s_</code> as first planned)</td><td><code>i_batch</code> (the old <code>items</code> batch table), <code>i_reorder_order</code>, <code>i_count</code>, <code>i_count_line</code></td></tr>
+                <tr><td><code>rm_</code></td><td>Stok transaction documents and the ledger (not <code>s_</code> as first planned; <code>rm</code> = raw material, the owner's term for stock)</td><td><code>rm_stock</code> (the document header, every type), <code>rm_stock_line</code>, <code>rm_stockcard</code> (the ledger)</td></tr>
+                <tr><td><code>g_</code></td><td>General Affairs transactions</td><td><code>g_vehicle_doc</code>, <code>g_vehicle_service</code>, <code>g_ac_service_order</code></td></tr>
+                <tr><td><code>h_</code></td><td>HR transactions</td><td><code>h_discipline</code>, <code>h_recruit_candidate</code>, <code>h_recruit_event</code>, <code>h_recruit_move</code></td></tr>
+                <tr><td><code>p_</code></td><td>Purchase transactions</td><td><code>p_request</code>, <code>p_order</code>, <code>p_receipt</code> (and their <code>_line</code> tables)</td></tr>
+                <tr><td><code>k_</code></td><td>Kas transactions</td><td><code>k_cash_in</code>, <code>k_cash_out</code></td></tr>
                 <tr><td><code>sys_</code></td><td>System: accounts, groups, settings, menu, logs</td><td><code>sys_user</code>, <code>sys_user_group</code>, <code>sys_user_group_module</code>, <code>sys_constant</code></td></tr>
-                <tr><td>none</td><td>Laravel framework tables, whose names are read from framework config</td><td><code>cache</code>, <code>cache_locks</code>, <code>jobs</code>, <code>job_batches</code>, <code>failed_jobs</code>, <code>sessions</code>, <code>migrations</code>, <code>password_reset_tokens</code></td></tr>
+                <tr><td>none</td><td>Laravel framework tables (names read from framework config) and <code>geo_*</code> (not decided; see below)</td><td><code>cache</code>, <code>cache_locks</code>, <code>jobs</code>, <code>job_batches</code>, <code>failed_jobs</code>, <code>sessions</code>, <code>migrations</code>, <code>password_reset_tokens</code>, <code>geo_country</code> ... <code>geo_village</code></td></tr>
             </tbody>
         </table>
-        <p>Map from the old Stoku names (migrations written before the rename keep the old names and run before the rename migrations, so a fresh install still works). Status: the nine <code>m_</code> tables are renamed (migration <code>rename_master_tables_with_m_prefix</code>, 2026-11-17); the <code>s_</code> and <code>sys_</code> renames are not done yet, so those tables still carry their current names:</p>
+        <p>Map from the original, un-prefixed names this application shipped with before 2026-11-01 (migrations written before a rename keep the old name and run before that rename migration, so a fresh install still works):</p>
         <table class="g-table">
-            <thead><tr><th>Old table</th><th>New table</th></tr></thead>
+            <thead><tr><th>Old table</th><th>New table</th><th>Rename migration</th></tr></thead>
             <tbody>
-                <tr><td><code>suppliers</code>, <code>departments</code>, <code>units</code>, <code>unit_conversions</code>, <code>categories</code>, <code>locations</code>, <code>recipients</code></td><td><code>m_supplier</code>, <code>m_department</code>, <code>m_unit</code>, <code>m_unit_conversion</code>, <code>m_category</code>, <code>m_location</code>, <code>m_recipient</code></td></tr>
-                <tr><td><code>products</code>, <code>product_units</code></td><td><code>m_item</code>, <code>m_item_unit</code> (see Open items for the Item / Product wording)</td></tr>
-                <tr><td><code>items</code> (batches), <code>reorder_orders</code></td><td><code>s_batch</code>, <code>s_reorder_order</code></td></tr>
-                <tr><td><code>stock_documents</code>, <code>stock_document_lines</code>, <code>stock_movements</code>, <code>stock_counts</code>, <code>stock_count_lines</code></td><td><code>s_document</code>, <code>s_document_line</code>, <code>s_movement</code>, <code>s_count</code>, <code>s_count_line</code></td></tr>
-                <tr><td><code>users</code>, <code>user_groups</code>, <code>user_group_modules</code>, <code>constants</code></td><td><code>sys_user</code>, <code>sys_user_group</code>, <code>sys_user_group_module</code>, <code>sys_constant</code></td></tr>
-                <tr><td><code>geo_country</code>, <code>geo_region</code>, <code>geo_city</code>, <code>geo_district</code>, <code>geo_village</code></td><td>Not decided: kept as they are for now (<code>sstock:import-geo</code> copies them from <code>tm2mst</code> under the same names)</td></tr>
+                <tr><td><code>suppliers</code>, <code>departments</code>, <code>units</code>, <code>unit_conversions</code>, <code>categories</code>, <code>locations</code>, <code>recipients</code>, <code>products</code>, <code>product_units</code></td><td><code>m_supplier</code>, <code>m_department</code>, <code>m_unit</code>, <code>m_unit_conversion</code>, <code>m_category</code>, <code>m_location</code>, <code>m_recipient</code>, <code>m_item</code>, <code>m_item_unit</code></td><td><code>rename_master_tables_with_m_prefix</code> (2026-11-17)</td></tr>
+                <tr><td><code>items</code> (batches), <code>reorder_orders</code>, <code>stock_counts</code>, <code>stock_count_lines</code></td><td><code>i_batch</code>, <code>i_reorder_order</code>, <code>i_count</code>, <code>i_count_line</code></td><td><code>rename_stock_tables_with_rm_prefix</code> and its sibling (2026-11-17)</td></tr>
+                <tr><td><code>stock_documents</code>, <code>stock_document_lines</code>, <code>stock_movements</code></td><td><code>rm_stock</code>, <code>rm_stock_line</code>, <code>rm_stockcard</code></td><td><code>rename_stock_tables_with_rm_prefix</code> (2026-11-17)</td></tr>
+                <tr><td>batch / item column named <code>item_id</code> on <code>rm_stock_line</code>, <code>rm_stockcard</code>, <code>i_count_line</code></td><td><code>batch_id</code> (column rename only; <code>product_id</code> is unchanged, it still points to <code>m_item</code>)</td><td><code>rename_item_id_to_batch_id</code> (2026-11-17)</td></tr>
+                <tr><td><code>users</code>, <code>user_groups</code>, <code>user_group_modules</code>, <code>constants</code></td><td><code>sys_user</code>, <code>sys_user_group</code>, <code>sys_user_group_module</code>, <code>sys_constant</code></td><td><code>rename_system_tables_with_sys_prefix</code> (2026-11-17)</td></tr>
+                <tr><td><code>geo_country</code>, <code>geo_region</code>, <code>geo_city</code>, <code>geo_district</code>, <code>geo_village</code></td><td>Not decided: kept as they are for now (<code>sstock:import-geo</code> copies them from <code>tm2mst</code> under the same names)</td><td>&mdash;</td></tr>
             </tbody>
         </table>
+        <p class="g-note">Prose elsewhere in this guide (sections 1 to 12, written before the 2026-11-17 renames) still names the old tables (<code>stock_documents</code>, <code>items</code> for batches, and so on) and the old column name (<code>item_id</code> for the batch foreign key); the table and column facts above are the current ones. The model classes themselves did not rename: <code>StockDocument</code> (table <code>rm_stock</code>), <code>StockDocumentLine</code> (<code>rm_stock_line</code>), <code>StockMovement</code> (<code>rm_stockcard</code>), <code>Item</code> (<code>i_batch</code>, one batch), <code>Product</code> (<code>m_item</code>, the stock item master) &mdash; see <a href="#open">Open items</a> for the Item / Product wording question this leaves open.</p>
         <ul class="g-list">
             <li><b>Every model declares <code>protected $table</code></b>: Laravel's plural guess no longer matches. A table written as a string (<code>exists:</code> / <code>unique:</code> / <code>Rule::exists</code>, <code>DB::table</code>, <code>join</code>, <code>Schema::hasTable</code>, raw SQL, <code>'table.column'</code>) is not found by searching class names, so search for the old name as a literal string.</li>
             <li><b>Foreign keys always name the table</b>: <code>constrained('m_supplier')</code>; without an argument Laravel guesses <code>suppliers</code> from the column name. A pivot table needs its name written out.</li>
-            <li><b>Renaming keeps old constraint and index names</b> (for example <code>items_product_id_foreign</code>, <code>items_product_id_expiry_date_unique</code>), because Laravel names them from the table at creation time. In a later migration drop an index or foreign key by its explicit name, not by column list. Foreign keys that point to a renamed table follow it automatically (SQLite checked; InnoDB documented). A rename migration never drops a table: Jays' <code>rename_master_tables_with_m_prefix</code> skips a table that already has the new name (safe to re-run), stops with a message when the database has a view, and uses one atomic <code>RENAME TABLE</code> on MySQL (<code>Schema::rename</code> one by one on SQLite in the tests).</li>
+            <li><b>Renaming keeps old constraint and index names</b> (for example <code>items_product_id_foreign</code>, <code>items_product_id_expiry_date_unique</code>), because Laravel names them from the table at creation time. In a later migration drop an index or foreign key by its explicit name, not by column list. Foreign keys that point to a renamed table follow it automatically (SQLite checked; InnoDB documented). A rename migration never drops a table: it skips a table that already has the new name (safe to re-run), stops with a message when the database has a view, and uses one atomic <code>RENAME TABLE</code> on MySQL (<code>Schema::rename</code> one by one on SQLite in the tests).</li>
             <li><b>Views are not updated by <code>RENAME TABLE</code></b>. On 2026-11-01 there were no views, routines, triggers or events in the <code>jays</code> database on the laptop or on Biznet (read from <code>information_schema</code>). Check again before any rename, and create any later view only after the rename.</li>
-            <li><b>Applying it on Biznet</b>: back up with <code>mysqldump</code> to the laptop, then <code>php artisan down</code>, pull, <code>migrate --force</code>, <code>optimize</code>, <code>up</code>. Rows are not touched, and <code>sessions</code> keeps its name, so testers stay signed in. Never run <code>migrate:fresh</code> or <code>composer sample</code> there.</li>
-            <li>Stoku is frozen and keeps its old names. Jays can no longer take code from Stoku with <code>git pull</code> after the rename.</li>
+            <li><b>Applying a rename on Biznet</b>: back up with <code>mysqldump</code> to the laptop, then <code>php artisan down</code>, pull, <code>migrate --force</code>, <code>optimize</code>, <code>up</code>. Rows are not touched, and <code>sessions</code> keeps its name, so testers stay signed in. Never run <code>migrate:fresh</code> or <code>composer sample</code> there.</li>
+            <li>Stoku, the separate upstream inventory project this application was forked from, is frozen and keeps its old, un-prefixed names. Jays can no longer take code from Stoku with <code>git pull</code> after the rename: this application (AdminKU) has diverged for good.</li>
+            <li><b>New document-type tables created after 2026-11-17</b> (HR, Purchase, Kas) are prefixed from the start (<code>h_</code>, <code>p_</code>, <code>k_</code>), so they need no rename migration of their own.</li>
         </ul>
 
         <h3>Migrations</h3>
@@ -357,7 +376,7 @@
         </ul>
 
         <h3>Company header of every printout</h3>
-        <p>One screen (module <code>CMP</code>, Data Master &gt; Perusahaan, Supervisor only; <code>CompanyController</code>, <code>CompanyRequest</code>, view <code>company/form</code>) feeds one class, <code>App\Support\Company</code>, which is the only source of the print header. The application keeps the name STOKU (login, menu, titles); only printouts use the company name.</p>
+        <p>One screen (module <code>CMP</code>, Data Master &gt; Perusahaan, Supervisor only; <code>CompanyController</code>, <code>CompanyRequest</code>, view <code>company/form</code>) feeds one class, <code>App\Support\Company</code>, which is the only source of the print header. The application keeps the name ADMINKU (login, menu, titles; from <code>config('app.name')</code>, env <code>APP_NAME</code>); only printouts use the company name.</p>
         <ul class="g-list">
             <li><b>Where the data lives:</b> <code>constants</code> keys <code>company.name</code>, <code>legal_name</code>, <code>address</code>, <code>phone</code>, <code>email</code>, <code>npwp</code>, <code>logo</code> (the file name, always <code>logo.png</code>) and <code>kop_style</code> (<code>logo_name_address</code> | <code>logo_name</code> | <code>name</code>). Nothing new in the schema. Defaults before the first save: name = <code>config('devlib.company.name')</code>, style = <code>logo_name</code> when a logo exists, else <code>name</code>.</li>
             <li><b>Wiring:</b> <code>AppServiceProvider::boot</code> registers <code>Document::companyUsing(fn () =&gt; Company::kop())</code>, so <code>x-dl::print-doc</code> (stock documents) and <code>x-dl::print-sheet</code> (count sheet, minutes) use it through <code>Kop::of()</code> of DevLib. The six reports pass <code>Company::report()</code> to <code>x-dl::report</code> (it reads <code>address</code> and <code>contact</code> instead of <code>lines</code>). Nothing builds its own header. <code>kop()</code> gives at most 3 lines (address lines, then <code>Telp. ... · e-mail</code>); the tax id prints only on stock documents.</li>
@@ -375,7 +394,7 @@
                 <tr><td>Grids</td><td>Transaction grids are plain (bold document number, one colored Status badge). Master grids use a colored box per row (<code>box</code>, <code>hue</code> from <code>Palette</code>)</td></tr>
                 <tr><td>Forms</td><td>The Back button always goes to the module grid (<code>:back</code>); a form must not submit twice</td></tr>
                 <tr><td>Seeders</td><td>Sample data lives only in <code>database/seeders</code>; sample transactions go through <code>StockDocuments</code> then <code>StockLedger</code>; a schema change updates the seeders in the same change</td></tr>
-                <tr><td>DevLib</td><td>Screens use the library components (<code>x-dl::*</code>) instead of hand-built markup; Stoku only supplies data and its own CSS</td></tr>
+                <tr><td>DevLib</td><td>Screens use the library components (<code>x-dl::*</code>) instead of hand-built markup; AdminKU only supplies data and its own CSS</td></tr>
                 <tr><td>Git</td><td>Commit and push every change; never force-push; never commit <code>.env</code></td></tr>
                 <tr><td>Help</td><td>User's Guide (Indonesian) is split per section in <code>resources/views/help/ug/*.blade.php</code> and wired by <code>help/user-guide.blade.php</code>; each module has an anchor (<code>m-</code>, <code>t-</code>, <code>r-</code>, <code>sec-</code>) and every section follows the same pattern (purpose, who, steps, notes, common problems). Diagrams are inline SVG in <code>resources/help/diagrams</code>, included with <code>help.diagram</code>. <code>HelpTest</code> compares the module list (<code>Modules::all()</code>) with those anchors, so a new module needs a help section. Change the UG and this guide together with the behaviour</td></tr>
             </tbody>
@@ -462,7 +481,7 @@ npm run build      # required after editing resources/css/app.css</pre>
 
         <h3 id="mail">Mail</h3>
         <p class="g-note">Since GA, a second mail exists: <code>AcVisitNotice</code>, the visit notice to an AC vendor (<a href="#ga-messages">section 13</a>). It goes through the same <code>MAIL_*</code> settings.</p>
-        <p>The only mail Stoku sends is the password-reset link (<code>PasswordResetController</code>, text in <code>AppServiceProvider</code>: Indonesian, subject and signature use <code>APP_NAME</code>). Everything is set in <code>.env</code> and read through <code>config/mail.php</code>; code never calls <code>env()</code>, so it also works with <code>config:cache</code>.</p>
+        <p>The only mail the Stok module sends is the password-reset link (<code>PasswordResetController</code>, text in <code>AppServiceProvider</code>: Indonesian, subject and signature use <code>APP_NAME</code>). Everything is set in <code>.env</code> and read through <code>config/mail.php</code>; code never calls <code>env()</code>, so it also works with <code>config:cache</code>.</p>
         <ul class="g-list">
             <li><code>MAIL_MAILER</code> (<code>log</code> writes the mail to <code>storage/logs/laravel.log</code>; <code>smtp</code> sends), <code>MAIL_HOST</code>, <code>MAIL_PORT</code>, <code>MAIL_SCHEME</code> (<code>null</code> = STARTTLS on 587; <code>smtps</code> with 465), <code>MAIL_USERNAME</code>, <code>MAIL_PASSWORD</code>, <code>MAIL_FROM_ADDRESS</code>, <code>MAIL_FROM_NAME</code>, <code>MAIL_TIMEOUT</code> (seconds, default 15), <code>MAIL_EHLO_DOMAIN</code> (default: host of <code>APP_URL</code>).</li>
             <li>When sending fails, the user sees a friendly message on the forgot-password screen (not a 500), the exception is written to the log with <code>Log::error</code> (<code>LOG_LEVEL=warning</code> still records it), and the reset token is deleted so the user can ask again at once.</li>
@@ -513,7 +532,7 @@ composer test                        # config:clear, then php artisan test</pre>
                 <tr><td>Master data is deactivated, never deleted</td><td>History and foreign keys stay valid</td></tr>
                 <tr><td>Product / batch model, expiry not in the code, FEFO warning only, Reorder Point per product</td><td>Matches GS1 / SAP practice; a warning avoids blocking a legitimate pick (see the <code>stok-batch-expiry</code> skill)</td></tr>
                 <tr><td>Screens written in English, translated by <code>Indonesian</code></td><td>DevLib convention; the User's Guide is Indonesian plain HTML and this guide is English plain HTML, the only text outside the dictionary</td></tr>
-                <tr><td>Region data kept in Stoku's own <code>geo_*</code> tables, filled once by <code>sstock:import-geo</code></td><td>Suppliers pick a region from local tables; no outside lookup at run time</td></tr>
+                <tr><td>Region data kept in AdminKU's own <code>geo_*</code> tables, filled once by <code>sstock:import-geo</code></td><td>Suppliers pick a region from local tables; no outside lookup at run time</td></tr>
                 <tr><td>Sample data only in seeders, through the official path</td><td>Repeatable, and stock always equals the ledger</td></tr>
                 <tr><td>Help in <code>resources/</code>, diagrams as inline SVG, Technical Guide behind the <code>administrator</code> middleware</td><td>Not reachable without login, diagrams follow the theme, hiding a link alone is not security</td></tr>
             </tbody>
@@ -530,7 +549,7 @@ composer test                        # config:clear, then php artisan test</pre>
         </ul>
 
         <h2 id="ga">13. GA: vehicle care and AC care</h2>
-        <p>General Affairs modules of AdminKU for Jays: <b>Perawatan Kendaraan</b> (vehicle documents, service schedule, odometer) and <b>Perawatan AC</b> (cleaning schedule, vendor visits, floor plan). Both are self-contained: they never touch warehouse stock. Permission codes <code>GV*</code> (vehicle) and <code>GA*</code> (AC) sit under the menu parent <code>GA</code>. Perawatan Gedung, HR and Purchase are placeholders (<a href="#ga-open">open items</a>).</p>
+        <p>General Affairs modules of AdminKU for Jays: <b>Perawatan Kendaraan</b> (vehicle documents, service schedule, odometer) and <b>Perawatan AC</b> (cleaning schedule, vendor visits, floor plan). Both are self-contained: they never touch warehouse stock. Permission codes <code>GV*</code> (vehicle) and <code>GA*</code> (AC) sit under the menu parent <code>GA</code>. Perawatan Gedung is still a placeholder (<a href="#ga-open">open items</a>); HR (<a href="#hr">section 14</a>), Purchase (<a href="#purchase">section 15</a>) and Kas (<a href="#kas">section 16</a>) are built.</p>
         <table class="g-table">
             <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
             <tbody>
@@ -695,7 +714,7 @@ composer test                        # config:clear, then php artisan test</pre>
         </table>
         <ul class="g-list">
             <li><b>Rights migrations</b> give the built-in group <code>ADMIN</code> read-write on the new codes with <code>insertOrIgnore</code> (safe to re-run; <code>down()</code> deletes those rows): <code>2026_11_18_120000_give_vehicle_care_to_admin_groups</code> (GVM, GVD, GVS, GVO, GVK, GVT), <code>2026_11_19_120000_give_ac_care_to_admin_groups</code> (GAS, GAV, GAK, GAA, GAR, GAE) and <code>2026_11_20_120000_give_ga_settings_to_admin_groups</code> (GAP). No other group receives anything: the Administrator ticks GA modules per group in the Grup screen (typically a GA officer group with everything, and a driver group with only GVO).</li>
-            <li><b>Menu:</b> <code>Menu::layers</code> builds the GA parent from <code>Modules</code>; for Administrators only it appends the placeholder <b>Perawatan Gedung</b> (route <code>soon</code>, view <code>soon.blade.php</code>), as it does for HR and Purchase. Placeholders have no module code or group right.</li>
+            <li><b>Menu:</b> <code>Menu::layers</code> builds the GA parent from <code>Modules</code>; for Administrators only it appends the placeholder <b>Perawatan Gedung</b> (route <code>soon</code>, view <code>soon.blade.php</code>). It is the only remaining placeholder: HR and Purchase menus are now built the same way as GA (parent built from <code>Modules</code>), and Kas the same way again.</li>
             <li><b>Phone view:</b> GA has no native phone screens; its pages are the desktop pages and use the DevLib phone rules (<code>:phone-cards</code> on the grids, <code>dl-table--stack</code> tables).</li>
         </ul>
 
@@ -745,10 +764,177 @@ composer test                        # config:clear, then php artisan test</pre>
             <li>Vehicle documents, services and odometer readings cannot be edited or deleted from a screen; a wrong entry needs a database correction by an Administrator.</li>
             <li>No alerts: Segera and Terlambat items appear only on the GA screens (no Beranda card, no e-mail digest, no GA report screens).</li>
             <li>Servicing does not deduct stock; oil and filters taken from the warehouse are issued manually in Pengeluaran Barang.</li>
-            <li>Perawatan Gedung, HR (Employee, Recruitment) and Purchase (PR, PO, PV) are placeholders ("Segera hadir"), visible to Administrators only; the tables <code>g_maintenance_order</code>, <code>h_*</code> and <code>p_*</code> from the prefix plan do not exist.</li>
+            <li>Perawatan Gedung is still a placeholder ("Segera hadir"), visible to Administrators only; the table <code>g_maintenance_order</code> from the prefix plan does not exist. HR, Purchase and Kas are built (<a href="#hr">14</a>, <a href="#purchase">15</a>, <a href="#kas">16</a>).</li>
             <li>No scan or signature capture for the printed minutes (Berita Acara); the paper is signed by hand.</li>
             <li>No spare-part master list and no cost report yet: parts are free text with an optional total cost per row.</li>
         </ul>
+
+        <h2 id="hr">14. HR: employees, recruitment, discipline</h2>
+        <p>Pure personnel records: no payroll, attendance or leave. Three independent sub-modules share only the employee master. Like GA, rights come only from a group (HR is excluded from <code>Modules::defaults()</code>) and screens follow the same English-code / Indonesian-label / DevLib pattern as the rest of the app.</p>
+        <table class="g-table">
+            <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
+            <tbody>
+                <tr><td>Models</td><td><code>Employee</code>, <code>EmployeeFamily</code>, <code>EmployeeDoc</code>, <code>EmployeeContract</code>, <code>RecruitStep</code>, <code>Candidate</code>, <code>CandidateEvent</code>, <code>CandidateMove</code>, <code>Discipline</code></td><td><code>app/Models</code></td></tr>
+                <tr><td>Screens</td><td><code>EmployeeController</code> (card/list, tabs Profile/Pekerjaan/Dokumen/Keluarga/Kontrak, photo and KTP scan crop), <code>CandidateController</code> (kanban board, drag/drop, Setup), <code>RecruitStepController</code> (stage Setup), <code>DisciplineController</code> (issue/revoke/print)</td><td><code>app/Http/Controllers</code>, views <code>employees</code>, <code>candidates</code>, <code>recruit-steps</code>, <code>discipline</code></td></tr>
+                <tr><td>Sample data</td><td><code>SampleHr</code> service + <code>sample:hr</code> artisan command (idempotent, resettable independently of the main Sample Data refresh)</td><td><code>app/Services/SampleHr.php</code>, <code>app/Console/Commands/SampleHrCommand.php</code></td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="hr-tables">Tables</h3>
+        <table class="g-table">
+            <thead><tr><th>Table</th><th>Key columns</th><th>Relations and rules</th></tr></thead>
+            <tbody>
+                <tr><td><code>m_employee</code></td><td><code>code</code> (<code>E-0001</code>..., <code>Employee::nextCode</code>), <code>nik_ktp</code>, <code>department_id</code>, <code>employment</code> (<code>tetap|kontrak|harian|magang</code>), <code>work_status</code> (<code>working|leave|furlough</code>, only meaningful while <code>is_active</code>), <code>user_id</code> (nullable, unique, <code>nullOnDelete</code>), <code>is_active</code>, <code>exit_reason</code>, <code>exit_date</code></td><td>never deleted; leaving sets <code>is_active=false</code> and an exit reason, and deactivates the linked <code>user_id</code> account (not the other way round)</td></tr>
+                <tr><td><code>m_employee_family</code>, <code>m_employee_doc</code>, <code>m_employee_contract</code></td><td>family: <code>relation</code>, <code>is_deceased</code>; doc: <code>doc_type</code>, <code>doc_no</code>, <code>expiry_date</code>; contract: <code>employment</code>, <code>start_date</code>, <code>end_date</code> (null only for <code>tetap</code>), <code>probation_end</code></td><td>all three <code>cascadeOnDelete</code> on <code>employee_id</code> (never actually triggered since employees are not deleted)</td></tr>
+                <tr><td><code>m_recruit_step</code></td><td><code>name</code>, <code>sort</code>, <code>kind</code> (<code>start|mid|end</code>, exactly one <code>start</code> = Daftar and one <code>end</code> = Diterima, seeded), <code>needs_schedule</code> (pop-up date+time when a candidate moves in), <code>is_active</code></td><td>referenced by candidates and move/event rows; a stage already used is deactivated, not deleted</td></tr>
+                <tr><td><code>h_recruit_candidate</code></td><td><code>nik</code> (16 digits, indexed, not unique &mdash; a new application is a new row), <code>step_id</code>, <code>status</code> (<code>active|rejected|withdrawn</code>), <code>source</code>, <code>ktp_path/name</code>, <code>cv_path/name</code>, <code>photo_path/name</code></td><td><code>h_recruit_candidate_dept</code> is a plain pivot (<code>candidate_id</code>, <code>department_id</code>, composite primary key) for "applied to more than one department"</td></tr>
+                <tr><td><code>h_recruit_event</code></td><td><code>candidate_id</code>, <code>step_id</code>, <code>scheduled_on/time</code>, <code>assessor</code>, <code>result</code> (<code>waiting|pass|fail</code>), <code>note</code></td><td>one row per scheduled stage visit (interview, test); <code>CandidateEvent::result</code> feeds the "SP aktif"-style badge and the card's last-result chip</td></tr>
+                <tr><td><code>h_recruit_move</code></td><td><code>candidate_id</code>, <code>from_step_id</code> (nullable), <code>to_step_id</code>, <code>moved_by</code>, <code>scheduled_on/time</code>, <code>assessor</code>, <code>moved_at</code></td><td>append-only log of every board drag or "Pindah ke"; <code>from_step_id</code> null only for the very first placement</td></tr>
+                <tr><td><code>h_discipline</code></td><td><code>doc_no</code> (unique, <code>NNN/TYPE/ROMAN-MONTH/YEAR</code>), <code>year</code>, <code>seq</code> (unique together with <code>year, type</code>), <code>type</code> (<code>sp1|sp2|sp3|phk</code>), <code>employee_id</code>, <code>issued_on</code>, <code>until_on</code> (SP only), <code>status</code> (<code>issued|revoked</code>), <code>revoke_reason</code>, <code>revoked_at</code></td><td>never updated after issue except to revoke; <code>Discipline::state()</code> computes the DISPLAYED status (<code>active</code>, <code>expired</code>, <code>superseded</code>, <code>revoked</code>, or <code>issued</code> for a PHK) from dates and the other letters of the same employee, nothing is stored for that</td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="hr-recruit">Recruitment board and moves</h3>
+        <p>A kanban board (<code>candidates.board</code>) with one column per active <code>m_recruit_step</code> ordered by <code>sort</code>; <code>Daftar</code> (kind <code>start</code>) and <code>Diterima</code> (kind <code>end</code>) are fixed endpoints, middle stages are configurable in Setup (name, order, colour, WIP limit, <code>needs_schedule</code>).</p>
+        <ul class="g-list">
+            <li><b>Moving a card</b> (<code>CandidateController@move</code>, drag or the "Pindah ke" menu) always writes one <code>h_recruit_move</code> row and updates <code>step_id</code>. Moving <b>into</b> a <code>needs_schedule</code> stage opens a required date+time+assessor dialog before the move is saved. Moving <b>out of</b> a scheduled stage whose event result is still <code>waiting</code> warns and offers: fill the result first, move anyway (recorded as "moved without a result"), or cancel.</li>
+            <li><b>Jadikan karyawan</b> (candidate at <code>end</code> stage only) opens the Employee form pre-filled from the candidate; saving creates the <code>m_employee</code> row, the candidate itself is not changed or deleted.</li>
+            <li><b>Rejected / withdrawn</b> candidates (<code>status</code>) disappear from the board but stay in the Daftar (list) view; a step once used by any candidate is deactivated rather than removed so history stays readable.</li>
+            <li><b>Attention score</b> (<code>Employee::attention()</code>): worst of (a) the current contract ending within <code>CONTRACT_WARN_DAYS</code> = 60 days, (b) any document expiring within <code>DOC_WARN_DAYS</code> = 30 days, (c) "Data belum lengkap" when NIK, KTP area or phone is missing; computed on read from already-loaded <code>contracts</code>/<code>docs</code>, nothing is stored.</li>
+        </ul>
+
+        <h3 id="hr-discipline">Discipline letters</h3>
+        <ul class="g-list">
+            <li><b>Numbering:</b> <code>Discipline::nextNumber()</code> locks on <code>(year, type)</code> and returns the next <code>seq</code> plus the formatted <code>NNN/TYPE/ROMAN-MONTH/YEAR</code> string (for example <code>012/SP2/XI/2026</code>); called inside the save transaction, the same race-safe pattern as stock document numbers.</li>
+            <li><b>Suggested type</b> on the issue form is the next rank above the employee's current <code>active</code> letter (SP1 &rarr; SP2 &rarr; SP3 &rarr; PHK); issuing a higher type out of order is allowed with a warning, never blocked.</li>
+            <li><b>Revoke, never edit:</b> an issued letter's fields are frozen; a mistake is corrected with <span class="g-btn">Cabut surat</span> (reason required, sets <code>status=revoked</code>, <code>revoked_at</code>) and a fresh letter issued; the used number is never reused.</li>
+            <li><b>PHK does not deactivate the employee by itself:</b> the PHK detail screen has a separate <span class="g-btn">Nonaktifkan karyawan</span> button that pre-fills the exit reason and opens the Employee Deactivate action.</li>
+            <li><b>Printing:</b> an A4 letter with the company header (<code>Company::kop()</code>, like every other printout) and a signature box; the printed NIK is masked.</li>
+        </ul>
+
+        <h3 id="hr-modules">Modules and rights</h3>
+        <table class="g-table">
+            <thead><tr><th>Code</th><th>Menu</th><th>Min role</th><th>Guarded route prefix</th></tr></thead>
+            <tbody>
+                <tr><td>HRE</td><td>Karyawan</td><td>Supervisor</td><td><code>employees.</code></td></tr>
+                <tr><td>HRR</td><td>Rekrutmen</td><td>Supervisor</td><td><code>candidates.</code>, <code>recruit-steps.</code></td></tr>
+                <tr><td>HRD</td><td>Kedisiplinan</td><td>Supervisor</td><td><code>discipline.</code></td></tr>
+            </tbody>
+        </table>
+        <p class="g-note">Migrations <code>give_employee_to_admin_groups</code> and <code>give_recruitment_to_admin_groups</code> grant HRE / HRR (RW) to the built-in <code>ADMIN</code> group only, the same <code>insertOrIgnore</code> / reversible pattern as GA; <code>create_discipline</code> does the same for HRD in the same migration that creates <code>h_discipline</code>. No other group receives anything automatically: an Administrator ticks HR modules per group, same as every other module.</p>
+
+        <h2 id="purchase">15. Purchase: PR, PO, PV</h2>
+        <p>Three document types, one pattern each (draft &rarr; submit &rarr; approve/reject, Supervisor-only approval, never the creator), chained: a <b>Permintaan Pembelian (PP/PR)</b> is turned into a <b>Pesanan Pembelian (PO)</b> (directly, or via Keputusan Pesanan), and a PO is received through one or more <b>Penerimaan Pembelian (PV)</b>, each PV creating and auto-confirming one Stok Receiving (<code>rm_stock</code> type IN) so stock increases without re-entering the line items.</p>
+        <table class="g-table">
+            <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
+            <tbody>
+                <tr><td>Models</td><td><code>PurchaseRequest</code>, <code>PurchaseRequestLine</code>, <code>PurchaseOrder</code>, <code>PurchaseOrderLine</code>, <code>PurchaseReceipt</code>, <code>PurchaseReceiptLine</code></td><td><code>app/Models</code></td></tr>
+                <tr><td>Screens</td><td><code>PurchaseRequestController</code>, <code>PurchaseDecisionController</code> (Keputusan Pesanan: supplier history for one item, builds a PO draft), <code>PurchaseOrderController</code>, <code>PurchaseReceiptController</code></td><td><code>app/Http/Controllers</code>, views <code>pr</code>/<code>purchase-decisions</code>/<code>po</code>/<code>pv</code> (route prefixes below)</td></tr>
+                <tr><td>Form requests</td><td><code>PurchaseRequestRequest</code>, <code>PurchaseOrderRequest</code></td><td><code>app/Http/Requests</code></td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="pur-tables">Tables</h3>
+        <table class="g-table">
+            <thead><tr><th>Table</th><th>Key columns</th><th>Relations and rules</th></tr></thead>
+            <tbody>
+                <tr><td><code>p_request</code> / <code>p_request_line</code></td><td>header: <code>doc_no</code> (<code>PP-YYMM-0001</code>), <code>department_id</code>, <code>need_date</code>, <code>status</code>; line: <code>item_id</code> (nullable &mdash; a free-text <code>item_name</code> is allowed for a product not yet in the master), <code>qty</code>, <code>unit</code>, <code>est_price</code>, <code>ordered_qty</code> (denormalised, see <code>syncOrdered()</code>)</td><td><code>status</code>: <code>draft &rarr; approval &rarr; approved|rejected</code>, <code>approved</code> may <code>cancelled</code>; once approved, <code>approved|partial|done</code> is recomputed by <code>syncOrdered()</code> from live PO lines</td></tr>
+                <tr><td><code>p_order</code> / <code>p_order_line</code></td><td>header: <code>doc_no</code> (<code>PO-YYMM-0001</code>), <code>supplier_id</code>, <code>payment_term_days</code>, <code>vat_pct</code>, <code>status</code>; line: <code>request_line_id</code> (nullable, nulls on delete of the PR line &mdash; keeps the PO line even if the PP line disappears), <code>item_id</code>/<code>item_name</code>, <code>price</code>, <code>received_qty</code> (denormalised, see <code>syncReceived()</code>)</td><td>same status machine as PP, plus <code>approved|partial|done</code> recomputed by <code>syncReceived()</code> from live PV lines; <code>PurchaseOrder::LIVE</code> = every status except <code>rejected</code>/<code>cancelled</code> is what both sync methods count as "still alive"</td></tr>
+                <tr><td><code>p_receipt</code> / <code>p_receipt_line</code></td><td>header: <code>doc_no</code> (<code>PV-YYMM-0001</code>), <code>order_id</code>, <code>supplier_id</code>, <code>ref_no</code> (supplier's surat jalan), <code>receiver</code>, <code>status</code> (<code>draft|confirmed|cancelled</code>, no approval step), <code>stock_document_id</code> (the <code>rm_stock</code> RCV created on Confirm); line: <code>order_line_id</code>, <code>qty</code>, <code>unit</code>, <code>price</code> (copied from the PO line), <code>expiry_date</code></td><td>Confirm is the only state change that matters: it books one Stok Receiving in the same transaction. <code>PurchaseReceipt::statusNow()</code> reports <code>cancelled</code> even while the stored <code>status</code> is still <code>confirmed</code>, if the linked <code>rm_stock</code> row was cancelled directly from the Stok side</td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="pur-lifecycle">Document lifecycle</h3>
+        <table class="g-table">
+            <thead><tr><th>Document</th><th>From</th><th>Action</th><th>To</th></tr></thead>
+            <tbody>
+                <tr><td rowspan="5">PP, PO (identical machine)</td><td>(new)</td><td>Save</td><td><span class="g-st g-grey">draft</span></td></tr>
+                <tr><td>draft</td><td>Confirm (submit)</td><td><span class="g-st g-yellow">approval</span></td></tr>
+                <tr><td>approval</td><td>Supervisor Approve / Reject (never the creator)</td><td><span class="g-st g-green">approved</span> / <span class="g-st g-red">rejected</span></td></tr>
+                <tr><td>approved</td><td>Cancel (reason required; PP: only while no PO line still live; PO: only while nothing received)</td><td><span class="g-st g-red">cancelled</span></td></tr>
+                <tr><td>rejected, cancelled</td><td>Duplicate</td><td>new draft, a copy</td></tr>
+                <tr><td rowspan="2">PV</td><td>(new)</td><td>Save, then Confirm</td><td><span class="g-st g-grey">draft</span> &rarr; <span class="g-st g-green">confirmed</span> (books the Stok Receiving)</td></tr>
+                <tr><td>confirmed</td><td>Cancel (Supervisor; reason required)</td><td><span class="g-st g-red">cancelled</span> (cancels the linked Stok Receiving, which reverses the ledger and PO <code>received_qty</code>)</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Numbering</b> (<code>PurchaseRequest::nextNo</code>, <code>PurchaseOrder::nextNo</code>, <code>PurchaseReceipt::nextNo</code>): <code>{PREFIX}-YYMM-NNNN</code> per month, drafts unnumbered until Confirm, the same lock-read-retry pattern as Stok document numbers.</li>
+            <li><b>Keputusan Pesanan is read-only logic, no document of its own:</b> <code>PurchaseOrder::history($itemId)</code> reads <code>rm_stockcard</code> joined through <code>rm_stock</code> and <code>i_batch</code> (confirmed or cancel-pending Receiving only) grouped per supplier, giving last price, last date and how many times bought; the screen's "Buat PO" button then adds a line to the user's existing draft PO for that supplier, or starts a new one.</li>
+            <li><b>Approval is single level</b>, same rule as the Stok Adjustment: <code>User::canApprove()</code> is false for Admin Data, so its Approve/Reject buttons never render for that role, and the creator is always refused regardless of role.</li>
+            <li><b>Money</b> uses <code>App\Support\Decimal</code> (bcmath) like the rest of the app; PO total = sum(qty &times; price) + VAT.</li>
+        </ul>
+
+        <h3 id="pur-modules">Modules and rights</h3>
+        <table class="g-table">
+            <thead><tr><th>Code</th><th>Menu</th><th>Min role</th><th>Guarded route prefix</th></tr></thead>
+            <tbody>
+                <tr><td>PUP</td><td>Permintaan Pembelian</td><td>Data Entry</td><td><code>pr.</code></td></tr>
+                <tr><td>PUK</td><td>Keputusan Pesanan</td><td>Data Entry</td><td><code>purchase-decisions.</code> (building a draft PO also needs <code>PUO</code> write)</td></tr>
+                <tr><td>PUO</td><td>Pesanan Pembelian (PO)</td><td>Data Entry</td><td><code>po.</code></td></tr>
+                <tr><td>PUV</td><td>Penerimaan Pembelian (PV)</td><td>Data Entry</td><td><code>pv.</code></td></tr>
+            </tbody>
+        </table>
+        <p class="g-note">Approve/Reject on PP and PO still need the Supervisor role regardless of the group's module access (same split as every other approval in the app). Migrations <code>create_purchase_request</code>, <code>create_purchase_order</code> and <code>create_purchase_receipt</code> grant PUP, (PUK, PUO) and PUV (RW) to the built-in <code>ADMIN</code> group only, in the same migration that creates each table set.</p>
+
+        <h2 id="kas">16. Kas: cash in, cash out, accounts</h2>
+        <p>Dana masuk (Uang Masuk) and dana keluar (Uang Keluar) against one or more cash/bank accounts. Deliberately the simplest document pair in the app: Uang Keluar must name one approved Uang Masuk as its funding source and is capped by that source's remaining balance, so there is never a need for the app to track a separate running account balance &mdash; it is computed on read instead.</p>
+        <table class="g-table">
+            <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
+            <tbody>
+                <tr><td>Models</td><td><code>CashAccount</code>, <code>CashIn</code>, <code>CashOut</code></td><td><code>app/Models</code></td></tr>
+                <tr><td>Screens</td><td><code>CashAccountController</code> (master, opened via Setup), <code>CashInController</code>, <code>CashOutController</code></td><td><code>app/Http/Controllers</code>, views <code>cash-accounts</code>, <code>cash-in</code>, <code>cash-out</code></td></tr>
+                <tr><td>Form requests</td><td><code>CashAccountRequest</code>, <code>CashInRequest</code>, <code>CashOutRequest</code></td><td><code>app/Http/Requests</code></td></tr>
+                <tr><td>Files</td><td>Private disk <code>kas</code> (<code>in/...</code>, <code>out/...</code>), proof attachment per document, served by <code>CashInController@file</code> / <code>CashOutController@file</code>, same pattern as GA's private disk</td><td><code>config/filesystems.php</code></td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="kas-tables">Tables</h3>
+        <table class="g-table">
+            <thead><tr><th>Table</th><th>Key columns</th><th>Relations and rules</th></tr></thead>
+            <tbody>
+                <tr><td><code>m_cash_account</code></td><td><code>name</code>, <code>type</code> (<code>cash|bank</code>), <code>bank_name</code>, <code>account_no</code>, <code>account_holder</code>, <code>opening_balance</code> decimal(15,2), <code>is_active</code></td><td>never deleted, only deactivated (<code>Deactivate</code> button); <code>CashAccount::currentBalance()</code> = <code>opening_balance</code> + sum of approved Uang Masuk into this account &minus; sum of approved Uang Keluar whose linked Uang Masuk points at this account &mdash; computed every read, nothing cached</td></tr>
+                <tr><td><code>k_cash_in</code></td><td><code>doc_no</code> (<code>UM-YYMM-0001</code>), <code>cash_account_id</code> (<code>restrictOnDelete</code>), <code>source_name</code> (free text: institution, donor, "Pendapatan operasional", ...), <code>amount</code> decimal(15,2), <code>status</code></td><td>the funding side; <code>CashIn::usedAmount()</code> = sum of its own <code>approved</code> <code>k_cash_out</code> children, <code>remainingAmount()</code> = <code>amount - usedAmount()</code></td></tr>
+                <tr><td><code>k_cash_out</code></td><td><code>doc_no</code> (<code>UK-YYMM-0001</code>), <code>cash_in_id</code> (<b>required</b>, <code>restrictOnDelete</code> &mdash; every Uang Keluar must name a source), <code>amount</code>, <code>purpose</code>, <code>status</code></td><td>no <code>cash_account_id</code> of its own: <code>CashOut::cashAccount()</code> simply reads <code>cashIn.cashAccount</code>, so the origin account always follows the chosen Uang Masuk</td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="kas-lifecycle">Document lifecycle</h3>
+        <table class="g-table">
+            <thead><tr><th>From</th><th>Action</th><th>To</th><th>Extra check</th></tr></thead>
+            <tbody>
+                <tr><td>(new)</td><td>Save</td><td><span class="g-st g-grey">draft</span></td><td>&mdash;</td></tr>
+                <tr><td>draft</td><td>Confirm (submit)</td><td><span class="g-st g-yellow">approval</span></td><td>number born here (<code>UM-</code>/<code>UK-YYMM-0001</code>)</td></tr>
+                <tr><td>approval</td><td>Supervisor Approve (never the creator, never Admin Data)</td><td><span class="g-st g-green">approved</span></td><td>Uang Keluar only: re-reads the Uang Masuk row <code>lockForUpdate</code> and refuses if <code>amount &gt; remainingAmount()</code> &mdash; the only place the balance is actually enforced</td></tr>
+                <tr><td>approval</td><td>Supervisor Reject (reason required)</td><td><span class="g-st g-red">rejected</span></td><td>&mdash;</td></tr>
+                <tr><td>approval, approved</td><td>Cancel (reason required; owner or Supervisor)</td><td><span class="g-st g-red">cancelled</span></td><td>Uang Masuk only: refused while it still has a linked Uang Keluar in <code>approval</code> or <code>approved</code> status</td></tr>
+                <tr><td>draft</td><td>Delete (owner or Supervisor)</td><td>(removed)</td><td>&mdash;</td></tr>
+                <tr><td>rejected, cancelled</td><td>Duplicate</td><td>new draft, a copy</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+        <ul class="g-list">
+            <li><b>Balance is checked exactly once</b>, at Uang Keluar Approve, inside a transaction that locks the Uang Masuk row (<code>CashIn::query()->lockForUpdate()</code>) &mdash; the same race guard pattern as stock document numbering, so two Uang Keluar approved at the same instant cannot both pass against the same remaining balance.</li>
+            <li><b>Approval is single level</b>, same rule as every other approval in the app: <code>User::canApprove()</code> is false for Admin Data (role opens the screens, buttons simply are not drawn), and the creator is always refused regardless of role.</li>
+        </ul>
+
+        <h3 id="kas-modules">Modules, rights and deliberate simplifications</h3>
+        <table class="g-table">
+            <thead><tr><th>Code</th><th>Menu</th><th>Min role</th><th>Guarded route prefix</th></tr></thead>
+            <tbody>
+                <tr><td>KSM</td><td>Uang Masuk</td><td>Data Entry</td><td><code>cash-in.</code></td></tr>
+                <tr><td>KSK</td><td>Uang Keluar</td><td>Data Entry</td><td><code>cash-out.</code></td></tr>
+                <tr><td>KSR</td><td>Kas / Rekening (opened from the Setup button on KSM/KSK, like GA's Pengaturan under <code>Modules::MENU_UNDER</code>)</td><td>Supervisor</td><td><code>cash-accounts.</code></td></tr>
+            </tbody>
+        </table>
+        <p class="g-note">Migration <code>create_cash_in_out</code> grants KSM/KSK/KSR (RW) to the built-in <code>ADMIN</code> group only, same pattern as every other module. It is dated 2026-11-04, before the <code>sys_</code> rename (2026-11-17); the grant code was patched to detect whichever of <code>user_groups</code>/<code>sys_user_group</code> exists at that point in a fresh migrate, instead of assuming the post-rename name (the earlier hardcoded name broke <code>migrate:fresh</code> and the whole test suite until this was found and fixed).</p>
+        <table class="g-table">
+            <thead><tr><th>Simplification (on purpose, for now)</th><th>Why / what it means</th></tr></thead>
+            <tbody>
+                <tr><td>Uang Keluar has no <code>cash_account_id</code> of its own; its origin account is whatever account the linked Uang Masuk belongs to</td><td>One join fewer, and the two documents can never disagree about which account a payment came from</td></tr>
+                <tr><td><code>source_name</code> (Uang Masuk) and <code>purpose</code> (Uang Keluar) are free text, not a master list</td><td>Fast to ship for Jays' actual usage pattern (ad-hoc donors, operational income, ad-hoc expenses); a Sumber Dana / Kategori master can be added later without touching the approval flow</td></tr>
+                <tr><td>No transfer between two Kas/Rekening accounts</td><td>Deliberately deferred: it needs its own document type (or a same-amount Uang Keluar + Uang Masuk pair with a link between them) and was out of scope for this first cut</td></tr>
+                <tr><td>Account balance is always computed, never stored</td><td>Cannot drift from the documents; the cost is a small aggregate query per account view, acceptable at Jays' transaction volume</td></tr>
+            </tbody>
+        </table>
     </main>
 </div>
 @endsection

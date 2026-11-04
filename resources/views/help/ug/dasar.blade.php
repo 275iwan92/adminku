@@ -7,7 +7,7 @@
 <h2 id="masuk">3. Masuk, Beranda, dan Menu</h2>
 <h3>Masuk</h3>
 <ol class="g-steps">
-    <li>Buka alamat Stoku di browser.</li>
+    <li>Buka alamat AdminKU di browser.</li>
     <li>Isi <b>username atau e-mail</b> dan <b>password</b>, lalu tekan tombol masuk.</li>
     <li>Salah password 5 kali berturut-turut? Percobaan berikutnya ditahan beberapa detik. Tunggu sampai hitungan selesai, lalu coba lagi.</li>
     <li>Lupa password? Tekan <b>Lupa password?</b>, isi username atau e-mail, lalu tekan <b>Kirim tautan reset</b>. Tautan dikirim ke e-mail Anda. Tautan berlaku 60 menit dan hanya bisa dipakai sekali. Pilih password baru (minimal 8 karakter), lalu tekan <b>Simpan password baru</b>.</li>
@@ -15,14 +15,14 @@
 @include('help.diagram', ['name' => 'ug-masuk', 'caption' => 'Masuk, lupa password, dan membuka menu.'])
 
 <h3 id="keluar-otomatis">Keluar otomatis</h3>
-<p class="g-note">Tidak ada pilihan &quot;ingat saya&quot;. Stoku tidak mengingat Anda di komputer ini. Bila sesi habis, Anda masuk lagi.</p>
+<p class="g-note">Tidak ada pilihan &quot;ingat saya&quot;. AdminKU tidak mengingat Anda di komputer ini. Bila sesi habis, Anda masuk lagi.</p>
 <ul class="g-list">
-    <li>Tidak ada aktivitas selama <b>30 menit</b>? Stoku keluar otomatis. Angka 30 menit adalah pengaturan bawaan. Administrator bisa mengubahnya.</li>
+    <li>Tidak ada aktivitas selama <b>30 menit</b>? AdminKU keluar otomatis. Angka 30 menit adalah pengaturan bawaan. Administrator bisa mengubahnya.</li>
     <li>Dua menit sebelumnya muncul peringatan <b>Sesi hampir berakhir</b> di pojok kanan bawah, dengan hitung mundur.</li>
     <li>Tekan <b>Tetap masuk</b> untuk melanjutkan. Tekan <b>Keluar sekarang</b> bila ingin keluar.</li>
     <li>Mengetik, menggerakkan mouse, menggulir, dan menyentuh layar dihitung sebagai aktivitas.</li>
     <li>Isian yang belum disimpan tidak tersimpan otomatis. Simpan pekerjaan Anda sebelum meninggalkan komputer.</li>
-    <li>Akun yang dinonaktifkan tidak bisa masuk. Bila akun dinonaktifkan saat Anda memakai Stoku, Anda langsung keluar pada klik berikutnya.</li>
+    <li>Akun yang dinonaktifkan tidak bisa masuk. Bila akun dinonaktifkan saat Anda memakai AdminKU, Anda langsung keluar pada klik berikutnya.</li>
 </ul>
 @include('help.diagram', ['name' => 'ug-keluar-otomatis', 'caption' => 'Keluar otomatis setelah 30 menit tanpa aktivitas, dengan peringatan 2 menit sebelumnya.'])
 
@@ -30,7 +30,7 @@
 <p>Setelah masuk Anda melihat <b>Beranda</b>. Beranda memberi peringatan supaya Anda tahu apa yang perlu dikerjakan.</p>
 <ul class="g-list">
     <li><b>Sapaan.</b> Satu baris di paling atas, misalnya &quot;Selamat siang, Budi&quot; (nama depan Anda), dengan tanggal dan jam kecil di bawahnya. Di HP tanggalnya ditulis singkat.</li>
-    <li><b>Cuaca.</b> Kartu kecil di kanan sapaan (di HP berupa label kecil di samping tanggal), misalnya &quot;Gerimis · Malang&quot;. Cuaca mengikuti <b>posisi perangkat Anda</b>: saat Beranda dibuka, browser bisa meminta izin lokasi, tekan <b>Izinkan</b>. Bila Anda menolak, bila lokasi tidak bisa dipakai, atau bila Stoku dibuka lewat alamat tanpa HTTPS, cuaca memakai kota yang diisi Supervisor di menu <b>Perusahaan</b>. Bila itu juga kosong, kartu cuaca tidak tampil dan Beranda tetap rapi. Kartu ini mengambil data dari internet lewat browser Anda (lihat catatan di bawah).</li>
+    <li><b>Cuaca.</b> Kartu kecil di kanan sapaan (di HP berupa label kecil di samping tanggal), misalnya &quot;Gerimis · Malang&quot;. Cuaca mengikuti <b>posisi perangkat Anda</b>: saat Beranda dibuka, browser bisa meminta izin lokasi, tekan <b>Izinkan</b>. Bila Anda menolak, bila lokasi tidak bisa dipakai, atau bila AdminKU dibuka lewat alamat tanpa HTTPS, cuaca memakai kota yang diisi Supervisor di menu <b>Perusahaan</b>. Bila itu juga kosong, kartu cuaca tidak tampil dan Beranda tetap rapi. Kartu ini mengambil data dari internet lewat browser Anda (lihat catatan di bawah).</li>
     <li><b>Kata motivasi</b> di bagian atas.</li>
     @if ($can('SO'))
         <li><b>Pengingat Stok Opname.</b> Kalimatnya &quot;Stok Opname terakhir ... Berikutnya ...&quot;. Warna biasa berarti jadwalnya masih jauh. Kuning berarti jadwalnya tinggal 3 hari atau kurang, sampai hari jadwalnya. Merah berarti terlambat. Bila ada opname yang sedang berjalan, tertulis &quot;Stok Opname SO-... sedang berjalan (terisi N dari M)&quot;. Tombol <b>Buka Stok Opname</b> membuka menunya. Tombol <b>Mulai Opname</b> hanya untuk Supervisor.</li>
@@ -50,17 +50,17 @@
 
 <h4>Catatan cuaca</h4>
 <ul class="g-list">
-    <li>Browser Anda mengirim posisi perangkat (dibulatkan, kira-kira ketelitian kota) ke layanan cuaca <b>Open-Meteo</b> dan ke layanan nama kota <b>BigDataCloud</b>. Stoku sendiri tidak menyimpan posisi Anda. Hasilnya diingat di browser selama satu jam supaya tidak meminta berulang.</li>
+    <li>Browser Anda mengirim posisi perangkat (dibulatkan, kira-kira ketelitian kota) ke layanan cuaca <b>Open-Meteo</b> dan ke layanan nama kota <b>BigDataCloud</b>. AdminKU sendiri tidak menyimpan posisi Anda. Hasilnya diingat di browser selama satu jam supaya tidak meminta berulang.</li>
     <li>Di komputer, posisinya berasal dari Wi-Fi atau alamat jaringan, jadi kira-kira tepat sampai tingkat kota, bukan alamat Anda.</li>
-    <li>Menolak izin lokasi tidak mengganggu pekerjaan: browser mengingat penolakan itu dan Stoku tidak menanyakannya lagi selama seminggu. Mengubah izin: pengaturan situs di browser.</li>
+    <li>Menolak izin lokasi tidak mengganggu pekerjaan: browser mengingat penolakan itu dan AdminKU tidak menanyakannya lagi selama seminggu. Mengubah izin: pengaturan situs di browser.</li>
     <li>Tidak ada internet atau layanan cuaca tidak menjawab: kartu cuaca diam atau tidak tampil. Pekerjaan lain tidak terganggu.</li>
 </ul>
 
-<h3 id="versi">Versi Stoku</h3>
-<p>Di samping nama <b>STOKU</b> (panel kiri dan halaman masuk) ada tulisan kecil dan pudar, misalnya <b>ver 0.133 A</b>. Angkanya naik sendiri setiap kali Stoku diperbarui. Huruf di belakangnya adalah tahap: <b>A</b> (alpha, masih dibangun dan dicoba tim sendiri), <b>B</b> (beta, uji coba dengan pengguna sungguhan, fitur dibekukan), <b>RC</b> (calon rilis). Setelah rilis resmi huruf hilang dan versinya menjadi seperti <b>ver 1.0.0</b>. Sentuh tulisannya untuk melihat nama tahap lengkap. Sebutkan versi ini saat melapor masalah.</p>
+<h3 id="versi">Versi AdminKU</h3>
+<p>Di samping nama <b>ADMINKU</b> (panel kiri dan halaman masuk) ada tulisan kecil dan pudar, misalnya <b>ver 0.133 A</b>. Angkanya naik sendiri setiap kali AdminKU diperbarui. Huruf di belakangnya adalah tahap: <b>A</b> (alpha, masih dibangun dan dicoba tim sendiri), <b>B</b> (beta, uji coba dengan pengguna sungguhan, fitur dibekukan), <b>RC</b> (calon rilis). Setelah rilis resmi huruf hilang dan versinya menjadi seperti <b>ver 1.0.0</b>. Sentuh tulisannya untuk melihat nama tahap lengkap. Sebutkan versi ini saat melapor masalah.</p>
 
 <h3 id="status-koneksi">Baris jaringan di bawah nama Anda</h3>
-<p>Di bawah nama Anda (kiri bawah di komputer; di HP pada daftar <b>Menu</b>) ada satu baris kecil dan pudar, misalnya <b>10.238.189.21 &rarr; 10.238.189.159</b>. Angka pertama adalah alamat jaringan perangkat Anda, angka kedua alamat server Stoku. Sentuh atau arahkan kursor ke baris itu untuk melihat nama komputernya. Bila Anda melapor masalah, sebutkan kedua angka ini supaya penyebabnya mudah dicari.</p>
+<p>Di bawah nama Anda (kiri bawah di komputer; di HP pada daftar <b>Menu</b>) ada satu baris kecil dan pudar, misalnya <b>10.238.189.21 &rarr; 10.238.189.159</b>. Angka pertama adalah alamat jaringan perangkat Anda, angka kedua alamat server AdminKU. Sentuh atau arahkan kursor ke baris itu untuk melihat nama komputernya. Bila Anda melapor masalah, sebutkan kedua angka ini supaya penyebabnya mudah dicari.</p>
 <ul class="g-list">
     <li><b>Normal.</b> Hanya baris angka itu.</li>
     <li><b>&quot;Server tidak terjangkau&quot;.</b> Alamat server berkedip merah muda dan tulisan kecil muncul. Browser Anda tidak mendapat jawaban dari server dua kali berturut-turut. Penyebabnya bisa server mati, kabel atau Wi-Fi putus, atau jaringan kantor bermasalah (browser tidak bisa membedakannya). Tulisan hilang sendiri begitu server menjawab lagi. Menunggu sebentar biasanya cukup; bila lama, hubungi pengelola.</li>
@@ -73,10 +73,10 @@
 <h4>Untuk apa</h4>
 <p>Mencatat bahwa barang yang stoknya menipis sudah Anda pesan ke pemasok. Catatan ini sederhana. Ini bukan dokumen PO (surat pesanan resmi): tidak ada harga, persetujuan, atau cetakan. Fungsinya agar rekan Anda tahu pesanan ke mana, berapa, dan kapan.</p>
 <h4>Siapa yang bisa</h4>
-<p>Data Entry dan Supervisor. Grup yang diatur Administrator perlu hak <b>Baca &amp; tulis (RW)</b> untuk modul <b>Riwayat Pemesanan</b>. Tanpa hak itu, tombol <b>Catat Pemesanan</b> dan <b>Tutup Pesanan</b> tidak tampil dan Stoku menolak simpanannya.</p>
+<p>Data Entry dan Supervisor. Grup yang diatur Administrator perlu hak <b>Baca &amp; tulis (RW)</b> untuk modul <b>Riwayat Pemesanan</b>. Tanpa hak itu, tombol <b>Catat Pemesanan</b> dan <b>Tutup Pesanan</b> tidak tampil dan AdminKU menolak simpanannya.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Pesan barang ke pemasok lebih dulu. Pemesanan dilakukan di luar Stoku.</li>
+    <li>Pesan barang ke pemasok lebih dulu. Pemesanan dilakukan di luar AdminKU.</li>
     <li>Di Beranda, tekan <b>Catat Pemesanan</b>.</li>
     <li>Pilih <b>Barang</b>. Daftarnya hanya berisi barang yang stoknya menipis dan belum punya pesanan terbuka.</li>
     <li>Pilih <b>Pemasok</b>. Pembelian tunai? Pilih <b>Kontan</b>. Pemasok belum ada? Tekan tombol <b>+</b> di samping pilihan (lihat <a href="#tombol-plus">Tombol plus</a>).</li>
@@ -102,7 +102,7 @@
     <li>Pesanan yang sudah tertutup (selesai atau ditutup manual) hilang dari peringatan Beranda. @if ($can('ORD')) Lihat semuanya di <a href="#t-ord">Riwayat Pemesanan</a>.@else Supervisor dan Data Entry yang punya menu <b>Riwayat Pemesanan</b> bisa melihatnya.@endif</li>
     <li><b>Perkiraan tiba.</b> Untuk pesanan yang belum menerima apa pun, keterangan ditambah <i>Perkiraan tiba {tanggal}.</i> Tanggalnya adalah Tanggal Pesan ditambah lead time. Lead time adalah lama dari pesan sampai barang datang.</li>
     <li>Pesanan lebih lama dari biasanya? Keterangan ditambah <i>Sudah {n} hari, biasanya {m}. Periksa pesanan.</i> Setelah ada penerimaan pertama, pesanan tidak ditandai terlambat lagi.</li>
-    <li>Dari mana lead time? Stoku menghitung rata-rata sampai 5 pesanan terakhir barang itu, dibulatkan ke atas, dari Tanggal Pesan sampai Penerimaan <b>pertama</b>. Pesanan yang ditutup manual tanpa penerimaan tidak dihitung. Datanya kurang dari 3 pesanan? Stoku memakai isian <b>Lead Time (hari)</b> di form Barang. Keduanya kosong? Tidak ada kalimat tambahan.</li>
+    <li>Dari mana lead time? AdminKU menghitung rata-rata sampai 5 pesanan terakhir barang itu, dibulatkan ke atas, dari Tanggal Pesan sampai Penerimaan <b>pertama</b>. Pesanan yang ditutup manual tanpa penerimaan tidak dihitung. Datanya kurang dari 3 pesanan? AdminKU memakai isian <b>Lead Time (hari)</b> di form Barang. Keduanya kosong? Tidak ada kalimat tambahan.</li>
     <li>Keterangan yang sama tampil di laporan <b>Ringkasan Stok</b> (kolom <b>Pemasok Pesanan</b>, <b>Jumlah Dipesan</b>, <b>Info Pemesanan</b>, dan <b>Lead Time Otomatis (d)</b>) dan di form Barang.</li>
 </ul>
 <h4>Masalah umum</h4>
@@ -110,7 +110,7 @@
     <li><b>Tombol Catat Pemesanan tidak ada.</b> Tidak ada barang yang menipis, atau semua barang yang menipis sudah punya pesanan terbuka.</li>
     <li><b>Barang tidak ada di daftar.</b> Stoknya belum sampai Titik Pesan Ulang, atau barang itu sudah punya pesanan terbuka.</li>
     <li><b>Pesan &quot;Barang ini tidak berada di bawah titik pesan ulang&quot;.</b> Stok barang berubah sejak Beranda dibuka. Muat ulang Beranda.</li>
-    <li><b>Salah catat pesanan.</b> Stoku belum punya tombol untuk mengubah atau menghapus catatan pesanan. Tekan <b>Tutup Pesanan</b>, lalu catat pesanan yang benar.</li>
+    <li><b>Salah catat pesanan.</b> AdminKU belum punya tombol untuk mengubah atau menghapus catatan pesanan. Tekan <b>Tutup Pesanan</b>, lalu catat pesanan yang benar.</li>
 </ul>
 
 <h3 id="menu">Menu dan tab</h3>
@@ -122,10 +122,10 @@
 </ul>
 
 <h3 id="tampilan-hp">Tampilan HP dan Tampilan Desktop</h3>
-<p>Stoku punya dua tampilan. <b>Tampilan Desktop</b> untuk komputer (menu di sisi kiri). <b>Tampilan HP</b> untuk ponsel yang dipegang tegak: satu tombol <b>&#8801;</b> melayang di kiri atas dan isi selebar layar, tanpa bilah permanen di atas maupun di bawah.</p>
+<p>AdminKU punya dua tampilan. <b>Tampilan Desktop</b> untuk komputer (menu di sisi kiri). <b>Tampilan HP</b> untuk ponsel yang dipegang tegak: satu tombol <b>&#8801;</b> melayang di kiri atas dan isi selebar layar, tanpa bilah permanen di atas maupun di bawah.</p>
 <ul class="g-list">
-    <li><b>Di ponsel</b>, Stoku selalu memakai Tampilan HP, mulai dari halaman Masuk (isian dan tombol besar), dan tidak ada tombol untuk pindah ke Tampilan Desktop. Tampilan mengikuti perangkat: ponsel memakai Tampilan HP, komputer memakai Tampilan Desktop. Untuk berganti, keluar lalu masuk dari perangkat lain.</li>
-    <li><b>Di komputer atau tablet dengan layar sempit</b> (lebih sempit dari 600 px, atau HP yang diputar mendatar), halaman Masuk dan Beranda <b>beralih sendiri</b> ke Tampilan HP, juga bila Anda baru mempersempit jendela. Bila jendela dilebarkan lagi, Stoku <b>kembali sendiri</b> ke Tampilan Desktop. Peralihan otomatis ini hanya berlaku selama Anda belum memilih tampilan sendiri. Bila peralihan otomatis tidak berjalan, muncul pertanyaan <b>Ingin tampilan yang lebih nyaman di smartphone?</b>: <b>Ketuk di sini</b> beralih ke Tampilan HP, <b>Tetap desktop</b> menutupnya dan pilihan itu diingat.</li>
+    <li><b>Di ponsel</b>, AdminKU selalu memakai Tampilan HP, mulai dari halaman Masuk (isian dan tombol besar), dan tidak ada tombol untuk pindah ke Tampilan Desktop. Tampilan mengikuti perangkat: ponsel memakai Tampilan HP, komputer memakai Tampilan Desktop. Untuk berganti, keluar lalu masuk dari perangkat lain.</li>
+    <li><b>Di komputer atau tablet dengan layar sempit</b> (lebih sempit dari 600 px, atau HP yang diputar mendatar), halaman Masuk dan Beranda <b>beralih sendiri</b> ke Tampilan HP, juga bila Anda baru mempersempit jendela. Bila jendela dilebarkan lagi, AdminKU <b>kembali sendiri</b> ke Tampilan Desktop. Peralihan otomatis ini hanya berlaku selama Anda belum memilih tampilan sendiri. Bila peralihan otomatis tidak berjalan, muncul pertanyaan <b>Ingin tampilan yang lebih nyaman di smartphone?</b>: <b>Ketuk di sini</b> beralih ke Tampilan HP, <b>Tetap desktop</b> menutupnya dan pilihan itu diingat.</li>
     <li><b>Memilih sendiri (hanya di komputer):</b> di Tampilan Desktop buka menu profil dan pilih <b>Tampilan HP</b>; jalan kembali ke Tampilan Desktop ada di ketukan <b>&#8801;</b>, lalu <b>Menu</b>. Pilihan yang Anda buat sendiri diingat di perangkat itu dan <b>tidak diubah otomatis</b>.</li>
     <li>Tablet dan ponsel yang meminta &quot;situs desktop&quot; di peramban dianggap komputer.</li>
 </ul>
@@ -160,7 +160,7 @@
 
 <h3 id="hp-batas">Batasan Tampilan HP saat ini</h3>
 <ul class="g-list">
-    <li><b>Kamera belum ada.</b> Pemindaian memakai alat pemindai barcode (Bluetooth / USB). Kamera dan pemasangan Stoku sebagai aplikasi di layar utama butuh alamat <b>https</b>.</li>
+    <li><b>Kamera belum ada.</b> Pemindaian memakai alat pemindai barcode (Bluetooth / USB). Kamera dan pemasangan AdminKU sebagai aplikasi di layar utama butuh alamat <b>https</b>.</li>
     <li><b>Hitung Stok Opname</b> menyimpan isian yang belum terkirim di HP dan mengirimnya lagi bila sinyal kembali, tetapi belum ada mode offline penuh.</li>
     <li>Formulir <b>Grup</b> menampilkan 24 modul sebagai kartu yang panjang (satu per modul); tetap bisa dipakai, hanya perlu menggulir cukup jauh.</li>
     <li>Tampilan HP baru diuji di emulasi browser pada lebar 360, 393, dan 430 px. Bila ada layar yang terpotong atau tombol yang sulit diketuk di HP Anda, buka halaman <b>/ukur</b> (bagian berikut), salin hasilnya, dan kirim bersama nama layar yang bermasalah.</li>
@@ -224,7 +224,7 @@
 </table>
 <h3>Mengisi form</h3>
 <ol class="g-steps">
-    <li>Isian bertanda <b>bintang merah (*)</b> wajib diisi. Bila ada yang kosong atau salah, Stoku menampilkan pesan merah di bawah isian itu dan tidak menyimpan.</li>
+    <li>Isian bertanda <b>bintang merah (*)</b> wajib diisi. Bila ada yang kosong atau salah, AdminKU menampilkan pesan merah di bawah isian itu dan tidak menyimpan.</li>
     <li>Kolom abu-abu atau terkunci (mis. <b>Kode Barang</b>, <b>No. Dokumen</b>) diisi otomatis atau tidak bisa diubah setelah disimpan.</li>
     <li>Tekan <b>Simpan</b>. Pesan hijau di atas layar berarti berhasil.</li>
     <li>Tombol hanya bereaksi sekali. Tidak perlu menekan dua kali, dan data tidak tersimpan ganda.</li>

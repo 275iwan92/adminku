@@ -1,0 +1,38 @@
+<svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" role="img" aria-labelledby="ug-kas-alur-t ug-kas-alur-d">
+<title id="ug-kas-alur-t">Alur Uang Masuk dan Uang Keluar di Kas</title>
+<desc id="ug-kas-alur-d">Uang Masuk dibuat sebagai draf, di-Confirm menjadi Diajukan, lalu Disetujui Supervisor sehingga kas tujuan bertambah dan Uang Masuk itu menjadi sumber dana yang bisa ditaut. Uang Keluar wajib memilih satu Uang Masuk yang sudah Disetujui, lalu melalui Confirm dan Disetujui juga; saat Disetujui, sisa saldo Uang Masuk itu dicek ulang dan ditolak bila jumlahnya tidak cukup lagi.</desc>
+<defs><marker id="m-ug-kas-alur" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<text class="t b" x="20" y="16" text-anchor="start">Uang Masuk (sumber dana)</text>
+<rect class="n n-gray" x="20" y="26" width="190" height="80" rx="9"/>
+<text class="t b" x="115" y="54" text-anchor="middle">Dibuat</text>
+<text class="t s" x="115" y="74" text-anchor="middle">Draf: kas tujuan,</text>
+<text class="t s" x="115" y="90" text-anchor="middle">sumber dana, jumlah</text>
+<rect class="n n-warn" x="250" y="26" width="180" height="80" rx="9"/>
+<text class="t b" x="340" y="54" text-anchor="middle">Confirm</text>
+<text class="t s" x="340" y="74" text-anchor="middle">Diajukan, menunggu</text>
+<text class="t s" x="340" y="90" text-anchor="middle">Supervisor</text>
+<rect class="n n-ok" x="470" y="26" width="190" height="80" rx="9"/>
+<text class="t b" x="565" y="54" text-anchor="middle">Disetujui</text>
+<text class="t s" x="565" y="74" text-anchor="middle">kas tujuan bertambah;</text>
+<text class="t s" x="565" y="90" text-anchor="middle">jadi sumber dana</text>
+<path class="e" d="M210,66 L250,66" marker-end="url(#m-ug-kas-alur)"/>
+<path class="e" d="M430,66 L470,66" marker-end="url(#m-ug-kas-alur)"/>
+<path class="e" d="M565,106 L345,200" marker-end="url(#m-ug-kas-alur)"/>
+<text class="el" x="470" y="150" text-anchor="middle">ditaut sebagai sumber dana</text>
+<text class="t b" x="250" y="188" text-anchor="start">Uang Keluar (wajib ditaut)</text>
+<rect class="n n-in" x="250" y="200" width="190" height="80" rx="9"/>
+<text class="t b" x="345" y="228" text-anchor="middle">Dibuat</text>
+<text class="t s" x="345" y="248" text-anchor="middle">pilih satu Uang Masuk,</text>
+<text class="t s" x="345" y="264" text-anchor="middle">isi jumlah dan untuk apa</text>
+<rect class="n n-warn" x="470" y="200" width="190" height="80" rx="9"/>
+<text class="t b" x="565" y="228" text-anchor="middle">Confirm</text>
+<text class="t s" x="565" y="248" text-anchor="middle">Diajukan, menunggu</text>
+<text class="t s" x="565" y="264" text-anchor="middle">Supervisor</text>
+<rect class="n n-ok" x="690" y="200" width="190" height="80" rx="9"/>
+<text class="t b" x="785" y="228" text-anchor="middle">Disetujui</text>
+<text class="t s" x="785" y="248" text-anchor="middle">sisa saldo dicek ulang;</text>
+<text class="t s" x="785" y="264" text-anchor="middle">kas tujuan berkurang</text>
+<path class="e" d="M440,240 L470,240" marker-end="url(#m-ug-kas-alur)"/>
+<path class="e" d="M660,240 L690,240" marker-end="url(#m-ug-kas-alur)"/>
+<text class="t s" x="20" y="308" text-anchor="start">Disetujui ditolak bila jumlah Uang Keluar melebihi sisa saldo Uang Masuk saat itu (dicek ulang, bisa sudah terpakai transaksi lain).</text>
+</svg>

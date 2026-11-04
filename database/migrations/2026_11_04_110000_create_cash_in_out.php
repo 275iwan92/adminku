@@ -54,9 +54,12 @@ return new class extends Migration
             $table->index(['status', 'doc_date']);
         });
 
-        $admin = DB::table('sys_user_group')->where('code', 'ADMIN')->value('id');
+        // Awalan sys_ lahir di migrasi 2026_11_17 (setelah ini); pakai nama lama bila belum di-rename.
+        $groupTable = Schema::hasTable('sys_user_group') ? 'sys_user_group' : 'user_groups';
+        $moduleTable = Schema::hasTable('sys_user_group_module') ? 'sys_user_group_module' : 'user_group_modules';
+        $admin = DB::table($groupTable)->where('code', 'ADMIN')->value('id');
         if ($admin) {
-            DB::table('sys_user_group_module')->insertOrIgnore([
+            DB::table($moduleTable)->insertOrIgnore([
                 ['group_id' => $admin, 'module' => 'KSM', 'access' => 'rw'],
                 ['group_id' => $admin, 'module' => 'KSK', 'access' => 'rw'],
                 ['group_id' => $admin, 'module' => 'KSR', 'access' => 'rw'],
@@ -66,7 +69,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::table('sys_user_group_module')->whereIn('module', ['KSM', 'KSK', 'KSR'])->delete();
+        $moduleTable = Schema::hasTable('sys_user_group_module') ? 'sys_user_group_module' : 'user_group_modules';
+        DB::table($moduleTable)->whereIn('module', ['KSM', 'KSK', 'KSR'])->delete();
         Schema::dropIfExists('k_cash_out');
         Schema::dropIfExists('k_cash_in');
     }

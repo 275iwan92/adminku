@@ -68,7 +68,7 @@
 <ul class="g-list">
     <li>Dari tanggal <b>sama dengan atau lebih awal</b> dari tanggal dokumen Saldo Awal: baris <b>AWAL</b> tampil di daftar, dan kotak Saldo Awal di atas bernilai 0.</li>
     <li>Dari tanggal <b>lebih lambat</b> dari tanggal dokumen Saldo Awal: baris AWAL tidak tampil. Jumlahnya sudah masuk ke kotak Saldo Awal di atas.</li>
-    <li>Ingin melihat seluruh riwayat dari awal? Atur Dari tanggal ke tanggal sebelum Stoku dipakai.</li>
+    <li>Ingin melihat seluruh riwayat dari awal? Atur Dari tanggal ke tanggal sebelum AdminKU dipakai.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">

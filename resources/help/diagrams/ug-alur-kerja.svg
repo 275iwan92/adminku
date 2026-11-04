@@ -1,5 +1,5 @@
 <svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 190" role="img" aria-labelledby="ug-alur-kerja-t ug-alur-kerja-d">
-<title id="ug-alur-kerja-t">Alur kerja Stoku</title>
+<title id="ug-alur-kerja-t">Alur kerja AdminKU</title>
 <desc id="ug-alur-kerja-d">Data Master diisi sekali, lalu Transaksi dicatat sebagai dokumen Draf yang di-Konfirmasi, baru stok berubah, dan hasilnya dibaca di Laporan dan Beranda.</desc>
 <defs><marker id="m-ug-alur-kerja" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <rect class="n n-in"  x="20" y="30" width="180" height="84" rx="9"/>

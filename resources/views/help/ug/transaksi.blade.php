@@ -11,7 +11,7 @@
 <table class="g-table">
     <thead><tr><th>Modul</th><th>Dipakai untuk</th><th>Siapa</th></tr></thead>
     <tbody>
-        @if ($can('OPN'))<tr><td><a href="#t-opn">Saldo Awal</a></td><td>Memasukkan stok yang sudah ada saat mulai memakai Stoku</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
+        @if ($can('OPN'))<tr><td><a href="#t-opn">Saldo Awal</a></td><td>Memasukkan stok yang sudah ada saat mulai memakai AdminKU</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
         @if ($can('RCV'))<tr><td><a href="#t-rcv">Penerimaan Barang</a></td><td>Barang masuk dari pemasok</td><td>Data Entry, Supervisor</td></tr>@endif
         @if ($can('ISS'))<tr><td><a href="#t-iss">Pengeluaran Barang</a></td><td>Barang keluar ke penerima</td><td>Data Entry, Supervisor</td></tr>@endif
         @if ($can('ADJ'))<tr><td><a href="#t-adj">Penyesuaian Stok</a></td><td>Mengoreksi stok barang per barang, untuk temuan di luar jadwal</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
@@ -24,7 +24,7 @@
 @if ($can('OPN'))
 <h3 id="t-opn">Saldo Awal <span class="g-role">hanya Supervisor</span></h3>
 <h4>Untuk apa</h4>
-<p>Memasukkan stok yang <b>sudah ada di rak</b> saat Anda mulai memakai Stoku. Saldo Awal <b>tidak wajib</b>. Barang yang baru datang cukup dicatat lewat Penerimaan Barang. Penerimaan pertama tidak otomatis menjadi Saldo Awal.</p>
+<p>Memasukkan stok yang <b>sudah ada di rak</b> saat Anda mulai memakai AdminKU. Saldo Awal <b>tidak wajib</b>. Barang yang baru datang cukup dicatat lewat Penerimaan Barang. Penerimaan pertama tidak otomatis menjadi Saldo Awal.</p>
 <h4>Siapa yang bisa</h4>
 <p>Hanya Supervisor.</p>
 <h4>Langkah</h4>
@@ -140,8 +140,8 @@
     <li><b>Setujui ditolak bila stok barang berubah</b> sejak dihitung, misalnya ada penerimaan atau pengeluaran baru. Tolak dokumennya, lalu hitung ulang di dokumen baru.</li>
     <li>Satuannya selalu satuan stok barang.</li>
     <li>Di grid tersedia kotak <b>Menunggu persetujuan</b> dan <b>Draf</b> untuk menyaring cepat.</li>
-    <li>Stoku juga membuat Penyesuaian otomatis dalam dua keadaan: saat Stok Opname disetujui (alasan &quot;Stok Opname SO-...&quot;) dan saat dokumen dibatalkan (alasan &quot;Pembalik otomatis pembatalan ...&quot;).</li>
-    <li>Stoku belum melarang pembuat dokumen menyetujui dokumennya sendiri.</li>
+    <li>AdminKU juga membuat Penyesuaian otomatis dalam dua keadaan: saat Stok Opname disetujui (alasan &quot;Stok Opname SO-...&quot;) dan saat dokumen dibatalkan (alasan &quot;Pembalik otomatis pembatalan ...&quot;).</li>
+    <li>AdminKU belum melarang pembuat dokumen menyetujui dokumennya sendiri.</li>
 </ul>
 <h4>Masalah umum</h4>
 <ul class="g-list">
@@ -153,7 +153,7 @@
 @if ($can('SO'))
 <h3 id="t-so">Stok Opname</h3>
 <h4>Untuk apa</h4>
-<p>Stok Opname adalah <b>penghitungan fisik rutin</b>, mingguan atau bulanan. Pada hari itu beberapa orang menghitung barang di gudang dengan <b>kertas dan alat tulis</b>. Hasilnya <b>diinput sekaligus</b> untuk banyak barang. Stoku menghitung <b>selisih</b>: hasil hitung fisik dikurangi stok di sistem. Setelah Supervisor menyetujui, Stoku membuat <b>satu Penyesuaian Stok otomatis</b> sehingga stok di sistem sama dengan stok di rak. Penghitungan dilakukan <b>per batch</b>: satu tanggal kedaluwarsa, satu baris.</p>
+<p>Stok Opname adalah <b>penghitungan fisik rutin</b>, mingguan atau bulanan. Pada hari itu beberapa orang menghitung barang di gudang dengan <b>kertas dan alat tulis</b>. Hasilnya <b>diinput sekaligus</b> untuk banyak barang. AdminKU menghitung <b>selisih</b>: hasil hitung fisik dikurangi stok di sistem. Setelah Supervisor menyetujui, AdminKU membuat <b>satu Penyesuaian Stok otomatis</b> sehingga stok di sistem sama dengan stok di rak. Penghitungan dilakukan <b>per batch</b>: satu tanggal kedaluwarsa, satu baris.</p>
 <table class="g-table">
     <thead><tr><th></th><th>Stok Opname</th><th>Penyesuaian Stok</th></tr></thead>
     <tbody>
@@ -172,12 +172,12 @@
 <ol class="g-steps">
     <li><b>Mulai</b> <span class="g-role">hanya Supervisor</span>. Di <b>Stok Opname</b>, tekan <b>Mulai Opname</b>. Isi <b>Tanggal Opname</b>. Pilih <b>Cakupan</b>: Semua barang, Per Kategori, atau Per Lokasi. Pilih Kategori atau Lokasinya bila perlu. Isi <b>Ambang Selisih (%)</b> (bawaan 5). Pilih <b>Hitung buta</b> dan <b>Kunci transaksi selama opname</b> (keduanya bawaan Ya). Tekan <b>Simpan</b>. Simpan berarti mulai.
         <ul class="g-list">
-            <li>Saat mulai, Stoku mencatat stok sistem dan biaya rata-rata tiap batch yang berstok dan aktif. Inilah <b>titik acuan stok</b> (disebut juga <b>cut-off</b>). Selisih dihitung terhadap titik acuan ini.</li>
+            <li>Saat mulai, AdminKU mencatat stok sistem dan biaya rata-rata tiap batch yang berstok dan aktif. Inilah <b>titik acuan stok</b> (disebut juga <b>cut-off</b>). Selisih dihitung terhadap titik acuan ini.</li>
             <li>Nomornya berawalan <b>SO</b>, mis. SO-2611-0001.</li>
             <li><b>Hitung buta Ya:</b> stok sistem disembunyikan di Lembar Hitung dan layar input sampai Tinjau. Lebih objektif. <b>Tidak:</b> stok sistem dan selisih langsung tampil. Lebih cepat.</li>
             <li><b>Kunci transaksi Ya:</b> Konfirmasi dan Setujui transaksi stok ditolak sampai opname selesai atau dibatalkan.</li>
             <li><b>Ambang Selisih:</b> selisih di atas persen ini wajib diberi alasan saat Tinjau.</li>
-            <li>Tidak ada batch berstok dalam cakupan itu? Stoku menolak dan meminta cakupan lain.</li>
+            <li>Tidak ada batch berstok dalam cakupan itu? AdminKU menolak dan meminta cakupan lain.</li>
         </ul>
     </li>
     <li><b>Cetak Lembar Hitung.</b> Tekan <b>Cetak Lembar Hitung</b>. Lembar A4 lanskap ini dikelompokkan per Lokasi, lalu kode. Kolom <b>Hasil Hitung</b>, <b>Penghitung</b>, dan <b>Catatan</b> dikosongkan untuk ditulis tangan. Kolom <b>Stok Sistem</b> hanya tercetak bila opname tidak buta. Di bawahnya ada kotak tanda tangan Penghitung dan Mengetahui (Supervisor). Data Entry dan Supervisor boleh mencetaknya.</li>
@@ -185,9 +185,9 @@
     <li><b>Input hasil hitung</b> (Data Entry atau Supervisor). Buka opname dari daftar. Setiap baris adalah satu batch. Isi <b>Hasil Hitung</b> (angka 0 atau lebih, sampai 3 desimal, dalam satuan stok) dan <b>Penghitung</b>. Nama penghitung terakhir diingat untuk baris berikutnya.
         <ul class="g-list">
             <li>Setiap perubahan <b>tersimpan otomatis</b> begitu Anda pindah sel.</li>
-            <li>Ingin memastikan semuanya sudah masuk? Tekan <b>Simpan Cadangan</b>. Stoku membandingkan jumlah baris terisi di layar dengan yang ada di server, lalu menampilkan &quot;Semua isian tersimpan di server: ...&quot;. Bila jumlahnya berbeda, muncul peringatan merah dan isian Anda mungkin belum tersimpan: muat ulang halaman dan isi lagi baris yang kurang.</li>
+            <li>Ingin memastikan semuanya sudah masuk? Tekan <b>Simpan Cadangan</b>. AdminKU membandingkan jumlah baris terisi di layar dengan yang ada di server, lalu menampilkan &quot;Semua isian tersimpan di server: ...&quot;. Bila jumlahnya berbeda, muncul peringatan merah dan isian Anda mungkin belum tersimpan: muat ulang halaman dan isi lagi baris yang kurang.</li>
             <li>Kotak <b>Terisi</b> dan <b>Belum diisi</b> di atas lembar menghitung kemajuan langsung. Klik <b>Belum diisi</b> untuk melihat baris yang tersisa. Kotak <b>Cari</b> mencari kode atau nama.</li>
-            <li>Beberapa orang boleh mengisi baris yang berbeda sekaligus. Stoku mencatat <b>siapa yang menginput</b> tiap baris. Namanya tampil di kolom <b>Diinput oleh</b> di layar Tinjau dan di Berita Acara.</li>
+            <li>Beberapa orang boleh mengisi baris yang berbeda sekaligus. AdminKU mencatat <b>siapa yang menginput</b> tiap baris. Namanya tampil di kolom <b>Diinput oleh</b> di layar Tinjau dan di Berita Acara.</li>
             <li>Baris yang sama sudah diubah orang lain sejak layar Anda dimuat? Muncul peringatan &quot;Baris ... sudah diubah oleh ... pada ...&quot;. Isi alasan lalu Simpan untuk <b>menimpa</b>. Angka yang Anda ketik menggantikan angka lama, bukan ditambahkan. Atau pilih Batal untuk membuang isian Anda.</li>
             <li>Opname <b>tidak buta</b>? Kolom <b>Stok Sistem</b> dan <b>Selisih</b> tampil langsung di layar input, dan baris yang selisihnya <b>melewati ambang</b> diberi warna merah muda supaya mudah dilihat.</li>
         </ul>
@@ -204,7 +204,7 @@
             <li>Tekan <b>Pratinjau Berita Acara</b> untuk melihat berita acaranya.</li>
         </ul>
     </li>
-    <li><b>Setujui Opname</b> <span class="g-role">hanya Supervisor</span>. Stoku memeriksa tiga hal: semua baris sudah final, alasan terisi, dan stok barang yang berselisih belum bergeser sejak titik acuan. Bila semuanya benar, Stoku membuat <b>satu dokumen Penyesuaian Stok</b> (status Disetujui, alasan &quot;Stok Opname SO-...&quot;) berisi baris yang selisihnya tidak nol. Dokumen itu diposting ke stok dan kunci transaksi dilepas. Tidak ada selisih sama sekali? Opname selesai tanpa Penyesuaian.</li>
+    <li><b>Setujui Opname</b> <span class="g-role">hanya Supervisor</span>. AdminKU memeriksa tiga hal: semua baris sudah final, alasan terisi, dan stok barang yang berselisih belum bergeser sejak titik acuan. Bila semuanya benar, AdminKU membuat <b>satu dokumen Penyesuaian Stok</b> (status Disetujui, alasan &quot;Stok Opname SO-...&quot;) berisi baris yang selisihnya tidak nol. Dokumen itu diposting ke stok dan kunci transaksi dilepas. Tidak ada selisih sama sekali? Opname selesai tanpa Penyesuaian.</li>
     <li><b>Kembalikan ke Penghitungan</b> (dengan catatan) mengembalikan opname agar diperbaiki. Stok tidak berubah. Setelah diperbaiki, tekan Selesai Hitung lagi.</li>
     <li><b>Berita Acara Stok Opname.</b> Tombol <b>Cetak Berita Acara</b> ada sesudah opname Selesai. Sebelum itu ada <b>Pratinjau Berita Acara</b>. Isinya: nomor, tanggal, cakupan, cut-off, ambang selisih, daftar penghitung, ringkasan, baris selisih beserta alasannya, nomor Penyesuaian yang dibuat, dan tiga kotak tanda tangan (Penghitung, Supervisor, Penanggung Jawab Gudang).</li>
 </ol>
@@ -218,7 +218,7 @@
         <tr><td>Tidak dihitung (centang, dengan Catatan)</td><td>Barang tidak ketemu atau tidak bisa dihitung. Baris itu tidak menghasilkan selisih dan stoknya tidak diubah.</td></tr>
     </tbody>
 </table>
-<div class="g-warn"><b>Kunci transaksi.</b> Opname berstatus Sedang dihitung atau Tinjau, dan kuncinya aktif? Stoku menolak tiga hal ini:
+<div class="g-warn"><b>Kunci transaksi.</b> Opname berstatus Sedang dihitung atau Tinjau, dan kuncinya aktif? AdminKU menolak tiga hal ini:
     <ul class="g-list">
         <li><b>Konfirmasi</b> Penerimaan Barang, Pengeluaran Barang, dan Saldo Awal.</li>
         <li><b>Setujui</b> Penyesuaian Stok.</li>
@@ -262,7 +262,7 @@
     <li><b>Kosong = belum dihitung. 0 = barang memang kosong.</b> Barang tidak ketemu: centang <b>Tidak dihitung</b> dan isi catatan.</li>
     <li>Kolom <b>Cari</b> di atas melompat ke barang: ketik sebagian kode atau nama lalu pilih. Pemindai barcode Bluetooth atau USB (bertingkah seperti keyboard) cukup memindai ke kolom Cari: kode yang pas langsung membuka barangnya. Tulisan tangan dengan pen (mis. S Pen) bisa dipakai di kolom isian mana pun.</li>
     <li>Tulisan di atas menunjukkan <b>Tersimpan</b>. Bila sinyal putus, tertulis <b>Gagal menyimpan</b> dan isian tertahan di HP, lalu dikirim ulang sendiri atau lewat <b>Coba lagi</b>. Jangan menutup halaman sebelum tertulis Tersimpan.</li>
-    <li>Bila barang itu sudah diisi orang lain, kartu memberi peringatan kuning (siapa dan jam berapa). Bila orang lain mengubahnya sejak layar Anda dibuka, Stoku meminta alasan untuk menimpa, atau pilih <b>Buang isian saya</b>.</li>
+    <li>Bila barang itu sudah diisi orang lain, kartu memberi peringatan kuning (siapa dan jam berapa). Bila orang lain mengubahnya sejak layar Anda dibuka, AdminKU meminta alasan untuk menimpa, atau pilih <b>Buang isian saya</b>.</li>
     <li>Sesudah barang terakhir muncul <b>Ringkasan</b> (juga lewat tombol Ringkasan di atas). Semua terisi: tekan <b>Selesai Hitung</b>. Yang belum terisi tampil sebagai daftar; sentuh untuk membukanya.</li>
 </ol>
 <p>Pada opname <b>hitung buta</b> stok sistem tidak ditampilkan sama sekali, seperti di komputer.</p>

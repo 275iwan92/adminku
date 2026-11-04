@@ -1,9 +1,9 @@
 <svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" role="img" aria-labelledby="ug-saldo-awal-vs-penerimaan-t ug-saldo-awal-vs-penerimaan-d">
 <title id="ug-saldo-awal-vs-penerimaan-t">Beda Saldo Awal dan Penerimaan Barang</title>
-<desc id="ug-saldo-awal-vs-penerimaan-d">Saldo Awal memasukkan stok yang sudah ada saat mulai memakai Stoku; hanya Supervisor, hanya untuk barang yang belum punya pergerakan stok, tanggalnya dipilih sendiri. Penerimaan Barang mencatat barang yang datang dari supplier; tanggalnya saat Konfirmasi. Penerimaan pertama tidak otomatis menjadi Saldo Awal.</desc>
+<desc id="ug-saldo-awal-vs-penerimaan-d">Saldo Awal memasukkan stok yang sudah ada saat mulai memakai AdminKU; hanya Supervisor, hanya untuk barang yang belum punya pergerakan stok, tanggalnya dipilih sendiri. Penerimaan Barang mencatat barang yang datang dari supplier; tanggalnya saat Konfirmasi. Penerimaan pertama tidak otomatis menjadi Saldo Awal.</desc>
 <rect class="n n-in"  x="20" y="20" width="420" height="230" rx="9"/>
 <text class="t b" x="34" y="46">Saldo Awal</text>
-<text class="t s" x="34" y="74">Untuk: stok yang sudah ada di rak saat mulai memakai Stoku</text>
+<text class="t s" x="34" y="74">Untuk: stok yang sudah ada di rak saat mulai memakai AdminKU</text>
 <text class="t s" x="34" y="98">Siapa: hanya Supervisor</text>
 <text class="t s" x="34" y="122">Syarat: barang belum punya pergerakan stok</text>
 <text class="t s" x="34" y="146">Tanggal: Anda pilih sendiri (tidak lebih dari hari ini)</text>

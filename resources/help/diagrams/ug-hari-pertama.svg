@@ -1,5 +1,5 @@
 <svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 215" role="img" aria-labelledby="ug-hari-pertama-t ug-hari-pertama-d">
-<title id="ug-hari-pertama-t">Urutan hari pertama memakai Stoku</title>
+<title id="ug-hari-pertama-t">Urutan hari pertama memakai AdminKU</title>
 <desc id="ug-hari-pertama-d">Enam langkah: masuk, isi Data Master, isi stok awal dengan Saldo Awal atau Penerimaan Barang, catat Pengeluaran Barang, periksa Laporan, lalu lakukan Stok Opname rutin. Setiap dokumen disimpan sebagai Draf dan stok baru berubah setelah Konfirmasi.</desc>
 <defs><marker id="m-ug-hari-pertama" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <rect class="n n-gray"  x="18" y="30" width="124" height="96" rx="9"/>

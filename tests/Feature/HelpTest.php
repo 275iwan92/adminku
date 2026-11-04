@@ -27,6 +27,7 @@ class HelpTest extends TestCase
         'STB' => 'r-stb', 'R-CARD' => 'r-card', 'R-SUM' => 'r-sum', 'R-IN' => 'r-in', 'R-OUT' => 'r-out', 'R-EXP' => 'r-exp', 'R-ADJ' => 'r-adj',
         'GVM' => 'ga-gvm', 'GVD' => 'ga-gvd', 'GVS' => 'ga-gvs', 'GVO' => 'ga-gvo', 'GVK' => 'ga-gvk', 'GVT' => 'ga-gvt',
         'GAM' => 'ga-gam', 'GAS' => 'ga-gas', 'GAV' => 'ga-gav', 'GAK' => 'ga-gak', 'GAA' => 'ga-gaa', 'GAR' => 'ga-gar', 'GAE' => 'ga-gae', 'GAP' => 'ga-gap', 'PUP' => 'pur-pup', 'PUK' => 'pur-puk', 'PUO' => 'pur-puo', 'PUV' => 'pur-puv', 'HRE' => 'hr-hre', 'HRR' => 'hr-hrr', 'HRD' => 'hr-hrd',
+        'KSM' => 'kas-ksm', 'KSK' => 'kas-ksk', 'KSR' => 'kas-ksr',
         'USR' => 'sec-usr', 'GRP' => 'sec-grp', 'SMP' => 'sec-smp', 'MOD' => 'sec-mod',
     ];
 
@@ -218,7 +219,7 @@ class HelpTest extends TestCase
     public function test_user_guide_opens_for_every_role(): void
     {
         foreach ([User::factory(), User::factory()->supervisor(), User::factory()->administrator()] as $factory) {
-            $this->actingAs($factory->create())->get(route('help.user-guide'))->assertOk()->assertSee('Panduan Pengguna Stoku')->assertSee('Cara memakai Grid');
+            $this->actingAs($factory->create())->get(route('help.user-guide'))->assertOk()->assertSee('Panduan Pengguna AdminKU')->assertSee('Cara memakai Grid');
         }
     }
 
@@ -249,7 +250,7 @@ class HelpTest extends TestCase
     {
         $this->actingAs(User::factory()->create())->get(route('help.technical-guide'))->assertForbidden();
         $this->actingAs(User::factory()->supervisor()->create())->get(route('help.technical-guide'))->assertForbidden();
-        $this->actingAs(User::factory()->administrator()->create())->get(route('help.technical-guide'))->assertOk()->assertSee('Stoku Technical Guide');
+        $this->actingAs(User::factory()->administrator()->create())->get(route('help.technical-guide'))->assertOk()->assertSee('AdminKU Technical Guide');
     }
 
     public function test_technical_guide_tab_is_rendered_only_for_administrators(): void

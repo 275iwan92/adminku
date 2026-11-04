@@ -1,8 +1,8 @@
 {{-- REMARK
- Tujuan       : User's Guide (UG) Stoku, Bahasa Indonesia, untuk SEMUA pengguna yang sudah login: peta "Mulai di sini", peran, cara memakai grid dan form, satu bagian per modul (Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum), istilah, dan pertanyaan umum.
-                Halaman dokumentasi murni: HTML biasa (kelas sstock-guide di resources/css/app.css), tidak lewat kamus Indonesian; istilah dan nama tombol ditulis sama persis dengan label di layar.
-                Isi dipecah per bagian di resources/views/help/ug/*.blade.php (mulai, dasar, master, transaksi, laporan, ga, hr, keamanan, istilah, tanya); berkas ini memuat daftar isi dan menyambungkannya.
-                Bagian 9 GA (Perawatan Kendaraan dan Perawatan AC, kode modul GV* dan GA*) memakai nama aplikasi AdminKU dan perusahaan Jays; bagian lama belum diganti mereknya.
+ Tujuan       : User's Guide (UG) AdminKU, Bahasa Indonesia, untuk SEMUA pengguna yang sudah login: peta "Mulai di sini", peran, cara memakai grid dan form, satu bagian per modul (Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum), istilah, dan pertanyaan umum.
+                Halaman dokumentasi murni: HTML biasa (kelas sstock-guide di resources/css/app.css, nama kelas lama, belum diganti), tidak lewat kamus Indonesian; istilah dan nama tombol ditulis sama persis dengan label di layar.
+                Isi dipecah per bagian di resources/views/help/ug/*.blade.php (mulai, dasar, master, transaksi, laporan, ga, hr, purchase, keamanan, kas, istilah, tanya); berkas ini memuat daftar isi dan menyambungkannya.
+                Bagian 9 GA (Perawatan Kendaraan dan Perawatan AC, kode modul GV* dan GA*) memakai nama perusahaan Jays (nama klien, bukan nama produk).
  Sumber hulu  : App\Support\Modules (daftar modul + peran minimal), User::canAccess (bagian modul hanya tampil bila pengguna boleh membukanya), REMARK di view/controller, HANDOVER.md.
  Output       : tab "Panduan Pengguna" di Bantuan & dukungan (menu profil).
  Dipakai oleh : route help.user-guide (grup auth). Technical Guide (English, Administrator) ada di help/technical-guide.blade.php; ubah keduanya bersama bila perilaku berubah.
@@ -20,6 +20,7 @@
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
     $anyHr = $can('HRE') || $can('HRR') || $can('HRD');
     $anyPur = $can('PUP') || $can('PUK') || $can('PUO') || $can('PUV');
+    $anyKas = $can('KSM') || $can('KSK') || $can('KSR');
     $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
@@ -103,6 +104,12 @@
             @if ($can('PUO'))<a class="g-toc-sub" href="#pur-puo">Pesanan Pembelian (PO)</a>@endif
             @if ($can('PUV'))<a class="g-toc-sub" href="#pur-puv">Penerimaan Pembelian (PV)</a>@endif
         @endif
+        @if ($anyKas)
+            <a href="#kas">9c. Kas</a>
+            @if ($can('KSM'))<a class="g-toc-sub" href="#kas-ksm">Uang Masuk</a>@endif
+            @if ($can('KSK'))<a class="g-toc-sub" href="#kas-ksk">Uang Keluar</a>@endif
+            @if ($can('KSR'))<a class="g-toc-sub" href="#kas-ksr">Kas / Rekening</a>@endif
+        @endif
         @if ($anySec)
             <a href="#keamanan">10. Keamanan</a>
             @if ($can('USR'))<a class="g-toc-sub" href="#sec-usr">Pengguna</a>@endif
@@ -115,8 +122,8 @@
     </nav>
 
     <main class="g-body">
-        <h1>Panduan Pengguna Stoku</h1>
-        <p class="g-lead">Tuntunan memakai Stoku langkah demi langkah. Bagian yang hanya bisa dipakai peran tertentu ditandai <span class="g-role">hanya Supervisor</span>. Panduan ini hanya menampilkan modul yang boleh Anda buka (peran Anda: <b>{{ $user->roleLabel() }}</b>).</p>
+        <h1>Panduan Pengguna AdminKU</h1>
+        <p class="g-lead">Tuntunan memakai AdminKU langkah demi langkah. Bagian yang hanya bisa dipakai peran tertentu ditandai <span class="g-role">hanya Supervisor</span>. Panduan ini hanya menampilkan modul yang boleh Anda buka (peran Anda: <b>{{ $user->roleLabel() }}</b>).</p>
 
         @include('help.ug.mulai')
         @include('help.ug.dasar')
@@ -126,6 +133,7 @@
         @include('help.ug.ga')
         @include('help.ug.hr')
         @include('help.ug.purchase')
+        @include('help.ug.kas')
         @include('help.ug.keamanan')
         @include('help.ug.istilah')
         @include('help.ug.tanya')

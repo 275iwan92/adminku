@@ -11,7 +11,7 @@
 @if ($can('USR'))
 <h3 id="sec-usr">Pengguna</h3>
 <h4>Untuk apa</h4>
-<p>Membuat akun untuk orang yang memakai Stoku, menentukan perannya, dan mencabut aksesnya bila perlu.</p>
+<p>Membuat akun untuk orang yang memakai AdminKU, menentukan perannya, dan mencabut aksesnya bila perlu.</p>
 <h4>Siapa yang bisa</h4>
 <p>Administrator.</p>
 <h4>Langkah</h4>
@@ -53,7 +53,7 @@
 <div class="g-tip">Akses nyata = modul diberikan Grup <b>dan</b> peran pengguna cukup tinggi. Modul khusus Supervisor tetap tertutup bagi Data Entry walau diberi RW. Administrator selalu punya akses penuh.</div>
 <ul class="g-list">
     <li>Pengguna tanpa Grup memakai modul bawaan perannya, dengan hak baca dan tulis.</li>
-    <li>Modul dengan hak RO tetap tampil di menu. Saat menyimpan, Stoku menolak dengan pesan hak akses hanya-baca.</li>
+    <li>Modul dengan hak RO tetap tampil di menu. Saat menyimpan, AdminKU menolak dengan pesan hak akses hanya-baca.</li>
     <li>Tombol plus di pilihan dokumen hanya tampil bila pengguna punya hak RW di modul masternya.</li>
 </ul>
 <h4>Masalah umum</h4>

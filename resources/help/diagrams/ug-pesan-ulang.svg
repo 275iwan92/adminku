@@ -1,6 +1,6 @@
 <svg class="g-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 375" role="img" aria-labelledby="ug-pesan-ulang-t ug-pesan-ulang-d">
 <title id="ug-pesan-ulang-t">Alur pesan ulang barang dan Catat Pemesanan</title>
-<desc id="ug-pesan-ulang-d">Stok tersedia sama dengan atau di bawah Titik Pesan Ulang memunculkan peringatan Belum dipesan di Beranda. Setelah memesan ke supplier di luar Stoku, tekan Catat Pemesanan; statusnya menjadi Dipesan. Setiap Penerimaan Barang yang dikonfirmasi menambah jumlah diterima. Selama jumlah diterima kurang dari jumlah dipesan, status Diterima sebagian dan pesanan tetap terbuka. Bila jumlah dipesan terpenuhi, pesanan tertutup otomatis. Tutup Pesanan menutup pesanan secara manual. Penerimaan yang dibatalkan membuat jumlah dihitung ulang.</desc>
+<desc id="ug-pesan-ulang-d">Stok tersedia sama dengan atau di bawah Titik Pesan Ulang memunculkan peringatan Belum dipesan di Beranda. Setelah memesan ke supplier di luar AdminKU, tekan Catat Pemesanan; statusnya menjadi Dipesan. Setiap Penerimaan Barang yang dikonfirmasi menambah jumlah diterima. Selama jumlah diterima kurang dari jumlah dipesan, status Diterima sebagian dan pesanan tetap terbuka. Bila jumlah dipesan terpenuhi, pesanan tertutup otomatis. Tutup Pesanan menutup pesanan secara manual. Penerimaan yang dibatalkan membuat jumlah dihitung ulang.</desc>
 <defs><marker id="m-ug-pesan-ulang" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <rect class="n n-bad"  x="20" y="30" width="190" height="84" rx="9"/>
 <text class="t b" x="115" y="54" text-anchor="middle">Stok tersedia</text>
@@ -8,7 +8,7 @@
 <text class="t s" x="115" y="90" text-anchor="middle">Beranda: Belum dipesan</text>
 <rect class="n n-gray"  x="250" y="30" width="180" height="84" rx="9"/>
 <text class="t b" x="340" y="68" text-anchor="middle">Pesan ke supplier</text>
-<text class="t s" x="340" y="88" text-anchor="middle">di luar Stoku</text>
+<text class="t s" x="340" y="88" text-anchor="middle">di luar AdminKU</text>
 <rect class="n n-in"  x="470" y="30" width="190" height="84" rx="9"/>
 <text class="t b" x="565" y="54" text-anchor="middle">Catat Pemesanan</text>
 <text class="t s" x="565" y="74" text-anchor="middle">Supplier, Jumlah Dipesan,</text>

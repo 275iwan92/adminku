@@ -245,7 +245,7 @@
     <li>Isi <b>Nama PT / CV</b> bila ada. Ini nama badan hukum untuk urusan pajak. Ia dicetak kecil di bawah nama perusahaan.</li>
     <li>Isi <b>NPWP</b>, <b>Telepon</b>, dan <b>Email</b> bila perlu.</li>
     <li>Isi <b>Alamat</b>. Tulis satu baris alamat per baris.</li>
-    <li>Di bagian <b>Cuaca di Beranda</b> isi <b>Kota untuk cuaca</b>, <b>Lintang</b>, dan <b>Bujur</b> (misalnya Malang, -7.98, 112.63; koma desimal boleh). Ini kota <b>cadangan</b> untuk kartu cuaca Beranda, dipakai bila lokasi perangkat pengguna tidak bisa dipakai (izin ditolak atau Stoku dibuka tanpa HTTPS). Kosong semua = tanpa cadangan: kartu cuaca hanya tampil bila lokasi perangkat bisa dipakai. Lintang dan Bujur harus diisi berpasangan; lintang -90 sampai 90, bujur -180 sampai 180.</li>
+    <li>Di bagian <b>Cuaca di Beranda</b> isi <b>Kota untuk cuaca</b>, <b>Lintang</b>, dan <b>Bujur</b> (misalnya Malang, -7.98, 112.63; koma desimal boleh). Ini kota <b>cadangan</b> untuk kartu cuaca Beranda, dipakai bila lokasi perangkat pengguna tidak bisa dipakai (izin ditolak atau AdminKU dibuka tanpa HTTPS). Kosong semua = tanpa cadangan: kartu cuaca hanya tampil bila lokasi perangkat bisa dipakai. Lintang dan Bujur harus diisi berpasangan; lintang -90 sampai 90, bujur -180 sampai 180.</li>
     <li>Pada <b>Logo</b>, pilih berkas gambar dari komputer Anda. Tekan <b>Hapus logo</b> bila ingin membuang logo yang sudah ada.</li>
     <li>Pilih <b>Tampilan kop</b>: <b>Logo + Nama + Alamat</b>, <b>Logo + Nama</b>, atau <b>Nama saja</b>.</li>
     <li>Lihat <b>Pratinjau kop</b> di bawah isian. Pratinjau berubah langsung saat Anda mengetik atau memilih.</li>
@@ -253,13 +253,13 @@
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
-    <li><b>Logo.</b> Pakai PNG, JPG, atau WebP. SVG tidak bisa dipakai. Ukuran berkas paling besar 1 MB, dan tiap sisi gambar antara 32 dan 4000 piksel. Stoku mengecilkan logo otomatis sampai selebar 600 piksel.</li>
+    <li><b>Logo.</b> Pakai PNG, JPG, atau WebP. SVG tidak bisa dipakai. Ukuran berkas paling besar 1 MB, dan tiap sisi gambar antara 32 dan 4000 piksel. AdminKU mengecilkan logo otomatis sampai selebar 600 piksel.</li>
     <li><b>Memilih gaya dengan logo, tetapi logo belum ada?</b> Pilihan Anda tetap disimpan. Namun kop dicetak dengan <b>Nama saja</b> sampai logo diunggah. Pratinjau memberi keterangan kecil tentang hal ini.</li>
     <li><b>Nama PT / CV sama dengan nama perusahaan?</b> Namanya dicetak sekali saja. Perbedaan huruf besar dan kecil atau spasi tidak dihitung.</li>
     <li><b>Alamat</b> hanya dicetak pada gaya <b>Logo + Nama + Alamat</b>. Kop dokumen stok memuat paling banyak tiga baris alamat dan kontak. Teks yang terlalu panjang dipotong. Tulis singkat.</li>
     <li><b>NPWP</b> dicetak di kop dokumen stok. Ia tidak dicetak di Lembar Hitung, Berita Acara, dan laporan.</li>
-    <li>Belum pernah diisi? Kop memakai nama bawaan <b>Stoku</b>, <b>Nama saja</b> bila belum ada logo.</li>
-    <li>Aplikasi tetap bernama <b>Stoku</b> di halaman masuk, menu, dan judul. Hanya kop cetakan yang memakai nama perusahaan Anda.</li>
+    <li>Belum pernah diisi? Kop memakai nama bawaan <b>AdminKU</b>, <b>Nama saja</b> bila belum ada logo.</li>
+    <li>Aplikasi tetap bernama <b>AdminKU</b> di halaman masuk, menu, dan judul. Hanya kop cetakan yang memakai nama perusahaan Anda.</li>
     <li>Perubahan berlaku untuk semua cetakan berikutnya, termasuk mencetak ulang dokumen lama. Dokumen yang sudah dicetak di kertas tidak berubah.</li>
 </ul>
 <h4>Masalah umum</h4>
