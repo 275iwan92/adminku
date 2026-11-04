@@ -109,6 +109,9 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::view('help', 'help.user-guide')->name('help.user-guide');
     // Perangkat Saya (menu profil): sesi login milik sendiri, semua peran, rute bebas (tanpa kode modul / hak Grup).
     Route::get('devices', [DeviceController::class, 'index'])->name('devices.index');
+    // Uji kecepatan ke server ini (unduh: byte acak; unggah: badan permintaan dibuang), dipakai speedometer di layar Perangkat Saya.
+    Route::get('devices/speed', [DeviceController::class, 'speedDown'])->name('devices.speed-down');
+    Route::post('devices/speed', [DeviceController::class, 'speedUp'])->name('devices.speed-up');
     Route::post('devices/others', [DeviceController::class, 'destroyOthers'])->name('devices.destroy-others');
     Route::post('devices/{device}', [DeviceController::class, 'destroy'])->name('devices.destroy');
 

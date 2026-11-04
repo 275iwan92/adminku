@@ -78,6 +78,16 @@ class DeviceTest extends TestCase
         $this->assertModelExists($theirs);
     }
 
+    public function test_speed_test_serves_requested_bytes_and_swallows_uploads_for_logged_in_users_only(): void
+    {
+        $this->get(route('devices.speed-down'))->assertRedirect(route('login'));
+
+        $this->actingAs(User::factory()->create());
+        $this->assertSame(2048, strlen($this->get(route('devices.speed-down', ['kb' => 2]))->assertOk()->getContent()));
+        $this->assertSame(8192 * 1024, strlen($this->get(route('devices.speed-down', ['kb' => 999999]))->getContent()));
+        $this->call('POST', route('devices.speed-up'), [], [], [], [], str_repeat('x', 4096))->assertNoContent();
+    }
+
     public function test_describe_reads_browser_and_system(): void
     {
         $this->assertSame('Edge di Windows', UserDevice::describe('Mozilla/5.0 (Windows NT 10.0) Chrome/120 Safari/537 Edg/120'));

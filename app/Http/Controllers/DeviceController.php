@@ -38,6 +38,20 @@ class DeviceController extends Controller
         return back()->with('status', 'Semua perangkat lain dikeluarkan.');
     }
 
+    // Byte acak (tidak bisa dikompres) sebanyak ?kb (1 sampai 8192 KB) untuk mengukur kecepatan unduh.
+    public function speedDown(Request $request)
+    {
+        $kb = max(1, min(8192, $request->integer('kb', 1024)));
+
+        return response(random_bytes($kb * 1024), 200, ['Content-Type' => 'application/octet-stream', 'Cache-Control' => 'no-store']);
+    }
+
+    // Badan permintaan dibuang; waktu kirimnya diukur browser. Batas ukuran dijaga server web (post_max_size).
+    public function speedUp()
+    {
+        return response()->noContent();
+    }
+
     private function kick($devices): void
     {
         foreach ($devices as $device) {
