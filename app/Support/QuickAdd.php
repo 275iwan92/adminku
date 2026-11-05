@@ -24,18 +24,21 @@ final class QuickAdd
         'category' => ['CAT', 'categories.store', 'Add Category', 'fa-tags', [['code', 'Code Prefix', true, 'text', 3], ['name', 'Category Name', true, 'text', 100]], 'Exactly 3 letters or digits. Cannot be changed after saving.'],
         'location' => ['LOC', 'locations.store', 'Add Location', 'fa-warehouse', [['code', 'Location Code', true, 'text', 50], ['name', 'Location Name', true, 'text', 100]], null],
         'unit' => ['UOM', 'units.store', 'Add Unit', 'fa-ruler', [['code', 'Unit Code', true, 'text', 20], ['name', 'Unit Name', true, 'text', 100]], 'Short, lowercase (pcs, box, kg). Cannot be changed after saving.'],
+        // Sumber Dana: nilai opsi = nama (disalin ke Uang Masuk), jadi value-key name. Rekening bank: balasan {id,name}, dipakai id.
+        'cash_source' => ['KSM', 'cash-sources.store', 'Add Source of Funds', 'fa-hand-holding-dollar', [['name', 'Source of Funds', true, 'text', 150]], null, 'name'],
+        'cash_bank' => ['KSM', 'cash-in.bank-account', 'Add Bank Account', 'fa-building-columns', [['bank_name', 'Bank Name', true, 'text', 100], ['account_no', 'Account Number', true, 'text', 30], ['account_holder', 'Account Holder', false, 'text', 100]], null, 'id'],
     ];
 
     public static function for(string $kind, ?User $user = null): array
     {
-        [$module, $route, $title, $icon, $fields, $note] = self::KINDS[$kind];
+        [$module, $route, $title, $icon, $fields, $note, $valueKey] = self::KINDS[$kind] + [6 => null];
         $user ??= auth()->user();
         if (! $user?->canWrite($module)) {
             return [];
         }
 
         return array_filter([
-            'url' => route($route, absolute: false), 'title' => $title, 'icon' => $icon, 'note' => $note,
+            'url' => route($route, absolute: false), 'title' => $title, 'icon' => $icon, 'note' => $note, 'value-key' => $valueKey,
             'fields' => array_map(fn ($f) => ['name' => $f[0], 'label' => $f[1], 'required' => $f[2], 'type' => $f[3], 'maxlength' => $f[4]], $fields),
         ]);
     }

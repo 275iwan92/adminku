@@ -47,6 +47,7 @@
 .sstock-cash .dl-field__hint { font-size: 15px; }
 .sstock-cash .dl-input, .sstock-cash [data-dl-dd-text], .sstock-cash select { font-size: 20px; }
 .sstock-cash .dl-input, .sstock-cash .dl-btn { min-height: 2.75rem; }
+.sstock-cash .dl-segment__opt { font-size: 20px; padding: .5rem 1.6rem; min-height: 2.75rem; }
 .sstock-cash .sstock-amount .dl-input { font-size: 40px; font-weight: 700; height: 4.5rem; text-align: right; letter-spacing: .01em; }
 .sstock-cash .sstock-amount .dl-field__label { font-size: 19px; font-weight: 700; }
 .sstock-cash .sstock-amount .dl-prefix, .sstock-cash .sstock-amount .dl-field__box { border-width: 2px; }

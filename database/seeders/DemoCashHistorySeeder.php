@@ -50,21 +50,21 @@ class DemoCashHistorySeeder extends Seeder
 
         $base = today();
         try {
-            $um1 = $this->cashIn($http, $entry, $boss, $bca, 'Institusi A', 10_000_000, $base->copy()->subDays(85), 'approved');
+            $um1 = $this->cashIn($http, $entry, $boss, $bca, 'Donatur Bapak Hadi', 10_000_000, $base->copy()->subDays(85), 'approved');
             $this->cashOut($http, $entry, $boss, $um1, 5_000_000, 'Sewa tempat kegiatan', $base->copy()->subDays(80), 'approved');
-            $um2 = $this->cashIn($http, $entry, $boss, $tunai, 'Donatur Budi', 1_500_000, $base->copy()->subDays(70), 'approved');
+            $um2 = $this->cashIn($http, $entry, $boss, $tunai, 'Donatur umum', 1_500_000, $base->copy()->subDays(70), 'approved');
             $this->cashOut($http, $entry, $boss, $um2, 500_000, 'ATK', $base->copy()->subDays(65), 'approved');
             $this->cashOut($http, $entry, $boss, $um1, 3_000_000, 'Konsumsi acara', $base->copy()->subDays(60), 'approved');
-            $um3 = $this->cashIn($http, $entry, $boss, $mandiri, 'Institusi B', 6_000_000, $base->copy()->subDays(55), 'approved');
+            $um3 = $this->cashIn($http, $entry, $boss, $mandiri, 'Penjualan barang bekas', 6_000_000, $base->copy()->subDays(55), 'approved');
             $this->cashOut($http, $entry, $boss, $um3, 1_000_000, 'Operasional kantor', $base->copy()->subDays(50), 'approved');
             $um4 = $this->cashIn($http, $entry, $boss, $bca, 'Pendapatan operasional', 3_000_000, $base->copy()->subDays(40), 'approved');
             $this->cashOut($http, $entry, $boss, $um3, 1_000_000, 'Transportasi', $base->copy()->subDays(35), 'approved');
             $this->cashOut($http, $entry, $boss, $um4, 2_900_000, 'ATK dan cetak', $base->copy()->subDays(30), 'approved');
-            $this->cashIn($http, $entry, $boss, $tunai, 'Donatur Budi', 800_000, $base->copy()->subDays(25), 'approved');
+            $this->cashIn($http, $entry, $boss, $tunai, 'Donatur umum', 800_000, $base->copy()->subDays(25), 'approved');
             $this->cashOut($http, $entry, $boss, $um1, 1_500_000, 'Dokumentasi', $base->copy()->subDays(20), 'approval');
             $this->cashOut($http, $entry, $boss, $um3, 500_000, 'Perjalanan dinas', $base->copy()->subDays(15), 'rejected', 'Melebihi anggaran triwulan ini.');
-            $this->cashIn($http, $entry, $boss, $mandiri, 'Institusi B', 4_000_000, $base->copy()->subDays(10), 'approval');
-            $this->cashIn($http, $entry, $boss, $bca, 'Institusi A', 2_000_000, $base->copy()->subDays(3), 'draft');
+            $this->cashIn($http, $entry, $boss, $mandiri, 'Penjualan barang bekas', 4_000_000, $base->copy()->subDays(10), 'approval');
+            $this->cashIn($http, $entry, $boss, $bca, 'Donatur Bapak Hadi', 2_000_000, $base->copy()->subDays(3), 'draft');
         } finally {
             Carbon::setTestNow();
         }

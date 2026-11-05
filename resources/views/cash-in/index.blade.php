@@ -15,6 +15,7 @@
     @if (auth()->user()->canAccess('KSR'))
         <x-dl::action-bar align="start">
             <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-building-columns" label="Setup Kas / Rekening" :href="route('cash-accounts.index')" />
+            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-hand-holding-dollar" label="Kelola Sumber Dana" :href="route('cash-sources.index')" />
         </x-dl::action-bar>
     @endif
     <x-dl::grid id="cash-in" :rows="$rows" actions="open" :open-url="url('cash-in/{id}')"

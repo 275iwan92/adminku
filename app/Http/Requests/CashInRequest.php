@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\CashAccount;
 use App\Support\Text;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -37,5 +38,9 @@ class CashInRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge(['source_name' => Text::of($this->input('source_name')), 'description' => Text::of($this->input('description'))]);
+        // Saklar Tunai: kas tujuan = kas tunai aktif (m_cash_account.type = cash); Rekening bank memakai pilihan rekening.
+        if ($this->input('cash_kind') === 'cash') {
+            $this->merge(['cash_account_id' => CashAccount::query()->where('type', 'cash')->where('is_active', true)->orderBy('id')->value('id')]);
+        }
     }
 }

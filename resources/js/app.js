@@ -34,3 +34,15 @@ import './hp-count';
 
 // Cari Barang tampilan HP: isi kolom terpilih saat fokus supaya pindai berikutnya menimpa.
 import './hp-find';
+
+// Uang Masuk: dropdown Rekening Bank hanya tampil bila saklar Kas Tujuan = Rekening bank (Tunai memakai kas tunai otomatis).
+const cashKindSync = () => {
+    const k = document.querySelector('[name="cash_kind"]');
+    if (!k) return;
+    document.querySelectorAll('.sstock-cashbank').forEach((el) => {
+        const box = el.parentElement.children.length === 1 ? el.parentElement : el;
+        box.style.display = k.value === 'bank' ? '' : 'none';
+    });
+};
+document.addEventListener('change', (e) => { if (e.target.matches?.('[name="cash_kind"]')) cashKindSync(); });
+document.addEventListener('DOMContentLoaded', cashKindSync);

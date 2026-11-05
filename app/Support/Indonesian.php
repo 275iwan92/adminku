@@ -124,7 +124,7 @@ final class Indonesian
         'RO opens the screen but blocks saving or changing anything. A user also needs a high enough role: Supervisor-only and Administrator-only modules stay closed to lower roles even when granted. Administrators always have full access.' => 'RO membuka layar tetapi menolak menyimpan atau mengubah apa pun. Pengguna juga harus berperan cukup tinggi: modul khusus Supervisor atau Administrator tetap tertutup bagi peran di bawahnya walau diberikan. Administrator selalu punya akses penuh.',
 
         // Tambah cepat dari dropdown (x-dl::field.select add)
-        'Add Supplier' => 'Tambah Pemasok', 'Add Recipient' => 'Tambah Penerima', 'Add Department' => 'Tambah Departemen', 'Add Category' => 'Tambah Kategori', 'Add Location' => 'Tambah Lokasi', 'Add Unit' => 'Tambah Satuan',
+        'Add Supplier' => 'Tambah Pemasok', 'Add Source of Funds' => 'Tambah Sumber Dana', 'Source of Funds' => 'Sumber Dana', 'Add Bank Account' => 'Tambah Rekening Bank', 'Bank Name' => 'Nama Bank', 'Account Number' => 'No. Rekening', 'Account Holder' => 'Atas Nama', 'Add Recipient' => 'Tambah Penerima', 'Add Department' => 'Tambah Departemen', 'Add Category' => 'Tambah Kategori', 'Add Location' => 'Tambah Lokasi', 'Add Unit' => 'Tambah Satuan',
         'Recipient Name' => 'Nama Penerima', 'Department Name' => 'Nama Departemen',
         'The supplier code is created automatically. Address and region can be completed later in Suppliers.' => 'Kode pemasok dibuat otomatis. Alamat dan wilayah bisa dilengkapi nanti di menu Pemasok.',
         'The department code is created automatically.' => 'Kode departemen dibuat otomatis.',
