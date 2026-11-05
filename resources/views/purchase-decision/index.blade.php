@@ -24,14 +24,8 @@
                 <x-dl::field.lookup name="item_id" lookup="item_pp" label="Barang" :value="$src === 'master' ? $f('item_id') : null" :error="$errors->first('item_id') ?: $errors->first('item_name')" />
             </div>
             <div data-src="pp" @if ($src !== 'pp') hidden @endif style="margin-top:10px">
-                <label>Barang dari PP
-                    <select name="line" class="dl-input" @disabled($src !== 'pp')>
-                        <option value="">—</option>
-                        @foreach ($outstanding as $l)
-                            <option value="{{ $l->id }}" @selected($f('line') == $l->id)>{{ $l->request->doc_no }} · {{ $l->label() }} · sisa {{ $qty($l->qty - $l->ordered_qty) }} {{ $l->unit }}</option>
-                        @endforeach
-                    </select>
-                </label>
+                <x-dl::field.select name="line" label="Barang dari PP" :value="$f('line')"
+                    :options="$outstanding->mapWithKeys(fn ($l) => [$l->id => $l->request->doc_no.' · '.$l->label().' · sisa '.$qty($l->qty - $l->ordered_qty).' '.$l->unit])->all()" />
                 @if ($outstanding->isEmpty())<p class="dl-note">Tidak ada baris PP yang menunggu dipesan.</p>@endif
             </div>
             <div style="margin-top:10px"><x-dl::button class="sstock-btn-amber" type="submit" icon="fa-play" label="Proses" /></div>
