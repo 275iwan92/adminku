@@ -84,7 +84,7 @@ final class Modules
             'PUO' => ['PUR', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'grid', 'po.index', 'entry', ['po.']],
             'PUV' => ['PUR', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'grid', 'pv.index', 'entry', ['pv.']],
             'KSM' => ['KEU', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.', 'cash-sources.']],
-            'KSK' => ['KEU', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.']],
+            'KSK' => ['KEU', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.', 'cash-purposes.']],
             'KSR' => ['KEU', 'Kas / Rekening', 'fa-solid fa-building-columns', 'grid', 'cash-accounts.index', 'supervisor', ['cash-accounts.']],
             'R-KFLOW' => ['KEU', 'Laporan Arus Kas', 'fa-solid fa-book', 'report', 'reports.cash-flow', 'entry', ['reports.cash-flow']],
             'R-KIN' => ['KEU', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.cash-receipts', 'entry', ['reports.cash-receipts']],

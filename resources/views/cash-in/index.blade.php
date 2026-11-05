@@ -12,12 +12,14 @@
         $tones = ['Draf' => 'neutral', 'Diajukan' => 'warn', 'Disetujui' => 'success', 'Ditolak' => 'danger', 'Dibatalkan' => 'danger'];
     @endphp
     @include('partials.flash')
-    @if (auth()->user()->canAccess('KSR'))
-        <x-dl::action-bar align="start">
+    <x-dl::action-bar align="start">
+        @if (auth()->user()->canAccess('KSR'))
             <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-building-columns" label="Setup Kas / Rekening" :href="route('cash-accounts.index')" />
+        @endif
+        @if (auth()->user()->canWrite('KSM'))
             <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-hand-holding-dollar" label="Kelola Sumber Dana" :href="route('cash-sources.index')" />
-        </x-dl::action-bar>
-    @endif
+        @endif
+    </x-dl::action-bar>
     <x-dl::grid id="cash-in" :rows="$rows" actions="open" :open-url="url('cash-in/{id}')"
         :new-url="auth()->user()->canWrite('KSM') ? route('cash-in.create') : null"
         search="Cari nomor, kas tujuan, sumber dana..."

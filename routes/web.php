@@ -20,6 +20,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CashAccountController;
 use App\Http\Controllers\CashInController;
 use App\Http\Controllers\CashOutController;
+use App\Http\Controllers\CashPurposeController;
 use App\Http\Controllers\CashReportController;
 use App\Http\Controllers\CashSourceController;
 use App\Http\Controllers\CategoryController;
@@ -337,6 +338,11 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::put('cash-out/{cashOut}', [CashOutController::class, 'update'])->whereNumber('cashOut')->name('cash-out.update');
     Route::get('cash-out/{cashOut}/file', [CashOutController::class, 'file'])->whereNumber('cashOut')->name('cash-out.file');
     // Kas, master Kas / Rekening (KSR): dibuka lewat tombol Setup di Uang Masuk / Uang Keluar.
+    Route::get('cash-purposes', [CashPurposeController::class, 'index'])->name('cash-purposes.index');
+    Route::get('cash-purposes/create', [CashPurposeController::class, 'create'])->name('cash-purposes.create');
+    Route::post('cash-purposes', [CashPurposeController::class, 'store'])->name('cash-purposes.store');
+    Route::get('cash-purposes/{purpose}', [CashPurposeController::class, 'show'])->whereNumber('purpose')->name('cash-purposes.show');
+    Route::put('cash-purposes/{purpose}', [CashPurposeController::class, 'update'])->whereNumber('purpose')->name('cash-purposes.update');
     Route::get('cash-sources', [CashSourceController::class, 'index'])->name('cash-sources.index');
     Route::get('cash-sources/create', [CashSourceController::class, 'create'])->name('cash-sources.create');
     Route::post('cash-sources', [CashSourceController::class, 'store'])->name('cash-sources.store');

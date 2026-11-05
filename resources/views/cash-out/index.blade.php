@@ -12,6 +12,11 @@
         $tones = ['Draf' => 'neutral', 'Diajukan' => 'warn', 'Disetujui' => 'success', 'Ditolak' => 'danger', 'Dibatalkan' => 'danger'];
     @endphp
     @include('partials.flash')
+    @if (auth()->user()->canWrite('KSK'))
+        <x-dl::action-bar align="start">
+            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-bullseye" label="Kelola Kebutuhan" :href="route('cash-purposes.index')" />
+        </x-dl::action-bar>
+    @endif
     <x-dl::grid id="cash-out" :rows="$rows" actions="open" :open-url="url('cash-out/{id}')"
         :new-url="auth()->user()->canWrite('KSK') ? route('cash-out.create') : null"
         search="Cari nomor, ditaut ke, untuk apa..."

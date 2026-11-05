@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CashOutRequest;
 use App\Models\CashIn;
+use App\Models\CashPurpose;
 use App\Models\CashOut;
 use App\Support\Text;
 use Illuminate\Http\RedirectResponse;
@@ -162,7 +163,8 @@ class CashOutController extends Controller
         $cashIns = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->number().' — '.$c->source_name.' — sisa Rp '.number_format($c->remainingAmount(), 0, ',', '.')])->all();
         // Sisa saldo per Uang Masuk (angka) untuk peringatan langsung di form bila Jumlah melebihi sisa.
         $remaining = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->remainingAmount()])->all();
+        $accountNames = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->cashAccount?->name])->all();
 
-        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining];
+        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining, 'accountNames' => $accountNames, 'purposes' => CashPurpose::query()->orderBy('name')->pluck('name', 'name')->all()];
     }
 }

@@ -26,6 +26,7 @@ final class QuickAdd
         'unit' => ['UOM', 'units.store', 'Add Unit', 'fa-ruler', [['code', 'Unit Code', true, 'text', 20], ['name', 'Unit Name', true, 'text', 100]], 'Short, lowercase (pcs, box, kg). Cannot be changed after saving.'],
         // Sumber Dana: nilai opsi = nama (disalin ke Uang Masuk), jadi value-key name. Rekening bank: balasan {id,name}, dipakai id.
         'cash_source' => ['KSM', 'cash-sources.store', 'Add Source of Funds', 'fa-hand-holding-dollar', [['name', 'Source of Funds', true, 'text', 150]], null, 'name'],
+        'cash_purpose' => ['KSK', 'cash-purposes.store', 'Add Purpose', 'fa-bullseye', [['name', 'Purpose', true, 'text', 150]], null, 'name'],
         'cash_bank' => ['KSM', 'cash-in.bank-account', 'Add Bank Account', 'fa-building-columns', [['bank_name', 'Bank Name', true, 'text', 100], ['account_no', 'Account Number', true, 'text', 30], ['account_holder', 'Account Holder', false, 'text', 100]], null, 'id'],
     ];
 

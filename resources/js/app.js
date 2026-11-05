@@ -47,21 +47,32 @@ const cashKindSync = () => {
 document.addEventListener('change', (e) => { if (e.target.matches?.('[name="cash_kind"]')) cashKindSync(); });
 document.addEventListener('DOMContentLoaded', cashKindSync);
 
-// Uang Keluar: peringatan langsung bila Jumlah melebihi sisa Uang Masuk yang dipilih (server tetap menolak saat simpan).
+// Uang Keluar: ringkasan sisa saldo Uang Masuk yang dipilih + peringatan langsung bila Jumlah melebihi sisa (server tetap menolak saat simpan).
 const cashOverSync = () => {
     const f = document.querySelector('form[data-cash-remaining]');
     const amountEl = f?.querySelector('[name="amount"]');
     if (!amountEl) return;
     const remaining = JSON.parse(f.dataset.cashRemaining || '{}');
+    const names = JSON.parse(f.dataset.cashAccounts || '{}');
     const id = f.querySelector('[name="cash_in_id"]')?.value;
-    const amount = window.Devlib?.h?.parseNum ? window.Devlib.h.parseNum(amountEl.value) : parseFloat(amountEl.value);
+    const amount = Number((window.Devlib?.h?.parseNum ? window.Devlib.h.parseNum(amountEl.value) : parseFloat(amountEl.value)) || 0);
     const field = amountEl.closest('.dl-field');
-    let note = f.querySelector('[data-cash-overwarn]');
-    const over = id && remaining[id] !== undefined && Number(amount) > Number(remaining[id]);
+    const rp = (n) => `${n < 0 ? '- ' : ''}Rp ${Math.abs(Math.round(n)).toLocaleString('id-ID')}`;
+    f.querySelectorAll('[data-cash-sum], [data-cash-overwarn]').forEach((el) => el.remove());
+    const known = id && remaining[id] !== undefined;
+    const over = known && amount > Number(remaining[id]);
     field?.classList.toggle('dl-field--tone-warn', !!over);
-    if (!over) return note?.remove();
-    if (!note) { note = Object.assign(document.createElement('div'), { className: 'sstock-overwarn' }); note.dataset.cashOverwarn = ''; field.after(note); }
-    note.textContent = `Jumlah melebihi sisa Uang Masuk ini (sisa Rp ${Math.round(remaining[id]).toLocaleString('id-ID')}). Kurangi jumlahnya atau pilih Uang Masuk lain.`;
+    if (!known) return;
+    const left = Number(remaining[id]) - amount;
+    const sum = Object.assign(document.createElement('div'), { className: 'sstock-cashsum' });
+    sum.dataset.cashSum = '';
+    sum.innerHTML = `<div><span>Kas asal</span><b>${names[id] ?? '-'}</b></div><div><span>Sisa saldo Uang Masuk</span><b>${rp(Number(remaining[id]))}</b></div><div><span>Sisa setelah ini</span><b class="${left < 0 ? 'is-neg' : ''}">${rp(left)}</b></div>`;
+    field.after(sum);
+    if (over) {
+        const note = Object.assign(document.createElement('div'), { className: 'sstock-overwarn', textContent: 'Jumlah melebihi sisa. Kurangi atau pilih Uang Masuk lain.' });
+        note.dataset.cashOverwarn = '';
+        sum.after(note);
+    }
 };
 document.addEventListener('input', (e) => { if (e.target.closest?.('form[data-cash-remaining]')) cashOverSync(); });
 document.addEventListener('change', (e) => { if (e.target.closest?.('form[data-cash-remaining]')) cashOverSync(); });
