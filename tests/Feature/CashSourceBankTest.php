@@ -69,6 +69,19 @@ class CashSourceBankTest extends TestCase
         $this->actingAs($reader)->postJson(route('cash-in.bank-account'), ['bank_name' => 'BNI', 'account_no' => '1'])->assertForbidden();
     }
 
+    public function test_cash_in_stores_the_source_id_and_a_used_source_is_deactivated_not_deleted(): void
+    {
+        $source = CashSource::where('name', 'Donatur Bapak Hadi')->firstOrFail();
+        $this->actingAs($this->staff)->post(route('cash-in.store'), ['doc_date' => '2026-11-02', 'cash_kind' => 'cash', 'source_name' => 'Donatur Bapak Hadi', 'amount' => 1000])->assertSessionHasNoErrors();
+        $this->assertSame($source->id, CashIn::latest('id')->firstOrFail()->source_id);
+
+        $this->put(route('cash-sources.update', $source), ['_action' => 'delete'])->assertRedirect(route('cash-sources.index'));
+        $this->assertFalse($source->fresh()->is_active);   // sudah dipakai: dinonaktifkan, bukan dihapus
+        $this->get(route('cash-in.create'))->assertOk()->assertDontSee('value="Donatur Bapak Hadi"', false);
+        $this->put(route('cash-sources.update', $source), ['_action' => 'activate'])->assertRedirect();
+        $this->assertTrue($source->fresh()->is_active);
+    }
+
     public function test_deleting_a_source_keeps_old_cash_ins_readable(): void
     {
         $source = CashSource::create(['name' => 'Sumber Lama']);

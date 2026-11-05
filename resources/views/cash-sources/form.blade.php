@@ -13,7 +13,7 @@
     @endphp
     @include('partials.flash')
     <x-dl::form :title="$isNew ? 'Sumber Dana · Baru' : raw($source->name)" panel="top" kind="master" :deletable="! $isNew"
-        :status="$isNew ? 'new' : 'active'" :back="route('cash-sources.index')" :new-url="route('cash-sources.create')"
+        :status="$isNew ? 'new' : ($source->is_active ? 'active' : 'inactive')" :back="route('cash-sources.index')" :new-url="route('cash-sources.create')"
         :action="$isNew ? route('cash-sources.store') : route('cash-sources.update', $source)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :created-at="$source->created_at?->format('Y-m-d H:i:s')" :updated-at="$source->updated_at?->format('Y-m-d H:i:s')">
         <x-dl::form.row>

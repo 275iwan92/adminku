@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Dipakai oleh : CashInController, CashOutController (dropdown sumber dana).
  * Status       : Aktif.
  */
-#[Fillable(['doc_no', 'doc_date', 'cash_account_id', 'source_name', 'amount', 'description', 'attachment', 'status', 'created_by', 'submitted_at', 'approved_by', 'approved_at', 'reason'])]
+#[Fillable(['doc_no', 'doc_date', 'cash_account_id', 'source_id', 'source_name', 'amount', 'description', 'attachment', 'status', 'created_by', 'submitted_at', 'approved_by', 'approved_at', 'reason'])]
 class CashIn extends Model
 {
     protected $table = 'k_cash_in';
@@ -56,9 +57,21 @@ class CashIn extends Model
         return self::STATUS[$this->status] ?? $this->status;
     }
 
+    // Jumlah terpakai (Uang Keluar disetujui yang menaut). Memakai kolom used_sum bila daftar dimuat dengan scope withUsed (satu query untuk semua baris), selain itu menghitung sendiri.
+    public function scopeWithUsed(Builder $q): Builder
+    {
+        return $q->withSum(['cashOuts as used_sum' => fn ($w) => $w->where('status', 'approved')], 'amount');
+    }
+
     public function usedAmount(): float
     {
-        return (float) $this->cashOuts()->where('status', 'approved')->sum('amount');
+        // used_sum bernilai NULL bila belum ada pemakaian: yang menentukan ada-tidaknya kolom, bukan nilainya.
+        return (float) (array_key_exists('used_sum', $this->attributes) ? $this->used_sum : $this->cashOuts()->where('status', 'approved')->sum('amount'));
+    }
+
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(CashSource::class, 'source_id');
     }
 
     public function remainingAmount(): float

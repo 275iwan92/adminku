@@ -138,9 +138,13 @@ final class Opening
         $accounts = CashAccount::query()->where('is_active', true)->get();
         $balance = fn (string $type) => (float) $accounts->where('type', $type)->sum(fn (CashAccount $a) => $a->currentBalance());
         $from = now()->startOfMonth();
-        $sum = fn ($q, $a, $b) => (float) $q->where('status', 'approved')->whereDate('doc_date', '>=', $a->toDateString())->whereDate('doc_date', '<=', $b->toDateString())->sum('amount');
-        $in = $sum(CashIn::query(), $from, now());
-        $out = $sum(CashOut::query(), $from, now());
+        // Total Disetujui per bulan (6 bulan terakhir) dalam dua query, bukan satu query per bulan.
+        $monthly = fn (string $model) => $model::query()->where('status', 'approved')->whereDate('doc_date', '>=', $from->copy()->subMonths(5)->toDateString())->whereDate('doc_date', '<=', $from->copy()->endOfMonth()->toDateString())
+            ->get(['doc_date', 'amount'])->groupBy(fn ($r) => $r->doc_date->format('Y-m'))->map(fn ($g) => (float) $g->sum('amount'));
+        $ins = $monthly(CashIn::class);
+        $outs = $monthly(CashOut::class);
+        $in = $ins[$from->format('Y-m')] ?? 0.0;
+        $out = $outs[$from->format('Y-m')] ?? 0.0;
 
         $barsFrom = $from->copy()->subMonths(2);   // grafik per kebutuhan: 3 bulan terakhir (bulan ini + 2 sebelumnya)
         $bars = CashOut::query()->with('category')->where('status', 'approved')->whereDate('doc_date', '>=', $barsFrom->toDateString())->whereDate('doc_date', '<=', now()->toDateString())->get()
@@ -149,8 +153,8 @@ final class Opening
 
         $trend = [];
         for ($i = 5; $i >= 0; $i--) {
-            $m = now()->startOfMonth()->subMonths($i);
-            $trend[] = ['label' => $m->translatedFormat('M'), 'in' => $sum(CashIn::query(), $m, $m->copy()->endOfMonth()), 'out' => $sum(CashOut::query(), $m, $m->copy()->endOfMonth())];
+            $m = $from->copy()->subMonths($i);
+            $trend[] = ['label' => $m->translatedFormat('M'), 'in' => $ins[$m->format('Y-m')] ?? 0.0, 'out' => $outs[$m->format('Y-m')] ?? 0.0];
         }
 
         return [

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CashAccountRequest;
 use App\Models\CashAccount;
+use App\Support\Text;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 /* REMARK
  * Tujuan       : Master Kas / Rekening (KSR, dibuka lewat tombol Setup di Uang Masuk / Uang Keluar): kas tunai dan rekening bank, saldo awal, saldo berjalan (dihitung).
@@ -60,5 +62,17 @@ class CashAccountController extends Controller
         $account->update(['is_active' => ! $account->is_active]);
 
         return response()->json(['active' => $account->is_active]);
+    }
+
+    // Tambah cepat rekening bank dari form Uang Masuk / Uang Keluar (tombol plus): bank + no. rekening wajib, atas nama boleh kosong, saldo awal 0. Balasan JSON 201 {id,name}. Bank + no. rekening kembar ditolak.
+    public function storeBank(Request $request): JsonResponse
+    {
+        $data = $request->validate(['bank_name' => ['required', 'string', 'max:60'], 'account_no' => ['required', 'string', 'max:30'], 'account_holder' => ['nullable', 'string', 'max:100']]);
+        $data = array_map(fn ($v) => Text::of($v), $data);
+        abort_if(CashAccount::query()->where('type', 'bank')->where('bank_name', $data['bank_name'])->where('account_no', $data['account_no'])->exists(), 422, 'Rekening itu sudah ada.');
+        $name = $data['bank_name'].' · '.$data['account_no'].($data['account_holder'] !== '' ? ' · '.$data['account_holder'] : '');
+        $account = CashAccount::create(['account_holder' => $data['account_holder'] ?: null] + $data + ['name' => mb_substr($name, 0, 100), 'type' => 'bank', 'opening_balance' => 0]);
+
+        return response()->json($account->only(['id', 'name']), 201);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /* REMARK
  * Tujuan       : Kebutuhan (m_cash_purpose): daftar nama untuk dropdown Uang Keluar, ditambah / dihapus pengguna. Nama disalin ke k_cash_out.purpose, jadi menghapus tidak mengubah dokumen lama.
@@ -20,9 +21,8 @@ class CashPurpose extends Model
         return ['is_active' => 'boolean'];
     }
 
-    // Berapa Uang Keluar yang memakai nama ini (menurut kategori).
-    public function usedCount(): int
+    public function cashOuts(): HasMany
     {
-        return CashOut::query()->where('purpose_id', $this->id)->count();
+        return $this->hasMany(CashOut::class, 'purpose_id');
     }
 }

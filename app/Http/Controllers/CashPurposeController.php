@@ -18,7 +18,7 @@ class CashPurposeController extends Controller
 {
     public function index()
     {
-        $rows = CashPurpose::query()->orderBy('name')->get()->map(fn (CashPurpose $s) => ['id' => $s->id, 'name' => $s->name, 'used' => $s->usedCount(), 'active' => $s->is_active])->all();
+        $rows = CashPurpose::query()->withCount('cashOuts')->orderBy('name')->get()->map(fn (CashPurpose $s) => ['id' => $s->id, 'name' => $s->name, 'used' => $s->cash_outs_count, 'active' => $s->is_active])->all();
 
         return view('cash-purposes.index', ['rows' => $rows]);
     }
@@ -53,7 +53,7 @@ class CashPurposeController extends Controller
         }
         if ($action === 'delete') {
             // Kategori yang sudah dipakai Uang Keluar tidak dihapus keras (grafik lama tetap utuh): dinonaktifkan, hilang dari dropdown.
-            if ($purpose->usedCount() > 0) {
+            if ($purpose->cashOuts()->exists()) {
                 $purpose->update(['is_active' => false]);
 
                 return redirect()->route('cash-purposes.index')->with('status', 'Kebutuhan sudah dipakai Uang Keluar, jadi dinonaktifkan (tidak dihapus) supaya laporan lama tetap utuh.');

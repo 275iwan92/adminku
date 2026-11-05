@@ -8,9 +8,7 @@ use App\Models\CashIn;
 use App\Models\CashOut;
 use App\Models\CashSource;
 use App\Support\Text;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -27,7 +25,7 @@ class CashInController extends Controller
 {
     public function index()
     {
-        $rows = CashIn::query()->with(['cashAccount', 'creator'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (CashIn $c) => [
+        $rows = CashIn::query()->withUsed()->with(['cashAccount', 'creator'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (CashIn $c) => [
             'id' => $c->id, 'doc_no' => $c->doc_no ?? '(draf)', 'doc_date' => $c->doc_date->format('Y-m-d'), 'cash_account' => $c->cashAccount->name, 'source_name' => $c->source_name,
             'amount' => (float) $c->amount, 'used' => $c->status === 'approved' ? $c->usedAmount() : null, 'remaining' => $c->status === 'approved' ? $c->remainingAmount() : null,
             'status' => $c->statusLabel(), 'open' => in_array($c->status, ['approval', 'approved'], true),
@@ -46,22 +44,10 @@ class CashInController extends Controller
         return view('cash-in.form', $this->formData($cashIn));
     }
 
-    // Tambah cepat rekening bank dari form Uang Masuk (tombol plus): bank + no. rekening wajib, atas nama boleh kosong, saldo awal 0. Balasan JSON 201 {id,name}. Bank + no. rekening kembar ditolak.
-    public function storeBank(Request $request): JsonResponse
-    {
-        $data = $request->validate(['bank_name' => ['required', 'string', 'max:60'], 'account_no' => ['required', 'string', 'max:30'], 'account_holder' => ['nullable', 'string', 'max:100']]);
-        $data = array_map(fn ($v) => Text::of($v), $data);
-        abort_if(CashAccount::query()->where('type', 'bank')->where('bank_name', $data['bank_name'])->where('account_no', $data['account_no'])->exists(), 422, 'Rekening itu sudah ada.');
-        $name = $data['bank_name'].' · '.$data['account_no'].($data['account_holder'] !== '' ? ' · '.$data['account_holder'] : '');
-        $account = CashAccount::create(['account_holder' => $data['account_holder'] ?: null] + $data + ['name' => mb_substr($name, 0, 100), 'type' => 'bank', 'opening_balance' => 0]);
-
-        return response()->json($account->only(['id', 'name']), 201);
-    }
-
     public function store(CashInRequest $request): RedirectResponse
     {
         $cashIn = DB::transaction(function () use ($request) {
-            $cashIn = new CashIn($request->safe()->only(['doc_date', 'cash_account_id', 'source_name', 'amount', 'description']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
+            $cashIn = new CashIn($request->safe()->only(['doc_date', 'cash_account_id', 'source_id', 'source_name', 'amount', 'description']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
             if ($request->hasFile('attachment')) {
                 $cashIn->attachment = $request->file('attachment')->store('in', 'kas');
             }
@@ -90,7 +76,7 @@ class CashInController extends Controller
                 case 'confirm':
                     $need(['draft']);
                     abort_unless($owner || $user->isSupervisor(), 403, 'Hanya pembuat atau Supervisor yang mengubah draf ini.');
-                    $cashIn->fill($request->safe()->only(['doc_date', 'cash_account_id', 'source_name', 'amount', 'description']));
+                    $cashIn->fill($request->safe()->only(['doc_date', 'cash_account_id', 'source_id', 'source_name', 'amount', 'description']));
                     if ($request->hasFile('attachment')) {
                         $cashIn->attachment = $request->file('attachment')->store('in', 'kas');
                     }
@@ -176,7 +162,7 @@ class CashInController extends Controller
             // Saklar Tunai / Rekening bank: dropdown hanya rekening bank (aktif + rekening dokumen ini); awal saklar mengikuti jenis kas dokumen.
             'banks' => CashAccount::query()->where('type', 'bank')->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $cashIn->cash_account_id))->orderBy('name')->pluck('name', 'id')->all(),
             'kind' => $cashIn->cashAccount?->type === 'bank' ? 'bank' : 'cash',
-            'sources' => CashSource::query()->orderBy('name')->pluck('name', 'name')->all(),
+            'sources' => CashSource::query()->where('is_active', true)->orderBy('name')->pluck('name', 'name')->all(),
         ];
     }
 }

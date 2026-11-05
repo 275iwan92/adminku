@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CashOutRequest;
 use App\Models\CashAccount;
 use App\Models\CashIn;
-use App\Models\CashPurpose;
 use App\Models\CashOut;
+use App\Models\CashPurpose;
 use App\Support\Text;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -163,7 +163,7 @@ class CashOutController extends Controller
                 $log[] = ['at' => $cashOut->updated_at->format('Y-m-d H:i:s'), 'by' => '-', 'action' => 'Dibatalkan', 'note' => $cashOut->reason];
             }
         }
-        $approved = CashIn::query()->where('status', 'approved')
+        $approved = CashIn::query()->withUsed()->with('cashAccount')->where('status', 'approved')
             ->when($cashOut->cash_in_id, fn ($q) => $q->orWhere('id', $cashOut->cash_in_id))
             ->orderByDesc('doc_date')->get();
         $cashIns = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->number().' — '.$c->source_name.' — sisa Rp '.number_format($c->remainingAmount(), 0, ',', '.')])->all();

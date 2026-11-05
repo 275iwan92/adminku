@@ -18,7 +18,7 @@ class CashSourceController extends Controller
 {
     public function index()
     {
-        $rows = CashSource::query()->orderBy('name')->get()->map(fn (CashSource $s) => ['id' => $s->id, 'name' => $s->name, 'used' => $s->usedCount(), 'active' => true])->all();
+        $rows = CashSource::query()->withCount('cashIns')->orderBy('name')->get()->map(fn (CashSource $s) => ['id' => $s->id, 'name' => $s->name, 'used' => $s->cash_ins_count, 'active' => $s->is_active])->all();
 
         return view('cash-sources.index', ['rows' => $rows]);
     }
@@ -45,10 +45,22 @@ class CashSourceController extends Controller
 
     public function update(CashSourceRequest $request, CashSource $source): RedirectResponse
     {
-        if ($request->input('_action') === 'delete') {
+        $action = $request->input('_action');
+        if (in_array($action, ['activate', 'deactivate'], true)) {
+            $source->update(['is_active' => $action === 'activate']);
+
+            return redirect()->route('cash-sources.show', $source)->with('status', $action === 'activate' ? 'Diaktifkan.' : 'Dinonaktifkan.');
+        }
+        if ($action === 'delete') {
+            // Sumber yang sudah dipakai Uang Masuk tidak dihapus keras (laporan per sumber tetap utuh): dinonaktifkan, hilang dari dropdown.
+            if ($source->cashIns()->exists()) {
+                $source->update(['is_active' => false]);
+
+                return redirect()->route('cash-sources.index')->with('status', 'Sumber dana sudah dipakai Uang Masuk, jadi dinonaktifkan (tidak dihapus) supaya laporan lama tetap utuh.');
+            }
             $source->delete();
 
-            return redirect()->route('cash-sources.index')->with('status', 'Sumber dana dihapus. Uang Masuk lama tetap memakai namanya.');
+            return redirect()->route('cash-sources.index')->with('status', 'Sumber dana dihapus.');
         }
         $source->update($request->validated());
 

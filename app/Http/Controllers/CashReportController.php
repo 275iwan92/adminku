@@ -65,7 +65,7 @@ class CashReportController extends Controller
         $status = $this->statusFilter($request);
         $source = Text::of($request->query('source'));
 
-        $rows = CashIn::query()->with('cashAccount')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])
+        $rows = CashIn::query()->withUsed()->with('cashAccount')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])
             ->when($status !== '', fn ($q) => $q->where('status', $status))
             ->when($source !== '', fn ($q) => $q->where('source_name', 'like', '%'.$source.'%'))
             ->orderBy('doc_date')->get()->map(fn (CashIn $c) => [

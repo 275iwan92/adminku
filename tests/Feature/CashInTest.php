@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use App\Models\CashAccount;
 use App\Models\CashIn;
+use App\Models\CashOut;
 use App\Models\User;
 use App\Models\UserGroup;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /* REMARK
@@ -58,6 +60,24 @@ class CashInTest extends TestCase
     private function act(CashIn $cashIn, string $action, User $by, array $extra = [])
     {
         return $this->actingAs($by)->put(route('cash-in.update', $cashIn), ['_action' => $action] + $extra);
+    }
+
+    // Daftar Uang Masuk menghitung "terpakai" lewat satu subquery (withUsed), bukan satu query per baris: query ke k_cash_out tetap satu berapa pun jumlah baris.
+    public function test_cash_in_list_does_not_query_per_row(): void
+    {
+        $queriesOnCashOut = function (int $rows) {
+            CashIn::query()->delete();
+            for ($i = 0; $i < $rows; $i++) {
+                CashIn::create(['doc_no' => "UM-N{$rows}-{$i}", 'doc_date' => '2026-11-02', 'cash_account_id' => $this->account->id, 'source_name' => 'X', 'amount' => 1000, 'status' => 'approved', 'created_by' => $this->staff->id]);
+            }
+            DB::flushQueryLog();
+            DB::enableQueryLog();
+            $this->actingAs($this->staff)->get(route('cash-in.index'))->assertOk();
+
+            return collect(DB::getQueryLog())->filter(fn ($q) => str_contains($q['query'], 'k_cash_out'))->count();
+        };
+
+        $this->assertSame([1, 1], [$queriesOnCashOut(2), $queriesOnCashOut(12)]);
     }
 
     public function test_sequential_numbers_per_month_born_at_confirm(): void
@@ -141,7 +161,7 @@ class CashInTest extends TestCase
 
         $payload = ['doc_date' => '2026-11-03', 'cash_in_id' => $cashIn->id, 'amount' => 1_000_000, 'purpose' => 'Sewa tempat'];
         $this->actingAs($this->staff)->post(route('cash-out.store'), $payload);
-        $cashOut = \App\Models\CashOut::latest('id')->firstOrFail();
+        $cashOut = CashOut::latest('id')->firstOrFail();
         $this->put(route('cash-out.update', $cashOut), ['_action' => 'confirm'] + $payload);   // diajukan: cukup untuk mengunci Uang Masuk
 
         $this->act($cashIn, 'cancel', $this->boss, ['_reason' => 'x'])->assertStatus(422);

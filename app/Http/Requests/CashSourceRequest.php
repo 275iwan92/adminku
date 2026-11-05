@@ -20,7 +20,7 @@ class CashSourceRequest extends FormRequest
 
     public function rules(): array
     {
-        if ($this->input('_action') === 'delete') {
+        if (in_array($this->input('_action'), ['delete', 'activate', 'deactivate'], true)) {
             return [];
         }
 
