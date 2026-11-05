@@ -210,7 +210,7 @@ class PurchaseReceiptController extends Controller
             $line = $mine[$l->id] ?? null;
 
             return [
-                'id' => $l->id, 'label' => $l->label(), 'ordered' => (float) $l->qty, 'got' => $got, 'left' => $left, 'unit' => $l->unit, 'price' => (float) $l->price,
+                'id' => $l->id, 'code' => $l->item?->code, 'label' => $l->label(), 'ordered' => (float) $l->qty, 'got' => $got, 'left' => $left, 'unit' => $l->unit, 'price' => (float) $l->price,
                 'tracks' => (bool) $l->item?->tracks_expiry, 'master' => (bool) $l->item_id,
                 'qty' => old("lines.{$l->id}.qty", $line ? (float) $line->qty : ($pv->exists ? 0 : $left)), 'expiry' => old("lines.{$l->id}.expiry_date", $line?->expiry_date?->format('Y-m-d')),
             ];

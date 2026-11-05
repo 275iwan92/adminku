@@ -584,3 +584,7 @@ html[data-dl-theme="soft_green"] {
 
 /* Panel kiri AdminKU tetap teal gelap di semua tema; tema Soft memberi teks panel warna gelap (untuk panel terang), jadi dikembalikan terang di sini. */
 html[data-dl-theme="soft_green"] .dl-lm { --dl-side-ink: #eaf4f1; --dl-side-leaf: #d3e6e2; --dl-side-hot: #ffffff; --dl-side-muted: #bfd6da; --dl-net-bad: #ff9b9b; --dl-net-warn: #ffd37a; }
+
+/* Scan barang datang (PV): kamera hanya di HP */
+.sstock-scan { margin: 4px 0 12px; }
+body:not(.dl-on-phone) .sstock-scan .dl-scan__cam { display: none; }

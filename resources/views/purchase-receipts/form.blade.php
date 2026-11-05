@@ -35,6 +35,14 @@
     @if ($now === 'cancelled' && $pv->exists)
         <x-dl::alert tone="warn" :message="raw('PV dibatalkan'.($pv->reason ? '. Alasan: '.$pv->reason : '').'. Stok dikembalikan dan jumlah diterima PO kembali.')" />
     @endif
+    @if ($editable && $order)
+        {{-- Pratinjau scan barang datang: pemindai keyboard (ketik kode + Enter) di laptop; tombol kamera hanya di HP (https). Kode dicocokkan ke kode barang baris PO. --}}
+        <div class="sstock-scan" data-pv-scan>
+            <x-dl::scan name="code" label="Scan barang datang" placeholder="Scan barcode / kode barang, lalu Enter" :autofocus="false"
+                hint="Tiap scan menambah 1 ke Terima sekarang pada barang yang cocok. Kamera hanya tampil di HP (butuh https)." />
+            <p class="dl-note" data-scan-msg aria-live="polite"></p>
+        </div>
+    @endif
     <x-dl::form :title="'Penerimaan Pembelian · '.($isNew ? 'Baru' : raw($pv->number()))" :subtitle="$isNew ? null : raw($pv->supplier?->name)" panel="top" kind="document" :status="$now"
         :back="route('pv.index')" :new-url="route('pv.create')" :log="$log"
         :action="$isNew ? route('pv.store') : route('pv.update', $pv)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
@@ -68,7 +76,7 @@
                     <thead><tr><th>Barang</th><th style="text-align:right">Dipesan</th><th style="text-align:right">Sudah diterima</th><th style="text-align:right">Sisa</th><th style="text-align:right">Terima sekarang</th><th>Sat</th><th style="text-align:right">Harga (dari PO)</th><th>Kedaluwarsa</th></tr></thead>
                     <tbody>
                     @foreach ($rows as $r)
-                        <tr>
+                        <tr data-code="{{ $r['code'] }}" data-line="{{ $r['id'] }}">
                             <td>{{ $r['label'] }}@unless ($r['master']) <span class="dl-note" title="Belum ada di master Barang: tidak bisa diterima">(belum di master)</span>@endunless</td>
                             <td style="text-align:right">{{ $n($r['ordered']) }}</td>
                             <td style="text-align:right">{{ $n($r['got']) }}</td>
@@ -91,6 +99,26 @@
             @endif
         </x-slot:detail>
     </x-dl::form>
+    @if ($editable && $order)
+        <script>
+            (() => {
+                const box = document.querySelector('[data-pv-scan]'), msg = box.querySelector('[data-scan-msg]'), seen = {};
+                box.querySelector('form').addEventListener('dl:scan', e => {
+                    const code = e.detail.code.toUpperCase();
+                    const tr = [...document.querySelectorAll('tr[data-code]')].find(r => r.dataset.code && r.dataset.code.toUpperCase() === code);
+                    const input = box.querySelector('[data-scan-input]');
+                    input.value = ''; input.focus();
+                    if (!tr) { msg.textContent = 'Kode ' + code + ' tidak ada di PO ini.'; msg.style.color = 'var(--dl-danger,#a32d2d)'; return; }
+                    const q = tr.querySelector('input[name$="[qty]"]');
+                    if (!q || q.disabled) { msg.textContent = 'Barang ' + code + ' sudah diterima penuh.'; return; }
+                    seen[code] = (seen[code] || 0) + 1;   // scan pertama menimpa isian awal (= sisa PO)
+                    q.value = seen[code];
+                    tr.scrollIntoView({block: 'center', behavior: 'smooth'}); tr.style.outline = '2px solid var(--dl-accent)'; setTimeout(() => { tr.style.outline = ''; }, 900);
+                    msg.textContent = code + ' · terima ' + seen[code]; msg.style.color = '';
+                });
+            })();
+        </script>
+    @endif
     @if ($isNew)
         <script>
             document.querySelector('[name=order_id]')?.addEventListener('change', e => {

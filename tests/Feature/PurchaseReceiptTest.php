@@ -134,6 +134,9 @@ class PurchaseReceiptTest extends TestCase
 
         $draft = $this->actingAs($this->staff)->get(route('pv.create', ['po' => $po->id]))->assertOk()->viewData('rows');
         $this->assertSame([5.0, 24.0], array_column($draft, 'left'));
+
+        // Kotak scan barang datang + kode barang tiap baris (pencocokan scan di sisi klien)
+        $this->get(route('pv.create', ['po' => $po->id]))->assertSee('data-pv-scan', false)->assertSee('data-code="'.$draft[0]['code'].'"', false);
     }
 
     public function test_free_text_items_and_missing_expiry_block_confirm_and_nothing_is_created(): void
