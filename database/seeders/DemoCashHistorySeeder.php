@@ -17,7 +17,7 @@ use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
  *                Dibuat lewat rute aplikasi sendiri (cash-in.*, cash-out.*) dengan waktu sistem digeser ke tanggal transaksi, seperti DemoPurchaseHistorySeeder, jadi nomor dokumen, tanggal, dan status persis pemakaian nyata. Idempoten: dilewati bila Kas Tunai sudah ada.
  *                Grup SUPERVISOR dan ADMINDATA sudah otomatis punya akses modul Kas lewat migration 2026_12_03_100000_create_admin_data_role_group.php (menggranti semua modul selain Keamanan dari Modules::all() saat ini), jadi tidak perlu hak tambahan di sini.
  * Sumber hulu  : User (admin, supervisor, entry), rute cash-in.*, cash-out.*.
- * Output       : m_cash_account (3 baris), k_cash_in (7), k_cash_out (8).
+ * Output       : m_cash_account (3 baris), k_cash_in (7), k_cash_out (10: 8 tertaut Uang Masuk, 2 tanpa tautan).
  * Dipakai oleh : DatabaseSeeder hanya bila config sstock.demo (produk demo AdminKU), setelah DemoPurchaseHistorySeeder; ikut adminku:reset-demo.
  * Status       : Aktif (data demo).
  */
@@ -64,6 +64,8 @@ class DemoCashHistorySeeder extends Seeder
             $this->cashOut($http, $entry, $boss, $um1, 1_500_000, 'Lainnya', $base->copy()->subDays(20), 'approval', desc: 'Dokumentasi kegiatan');
             $this->cashOut($http, $entry, $boss, $um3, 500_000, 'Transportasi', $base->copy()->subDays(15), 'rejected', 'Melebihi anggaran triwulan ini.', desc: 'Perjalanan dinas');
             $this->cashIn($http, $entry, $boss, $mandiri, 'Penjualan barang bekas', 4_000_000, $base->copy()->subDays(10), 'approval');
+            $this->freeCashOut($http, $entry, $boss, $tunai, 300_000, 'Konsumsi', $base->copy()->subDays(12), 'Snack rapat bulanan, dari kas tunai');
+            $this->freeCashOut($http, $entry, $boss, $bca, 750_000, 'Pembelian bahan pendukung', $base->copy()->subDays(6), 'Alat kebersihan, transfer rekening BCA');
             $this->cashIn($http, $entry, $boss, $bca, 'Donatur Bapak Hadi', 2_000_000, $base->copy()->subDays(3), 'draft');
         } finally {
             Carbon::setTestNow();
@@ -87,6 +89,20 @@ class DemoCashHistorySeeder extends Seeder
         }
 
         return $cashIn->fresh();
+    }
+
+    // Uang Keluar TANPA tautan Uang Masuk: Kas Asal dipilih sendiri (Tunai memakai kas tunai aktif, bank memakai rekeningnya), dibatasi saldo kas.
+    private function freeCashOut($http, User $creator, User $approver, CashAccount $account, int $amount, string $purpose, Carbon $date, string $desc): CashOut
+    {
+        Carbon::setTestNow($date->copy()->setTime(10, 0));
+        $payload = ['doc_date' => $date->toDateString(), 'cash_in_id' => null, 'cash_kind' => $account->type === 'bank' ? 'bank' : 'cash', 'cash_account_id' => $account->id, 'amount' => $amount, 'purpose' => $purpose, 'description' => $desc];
+        $http->actingAs($creator)->post(route('cash-out.store'), $payload);
+        $cashOut = CashOut::query()->latest('id')->firstOrFail();
+        $http->put(route('cash-out.update', $cashOut), ['_action' => 'confirm'] + $payload);
+        Carbon::setTestNow($date->copy()->setTime(15, 30));
+        $http->actingAs($approver)->put(route('cash-out.update', $cashOut), ['_action' => 'approve']);
+
+        return $cashOut->fresh();
     }
 
     // Uang Keluar: dibuat draf tertaut ke Uang Masuk, Confirm, lalu Approve atau Reject (alasan wajib).

@@ -149,6 +149,49 @@ class CashOutTest extends TestCase
         $this->assertNull(CashOut::find($draft->id));
     }
 
+    // Tanpa tautan Uang Masuk: Kas Asal dipilih sendiri (saklar Tunai memakai kas tunai aktif) dan batasnya saldo kas = saldo awal + masuk disetujui - keluar disetujui.
+    public function test_without_a_link_the_cash_balance_is_the_limit_starting_from_the_opening_balance(): void
+    {
+        $tunai = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 1_000_000]);
+        $free = ['cash_in_id' => null, 'cash_kind' => 'cash'];
+
+        $this->actingAs($this->staff)->post(route('cash-out.store'), $this->payload($free + ['amount' => 1_500_000]))->assertSessionHasErrors('amount');   // saldo kurang
+        $this->post(route('cash-out.store'), $this->payload($free + ['amount' => 600_000]))->assertSessionHasNoErrors();
+        $out = CashOut::latest('id')->firstOrFail();
+        $this->assertSame([$tunai->id, null], [$out->cash_account_id, $out->cash_in_id]);
+
+        $this->act($out, 'confirm', $this->staff, $this->payload($free + ['amount' => 600_000]))->assertSessionHasNoErrors();
+        $this->act($out, 'approve', $this->boss)->assertRedirect();
+        $this->assertSame(400_000.0, $tunai->fresh()->currentBalance());
+        $this->post(route('cash-out.store'), $this->payload($free + ['amount' => 500_000]))->assertSessionHasErrors('amount');   // sisa saldo kas 400.000
+    }
+
+    // Tautan Uang Masuk mengunci Kas Asal ke kas Uang Masuk itu, apa pun pilihan saklar / rekening yang dikirim.
+    public function test_a_cash_in_link_locks_the_cash_account(): void
+    {
+        $other = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 9_000_000]);
+        $this->actingAs($this->staff)->post(route('cash-out.store'), $this->payload(['cash_kind' => 'cash', 'cash_account_id' => $other->id]))->assertSessionHasNoErrors();
+
+        $this->assertSame($this->account->id, CashOut::latest('id')->firstOrFail()->cash_account_id);   // kas Uang Masuk tertaut, bukan kas yang dikirim
+    }
+
+    // Dua Uang Keluar tanpa tautan yang masing-masing muat di saldo kas (700.000 dari 1.000.000) tidak boleh disetujui keduanya: Approve kedua dicek ulang terhadap saldo kas.
+    public function test_two_approvals_cannot_both_spend_the_same_cash_balance(): void
+    {
+        $tunai = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 1_000_000]);
+        $free = ['cash_in_id' => null, 'cash_kind' => 'cash', 'amount' => 700_000];
+        $this->actingAs($this->staff);
+        $first = $this->create($free);
+        $second = $this->create($free);   // keduanya lolos saat simpan: Approve belum terjadi
+        $this->act($first, 'confirm', $this->staff, $this->payload($free))->assertSessionHasNoErrors();
+        $this->act($second, 'confirm', $this->staff, $this->payload($free))->assertSessionHasNoErrors();
+
+        $this->act($first, 'approve', $this->boss)->assertRedirect();
+        $this->act($second, 'approve', $this->boss)->assertStatus(422);
+        $this->assertSame(['approved', 'approval'], [$first->fresh()->status, $second->fresh()->status]);
+        $this->assertSame(300_000.0, $tunai->fresh()->currentBalance());
+    }
+
     public function test_a_saved_attachment_is_linked_on_the_form_even_when_the_receipt_is_very_tall(): void
     {
         Storage::fake('kas');

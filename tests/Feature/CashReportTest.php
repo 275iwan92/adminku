@@ -44,7 +44,7 @@ class CashReportTest extends TestCase
 
     private function cashOut(CashIn $cashIn, array $over = []): CashOut
     {
-        return CashOut::create($over + ['doc_no' => 'UK-TEST-'.CashOut::count(), 'doc_date' => '2026-11-03', 'cash_in_id' => $cashIn->id, 'amount' => 1_000_000, 'purpose' => 'Sewa', 'status' => 'approved', 'created_by' => $this->staff->id]);
+        return CashOut::create($over + ['doc_no' => 'UK-TEST-'.CashOut::count(), 'doc_date' => '2026-11-03', 'cash_in_id' => $cashIn->id, 'cash_account_id' => $cashIn->cash_account_id, 'amount' => 1_000_000, 'purpose' => 'Sewa', 'status' => 'approved', 'created_by' => $this->staff->id]);
     }
 
     // Pasangan kunci:nilai JSON mentah di dalam atribut data-config, setelah di-escape Blade ("->&quot;).
@@ -132,5 +132,22 @@ class CashReportTest extends TestCase
     {
         Carbon::setTestNow();
         parent::tearDown();
+    }
+
+    // Uang Keluar tanpa tautan Uang Masuk memakai Kas Asal sendiri: Arus Kas mengurangi kas itu dan Laporan Pengeluaran memisahkan Tunai dan tiap rekening bank.
+    public function test_unlinked_cash_out_flows_through_its_own_account_in_both_reports(): void
+    {
+        $tunai = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 2_000_000]);
+        $this->cashOut($this->cashIn(), ['amount' => 1_000_000, 'purpose' => 'Sewa']);   // lewat BCA (tertaut)
+        CashOut::create(['doc_no' => 'UK-FREE', 'doc_date' => '2026-11-03', 'cash_in_id' => null, 'cash_account_id' => $tunai->id, 'amount' => 250_000, 'purpose' => 'Konsumsi', 'status' => 'approved', 'created_by' => $this->staff->id]);
+
+        $flow = $this->actingAs($this->staff)->get(route('reports.cash-flow', ['from' => '2026-11-01', 'to' => '2026-11-30']))->assertOk();
+        $flow->assertSee($this->jsonPair('saldo', 1750000), false);   // Kas Tunai: 2.000.000 - 250.000 tanpa Uang Masuk apa pun
+
+        $out = $this->get(route('reports.cash-disbursements', ['from' => '2026-11-01', 'to' => '2026-11-30']))->assertOk();
+        foreach ([['channel', 'Kas Tunai'], ['channel', 'Rekening bank: Bank BCA'], ['source_name', 'Tanpa Uang Masuk (saldo kas)'], ['cash_in', 'Tanpa tautan']] as [$k, $v]) {
+            $out->assertSee($this->jsonPair($k, $v), false);
+        }
+        $out->assertSee(htmlspecialchars('"value":250000', ENT_QUOTES), false)->assertSee(htmlspecialchars('"value":1000000', ENT_QUOTES), false);   // Keluar Tunai, Keluar Bank
     }
 }

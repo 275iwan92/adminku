@@ -57,7 +57,7 @@ class CashPurposeTest extends TestCase
         $account = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 0]);
         $in = CashIn::create(['doc_no' => 'UM-1', 'doc_date' => '2026-11-02', 'cash_account_id' => $account->id, 'source_name' => 'X', 'amount' => 5000, 'status' => 'approved', 'created_by' => $this->staff->id]);
         $purpose = CashPurpose::create(['name' => 'Kebutuhan Lama']);
-        $out = CashOut::create(['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'amount' => 1000, 'purpose' => 'Kebutuhan Lama', 'status' => 'draft', 'created_by' => $this->staff->id]);
+        $out = CashOut::create(['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'cash_account_id' => $in->cash_account_id, 'amount' => 1000, 'purpose' => 'Kebutuhan Lama', 'status' => 'draft', 'created_by' => $this->staff->id]);
         $this->actingAs($this->staff)->put(route('cash-purposes.update', $purpose), ['_action' => 'delete']);
 
         $this->get(route('cash-out.show', $out))->assertOk()->assertSee('Kebutuhan Lama', false);
@@ -81,7 +81,7 @@ class CashPurposeTest extends TestCase
     {
         $account = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 0]);
         $in = CashIn::create(['doc_no' => 'UM-1', 'doc_date' => '2026-11-02', 'cash_account_id' => $account->id, 'source_name' => 'X', 'amount' => 90000, 'status' => 'approved', 'created_by' => $this->staff->id]);
-        $base = ['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'amount' => 1000];
+        $base = ['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'cash_account_id' => $in->cash_account_id, 'amount' => 1000];
         $this->actingAs($this->staff);
 
         $this->post(route('cash-out.store'), $base + ['purpose' => 'Transportasi', 'description' => 'Bensin'])->assertSessionHasNoErrors();
@@ -99,7 +99,7 @@ class CashPurposeTest extends TestCase
         $account = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 0]);
         $in = CashIn::create(['doc_no' => 'UM-1', 'doc_date' => '2026-11-02', 'cash_account_id' => $account->id, 'source_name' => 'X', 'amount' => 90000, 'status' => 'approved', 'created_by' => $this->staff->id]);
         $cat = CashPurpose::where('name', 'Konsumsi')->firstOrFail();
-        CashOut::create(['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'amount' => 1000, 'purpose' => 'Konsumsi', 'purpose_id' => $cat->id, 'status' => 'draft', 'created_by' => $this->staff->id]);
+        CashOut::create(['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'cash_account_id' => $in->cash_account_id, 'amount' => 1000, 'purpose' => 'Konsumsi', 'purpose_id' => $cat->id, 'status' => 'draft', 'created_by' => $this->staff->id]);
         $this->actingAs($this->staff)->put(route('cash-purposes.update', $cat), ['_action' => 'delete'])->assertRedirect(route('cash-purposes.index'));
 
         $this->assertFalse($cat->fresh()->is_active);
@@ -116,8 +116,8 @@ class CashPurposeTest extends TestCase
         $account = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 0]);
         $in = CashIn::create(['doc_no' => 'UM-1', 'doc_date' => '2026-11-01', 'cash_account_id' => $account->id, 'source_name' => 'Donatur', 'amount' => 9_000_000, 'status' => 'approved', 'created_by' => $user->id]);
         $cat = CashPurpose::where('name', 'Transportasi')->firstOrFail();
-        CashOut::create(['doc_no' => 'UK-1', 'doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'amount' => 1_200_000, 'purpose' => 'Transportasi', 'purpose_id' => $cat->id, 'description' => 'Bensin', 'status' => 'approved', 'created_by' => $user->id]);
-        CashOut::create(['doc_no' => 'UK-2', 'doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'amount' => 300_000, 'purpose' => 'Nama lama', 'status' => 'approved', 'created_by' => $user->id]);
+        CashOut::create(['doc_no' => 'UK-1', 'doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'cash_account_id' => $in->cash_account_id, 'amount' => 1_200_000, 'purpose' => 'Transportasi', 'purpose_id' => $cat->id, 'description' => 'Bensin', 'status' => 'approved', 'created_by' => $user->id]);
+        CashOut::create(['doc_no' => 'UK-2', 'doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'cash_account_id' => $in->cash_account_id, 'amount' => 300_000, 'purpose' => 'Nama lama', 'status' => 'approved', 'created_by' => $user->id]);
 
         $res = $this->actingAs($user)->get(route('reports.cash-disbursements', ['from' => '2026-11-01', 'to' => '2026-11-30']))->assertOk();
         foreach ([['category', 'Transportasi'], ['category', 'Belum dikategorikan'], ['purpose', 'Bensin'], ['purpose', 'Nama lama']] as [$k, $v]) {

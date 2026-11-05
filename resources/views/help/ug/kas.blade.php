@@ -13,7 +13,7 @@
     <thead><tr><th>Layar</th><th>Isi singkat</th></tr></thead>
     <tbody>
         @if ($can('KSM'))<tr><td><a href="#kas-ksm">Uang Masuk</a></td><td>Dana diterima ke Kas Tunai atau satu rekening bank, dari satu sumber dana (dipilih dari daftar)</td></tr>@endif
-        @if ($can('KSK'))<tr><td><a href="#kas-ksk">Uang Keluar</a></td><td>Pengeluaran per kebutuhan (kategori) yang wajib ditaut ke satu Uang Masuk sebagai sumber dananya</td></tr>@endif
+        @if ($can('KSK'))<tr><td><a href="#kas-ksk">Uang Keluar</a></td><td>Pengeluaran per kebutuhan (kategori) dari Kas Tunai atau satu rekening bank; boleh ditaut ke satu Uang Masuk</td></tr>@endif
         @if ($can('KSR'))<tr><td><a href="#kas-ksr">Kas / Rekening</a></td><td>Daftar kas tunai dan rekening bank beserta saldo berjalan</td></tr>@endif
         @if ($can('R-KFLOW'))<tr><td><a href="#kas-rflow">Laporan Arus Kas</a></td><td>Buku kas per kas/rekening: saldo awal, baris kronologis, saldo akhir</td></tr>@endif
         @if ($can('R-KIN'))<tr><td><a href="#kas-rkin">Laporan Penerimaan</a></td><td>Uang Masuk: total Tunai, total Bank, rincian per rekening, per sumber dana</td></tr>@endif
@@ -67,14 +67,15 @@
 @if ($can('KSK'))
 <h3 id="kas-ksk">Uang Keluar</h3>
 <h4>Untuk apa</h4>
-<p>Mencatat pengeluaran dana. Setiap Uang Keluar <b>wajib ditaut ke satu Uang Masuk</b> yang sudah <b>Disetujui</b>, sebagai sumber dananya. <b>Kas Asal</b> tidak dipilih sendiri: ia otomatis ikut Kas Tujuan milik Uang Masuk yang ditaut.</p>
+<p>Mencatat pengeluaran dana dari <b>Kas Tunai</b> atau satu <b>rekening bank</b> (<b>Kas Asal</b>). Menaut ke satu Uang Masuk yang sudah <b>Disetujui</b> bersifat <b>opsional</b>: bila ditaut, Kas Asal otomatis ikut kas Uang Masuk itu dan <b>terkunci</b>, dan jumlahnya dibatasi sisa saldo Uang Masuk itu; bila tidak ditaut, Anda memilih sendiri kasnya dan jumlahnya dibatasi <b>saldo kas</b> (saldo awal + Uang Masuk disetujui - Uang Keluar disetujui pada kas itu).</p>
 <h4>Siapa yang bisa</h4>
 <p>Pengguna yang Grup-nya punya modul <b>Uang Keluar</b> (RO untuk membaca, RW untuk menyimpan dan mengajukan). Menyetujui atau menolak hanya untuk Supervisor, bukan Admin Data dan bukan pembuatnya sendiri.</p>
 <h4>Langkah: membuat dan mengajukan</h4>
 <ol class="g-steps">
     <li>Buka <b>Keuangan</b> lalu <b>Uang Keluar</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Form terbagi dua bagian. Bagian kiri: <b>No. Uang Keluar</b>, <b>Tanggal</b>, <b>Digunakan Untuk Kebutuhan</b>, <b>Keterangan</b>, <b>Lampiran Bukti</b>. Bagian kanan (panel abu-abu): <b>Ditaut Ke Uang Masuk</b> dan <b>Jumlah (IDR)</b>.</li>
-    <li>Pilih <b>Ditaut Ke Uang Masuk</b>. Pilihannya hanya Uang Masuk yang sudah <b>Disetujui</b>, dengan sisa saldo tertulis di tiap pilihan. Di bawah Jumlah tampil ringkasan: <b>Kas asal</b>, <b>Sisa saldo Uang Masuk</b>, dan <b>Sisa setelah ini</b>.</li>
+    <li>(Opsional) Pilih <b>Ditaut Ke Uang Masuk</b>: hanya Uang Masuk yang sudah <b>Disetujui</b>, dengan sisa saldo tertulis di tiap pilihan. Bila dipilih, saklar Kas Asal dan rekening terisi mengikuti kas Uang Masuk itu dan tidak bisa diubah.</li>
+    <li>Tanpa tautan, pilih <b>Kas Asal</b>: <b>Tunai</b> (otomatis kas tunai) atau <b>Rekening bank</b> lalu pilih rekeningnya (tombol <span class="g-btn">+</span> menambah rekening baru). Di bawah pilihan kas tampil <b>Saldo kas ini</b>, dan di bawah Jumlah tampil saldo setelah pengeluaran ini.</li>
     <li>Isi <b>Jumlah (IDR)</b> (angka besar berwarna merah). Bila melebihi sisa saldo, angka berubah kuning dan muncul peringatan &quot;Jumlah melebihi sisa&quot;; kurangi jumlahnya atau pilih Uang Masuk lain.</li>
     <li>Pilih <b>Digunakan Untuk Kebutuhan</b> (wajib): satu kategori pendek, misalnya Transportasi, Pembelian bahan pokok, Pembelian bahan pendukung. Kategori belum ada? Tekan <span class="g-btn">+</span> di sebelahnya. Tulis rinciannya di <b>Keterangan</b>; untuk kategori <b>Lainnya</b>, Keterangan <b>wajib</b> diisi.</li>
     <li>Lampirkan foto atau PDF bukti pengeluaran di <b>Lampiran Bukti</b> bila ada (tidak wajib; JPG, PNG, atau PDF, paling besar 5 MB).</li>
@@ -89,7 +90,7 @@
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
     <li>Status: <b>Draf</b>, <b>Diajukan</b>, <b>Disetujui</b>, <b>Ditolak</b>, <b>Dibatalkan</b>.</li>
-    <li>Jumlah yang melebihi sisa saldo ditolak saat Save dan dicek ulang saat <b>Approve</b>. Dua Uang Keluar atas Uang Masuk yang sama boleh diajukan bersamaan; yang disetujui lebih dulu memakai sisa saldonya lebih dulu.</li>
+    <li>Jumlah yang melebihi sisa saldo Uang Masuk tertaut atau saldo kas ditolak saat Save dan dicek ulang saat <b>Approve</b> (dua Uang Keluar yang berebut saldo yang sama: yang disetujui lebih dulu menang, yang kedua ditolak). Dua Uang Keluar atas Uang Masuk yang sama boleh diajukan bersamaan; yang disetujui lebih dulu memakai sisa saldonya lebih dulu.</li>
     <li><span class="g-btn">Cancel</span> (alasan wajib) bisa untuk Uang Keluar yang diajukan atau disetujui, oleh pembuat atau Supervisor. <span class="g-btn">Delete</span> hanya untuk draf.</li>
 </ul>
 <h4>Kelola Kebutuhan</h4>
@@ -97,6 +98,7 @@
 <h4>Masalah umum</h4>
 <ul class="g-list">
     <li><b>Save atau Confirm ditolak.</b> Uang Masuk belum dipilih, Jumlah kosong, 0, atau melebihi sisa saldo, Kebutuhan belum dipilih, atau Keterangan kosong padahal kebutuhannya <b>Lainnya</b>.</li>
+    <li><b>Saldo kas tidak cukup lagi.</b> Muncul saat Approve: saldo kas Kas Asal sudah terpakai Uang Keluar lain yang disetujui lebih dulu. Kurangi jumlahnya atau pilih kas lain.</li>
     <li><b>Sisa saldo Uang Masuk tidak cukup lagi.</b> Muncul saat Approve: sisa saldo Uang Masuk yang ditaut sudah terpakai Uang Keluar lain yang disetujui lebih dulu. Tolak atau batalkan dokumen ini, atau pilih Uang Masuk lain lewat Duplicate.</li>
     <li><b>Tombol Approve tidak muncul.</b> Anda pembuat Uang Keluar itu, atau peran Anda Admin Data atau bukan Supervisor ke atas.</li>
 </ul>
@@ -177,7 +179,7 @@
 @if ($can('R-KOUT'))
 <h3 id="kas-rkout">Laporan Pengeluaran</h3>
 <h4>Untuk apa</h4>
-<p>Semua Uang Keluar dikelompokkan per <b>Kebutuhan</b> (kategori), misalnya Transportasi atau Pembelian bahan pokok, dengan subtotal tiap kategori. Kelompok bisa diganti ke <b>Per Sumber Dana</b> (lewat Uang Masuk yang ditautnya). Kolom <b>Keterangan</b> memuat rincian tiap pengeluaran.</p>
+<p>Semua Uang Keluar dikelompokkan per <b>Kebutuhan</b> (kategori), misalnya Transportasi atau Pembelian bahan pokok, dengan subtotal tiap kategori dan ringkasan <b>Keluar Tunai</b> dan <b>Keluar Bank</b>. Kelompok bisa diganti ke <b>Per Kas / Rekening</b> (Tunai dan tiap rekening bank) atau <b>Per Sumber Dana</b> (lewat Uang Masuk yang ditautnya; yang tanpa tautan tampil sebagai &quot;Tanpa Uang Masuk&quot;). Kolom <b>Keterangan</b> memuat rincian tiap pengeluaran.</p>
 <h4>Siapa yang bisa</h4>
 <p>Pengguna yang Grup-nya punya modul <b>Laporan Pengeluaran</b> (RO cukup).</p>
 <h4>Langkah</h4>
