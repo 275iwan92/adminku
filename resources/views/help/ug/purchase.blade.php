@@ -53,7 +53,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Keputusan Pesanan</b>. Tombol <span class="g-btn">Buat PO</span> juga butuh hak tulis modul <b>Pesanan Pembelian (PO)</b>.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Pilih barangnya. Ada dua cara: <b>Dari master</b> (pilih atau ketik di <b>Item</b>, atau ketik nama di <b>Barang baru (ketik)</b> dengan <b>Unit</b>) atau <b>Dari PP</b> (daftar baris PP yang Disetujui dan belum terpesan penuh; tekan <span class="g-btn">Pilih</span> mengisi barang dan sisa Qty). Isi <b>Qty</b>.</li>
+    <li>Pilih barangnya. Ada dua cara: <b>Dari master</b> (pilih di <b>Barang</b>; Qty otomatis 1, ubah di draf PO) atau <b>Dari PP</b> (daftar baris PP yang Disetujui dan belum terpesan penuh; tekan <span class="g-btn">Pilih</span> mengisi barang dan sisa Qty).</li>
     <li>Tekan <span class="g-btn">Proses</span>. Tiap pemasok tampil dengan <b>Beli terakhir</b>, <b>Harga terakhir</b> (hijau = paling murah), dan <b>Berapa kali</b>. Tekan <b>Riwayat</b> di satu baris untuk melihat tiap pembelian: tanggal, nomor dokumen, jumlah, harga satuan.</li>
     <li>Pilih satu pemasok (atau pilih di <b>Pemasok lain</b> untuk yang belum pernah dipakai), lalu tekan <span class="g-btn">Buat PO</span>. Barang masuk ke draf PO pemasok itu milik Anda (atau draf baru dibuat), dengan harga terakhir di pemasok itu.</li>
 </ol>

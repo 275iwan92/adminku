@@ -15,7 +15,7 @@
         $qty = fn ($n) => \Devlib\Locale::number($n, floor((float) $n) == (float) $n ? 0 : 3);
     @endphp
     @include('partials.flash')
-    <x-dl::box>
+    <x-dl::box style="margin-top:14px">
         <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
             <x-dl::button class="sstock-btn-amber" :variant="$mode === 'master' ? 'primary' : 'secondary'" size="sm" icon="fa-box" label="Dari master" :href="route('po-decision.index')" />
             <x-dl::button class="sstock-btn-slate" :variant="$mode === 'pp' ? 'primary' : 'secondary'" size="sm" icon="fa-file-pen" label="Dari PP" :href="route('po-decision.index', ['mode' => 'pp'])" />
@@ -41,11 +41,12 @@
             <form method="get" action="{{ route('po-decision.index') }}">
                 <input type="hidden" name="proses" value="1">
                 <input type="hidden" name="line" value="{{ $f('line') }}">
-                <x-dl::form.row :cols="4">
-                    <x-dl::field.lookup name="item_id" lookup="item_pp" label="Item" :value="$f('item_id')" :error="$errors->first('item_id') ?: $errors->first('item_name')" />
-                    <x-dl::field.text name="item_name" label="Barang baru (ketik)" :value="$f('item_name')" maxlength="150" />
-                    <x-dl::field.number name="qty" label="Qty" :value="$f('qty')" :error="$errors->first('qty') ?: null" />
-                    <x-dl::field.text name="unit" label="Unit" :value="$f('unit')" maxlength="20" :error="$errors->first('unit') ?: null" />
+                {{-- Qty / Unit / nama ketik hanya ikut bila barang diambil dari baris PP (Pilih); selain itu Qty 1, Unit dari master --}}
+                @foreach (['item_name', 'qty', 'unit'] as $k)
+                    @if ($f($k))<input type="hidden" name="{{ $k }}" value="{{ $f($k) }}">@endif
+                @endforeach
+                <x-dl::form.row :cols="1">
+                    <x-dl::field.lookup name="item_id" lookup="item_pp" label="Barang" :value="$f('item_id')" :error="$errors->first('item_id') ?: $errors->first('item_name')" />
                 </x-dl::form.row>
                 @if ($f('line'))
                     <p class="dl-note">Barang ini diambil dari baris PP; PO yang dibuat akan terhubung ke PP-nya.</p>

@@ -98,7 +98,7 @@ class PurchaseOrderTest extends TestCase
         $this->assertCount(2, $history->firstWhere('supplier', 'CV Maju')->rows);
 
         $this->get(route('po-decision.index', ['proses' => 1, 'item_name' => 'Barang baru', 'unit' => 'pcs', 'qty' => 3]))->assertOk()->assertSee('belum pernah dibeli', false);
-        $this->get(route('po-decision.index', ['proses' => 1, 'item_id' => $this->paper->item_id]))->assertSessionHasErrors('qty');
+        $this->assertEquals(1, $this->get(route('po-decision.index', ['proses' => 1, 'item_id' => $this->paper->item_id]))->viewData('result')['qty']);   // tanpa Qty: otomatis 1
     }
 
     public function test_make_po_creates_then_reuses_the_users_draft_for_that_supplier_with_the_last_price(): void

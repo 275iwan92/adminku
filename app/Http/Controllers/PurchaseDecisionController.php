@@ -31,9 +31,10 @@ class PurchaseDecisionController extends Controller
             $data = $request->validate([
                 'item_id' => ['nullable', Rule::exists('m_item', 'id')->where('is_active', true)],
                 'item_name' => ['nullable', 'required_without:item_id', 'string', 'max:150'],
-                'qty' => ['required', 'numeric', 'gt:0', 'max:999999999'],
+                'qty' => ['nullable', 'numeric', 'gt:0', 'max:999999999'],
                 'unit' => ['nullable', 'string', 'max:20', 'required_without:item_id'],
-            ], ['item_name.required_without' => 'Pilih barang atau ketik nama barang.', 'qty.required' => 'Isi Qty.', 'qty.gt' => 'Qty harus lebih dari 0.', 'unit.required_without' => 'Isi satuan untuk barang yang diketik.']);
+            ], ['item_name.required_without' => 'Pilih barang.', 'qty.gt' => 'Qty harus lebih dari 0.', 'unit.required_without' => 'Isi satuan untuk barang yang diketik.']);
+            $data['qty'] ??= 1;
             $item = isset($data['item_id']) ? Item::query()->find($data['item_id']) : null;
             $result = [
                 'item' => $item, 'name' => $item ? $item->code.' · '.$item->name : Text::of($data['item_name'] ?? ''), 'qty' => $data['qty'], 'unit' => filled($data['unit'] ?? null) ? $data['unit'] : $item->unit,
