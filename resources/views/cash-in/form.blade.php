@@ -38,6 +38,7 @@
                 <x-dl::field.upload name="attachment" label="Lampiran Bukti" :value="$cashIn->attachment ? ['url' => route('cash-in.file', $cashIn), 'name' => 'Lampiran bukti ('.strtoupper(pathinfo($cashIn->attachment, PATHINFO_EXTENSION)).')'] : null" :preview="! str_ends_with(strtolower($cashIn->attachment ?? ''), '.pdf')" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti penerimaan dana (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
             </x-dl::form.col>
             <x-dl::form.col class="sstock-panel">
+                <p class="sstock-cashhelp">Pilih salah satu: Tunai atau Rekening bank.</p>
                 <x-dl::field.toggle-group name="cash_kind" label="Kas Tujuan" :options="['cash' => 'Tunai', 'bank' => 'Rekening bank']" :value="old('cash_kind', $kind)" />
                 <x-dl::field.select class="sstock-cashbank" name="cash_account_id" label="Rekening Bank" :options="['' => 'Pilih rekening...'] + $banks" :value="$v('cash_account_id')" :add="\App\Support\QuickAdd::for('cash_bank')" :error="$e('cash_account_id')" />
                 <x-dl::field.decimal class="sstock-amount" name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />

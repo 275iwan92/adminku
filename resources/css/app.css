@@ -55,6 +55,7 @@
 .sstock-cash .sstock-amount .dl-field__label { font-size: 16px; font-weight: 700; }
 .sstock-cash .sstock-amount .dl-prefix, .sstock-cash .sstock-amount .dl-field__box { border-width: 2px; }
 .sstock-cashnote { font-size: 1.25rem; font-weight: 600; }
+.sstock-cashhelp { margin: 0 0 4px; font-size: 13px; color: var(--dl-muted); }
 
 /* Logo AdminKU (SVG berwarna) menggantikan kotak gradasi bawaan DevLib di semua tempat lencana logo tampil (sidebar, kotak login, pojok login). */
 .dl-logo-badge { background: url('/media/brand/adminku.svg') center / contain no-repeat; }
