@@ -29,21 +29,19 @@
         :hide="['hold', 'email', 'print']" :log="$log"
         :created-by="$cashIn->creator?->name" :created-at="$cashIn->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$cashIn->approver?->name ?? $cashIn->creator?->name" :updated-at="$cashIn->updated_at?->format('Y-m-d H:i:s')">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.display label="No. Uang Masuk" :value="raw($cashIn->doc_no ?? '(otomatis)')" />
-            <x-dl::field.date name="doc_date" label="Tanggal" :value="$d('doc_date')" required :error="$e('doc_date')" />
-            <x-dl::field.toggle-group name="cash_kind" label="Kas Tujuan" :options="['cash' => 'Tunai', 'bank' => 'Rekening bank']" :value="old('cash_kind', $kind)" />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="2">
-            <x-dl::field.select class="sstock-cashbank" name="cash_account_id" label="Rekening Bank" :options="['' => 'Pilih rekening...'] + $banks" :value="$v('cash_account_id')" :add="\App\Support\QuickAdd::for('cash_bank')" :error="$e('cash_account_id')" />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="2">
-            <x-dl::field.decimal class="sstock-amount" name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
-            <x-dl::field.select name="source_name" label="Sumber Dana" :options="['' => 'Pilih sumber dana...'] + $sources + ($v('source_name') && ! isset($sources[$v('source_name')]) ? [$v('source_name') => $v('source_name')] : [])" :value="$v('source_name')" required :add="\App\Support\QuickAdd::for('cash_source')" :error="$e('source_name')" />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="2">
-            <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
-            <x-dl::field.upload name="attachment" label="Lampiran Bukti" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti penerimaan dana (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
+        <x-dl::form.row class="sstock-split">
+            <x-dl::form.col>
+                <x-dl::field.display label="No. Uang Masuk" :value="raw($cashIn->doc_no ?? '(otomatis)')" />
+                <x-dl::field.date name="doc_date" label="Tanggal" :value="$d('doc_date')" required :error="$e('doc_date')" />
+                <x-dl::field.select name="source_name" label="Sumber Dana" :options="['' => 'Pilih sumber dana...'] + $sources + ($v('source_name') && ! isset($sources[$v('source_name')]) ? [$v('source_name') => $v('source_name')] : [])" :value="$v('source_name')" required :add="\App\Support\QuickAdd::for('cash_source')" :error="$e('source_name')" />
+                <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
+                <x-dl::field.upload name="attachment" label="Lampiran Bukti" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti penerimaan dana (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
+            </x-dl::form.col>
+            <x-dl::form.col class="sstock-panel">
+                <x-dl::field.toggle-group name="cash_kind" label="Kas Tujuan" :options="['cash' => 'Tunai', 'bank' => 'Rekening bank']" :value="old('cash_kind', $kind)" />
+                <x-dl::field.select class="sstock-cashbank" name="cash_account_id" label="Rekening Bank" :options="['' => 'Pilih rekening...'] + $banks" :value="$v('cash_account_id')" :add="\App\Support\QuickAdd::for('cash_bank')" :error="$e('cash_account_id')" />
+                <x-dl::field.decimal class="sstock-amount" name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
+            </x-dl::form.col>
         </x-dl::form.row>
         @if ($cashIn->exists && $cashIn->status === 'approved')
             <x-slot:detail>
