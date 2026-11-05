@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Layar Keputusan Pesanan (satu barang): isian Barang (lookup master atau ketik), Qty, Unit; tab Dari master / Dari PP (baris PP yang menunggu dipesan, klik mengisi isian); tombol Proses menampilkan riwayat beli per pemasok
+ Tujuan       : Layar Keputusan Pesanan (satu barang): saklar Sumber (Dari master barang / Dari PP) menentukan isi dropdown Barang (lookup master atau baris PP yang menunggu dipesan; Qty otomatis 1 dari master, sisa Qty dari PP); tombol Proses menampilkan riwayat beli per pemasok
                 (beli terakhir, harga terakhir, berapa kali, tombol Riwayat membuka rincian tanggal / nomor / qty / harga satuan di bawah barisnya), pilihan pemasok, dan Buat PO.
  Sumber hulu  : PurchaseDecisionController@index (result, outstanding, mode, line).
  Input        : result (null sebelum Proses), outstanding (baris PP), mode, line.
@@ -16,44 +16,37 @@
     @endphp
     @include('partials.flash')
     <x-dl::box style="margin-top:14px">
-        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
-            <x-dl::button class="sstock-btn-amber" :variant="$mode === 'master' ? 'primary' : 'secondary'" size="sm" icon="fa-box" label="Dari master" :href="route('po-decision.index')" />
-            <x-dl::button class="sstock-btn-slate" :variant="$mode === 'pp' ? 'primary' : 'secondary'" size="sm" icon="fa-file-pen" label="Dari PP" :href="route('po-decision.index', ['mode' => 'pp'])" />
-        </div>
-
-        @if ($mode === 'pp')
-            <table class="dl-table" style="width:100%">
-                <thead><tr><th>PP</th><th>Barang</th><th style="text-align:right">Sisa Qty</th><th>Unit</th><th>Dibutuhkan</th><th></th></tr></thead>
-                <tbody>
-                @forelse ($outstanding as $l)
-                    <tr>
-                        <td>{{ $l->request->doc_no }}</td><td>{{ $l->label() }}</td><td style="text-align:right">{{ $qty($l->qty - $l->ordered_qty) }}</td><td>{{ $l->unit }}</td>
-                        <td>{{ $l->request->need_date?->format('d-m-Y') ?? '-' }}</td>
-                        <td><x-dl::button class="sstock-btn-teal" variant="secondary" size="sm" icon="fa-arrow-right" label="Pilih"
-                                :href="route('po-decision.index', array_filter(['item_id' => $l->item_id, 'item_name' => $l->item_name, 'qty' => $l->qty - $l->ordered_qty, 'unit' => $l->unit, 'line' => $l->id]))" /></td>
-                    </tr>
-                @empty
-                    <tr><td colspan="6">Tidak ada baris PP yang menunggu dipesan.</td></tr>
-                @endforelse
-                </tbody>
-            </table>
-        @else
-            <form method="get" action="{{ route('po-decision.index') }}">
-                <input type="hidden" name="proses" value="1">
-                <input type="hidden" name="line" value="{{ $f('line') }}">
-                {{-- Qty / Unit / nama ketik hanya ikut bila barang diambil dari baris PP (Pilih); selain itu Qty 1, Unit dari master --}}
-                @foreach (['item_name', 'qty', 'unit'] as $k)
-                    @if ($f($k))<input type="hidden" name="{{ $k }}" value="{{ $f($k) }}">@endif
-                @endforeach
-                <x-dl::form.row :cols="1">
-                    <x-dl::field.lookup name="item_id" lookup="item_pp" label="Barang" :value="$f('item_id')" :error="$errors->first('item_id') ?: $errors->first('item_name')" />
-                </x-dl::form.row>
-                @if ($f('line'))
-                    <p class="dl-note">Barang ini diambil dari baris PP; PO yang dibuat akan terhubung ke PP-nya.</p>
-                @endif
-                <x-dl::button class="sstock-btn-amber" type="submit" icon="fa-play" label="Proses" />
-            </form>
-        @endif
+        <form method="get" action="{{ route('po-decision.index') }}" data-src-form>
+            <input type="hidden" name="proses" value="1">
+            @php $src = ($f('line') || $f('mode') === 'pp') ? 'pp' : 'master'; @endphp
+            <x-dl::field.toggle-group name="mode" label="Sumber" :options="['master' => 'Dari master barang', 'pp' => 'Dari PP (permintaan pembelian)']" :value="$src" />
+            <div data-src="master" @if ($src === 'pp') hidden @endif style="margin-top:10px">
+                <x-dl::field.lookup name="item_id" lookup="item_pp" label="Barang" :value="$src === 'master' ? $f('item_id') : null" :error="$errors->first('item_id') ?: $errors->first('item_name')" />
+            </div>
+            <div data-src="pp" @if ($src !== 'pp') hidden @endif style="margin-top:10px">
+                <label>Barang dari PP
+                    <select name="line" class="dl-input" @disabled($src !== 'pp')>
+                        <option value="">—</option>
+                        @foreach ($outstanding as $l)
+                            <option value="{{ $l->id }}" @selected($f('line') == $l->id)>{{ $l->request->doc_no }} · {{ $l->label() }} · sisa {{ $qty($l->qty - $l->ordered_qty) }} {{ $l->unit }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                @if ($outstanding->isEmpty())<p class="dl-note">Tidak ada baris PP yang menunggu dipesan.</p>@endif
+            </div>
+            <div style="margin-top:10px"><x-dl::button class="sstock-btn-amber" type="submit" icon="fa-play" label="Proses" /></div>
+        </form>
+        <script>
+            (() => {
+                const f = document.querySelector('[data-src-form]'), m = f.querySelector('input[name=mode]');
+                const sync = () => f.querySelectorAll('[data-src]').forEach(d => {
+                    const on = d.dataset.src === m.value; d.hidden = !on;
+                    d.querySelectorAll('input,select').forEach(i => { i.disabled = !on; });
+                });
+                f.querySelectorAll('[data-dl-segment] button').forEach(b => b.addEventListener('click', () => setTimeout(sync, 0)));
+                sync();
+            })();
+        </script>
     </x-dl::box>
 
     @if ($result)

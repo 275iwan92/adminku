@@ -28,6 +28,12 @@ class PurchaseDecisionController extends Controller
     {
         $result = null;
         if ($request->boolean('proses')) {
+            if ($request->input('mode') === 'pp' && ($pl = PurchaseRequestLine::query()->find($request->input('line')))) {   // barang diambil dari baris PP: isi Barang, Qty (sisa), Unit
+                $request->merge(['item_id' => $pl->item_id, 'item_name' => $pl->item_name, 'qty' => $pl->qty - $pl->ordered_qty, 'unit' => $pl->unit]);
+            } else {
+                $request->request->remove('line');
+                $request->query->remove('line');
+            }
             $data = $request->validate([
                 'item_id' => ['nullable', Rule::exists('m_item', 'id')->where('is_active', true)],
                 'item_name' => ['nullable', 'required_without:item_id', 'string', 'max:150'],
