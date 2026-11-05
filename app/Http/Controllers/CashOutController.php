@@ -156,11 +156,13 @@ class CashOutController extends Controller
                 $log[] = ['at' => $cashOut->updated_at->format('Y-m-d H:i:s'), 'by' => '-', 'action' => 'Dibatalkan', 'note' => $cashOut->reason];
             }
         }
-        $cashIns = CashIn::query()->where('status', 'approved')
+        $approved = CashIn::query()->where('status', 'approved')
             ->when($cashOut->cash_in_id, fn ($q) => $q->orWhere('id', $cashOut->cash_in_id))
-            ->orderByDesc('doc_date')->get()
-            ->mapWithKeys(fn (CashIn $c) => [$c->id => $c->number().' — '.$c->source_name.' — sisa Rp '.number_format($c->remainingAmount(), 0, ',', '.')])->all();
+            ->orderByDesc('doc_date')->get();
+        $cashIns = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->number().' — '.$c->source_name.' — sisa Rp '.number_format($c->remainingAmount(), 0, ',', '.')])->all();
+        // Sisa saldo per Uang Masuk (angka) untuk peringatan langsung di form bila Jumlah melebihi sisa.
+        $remaining = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->remainingAmount()])->all();
 
-        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns];
+        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining];
     }
 }
