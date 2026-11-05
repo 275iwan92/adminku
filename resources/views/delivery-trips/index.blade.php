@@ -3,7 +3,7 @@
  Sumber hulu  : DeliveryTripController@index.
  Input        : rows.
  Output       : x-dl::grid; klik 2x membuka planner trip.
- Dipakai oleh : route trips.index (menu Transaksi > Pengiriman).
+ Dipakai oleh : route trips.index (menu Pengiriman > Perencanaan Pengiriman).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Pengiriman'])

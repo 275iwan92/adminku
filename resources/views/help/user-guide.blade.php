@@ -60,7 +60,7 @@
             @if ($can('ADJ'))<a class="g-toc-sub" href="#t-adj">Penyesuaian Stok</a>@endif
             @if ($can('SO'))<a class="g-toc-sub" href="#t-so">Stok Opname</a>@endif
             @if ($can('ORD'))<a class="g-toc-sub" href="#t-ord">Riwayat Pemesanan</a>@endif
-            @if ($can('PGK'))<a class="g-toc-sub" href="#t-pgk">Pengiriman</a>@endif
+            @if ($can('PGK'))<a class="g-toc-sub" href="#t-pgk">Perencanaan Pengiriman</a>@endif
             @if ($can('SJL'))<a class="g-toc-sub" href="#t-sjl">Surat Jalan</a>@endif
             <a class="g-toc-sub" href="#t-batal">Membatalkan dokumen</a>
         @endif

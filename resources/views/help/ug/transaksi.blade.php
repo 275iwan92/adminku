@@ -301,14 +301,14 @@
 @endif
 
 @if ($can('PGK'))
-<h3 id="t-pgk">Pengiriman</h3>
+<h3 id="t-pgk">Perencanaan Pengiriman</h3>
 <h4>Untuk apa</h4>
 <p>Menyusun satu trip untuk satu kendaraan dan satu crew (sopir dan asisten): urutan alamat antar dan ambil, barang di tiap alamat, dan perkiraan jam tiba (ETA) di setiap alamat. Contoh: antar ke A, antar ke B, ambil laundry di C, antar ke D, lalu kembali ke kantor.</p>
 <h4>Siapa yang bisa</h4>
 <p>Data Entry dan Supervisor. Membatalkan trip yang sudah ditugaskan hanya Supervisor.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>Transaksi</b>, lalu <b>Pengiriman</b>, tekan <b>+ New Record</b>.</li>
+    <li>Buka menu <b>Pengiriman</b>, lalu <b>Perencanaan Pengiriman</b>, tekan <b>+ New Record</b>.</li>
     <li>Isi <b>Tanggal trip</b>, <b>Kendaraan</b>, <b>Sopir</b>, <b>Asisten</b> (kosongkan bila sopir sendiri), dan <b>Jam berangkat</b>.</li>
     <li>Tekan <b>+ Tambah alamat</b> di awal atau di akhir daftar, lalu pilih <b>Antar</b> atau <b>Ambil</b>. Isi nama pelanggan dan alamat di panel kanan.</li>
     <li>Isi barang: ketik nama, jumlah, satuan, dan berat (kg), satu baris per barang. Untuk alamat antar, tekan <b>Ambil dari surat jalan</b>, centang satu atau beberapa surat jalan (barangnya tampil sebagai pratinjau), lalu <b>Pilih</b>. Barang dikelompokkan menurut nomor surat jalan.</li>
@@ -340,7 +340,7 @@
 <p>Data Entry dan Supervisor. Membuat dan membuka surat jalan juga membutuhkan hak <b>Pengeluaran Barang</b>.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>Transaksi</b>, lalu <b>Surat Jalan</b>.</li>
+    <li>Buka menu <b>Pengiriman</b>, lalu <b>Surat Jalan</b>.</li>
     <li>Tekan kotak <b>Belum dipakai</b> untuk melihat surat jalan yang belum masuk trip mana pun.</li>
     <li>Tekan <b>+ New Record</b> untuk membuat surat jalan baru (form Pengeluaran Barang). Sesudah dikonfirmasi, surat jalan itu bisa dipilih di Pengiriman.</li>
     <li>Klik 2x baris untuk membuka dokumennya.</li>

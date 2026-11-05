@@ -57,6 +57,6 @@ class MenuLayersTest extends TestCase
         $admin = User::factory()->administrator()->create();
 
         $this->actingAs($admin)->get(route('home'))->assertOk()->assertSee('Stok');
-        $this->assertSame(['MST', 'TRX', 'RPT', 'GA', 'HR', 'PUR', 'KEU', 'SEC'], collect(Menu::modules($admin))->pluck('code')->all());
+        $this->assertSame(['MST', 'TRX', 'RPT', 'GA', 'HR', 'PUR', 'DLV', 'KEU', 'SEC'], collect(Menu::modules($admin))->pluck('code')->all());
     }
 }
