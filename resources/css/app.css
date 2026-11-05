@@ -41,6 +41,17 @@
 
 .sstock-name .dl-input { font-size: 1.5rem; font-weight: 600; height: 3rem; }
 
+/* Form Uang Masuk / Uang Keluar: seluruh teks form diperbesar 35% lewat skala font DevLib (ramah pengguna lanjut usia); kolom Jumlah menonjol: besar, tebal, rata kanan. */
+.sstock-cash { --dl-font-scale: 1.35; }
+.sstock-cash .dl-field__label { font-size: 17px; }
+.sstock-cash .dl-field__hint { font-size: 15px; }
+.sstock-cash .dl-input, .sstock-cash [data-dl-dd-text], .sstock-cash select { font-size: 20px; }
+.sstock-cash .dl-input, .sstock-cash .dl-btn { min-height: 2.75rem; }
+.sstock-cash .sstock-amount .dl-input { font-size: 40px; font-weight: 700; height: 4.5rem; text-align: right; letter-spacing: .01em; }
+.sstock-cash .sstock-amount .dl-field__label { font-size: 19px; font-weight: 700; }
+.sstock-cash .sstock-amount .dl-prefix, .sstock-cash .sstock-amount .dl-field__box { border-width: 2px; }
+.sstock-cashnote { font-size: 1.25rem; font-weight: 600; }
+
 /* Logo AdminKU (SVG berwarna) menggantikan kotak gradasi bawaan DevLib di semua tempat lencana logo tampil (sidebar, kotak login, pojok login). */
 .dl-logo-badge { background: url('/media/brand/adminku.svg') center / contain no-repeat; }
 .dl-logo-badge > img { width: 100%; height: 100%; object-fit: contain; display: block; background: transparent; border-radius: 0; }

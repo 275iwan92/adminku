@@ -24,7 +24,7 @@
     <x-dl::form :title="'Uang Keluar · '.($isNew ? 'Baru' : raw($cashOut->number()))" :subtitle="$isNew ? null : raw($cashOut->purpose)" panel="top" kind="document" :status="$isNew ? 'new' : $cashOut->status"
         :back="route('cash-out.index')" :new-url="route('cash-out.create')"
         :action="$isNew ? route('cash-out.store') : route('cash-out.update', $cashOut)" :hidden="$isNew ? [] : ['_method' => 'PUT']" enctype="multipart/form-data"
-        :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
+        :pipeline="true" class="sstock-cash" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
         :hide="['hold', 'email', 'print']" :log="$log"
         :created-by="$cashOut->creator?->name" :created-at="$cashOut->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$cashOut->approver?->name ?? $cashOut->creator?->name" :updated-at="$cashOut->updated_at?->format('Y-m-d H:i:s')">
@@ -33,12 +33,12 @@
             <x-dl::field.date name="doc_date" label="Tanggal" :value="$d('doc_date')" required :error="$e('doc_date')" />
             <x-dl::field.select name="cash_in_id" label="Ditaut Ke Uang Masuk" :options="$cashIns" :value="$v('cash_in_id')" required :error="$e('cash_in_id')" hint="Hanya Uang Masuk yang sudah Disetujui. Sisa saldo tampil di tiap pilihan." />
         </x-dl::form.row>
-        <x-dl::form.row :cols="3">
-            <x-dl::field.display label="Kas Asal" :value="raw($account?->name ?? '(ikut Uang Masuk yang dipilih)')" />
-            <x-dl::field.decimal name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
+        <x-dl::form.row :cols="2">
+            <x-dl::field.decimal class="sstock-amount" name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
             <x-dl::field.text name="purpose" label="Untuk Apa" :value="$v('purpose')" required maxlength="150" :error="$e('purpose')" />
         </x-dl::form.row>
-        <x-dl::form.row>
+        <x-dl::form.row :cols="2">
+            <x-dl::field.display label="Kas Asal" :value="raw($account?->name ?? '(ikut Uang Masuk yang dipilih)')" />
             <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
         </x-dl::form.row>
         <x-dl::form.row>

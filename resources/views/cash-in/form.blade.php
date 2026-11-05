@@ -25,7 +25,7 @@
     <x-dl::form :title="'Uang Masuk · '.($isNew ? 'Baru' : raw($cashIn->number()))" :subtitle="$isNew ? null : raw($cashIn->source_name)" panel="top" kind="document" :status="$isNew ? 'new' : $cashIn->status"
         :back="route('cash-in.index')" :new-url="route('cash-in.create')"
         :action="$isNew ? route('cash-in.store') : route('cash-in.update', $cashIn)" :hidden="$isNew ? [] : ['_method' => 'PUT']" enctype="multipart/form-data"
-        :pipeline="true" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
+        :pipeline="true" class="sstock-cash" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
         :hide="['hold', 'email', 'print']" :log="$log"
         :created-by="$cashIn->creator?->name" :created-at="$cashIn->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$cashIn->approver?->name ?? $cashIn->creator?->name" :updated-at="$cashIn->updated_at?->format('Y-m-d H:i:s')">
@@ -34,12 +34,12 @@
             <x-dl::field.date name="doc_date" label="Tanggal" :value="$d('doc_date')" required :error="$e('doc_date')" />
             <x-dl::field.select name="cash_account_id" label="Kas Tujuan" :options="$accounts" :value="$v('cash_account_id')" required :error="$e('cash_account_id')" />
         </x-dl::form.row>
-        <x-dl::form.row :cols="3">
+        <x-dl::form.row :cols="2">
+            <x-dl::field.decimal class="sstock-amount" name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
             <x-dl::field.text name="source_name" label="Sumber Dana" :value="$v('source_name')" required maxlength="150" :error="$e('source_name')" hint="Mis. nama institusi, donatur, atau 'Pendapatan operasional'." />
-            <x-dl::field.decimal name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
-            <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
         </x-dl::form.row>
-        <x-dl::form.row>
+        <x-dl::form.row :cols="2">
+            <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
             <x-dl::field.upload name="attachment" label="Lampiran Bukti" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti penerimaan dana (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
         </x-dl::form.row>
         @if ($cashIn->exists && $cashIn->status === 'approved')
@@ -54,7 +54,7 @@
                         ['key' => 'status', 'label' => 'Status', 'type' => 'badge', 'tones' => $tones],
                     ]"
                     :stats="[['label' => 'Semua Uang Keluar']]" />
-                <p class="dl-note">Terpakai Rp {{ number_format($cashIn->usedAmount(), 0, ',', '.') }} dari Rp {{ number_format((float) $cashIn->amount, 0, ',', '.') }} — sisa Rp {{ number_format($cashIn->remainingAmount(), 0, ',', '.') }}.</p>
+                <p class="dl-note sstock-cashnote">Terpakai Rp {{ number_format($cashIn->usedAmount(), 0, ',', '.') }} dari Rp {{ number_format((float) $cashIn->amount, 0, ',', '.') }} — sisa Rp {{ number_format($cashIn->remainingAmount(), 0, ',', '.') }}.</p>
             </x-slot:detail>
         @endif
     </x-dl::form>
