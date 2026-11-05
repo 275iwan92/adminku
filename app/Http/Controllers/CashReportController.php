@@ -68,11 +68,15 @@ class CashReportController extends Controller
             ->when($source !== '', fn ($q) => $q->where('source_name', 'like', '%'.$source.'%'))
             ->orderBy('doc_date')->get()->map(fn (CashIn $c) => [
                 'date' => Locale::d($c->doc_date), 'doc' => $c->doc_no ?? '(draf)', 'source_name' => $c->source_name, 'account' => $c->cashAccount->name,
+                // Kelompok laporan: "Kas Tunai" atau "Rekening bank: nama rekening" (bank, no. rekening, atas nama ada di nama rekening).
+                'channel' => $c->cashAccount->type === 'bank' ? 'Rekening bank: '.$c->cashAccount->name : 'Kas Tunai', 'is_bank' => $c->cashAccount->type === 'bank',
                 'amount' => (float) $c->amount, 'used' => $c->usedAmount(), 'remaining' => $c->remainingAmount(), 'status' => $c->statusLabel(),
             ])->all();
+        $cash = (float) collect($rows)->where('is_bank', false)->sum('amount');
+        $bank = (float) collect($rows)->where('is_bank', true)->sum('amount');
 
         return view('reports.cash-receipts', [
-            'from' => $from, 'to' => $to, 'rows' => $rows, 'status' => $status, 'source' => $source,
+            'from' => $from, 'to' => $to, 'rows' => $rows, 'status' => $status, 'source' => $source, 'cash' => $cash, 'bank' => $bank,
             'sources' => CashIn::query()->distinct()->orderBy('source_name')->pluck('source_name', 'source_name')->all(),
         ]);
     }

@@ -14,9 +14,11 @@
     </x-report-filter>
     <x-dl::report phone-list title="Laporan Penerimaan" subtitle="Uang Masuk dikelompokkan per Sumber Dana — jumlah diterima, terpakai, sisa" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
         :criteria="array_filter(['Periode' => raw(Devlib\Locale::d($from).' — '.Devlib\Locale::d($to)), 'Sumber Dana' => raw($source !== '' ? $source : 'Semua sumber dana'), 'Status' => raw(\App\Models\CashIn::STATUS[$status] ?? 'Semua')])"
-        group-by="source_name" :groups="['source_name' => 'Per Sumber Dana']"
+        group-by="channel" :groups="['channel' => 'Per Kas / Rekening (Tunai dan tiap rekening bank)', 'source_name' => 'Per Sumber Dana']"
         :summary="[
             ['label' => 'Jumlah Uang Masuk', 'value' => count($rows)],
+            ['label' => 'Masuk Tunai', 'value' => $cash],
+            ['label' => 'Masuk Bank', 'value' => $bank],
             ['label' => 'Total Diterima', 'sum' => 'amount'],
             ['label' => 'Total Terpakai', 'sum' => 'used'],
             ['label' => 'Total Sisa', 'sum' => 'remaining'],
@@ -24,6 +26,7 @@
         :columns="[
             ['key' => 'date', 'label' => 'Tanggal'],
             ['key' => 'doc', 'label' => 'No. UM'],
+            ['key' => 'source_name', 'label' => 'Sumber Dana'],
             ['key' => 'account', 'label' => 'Kas Tujuan'],
             ['key' => 'amount', 'label' => 'Jumlah', 'type' => 'money', 'sum' => true],
             ['key' => 'used', 'label' => 'Terpakai', 'type' => 'money', 'sum' => true],
