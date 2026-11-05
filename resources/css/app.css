@@ -561,3 +561,4 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 .sp-push { flex: 1; }
 
 .dl-report-filter { padding-top: .75rem; }
+.dl-report-filter .dl-actionbar { justify-content: flex-start; border-top: 0; padding-top: 0; margin-top: -.25rem; }
