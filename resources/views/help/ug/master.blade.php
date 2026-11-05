@@ -93,7 +93,7 @@
     <li>Tekan <b>+ Data Baru</b>.</li>
     <li>Isi <b>Kode Pemasok</b> (unik, tidak bisa diubah setelah disimpan) dan <b>Nama Pemasok</b>.</li>
     <li>Isi kontak bila ada: <b>Telepon Kantor (PSTN)</b>, <b>Nama Kontak</b>, <b>HP Kontak (smartphone)</b> (juga dipakai untuk WhatsApp), dan <b>Alamat Jalan</b>.</li>
-    <li>Untuk Purchase, isi bila ada (boleh kosong): <b>Email</b> (tampil di cetakan PO), <b>Syarat Bayar (hari)</b> (0 = tunai; jadi nilai awal PO), dan <b>Catatan</b>. Tab <b>Riwayat beli</b> (hanya baca, muncul setelah pemasok disimpan) menampilkan barang yang pernah diterima dari pemasok ini: beli terakhir, harga terakhir, dan berapa kali.</li>
+    <li>Untuk Pembelian, isi bila ada (boleh kosong): <b>Email</b> (tampil di cetakan PO), <b>Syarat Bayar (hari)</b> (0 = tunai; jadi nilai awal PO), dan <b>Catatan</b>. Tab <b>Riwayat beli</b> (hanya baca, muncul setelah pemasok disimpan) menampilkan barang yang pernah diterima dari pemasok ini: beli terakhir, harga terakhir, dan berapa kali.</li>
     <li>Pada <b>Kecamatan, Kota / Kabupaten, Provinsi, Negara</b>, ketik kecamatan, kota, atau kode pos, lalu pilih dari daftar. Satu pilihan mengisi kecamatan, kota, provinsi, negara, dan kode pos.</li>
     <li>Tekan <b>Simpan</b>.</li>
 </ol>

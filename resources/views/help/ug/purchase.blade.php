@@ -1,15 +1,15 @@
 {{-- REMARK
- Tujuan       : Panduan Pengguna bagian 9b Purchase: Permintaan Pembelian (PP): satu PP banyak barang, siklus Draf > Confirm > Disetujui / Ditolak > Dibatalkan, nomor otomatis, satuan dan estimasi harga satuan terisi sendiri.
+ Tujuan       : Panduan Pengguna bagian 9b Pembelian: Permintaan Pembelian (PP): satu PP banyak barang, siklus Draf > Confirm > Disetujui / Ditolak > Dibatalkan, nomor otomatis, satuan dan estimasi harga satuan terisi sendiri.
                 Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
  Sumber hulu  : PurchaseRequestController / pr.*, PurchaseRequest, PurchaseRequestRequest, Modules (kode PUP), User::canAccess / canWrite, Menu::layers.
  Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya modul PUP). Tidak ada diagram.
  Status       : Aktif.
 --}}
 @if ($anyPur)
-<h2 id="purchase">9b. Purchase</h2>
-<p>Menu Purchase mengurus pembelian dari permintaan sampai barang masuk stok: <b>Permintaan Pembelian (PP)</b>, <b>Keputusan Pesanan</b>, <b>Pesanan Pembelian (PO)</b>, dan <b>Penerimaan Pembelian (PV)</b>.</p>
+<h2 id="purchase">9b. Pembelian</h2>
+<p>Menu Pembelian mengurus pembelian dari permintaan sampai barang masuk stok: <b>Permintaan Pembelian (PP)</b>, <b>Keputusan Pesanan</b>, <b>Pesanan Pembelian (PO)</b>, dan <b>Penerimaan Pembelian (PV)</b>.</p>
 <ul class="g-list">
-    <li><b>Hak Purchase datang dari Grup, bukan dari peran.</b> Menu Purchase hanya tampil bila Grup Anda diberi modul <b>Permintaan Pembelian</b>, <b>Keputusan Pesanan</b>, atau <b>Pesanan Pembelian (PO)</b>, atau <b>Penerimaan Pembelian (PV)</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
+    <li><b>Hak Pembelian datang dari Grup, bukan dari peran.</b> Menu Pembelian hanya tampil bila Grup Anda diberi modul <b>Permintaan Pembelian</b>, <b>Keputusan Pesanan</b>, atau <b>Pesanan Pembelian (PO)</b>, atau <b>Penerimaan Pembelian (PV)</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
     <li>Alurnya: PP disetujui, lalu Keputusan Pesanan memilih pemasok dari riwayat beli, lalu PO di-Confirm, disetujui, dan dicetak, lalu PV mencatat barang yang datang dan otomatis menambah stok.</li>
 </ul>
 
@@ -21,7 +21,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Permintaan Pembelian</b>. Menyetujui atau menolak hanya untuk peran Supervisor ke atas, dan bukan pembuat PP itu sendiri.</p>
 <h4>Langkah: membuat dan mengajukan PP</h4>
 <ol class="g-steps">
-    <li>Buka <b>Purchase</b> lalu <b>Permintaan Pembelian</b>, tekan <span class="g-btn">New</span>.</li>
+    <li>Buka <b>Pembelian</b> lalu <b>Permintaan Pembelian</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Isi <b>Tanggal</b>, <b>Bagian peminta</b>, dan bila perlu <b>Dibutuhkan tgl</b> serta <b>Catatan</b>. Pemohon adalah Anda sendiri.</li>
     <li>Tiap baris: pilih <b>Item</b> dari master, atau ketik nama di <b>Barang baru (ketik)</b> untuk barang yang belum ada di master (isi juga <b>Unit</b>). Isi <b>Qty</b>.</li>
     <li><b>Unit</b> kosong diisi satuan barang. <b>Estimasi harga satuan</b> kosong diisi harga beli terakhir barang itu bila pernah dibeli; boleh diubah. <b>Subtotal</b> = Qty x Estimasi harga satuan.</li>
@@ -79,7 +79,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Pesanan Pembelian (PO)</b>. Menyetujui atau menolak hanya untuk peran Supervisor ke atas, dan bukan pembuat PO itu sendiri.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>PO biasanya dibuat dari <b>Keputusan Pesanan</b>. Untuk PO manual, buka <b>Purchase</b> lalu <b>Pesanan Pembelian (PO)</b> dan tekan <span class="g-btn">New</span>.</li>
+    <li>PO biasanya dibuat dari <b>Keputusan Pesanan</b>. Untuk PO manual, buka <b>Pembelian</b> lalu <b>Pesanan Pembelian (PO)</b> dan tekan <span class="g-btn">New</span>.</li>
     <li>Tab <b>Data</b>: isi <b>Pemasok</b> (<b>Syarat Bayar</b> terisi dari pemasok), <b>Kirim tgl</b>, <b>Kirim ke</b>, <b>PPN (%)</b> bila ada (0 = tanpa PPN), dan <b>Catatan</b>. Periksa baris barang dan <b>Harga satuan</b>; kolom <b>Dari PP</b> menunjukkan PP asalnya. Tab <b>Riwayat</b> mencatat siapa mengajukan dan menyetujui.</li>
     <li>Tekan <span class="g-btn">Save</span> untuk draf, lalu <span class="g-btn">Confirm</span>: nomor PO lahir dan PO terkunci. Sebelum Confirm, <span class="g-btn">Delete</span> menghapus draf.</li>
     <li>Supervisor lain menekan <span class="g-btn">Approve</span> atau <span class="g-btn">Reject</span> (alasan wajib). Setelah <b>Disetujui</b>, tombol <span class="g-btn">Print</span> muncul untuk mencetak PO.</li>
@@ -105,7 +105,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Penerimaan Pembelian (PV)</b> (RW untuk membuat dan mengonfirmasi). Hanya peran Supervisor ke atas yang bisa membatalkan PV yang sudah terkonfirmasi.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka PO yang <b>Disetujui</b> lalu tekan <span class="g-btn">Terima barang</span>, atau buka <b>Purchase</b> lalu <b>Penerimaan Pembelian (PV)</b>, tekan <span class="g-btn">New</span>, dan pilih <b>Pesanan Pembelian (PO)</b>. Pemasok dan barang PO terisi, dengan <b>Terima sekarang</b> = sisa PO.</li>
+    <li>Buka PO yang <b>Disetujui</b> lalu tekan <span class="g-btn">Terima barang</span>, atau buka <b>Pembelian</b> lalu <b>Penerimaan Pembelian (PV)</b>, tekan <span class="g-btn">New</span>, dan pilih <b>Pesanan Pembelian (PO)</b>. Pemasok dan barang PO terisi, dengan <b>Terima sekarang</b> = sisa PO.</li>
     <li>Isi <b>Tanggal terima</b>, <b>No surat jalan pemasok</b>, dan <b>Penerima barang</b>. Ubah <b>Terima sekarang</b> bila yang datang kurang (kosong atau 0 = barang itu belum datang). Untuk barang yang melacak kedaluwarsa isi <b>Kedaluwarsa</b>.</li>
     <li>Tekan <span class="g-btn">Save</span> untuk draf, atau <span class="g-btn">Confirm</span> untuk menerima: nomor PV lahir (draf belum bernomor), nomor RCV tampil di PV, dan stok barang bertambah.</li>
     <li>Kiriman berikutnya dibuat sebagai PV baru dari PO yang sama sampai semua barang penuh.</li>

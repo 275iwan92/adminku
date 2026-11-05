@@ -98,7 +98,7 @@
             @if ($can('HRD'))<a class="g-toc-sub" href="#hr-hrd">Kedisiplinan</a>@endif
         @endif
         @if ($anyPur)
-            <a href="#purchase">9b. Purchase</a>
+            <a href="#purchase">9b. Pembelian</a>
             @if ($can('PUP'))<a class="g-toc-sub" href="#pur-pup">Permintaan Pembelian</a>@endif
             @if ($can('PUK'))<a class="g-toc-sub" href="#pur-puk">Keputusan Pesanan</a>@endif
             @if ($can('PUO'))<a class="g-toc-sub" href="#pur-puo">Pesanan Pembelian (PO)</a>@endif

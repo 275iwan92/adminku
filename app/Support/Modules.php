@@ -23,7 +23,7 @@ final class Modules
         'RPT' => ['Laporan', 'fa-solid fa-chart-column'],
         'GA' => ['GA', 'fa-solid fa-building-user'],
         'HR' => ['HR', 'fa-solid fa-user-tie'],
-        'PUR' => ['Purchase', 'fa-solid fa-cart-shopping'],
+        'PUR' => ['Pembelian', 'fa-solid fa-cart-shopping'],
         'KEU' => ['Keuangan', 'fa-solid fa-building-columns'],
         'SEC' => ['Keamanan', 'fa-solid fa-shield-halved'],
     ];
