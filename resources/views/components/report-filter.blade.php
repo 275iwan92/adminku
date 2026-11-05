@@ -5,7 +5,7 @@
  Dipakai oleh : semua view reports.*.
  Status       : Aktif.
 --}}
-@props(['from', 'to'])
+@props(['from', 'to', 'apply' => 'Apply'])
 <x-dl::action-form method="get" :action="url()->current()" class="dl-report-filter">
     <x-dl::form.row :cols="4">
         <x-dl::field.date name="from" label="From date" :value="$from->format('Y-m-d')" />
@@ -13,6 +13,6 @@
         {{ $slot }}
     </x-dl::form.row>
     <x-dl::action-bar>
-        <x-dl::button type="submit" icon="fa-filter" label="Apply" size="sm" />
+        <x-dl::button type="submit" icon="fa-filter" :label="$apply" size="sm" />
     </x-dl::action-bar>
 </x-dl::action-form>

@@ -300,6 +300,60 @@
 </ul>
 @endif
 
+@if ($can('PGK'))
+<h3 id="t-pgk">Pengiriman</h3>
+<h4>Untuk apa</h4>
+<p>Menyusun satu trip untuk satu kendaraan dan satu crew (sopir dan asisten): urutan alamat antar dan ambil, barang di tiap alamat, dan perkiraan jam tiba (ETA) di setiap alamat. Contoh: antar ke A, antar ke B, ambil laundry di C, antar ke D, lalu kembali ke kantor.</p>
+<h4>Siapa yang bisa</h4>
+<p>Data Entry dan Supervisor. Membatalkan trip yang sudah ditugaskan hanya Supervisor.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Transaksi</b>, lalu <b>Pengiriman</b>, tekan <b>+ New Record</b>.</li>
+    <li>Isi <b>Tanggal trip</b>, <b>Kendaraan</b>, <b>Sopir</b>, <b>Asisten</b> (kosongkan bila sopir sendiri), dan <b>Jam berangkat</b>.</li>
+    <li>Tekan <b>+ Tambah alamat</b> di awal atau di akhir daftar, lalu pilih <b>Antar</b> atau <b>Ambil</b>. Isi nama pelanggan dan alamat di panel kanan.</li>
+    <li>Isi barang: ketik nama, jumlah, satuan, dan berat (kg), satu baris per barang. Untuk alamat antar, tekan <b>Ambil dari surat jalan</b>, centang satu atau beberapa surat jalan (barangnya tampil sebagai pratinjau), lalu <b>Pilih</b>. Barang dikelompokkan menurut nomor surat jalan.</li>
+    <li>Ubah urutan dengan menyeret baris di daftar kiri. ETA semua alamat dihitung ulang. Hapus alamat dengan ikon tempat sampah (klik dua kali).</li>
+    <li>Tekan <b>Save</b> untuk menyimpan draf. Bila sudah benar, tekan <b>Confirm</b> untuk <b>menugaskan</b> trip: nomor PGK dibuat dan trip terkunci.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Waktu layanan tiap alamat otomatis: 5 menit ditambah 10 menit per 100 kg, dikali 0,7 bila ada asisten. Angka ini perkiraan awal, belum dikalibrasi dari pengiriman nyata.</li>
+    <li><b>Menit tempuh dari titik sebelumnya</b> diisi manual (awal 15 menit). Belum ada perhitungan jarak otomatis dari peta.</li>
+    <li>Satu surat jalan hanya bisa dipakai di satu alamat. Surat jalan yang dipakai alamat lain tampil redup di daftar pilih.</li>
+    <li>Barang dari surat jalan tidak diedit di sini. Ubah barangnya di surat jalan (Pengeluaran Barang).</li>
+    <li>Trip yang ditugaskan tidak bisa diubah. Supervisor menekan <b>Batalkan</b> (alasan wajib) dan surat jalannya bebas lagi.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Surat jalan tidak ada di daftar pilih.</b> Pengeluaran Barangnya belum Terkonfirmasi, dibatalkan, atau sudah dipakai alamat atau trip lain.</li>
+    <li><b>Tugaskan ditolak.</b> Pastikan ada minimal satu alamat dan tiap alamat punya barang atau surat jalan.</li>
+</ul>
+@endif
+
+@if ($can('SJL'))
+<h3 id="t-sjl">Surat Jalan</h3>
+<h4>Untuk apa</h4>
+<p>Melihat semua surat jalan (Pengeluaran Barang) beserta pemakaiannya: trip, plat kendaraan, dan sopir. Surat jalan baru dibuat di sini lewat form Pengeluaran Barang.</p>
+<h4>Siapa yang bisa</h4>
+<p>Data Entry dan Supervisor. Membuat dan membuka surat jalan juga membutuhkan hak <b>Pengeluaran Barang</b>.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Transaksi</b>, lalu <b>Surat Jalan</b>.</li>
+    <li>Tekan kotak <b>Belum dipakai</b> untuk melihat surat jalan yang belum masuk trip mana pun.</li>
+    <li>Tekan <b>+ New Record</b> untuk membuat surat jalan baru (form Pengeluaran Barang). Sesudah dikonfirmasi, surat jalan itu bisa dipilih di Pengiriman.</li>
+    <li>Klik 2x baris untuk membuka dokumennya.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Surat jalan memotong stok seperti Pengeluaran Barang biasa. Plat dan sopir yang tampil berasal dari trip yang memakainya.</li>
+    <li>Barang pribadi atau barang tanpa surat jalan tidak perlu surat jalan: ketik langsung barangnya di alamat pada Pengiriman.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Tombol New Record tidak ada.</b> Hak Anda untuk Pengeluaran Barang hanya baca.</li>
+</ul>
+@endif
+
 <h3 id="t-batal">Membatalkan dokumen yang sudah dikonfirmasi</h3>
 <h4>Untuk apa</h4>
 <p>Membatalkan dokumen yang sudah terlanjur dikonfirmasi. Stok dikembalikan. Riwayat stok tidak dihapus.</p>

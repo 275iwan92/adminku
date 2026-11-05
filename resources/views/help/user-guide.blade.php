@@ -16,7 +16,7 @@
     $can = fn (string $code) => $user->canAccess($code);
     $sup = $user->isSupervisor();
     $anyMaster = collect(['ITM', 'SUP', 'DEP', 'RCP', 'UOM', 'CAT', 'LOC', 'CMP'])->contains($can);
-    $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD'])->contains($can);
+    $anyTrx = collect(['OPN', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD', 'PGK', 'SJL'])->contains($can);
     $anyRpt = collect(['STB', 'R-CARD', 'R-SUM', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ'])->contains($can);
     $anyHr = $can('HRE') || $can('HRR') || $can('HRD');
     $anyPur = $can('PUP') || $can('PUK') || $can('PUO') || $can('PUV');
@@ -60,6 +60,8 @@
             @if ($can('ADJ'))<a class="g-toc-sub" href="#t-adj">Penyesuaian Stok</a>@endif
             @if ($can('SO'))<a class="g-toc-sub" href="#t-so">Stok Opname</a>@endif
             @if ($can('ORD'))<a class="g-toc-sub" href="#t-ord">Riwayat Pemesanan</a>@endif
+            @if ($can('PGK'))<a class="g-toc-sub" href="#t-pgk">Pengiriman</a>@endif
+            @if ($can('SJL'))<a class="g-toc-sub" href="#t-sjl">Surat Jalan</a>@endif
             <a class="g-toc-sub" href="#t-batal">Membatalkan dokumen</a>
         @endif
         @if ($anyRpt)

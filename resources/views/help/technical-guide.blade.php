@@ -955,6 +955,22 @@ composer test                        # config:clear, then php artisan test</pre>
             <li><b>Modules:</b> three new codes under the <code>KEU</code> parent (see the menu-parent note above), type <code>report</code> (same <code>type</code> value the Stok report codes use), minimum role Data Entry (read-only, no RW concept for a report) &mdash; <code>R-KFLOW</code> Laporan Arus Kas, <code>R-KIN</code> Laporan Penerimaan, <code>R-KOUT</code> Laporan Pengeluaran. They needed no new grant migration: an existing data migration (2026-12-03, the Admin Data role rollout) grants every module outside <code>SEC</code> from <code>Modules::all()</code> read dynamically, so a fresh migrate picks up these three automatically for the <code>SUPERVISOR</code> and <code>ADMINDATA</code> groups; they also need no Opening/menu wiring, the existing "every module tile shows on its parent's Beranda" mechanism places them on Beranda Kas by itself.</li>
             <li><b>Tests:</b> <code>CashReportTest</code> (cash-flow running balance across accounts, per-source grouping and used/remaining totals, default-approved vs. "Semua" status, per-account filter, module access).</li>
         </ul>
+
+        <h2 id="tg-delivery">Delivery (Pengiriman, PGK) and Surat Jalan (SJL)</h2>
+        <p>One <b>trip</b> = one vehicle + one crew (driver, optional assistant) with an ordered list of <b>stops</b> (deliver <code>ant</code> or pick up <code>amb</code>). The planner is a single Blade partial (<code>delivery-trips/planner.blade.php</code>) that keeps the stops in memory and posts them as JSON (<code>stops_json</code>); <code>DeliveryTripController::validated</code> re-validates every stop. Surat Jalan (SJL) is only a grid over Stok Issuance documents (<code>rm_stock</code> type OUT) showing where each one is used.</p>
+        <table class="g-table">
+            <thead><tr><th>Table</th><th>Key columns</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td><code>delivery_trip</code></td><td><code>doc_no</code> (PGK-YYMM-0001, born at assign), <code>trip_date</code>, <code>vehicle_id</code>, <code>driver</code>, <code>assistant</code>, <code>depart_time</code>, <code>return_min</code>, <code>status</code> draft | assigned | cancelled</td><td>Cancel (Supervisor, reason) frees the linked delivery notes</td></tr>
+                <tr><td><code>delivery_stop</code></td><td><code>trip_id</code>, <code>seq</code>, <code>kind</code>, <code>customer</code>, <code>address</code>, <code>travel_min</code>, <code>items</code> (JSON [name, qty, unit, kg])</td><td>Typed items are used only when no delivery note is linked</td></tr>
+                <tr><td><code>delivery_stop_doc</code></td><td><code>stop_id</code>, <code>stock_document_id</code> (unique)</td><td>A delivery note can belong to one stop only; only confirmed Issuance documents</td></tr>
+            </tbody>
+        </table>
+        <ul>
+            <li><b>ETA:</b> service minutes = (5 + 10 &times; kg / 100) &times; 0.7 when an assistant is set; arrival = departure + cumulative travel + previous services. Computed in the browser only. Constants are assumptions to calibrate; travel minutes are typed per stop (no routing service yet).</li>
+            <li><b>Not built yet:</b> map and routing, driver phone screen (arrive / done, proof of delivery), per-stop item weight for delivery notes (stock items have no weight).</li>
+            <li><b>Modules:</b> PGK (<code>trips.</code>) and SJL (<code>delivery-notes.</code>), Data Entry; migration <code>create_delivery_trip</code> grants both to the ADMIN group.</li>
+        </ul>
     </main>
 </div>
 @endsection

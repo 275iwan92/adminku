@@ -25,6 +25,8 @@ use App\Http\Controllers\CashReportController;
 use App\Http\Controllers\CashSourceController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DeliveryNoteController;
+use App\Http\Controllers\DeliveryTripController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DisciplineController;
@@ -316,6 +318,13 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('po/{po}', [PurchaseOrderController::class, 'show'])->whereNumber('po')->name('po.show');
     Route::put('po/{po}', [PurchaseOrderController::class, 'update'])->whereNumber('po')->name('po.update');
     Route::get('po/{po}/print', [PurchaseOrderController::class, 'print'])->whereNumber('po')->name('po.print');
+    // Pengiriman (PGK): planner trip satu kendaraan + satu crew; Surat Jalan (SJL): daftar Pengeluaran Barang sebagai surat jalan.
+    Route::get('trips', [DeliveryTripController::class, 'index'])->name('trips.index');
+    Route::get('trips/create', [DeliveryTripController::class, 'create'])->name('trips.create');
+    Route::post('trips', [DeliveryTripController::class, 'store'])->name('trips.store');
+    Route::get('trips/{trip}', [DeliveryTripController::class, 'show'])->whereNumber('trip')->name('trips.show');
+    Route::put('trips/{trip}', [DeliveryTripController::class, 'update'])->whereNumber('trip')->name('trips.update');
+    Route::get('delivery-notes', [DeliveryNoteController::class, 'index'])->name('delivery-notes.index');
     // Purchase, Penerimaan Pembelian (PUV): barang datang dari PO; Konfirmasi membuat Penerimaan Barang (RCV) di Stok otomatis.
     Route::get('pv', [PurchaseReceiptController::class, 'index'])->name('pv.index');
     Route::get('pv/create', [PurchaseReceiptController::class, 'create'])->name('pv.create');
