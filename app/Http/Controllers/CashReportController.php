@@ -30,16 +30,17 @@ class CashReportController extends Controller
 
         $rows = [];
         $totalOpen = $totalIn = $totalOut = 0.0;
+        $closeByType = ['cash' => 0.0, 'bank' => 0.0];   // saldo akhir Tunai dan Bank (jumlah semua rekening bank)
         foreach ($accounts as $account) {
             $priorIn = (float) CashIn::query()->where('cash_account_id', $account->id)->where('status', 'approved')->where('doc_date', '<', $from->toDateString())->sum('amount');
-            $priorOut = (float) CashOut::query()->whereHas('cashIn', fn ($q) => $q->where('cash_account_id', $account->id))->where('status', 'approved')->where('doc_date', '<', $from->toDateString())->sum('amount');
+            $priorOut = (float) CashOut::query()->where('cash_account_id', $account->id)->where('status', 'approved')->where('doc_date', '<', $from->toDateString())->sum('amount');
             $balance = (float) $account->opening_balance + $priorIn - $priorOut;
             $totalOpen += $balance;
             $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($from), 'doc' => '—', 'uraian' => 'Saldo awal', 'masuk' => null, 'keluar' => null, 'saldo' => $balance];
 
             $ins = CashIn::query()->where('cash_account_id', $account->id)->where('status', 'approved')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])->get()
                 ->map(fn (CashIn $c) => ['at' => $c->doc_date, 'doc' => $c->doc_no, 'uraian' => $c->source_name, 'masuk' => (float) $c->amount, 'keluar' => null]);
-            $outs = CashOut::query()->whereHas('cashIn', fn ($q) => $q->where('cash_account_id', $account->id))->where('status', 'approved')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])->get()
+            $outs = CashOut::query()->where('cash_account_id', $account->id)->where('status', 'approved')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])->get()
                 ->map(fn (CashOut $c) => ['at' => $c->doc_date, 'doc' => $c->doc_no, 'uraian' => $c->purpose, 'masuk' => null, 'keluar' => (float) $c->amount]);
             foreach ($ins->concat($outs)->sortBy('at')->values() as $e) {
                 $balance += ($e['masuk'] ?? 0) - ($e['keluar'] ?? 0);
@@ -48,11 +49,12 @@ class CashReportController extends Controller
                 $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($e['at']), 'doc' => $e['doc'], 'uraian' => $e['uraian'], 'masuk' => $e['masuk'], 'keluar' => $e['keluar'], 'saldo' => $balance];
             }
             $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($to), 'doc' => '—', 'uraian' => 'Saldo akhir', 'masuk' => null, 'keluar' => null, 'saldo' => $balance];
+            $closeByType[$account->type === 'bank' ? 'bank' : 'cash'] += $balance;
         }
 
         return view('reports.cash-flow', [
             'from' => $from, 'to' => $to, 'rows' => $rows, 'accountId' => $accountId, 'accounts' => $allAccounts->pluck('name', 'id')->all(),
-            'totalOpen' => $totalOpen, 'totalIn' => $totalIn, 'totalOut' => $totalOut, 'totalClose' => $totalOpen + $totalIn - $totalOut,
+            'closeCash' => $closeByType['cash'], 'closeBank' => $closeByType['bank'], 'totalOpen' => $totalOpen, 'totalIn' => $totalIn, 'totalOut' => $totalOut, 'totalClose' => $totalOpen + $totalIn - $totalOut,
         ]);
     }
 
@@ -81,7 +83,7 @@ class CashReportController extends Controller
         ]);
     }
 
-    // Uang Keluar per sumber dana (lewat Uang Masuk yang ditaut): "untuk apa" per sumber dana, dikelompokkan oleh nama sumber dana.
+    // Uang Keluar per kebutuhan (kategori) atau per sumber dana (lewat Uang Masuk yang ditaut, bila ada), dengan Keluar Tunai / Keluar Bank dan rincian per rekening (Kas Asal sendiri).
     public function disbursements(Request $request)
     {
         [$from, $to] = $this->period($request);
@@ -89,19 +91,21 @@ class CashReportController extends Controller
         $status = $this->statusFilter($request);
         $source = Text::of($request->query('source'));
 
-        $rows = CashOut::query()->with(['cashIn.cashAccount', 'category'])->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])
-            ->when($accountId, fn ($q) => $q->whereHas('cashIn', fn ($w) => $w->where('cash_account_id', $accountId)))
+        $rows = CashOut::query()->with(['cashIn.cashAccount', 'account', 'category'])->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])
+            ->when($accountId, fn ($q) => $q->where('cash_account_id', $accountId))
             ->when($status !== '', fn ($q) => $q->where('status', $status))
             ->when($source !== '', fn ($q) => $q->whereHas('cashIn', fn ($w) => $w->where('source_name', 'like', '%'.$source.'%')))
             ->orderBy('doc_date')->get()->map(fn (CashOut $c) => [
-                'date' => Locale::d($c->doc_date), 'doc' => $c->doc_no ?? '(draf)', 'cash_in' => $c->cashIn->number(), 'source_name' => $c->cashIn->source_name,
-                'account' => $c->cashIn->cashAccount->name, 'category' => $c->category?->name ?? 'Belum dikategorikan',
+                'date' => Locale::d($c->doc_date), 'doc' => $c->doc_no ?? '(draf)', 'cash_in' => $c->cashIn?->number() ?? 'Tanpa tautan', 'source_name' => $c->cashIn?->source_name ?? 'Tanpa Uang Masuk (saldo kas)',
+                'account' => $c->cashAccount()?->name ?? '-', 'channel' => $c->cashAccount()?->type === 'bank' ? 'Rekening bank: '.$c->cashAccount()->name : 'Kas Tunai', 'is_bank' => $c->cashAccount()?->type === 'bank', 'category' => $c->category?->name ?? 'Belum dikategorikan',
                 // Rincian = Keterangan; Uang Keluar lama bernama bebas (tanpa kategori) menampilkan nama lamanya di sini.
                 'purpose' => $c->description ?: ($c->purpose_id ? '' : $c->purpose), 'amount' => (float) $c->amount, 'status' => $c->statusLabel(),
             ])->all();
+        $cash = (float) collect($rows)->where('is_bank', false)->sum('amount');
+        $bank = (float) collect($rows)->where('is_bank', true)->sum('amount');
 
         return view('reports.cash-disbursements', [
-            'from' => $from, 'to' => $to, 'rows' => $rows, 'accountId' => $accountId, 'status' => $status, 'source' => $source,
+            'from' => $from, 'to' => $to, 'rows' => $rows, 'cash' => $cash, 'bank' => $bank, 'accountId' => $accountId, 'status' => $status, 'source' => $source,
             'accounts' => CashAccount::query()->orderBy('name')->pluck('name', 'id')->all(),
             'sources' => CashIn::query()->distinct()->orderBy('source_name')->pluck('source_name', 'source_name')->all(),
         ]);

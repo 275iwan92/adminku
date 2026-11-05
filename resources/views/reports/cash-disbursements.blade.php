@@ -13,18 +13,20 @@
         <x-dl::field.select name="source" label="Sumber Dana" :options="['' => 'Semua sumber dana'] + $sources" :value="$source" />
         <x-dl::field.select name="status" label="Status" :options="['' => 'Semua'] + \App\Models\CashOut::STATUS" :value="$status" />
     </x-report-filter>
-    <x-dl::report phone-list title="Laporan Pengeluaran" subtitle="Uang Keluar dikelompokkan per Kebutuhan (kategori), bisa diganti per Sumber Dana" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
+    <x-dl::report phone-list title="Laporan Pengeluaran" subtitle="Uang Keluar per Kebutuhan (kategori); bisa diganti per Kas / Rekening atau per Sumber Dana" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
         :criteria="array_filter(['Periode' => raw(Devlib\Locale::d($from).' — '.Devlib\Locale::d($to)), 'Kas' => raw($accounts[request('cash_account_id')] ?? 'Semua kas'), 'Sumber Dana' => raw($source !== '' ? $source : 'Semua sumber dana'), 'Status' => raw(\App\Models\CashOut::STATUS[$status] ?? 'Semua')])"
-        group-by="category" :groups="['category' => 'Per Kebutuhan', 'source_name' => 'Per Sumber Dana']"
+        group-by="category" :groups="['category' => 'Per Kebutuhan', 'channel' => 'Per Kas / Rekening (Tunai dan tiap rekening bank)', 'source_name' => 'Per Sumber Dana']"
         :summary="[
             ['label' => 'Jumlah Uang Keluar', 'value' => count($rows)],
+            ['label' => 'Keluar Tunai', 'value' => $cash],
+            ['label' => 'Keluar Bank', 'value' => $bank],
             ['label' => 'Total Pengeluaran', 'sum' => 'amount'],
         ]"
         :columns="[
             ['key' => 'date', 'label' => 'Tanggal'],
             ['key' => 'doc', 'label' => 'No. UK'],
             ['key' => 'cash_in', 'label' => 'Ditaut Ke'],
-            ['key' => 'account', 'label' => 'Kas'],
+            ['key' => 'account', 'label' => 'Kas Asal'],
             ['key' => 'source_name', 'label' => 'Sumber Dana'],
             ['key' => 'purpose', 'label' => 'Keterangan'],
             ['key' => 'amount', 'label' => 'Jumlah', 'type' => 'money', 'sum' => true],

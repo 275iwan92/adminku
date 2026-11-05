@@ -19,6 +19,8 @@
             ['label' => 'Total Masuk', 'value' => $totalIn],
             ['label' => 'Total Keluar', 'value' => $totalOut],
             ['label' => 'Saldo Akhir', 'value' => $totalClose],
+            ['label' => 'Saldo Akhir Tunai', 'value' => $closeCash],
+            ['label' => 'Saldo Akhir Bank', 'value' => $closeBank],
         ]"
         :columns="[
             ['key' => 'date', 'label' => 'Tanggal'],
