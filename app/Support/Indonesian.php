@@ -103,9 +103,9 @@ final class Indonesian
         'Search document, party, reference...' => 'Cari dokumen, pihak, referensi...',
 
         // Laporan
-        'From date' => 'Dari tanggal', 'To date' => 'Sampai tanggal', 'Apply' => 'Terapkan', 'Process' => 'Proses', 'All categories' => 'Semua kategori', 'Filter' => 'Saring',
+        'From date' => 'Dari tanggal', 'To date' => 'Sampai tanggal', 'Apply' => 'Terapkan', 'Show' => 'Tampilkan', 'All categories' => 'Semua kategori', 'Filter' => 'Saring',
         'Only items at / below reorder point' => 'Hanya barang di / bawah titik pesan ulang', 'Include inactive items' => 'Termasuk barang nonaktif',
-        'Recipient / Department' => 'Penerima / Departemen', 'Choose an item' => 'Pilih barang', 'Select an item and a period, then press Process to see its stock card.' => 'Pilih barang dan periode, lalu tekan Proses untuk melihat kartu stoknya.',
+        'Recipient / Department' => 'Penerima / Departemen', 'Choose an item' => 'Pilih barang', 'Select an item and a period, then press Show to see its stock card.' => 'Pilih barang dan periode, lalu tekan Tampilkan untuk melihat kartu stoknya.',
         'Stock movement history per item' => 'Riwayat pergerakan stok per barang', 'Stock position and movement per period' => 'Posisi dan pergerakan stok per periode',
         'Goods received from suppliers' => 'Barang diterima dari pemasok', 'Goods issued for maintenance / ATK' => 'Barang keluar untuk maintenance / ATK', 'Physical count vs system stock' => 'Hitung fisik dibanding stok sistem',
         'Period' => 'Periode', 'Scope' => 'Cakupan',

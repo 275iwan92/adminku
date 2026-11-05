@@ -53,7 +53,7 @@
 <ol class="g-steps">
     <li>Buka <b>Kartu Stok</b>.</li>
     <li>Pilih <b>Barang</b>. Isian ini wajib.</li>
-    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, lalu tekan <b>Proses</b>.</li>
+    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, lalu tekan <b>Tampilkan</b>.</li>
     <li>Baca kotak ringkasan di atas: <b>Saldo Awal</b>, <b>Total Masuk</b>, <b>Total Keluar</b>, <b>Penyesuaian</b>, dan <b>Saldo Akhir</b>. Lalu baca baris pergerakan di bawahnya.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>

@@ -8,11 +8,11 @@
 --}}
 @extends('layout', ['title' => 'Stock Card'])
 @section('body')
-    <x-report-filter :from="$from" :to="$to" apply="Process">
+    <x-report-filter :from="$from" :to="$to" apply="Show">
         <x-dl::field.select name="batch_id" label="Item" :options="$items" :value="$item?->id" required />
     </x-report-filter>
     @if (! $item)
-        <x-dl::empty-state title="Choose an item" message="Select an item and a period, then press Process to see its stock card." icon="file" />
+        <x-dl::empty-state title="Choose an item" message="Select an item and a period, then press Show to see its stock card." icon="file" />
     @else
         <x-dl::report phone-list title="Stock Card" subtitle="Stock movement history per item" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
             :criteria="array_filter([

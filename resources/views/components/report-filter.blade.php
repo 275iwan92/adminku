@@ -13,6 +13,6 @@
         {{ $slot }}
     </x-dl::form.row>
     <x-dl::action-bar>
-        <x-dl::button type="submit" icon="fa-filter" :label="$apply" size="sm" />
+        <x-dl::button type="submit" icon="fa-eye" :label="$apply" size="sm" />
     </x-dl::action-bar>
 </x-dl::action-form>
