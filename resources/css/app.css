@@ -474,7 +474,7 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 .sstock-cash .sstock-panel { background: var(--dl-surface-alt); border-radius: 12px; padding: 16px 18px; }
 /* Panel Kas + Jumlah: hijau untuk Uang Masuk, oranye untuk Uang Keluar; kotak isian tetap putih supaya terbaca. */
 .sstock-cash-in .sstock-panel { background: color-mix(in srgb, #16a34a 16%, var(--dl-surface)); border: 1px solid color-mix(in srgb, #16a34a 40%, transparent); }
-.sstock-cash-out .sstock-panel { background: color-mix(in srgb, #f97316 18%, var(--dl-surface)); border: 1px solid color-mix(in srgb, #f97316 45%, transparent); }
+.sstock-cash-out .sstock-panel { background: color-mix(in srgb, #ec4899 18%, var(--dl-surface)); border: 1px solid color-mix(in srgb, #ec4899 45%, transparent); }
 .sstock-cash-in .sstock-panel :is(.dl-prefix, .dl-field__box, .dl-dd__toggle, .dl-segment),
 .sstock-cash-out .sstock-panel :is(.dl-prefix, .dl-field__box, .dl-dd__toggle, .dl-segment) { background: var(--dl-surface); }
 .sstock-cashsum { display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
