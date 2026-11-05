@@ -228,7 +228,7 @@ class PhoneViewTest extends TestCase
         $sup = User::factory()->supervisor()->create();
         $screens = [
             'products.index' => [], 'suppliers.index' => [], 'units.index' => [], 'categories.index' => [], 'locations.index' => [],
-            'departments.index' => [], 'recipients.index' => [], 'reorder-orders.index' => [], 'stock-counts.index' => [],
+            'departments.index' => [], 'recipients.index' => ['view' => 'list'], 'reorder-orders.index' => [], 'stock-counts.index' => [],
             'docs.index' => ['receiving'], 'docs.index ' => ['issuance'], 'docs.index  ' => ['opening'], 'docs.index   ' => ['adjustment'],
         ];
         foreach ($screens as $name => $params) {

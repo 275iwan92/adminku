@@ -12,8 +12,8 @@
     // Tautan ke bagian modul lain hanya bila pengguna boleh membukanya (kalau tidak, hanya teks).
     $ref = fn (string $code, string $id, string $label) => $can($code) ? '<a href="#'.$id.'">'.e($label).'</a>' : e($label);
 @endphp
-<h2 id="ga">9. GA</h2>
-<p>Menu GA di AdminKU membantu bagian Umum (GA) Jays memantau dan mencatat perawatan aset: <b>kendaraan</b> (pajak, STNK dan plat, KIR, asuransi, servis, odometer) dan <b>AC</b> (jadwal cuci, kunjungan vendor, denah). Modul GA tidak menyentuh stok gudang.</p>
+<h2 id="ga">9. Personalia (GA)</h2>
+<p>Menu Personalia di AdminKU membantu bagian Personalia (GA) Jays memantau dan mencatat perawatan aset: <b>kendaraan</b> (pajak, STNK dan plat, KIR, asuransi, servis, odometer) dan <b>AC</b> (jadwal cuci, kunjungan vendor, denah). Modul GA tidak menyentuh stok gudang.</p>
 <table class="g-table">
     <thead><tr><th>Modul</th><th>Isi singkat</th></tr></thead>
     <tbody>
@@ -35,13 +35,13 @@
 
 <h3 id="ga-hak">Siapa boleh apa di GA</h3>
 <ul class="g-list">
-    <li><b>Hak GA datang dari Grup, bukan dari peran.</b> Menu GA hanya tampil bila Grup Anda diberi modulnya. Administrator melihat semuanya.</li>
+    <li><b>Hak Personalia datang dari Grup, bukan dari peran.</b> Menu Personalia hanya tampil bila Grup Anda diberi modulnya. Administrator melihat semuanya.</li>
     <li>Tiap modul punya dua tingkat: <b>RO</b> (hanya baca: boleh membuka layar) dan <b>RW</b> (baca dan tulis: boleh juga menyimpan, mengirim, dan mengubah). Form Perpanjang Dokumen Kendaraan, Catat Servis Kendaraan, dan Catat Odometer baru bisa dibuka dengan hak <b>RW</b>.</li>
     <li>Tombol yang tidak boleh Anda pakai tidak tampil. Contoh: tanpa hak RW pada Catat Servis Kendaraan, tombol <span class="g-btn">Catat Servis</span> tidak ada di Detail kendaraan.</li>
     <li>Pembagian yang lazim: petugas admin GA mendapat semua modul GA, sopir hanya <b>Catat Odometer</b>. Administrator mengatur ini di menu {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</li>
     <li><b>Pengaturan GA</b> hanya untuk peran Supervisor ke atas: Data Entry tidak bisa memakainya walau Grup-nya dicentang.</li>
-    <li><b>Menu GA ringkas:</b> satu butir <b>Perawatan Kendaraan</b> dan satu butir <b>Perawatan AC</b>, tanpa butir Pengaturan terpisah. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
-    <li>Menu GA milik Administrator juga memuat <b>Perawatan Gedung</b>. Itu layar sementara bertuliskan "Segera hadir"; belum bisa dipakai.</li>
+    <li><b>Menu Personalia ringkas:</b> satu butir <b>Perawatan Kendaraan</b> dan satu butir <b>Perawatan AC</b>, tanpa butir Pengaturan terpisah. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
+    <li>Menu Personalia milik Administrator juga memuat <b>Perawatan Gedung</b>. Itu layar sementara bertuliskan "Segera hadir"; belum bisa dipakai.</li>
 </ul>
 
 <h3 id="ga-status">Arti Aman, Segera, dan Terlambat</h3>
@@ -68,7 +68,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Monitoring Kendaraan</b> (RO sudah cukup). Detail kendaraan dan lampirannya ikut modul ini.</p>
 <h4>Langkah: membaca Monitoring Kendaraan</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Perawatan Kendaraan</b>.</li>
+    <li>Buka <b>Personalia</b> lalu <b>Perawatan Kendaraan</b>.</li>
     <li>Baca empat kotak di atas: <b>Kendaraan aktif</b>; <b>Terlambat</b> (dokumen atau servis sudah lewat); <b>Segera</b> (dalam 30 hari atau 1.000 km); dan <b>Biaya servis</b> tahun ini.</li>
     <li>Baca tabelnya. Kolom yang tampil: <b>Kendaraan</b> (plat dan nama), <b>Pajak tahunan</b>, <b>KIR</b>, <b>Servis berikutnya</b>, dan <b>Status</b>. Urutannya Terlambat dulu, lalu Segera, lalu Aman.</li>
     <li>Kolom <b>Jenis</b>, <b>Odometer (km)</b>, <b>STNK dan plat</b>, dan <b>Asuransi</b> tersembunyi. Tampilkan lewat tombol <span class="g-btn">Kolom</span>.</li>
@@ -124,7 +124,7 @@
 <p>Pengguna yang Grup-nya punya hak <b>RW</b> pada modul Perpanjang Dokumen Kendaraan, biasanya petugas admin GA. Sopir tidak mendapat modul ini.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Perawatan Kendaraan</b>, buka kendaraannya, lalu tekan <span class="g-btn">Perpanjang Dokumen</span> (kendaraannya sudah terpilih).</li>
+    <li>Buka <b>Personalia</b> lalu <b>Perawatan Kendaraan</b>, buka kendaraannya, lalu tekan <span class="g-btn">Perpanjang Dokumen</span> (kendaraannya sudah terpilih).</li>
     <li>Pilih <b>Kendaraan</b>.</li>
     <li>Pilih <b>Jenis Dokumen</b>: <i>Pajak tahunan</i>, <i>STNK dan plat 5 tahunan</i>, <i>KIR</i>, atau <i>Asuransi</i>.</li>
     <li>Isi <b>Tanggal Bayar / Uji</b> (bawaan hari ini).</li>
@@ -158,7 +158,7 @@
 <p>Pengguna yang Grup-nya punya hak <b>RW</b> pada modul Catat Servis Kendaraan, biasanya petugas admin GA.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Perawatan Kendaraan</b>, buka kendaraannya, lalu tekan <span class="g-btn">Catat Servis</span>.</li>
+    <li>Buka <b>Personalia</b> lalu <b>Perawatan Kendaraan</b>, buka kendaraannya, lalu tekan <span class="g-btn">Catat Servis</span>.</li>
     <li>Pilih <b>Kendaraan</b>. Daftar pekerjaan di bawahnya berubah mengikuti jenis kendaraan itu.</li>
     <li>Isi <b>Tanggal Servis</b> (bawaan hari ini) dan <b>Odometer (km)</b> (bawaan odometer terakhir; ketik angka yang sebenarnya).</li>
     <li>Centang <b>Pekerjaan yang Dikerjakan</b> dari jadwal perawatan kendaraan itu. Jadwal tiap pekerjaan yang dicentang mulai lagi dari servis ini.</li>
@@ -190,7 +190,7 @@
 <p>Pengguna yang Grup-nya punya hak <b>RW</b> pada modul Catat Odometer. Ini satu-satunya modul GA untuk sopir.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Catat Odometer</b> (sopir). Petugas yang punya Perawatan Kendaraan membukanya dari Detail kendaraan lewat tombol <span class="g-btn">Catat Odometer</span>.</li>
+    <li>Buka <b>Personalia</b> lalu <b>Catat Odometer</b> (sopir). Petugas yang punya Perawatan Kendaraan membukanya dari Detail kendaraan lewat tombol <span class="g-btn">Catat Odometer</span>.</li>
     <li>Pilih <b>Kendaraan</b>.</li>
     <li>Isi <b>Tanggal</b> (bawaan hari ini) dan <b>Kilometer</b> (bawaan odometer terakhir; ketik angka di panel).</li>
     <li><b>Dicatat Oleh</b> sudah berisi nama Anda; ubah bila orang lain yang membaca.</li>
@@ -278,7 +278,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Perawatan AC</b> (RO cukup). Tombol <span class="g-btn">Setup</span> dan <span class="g-btn">Penjadwalan</span> tampil sesuai hak modul yang Anda punya.</p>
 <h4>Langkah: membaca Perawatan AC</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b> lalu <b>Perawatan AC</b>.</li>
+    <li>Buka <b>Personalia</b> lalu <b>Perawatan AC</b>.</li>
     <li>Baca empat kotak: <b>AC aktif</b>, <b>Terlambat</b> (cuci atau servis besar sudah lewat), <b>Segera</b> (dalam 30 hari), dan <b>Kerusakan terbuka</b> (AC rusak yang belum selesai ditangani). Di bawah tombol tertulis <i>Kunjungan terdekat</i>.</li>
     <li>Baca tabelnya: <b>AC</b>, <b>Area</b>, <b>Cuci berikutnya</b>, <b>Servis besar</b>, <b>Kerusakan 12 bln</b>, dan <b>Status</b> (<i>Rusak</i> bila ada Breakdown terbuka, selain itu Terlambat, Segera, atau Aman).</li>
     <li>Klik dua kali baris AC (atau ikon Buka) untuk membuka <b>Detail AC</b>: status dan jadwal cuci serta servis besar, kondisi terakhir, riwayat perawatan (temuan, tindakan, biaya jasa, foto sebelum dan sesudah), spare part yang pernah diganti, dan biaya 12 bulan. Tombol <span class="g-btn">Jadwalkan Kunjungan</span> (hak Penjadwalan, hilang bila AC sudah punya kunjungan terbuka) dan <span class="g-btn">Ubah Data AC</span> (hak Master AC) ada di sana. Nomor kunjungan dan foto hanya tampil bagi yang punya modul Kunjungan AC.</li>
@@ -304,7 +304,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Penjadwalan AC</b>: RO untuk melihat, RW untuk menjadwalkan, menyusun otomatis, dan mengubah kapasitas harian.</p>
 <h4>Langkah: menjadwalkan AC</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b>, <b>Perawatan AC</b>, lalu tekan <span class="g-btn">Penjadwalan</span>. Pilih <b>Tipe</b> <i>Preventif (jadwal rutin)</i> (bawaan) lalu <span class="g-btn">Terapkan</span>. Empat kotak di atas: <b>Total AC</b>, <b>Terlambat dicuci</b>, <b>Jatuh tempo</b> (dalam 30 hari), dan <b>Terjadwal minggu ini</b>.</li>
+    <li>Buka <b>Personalia</b>, <b>Perawatan AC</b>, lalu tekan <span class="g-btn">Penjadwalan</span>. Pilih <b>Tipe</b> <i>Preventif (jadwal rutin)</i> (bawaan) lalu <span class="g-btn">Terapkan</span>. Empat kotak di atas: <b>Total AC</b>, <b>Terlambat dicuci</b>, <b>Jatuh tempo</b> (dalam 30 hari), dan <b>Terjadwal minggu ini</b>.</li>
     <li>Pilih <b>Vendor</b>. Atur juga <b>Area</b> (<i>Semua area</i> atau satu area) dan <b>Tampilkan</b> (<i>AC yang perlu dibersihkan</i> atau <i>Semua AC aktif</i>), lalu tekan <span class="g-btn">Terapkan</span>.</li>
     <li>Di <b>Kalender kunjungan</b> (Senin sampai Sabtu), klik hari kunjungan. Tiap hari menunjukkan jumlah AC terjadwal per kapasitas, mis. <i>2/3</i>, dan keterangan <i>1 slot kosong</i>, <i>Penuh</i>, <i>Sudah lewat</i>, atau <i>Bukan hari kunjungan</i>. Tombol <span class="g-btn">Minggu sebelumnya</span>, <span class="g-btn">Minggu ini</span>, dan <span class="g-btn">Minggu berikutnya</span> menggeser kalender.</li>
     <li>Di bagian <b>AC yang perlu dibersihkan</b>, periksa <b>Tanggal kunjungan terpilih</b> dan <b>Sisa kapasitas hari itu</b>. Atur <b>Jam mulai</b> bila perlu (bawaan jam awal kunjungan).</li>
@@ -356,7 +356,7 @@
 </ul>
 <h4>Langkah: dari Draf sampai Selesai</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b>, <b>Perawatan AC</b>, <span class="g-btn">Penjadwalan</span>, lalu tombol <span class="g-btn">Kunjungan dan Catat hasil</span>. Grid memuat <b>No. Pesanan</b>, <b>Tipe</b> (<i>Preventif</i> atau <i>Breakdown</i>), <b>Tanggal kunjungan</b>, <b>Jam mulai</b>, <b>Vendor</b>, <b>Jumlah AC</b>, dan <b>Status</b>. Kotak <b>Semua</b>, <b>Draf</b>, <b>Terkirim</b>, <b>Dikonfirmasi vendor</b>, <b>Selesai</b>, dan <b>Dijadwal ulang</b> menyaring daftar. Klik 2x sebuah baris untuk membukanya.</li>
+    <li>Buka <b>Personalia</b>, <b>Perawatan AC</b>, <span class="g-btn">Penjadwalan</span>, lalu tombol <span class="g-btn">Kunjungan dan Catat hasil</span>. Grid memuat <b>No. Pesanan</b>, <b>Tipe</b> (<i>Preventif</i> atau <i>Breakdown</i>), <b>Tanggal kunjungan</b>, <b>Jam mulai</b>, <b>Vendor</b>, <b>Jumlah AC</b>, dan <b>Status</b>. Kotak <b>Semua</b>, <b>Draf</b>, <b>Terkirim</b>, <b>Dikonfirmasi vendor</b>, <b>Selesai</b>, dan <b>Dijadwal ulang</b> menyaring daftar. Klik 2x sebuah baris untuk membukanya.</li>
     <li>Layar pesanan menunjukkan empat kotak tahap (<b>1. Draf</b>, <b>2. Terkirim</b>, <b>3. Dikonfirmasi</b>, <b>4. Selesai</b>) beserta waktu dan nama yang melakukannya, lalu tanggal, jam, vendor, dan jumlah AC.</li>
     <li><b>Draf.</b> Baca <b>Pesan untuk vendor</b> di <b>Pratinjau pesan</b>. Tekan <span class="g-btn">Kirim</span>, periksa jendela <b>Kirim pemberitahuan</b>, lalu tekan <b>Kirim</b>. E-mail terkirim ke vendor (bila vendor punya alamat e-mail) dan status menjadi <b>Terkirim</b>.</li>
     <li><b>WhatsApp.</b> Tekan <span class="g-btn">Buka WhatsApp</span>. WhatsApp terbuka dengan pesan yang sudah terisi dan nomor vendor; Anda sendiri menekan kirim di WhatsApp. Tidak ada WhatsApp yang terkirim otomatis.</li>
@@ -530,7 +530,7 @@
 <p>Peran Supervisor atau Administrator yang Grup-nya punya hak <b>RW</b> pada modul Pengaturan GA. Data Entry tidak bisa memakainya. Hak ini sengaja tidak dibagikan otomatis; Administrator menunjuk Supervisor yang boleh lewat {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>GA</b>, lalu <b>Perawatan Kendaraan</b> atau <b>Perawatan AC</b>, tekan <span class="g-btn">Setup</span>, lalu pilih <b>Pengaturan Kendaraan</b> atau <b>Pengaturan AC</b>. Isian terisi nilai yang sedang berlaku.</li>
+    <li>Buka <b>Personalia</b>, lalu <b>Perawatan Kendaraan</b> atau <b>Perawatan AC</b>, tekan <span class="g-btn">Setup</span>, lalu pilih <b>Pengaturan Kendaraan</b> atau <b>Pengaturan AC</b>. Isian terisi nilai yang sedang berlaku.</li>
     <li>Bagian <b>Kendaraan</b>: <b>Segera Jatuh Tempo (hari)</b> (1 sampai 365, bawaan 30) dan <b>Segera Servis (km)</b> (100 sampai 50.000, bawaan 1.000).</li>
     <li>Bagian <b>Perawatan AC</b>: <b>Cuci Rutin Tiap (bulan)</b> (bawaan 3), <b>Servis Besar Tiap (bulan)</b> (bawaan 12), dan <b>Segera Jatuh Tempo (hari)</b> (bawaan 30).</li>
     <li>Centang <b>Hari Kunjungan</b> (minimal satu; bawaan Senin sampai Jumat). Isi <b>Jam Mulai Kunjungan</b> (bawaan 09:00) dan <b>Jam Akhir Kunjungan</b> (bawaan 16:00).</li>

@@ -36,8 +36,8 @@ final class Opening
         'master' => ['MST', 'Data Master', 'fa-solid fa-boxes-stacked', 'slate', 'Daftar acuan yang dipakai semua transaksi'],
         'transaksi' => ['TRX', 'Transaksi', 'fa-solid fa-right-left', 'teal', 'Dokumen stok dan pemesanan'],
         'laporan' => ['RPT', 'Laporan', 'fa-solid fa-chart-column', 'coral', 'Hanya membaca data; tidak mengubah apa pun'],
-        'ga' => ['GA', 'GA', 'fa-solid fa-building-user', 'slate', 'Kendaraan, AC, dan gedung'],
-        'hr' => ['HR', 'HR', 'fa-solid fa-user-tie', 'slate', 'Karyawan, bagian, rekrutmen, kedisiplinan'],
+        'ga' => ['GA', 'Personalia', 'fa-solid fa-building-user', 'slate', 'Kendaraan, AC, dan gedung'],
+        'hr' => ['HR', 'SDM', 'fa-solid fa-user-tie', 'slate', 'Karyawan, bagian, rekrutmen, kedisiplinan'],
         'purchase' => ['PUR', 'Pembelian', 'fa-solid fa-cart-shopping', 'coral', 'PP, keputusan pesanan, PO, dan penerimaan pembelian'],
         'kas' => ['KEU', 'Keuangan', 'fa-solid fa-wallet', 'teal', 'Uang masuk dan keluar per kas, dilacak per sumber dana'],
     ];

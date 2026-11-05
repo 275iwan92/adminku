@@ -6,8 +6,8 @@
  Status       : Aktif.
 --}}
 @if ($anyHr)
-<h2 id="hr">9a. HR</h2>
-<p>Menu HR di AdminKU mencatat <b>kepegawaian</b>: siapa karyawannya, di bagian mana, apa dokumen dan kontraknya. HR di sini <b>tidak</b> mengurus gaji, absensi, atau cuti.</p>
+<h2 id="hr">9a. SDM (HR)</h2>
+<p>Menu SDM di AdminKU mencatat <b>kepegawaian</b>: siapa karyawannya, di bagian mana, apa dokumen dan kontraknya. SDM di sini <b>tidak</b> mengurus gaji, absensi, atau cuti.</p>
 <table class="g-table">
     <thead><tr><th>Layar</th><th>Isi singkat</th></tr></thead>
     <tbody>
@@ -18,7 +18,7 @@
     </tbody>
 </table>
 <ul class="g-list">
-    <li><b>Hak HR datang dari Grup, bukan dari peran.</b> Menu HR hanya tampil bila Grup Anda diberi modul <b>Karyawan</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
+    <li><b>Hak SDM datang dari Grup, bukan dari peran.</b> Menu SDM hanya tampil bila Grup Anda diberi modul <b>Karyawan</b> (RO untuk membaca, RW untuk menyimpan). Administrator melihat semuanya.</li>
     <li>Data karyawan (NIK KTP, NPWP, alamat) bersifat pribadi: berikan modul Karyawan hanya kepada petugas HR.</li>
 </ul>
 
@@ -30,7 +30,7 @@
 <p>Peran Supervisor ke atas yang Grup-nya punya modul <b>Karyawan</b> (RO untuk membaca, RW untuk menambah dan mengubah).</p>
 <h4>Langkah: menambah karyawan</h4>
 <ol class="g-steps">
-    <li>Buka <b>HR</b> lalu <b>Karyawan</b>, tekan <span class="g-btn">New</span>.</li>
+    <li>Buka <b>SDM</b> lalu <b>Karyawan</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Tab <b>Profil</b>: isi nama, jenis kelamin, tanggal lahir, NIK KTP (16 angka), HP, wilayah dan alamat KTP, serta kontak darurat. Kode karyawan (E-0001 dan seterusnya) terisi sendiri.</li>
     <li>Tab <b>Pekerjaan</b>: pilih <b>Bagian</b>, isi jabatan, <b>Status Kerja</b> (Tetap, Kontrak, Harian, Magang), tanggal masuk, dan <b>Akun AdminKU</b> bila karyawan ini memakai AdminKU.</li>
     <li>Di tab <b>Profil</b> ada dua kotak foto. Klik kotak <b>Foto Profil</b> atau <b>Scan KTP</b>, pilih gambar (di HP bisa langsung memakai kamera), geser gambar di dalam bingkai, atur zoom, lalu <b>Use Photo</b>; hasilnya dipotong 3:4 (foto) atau seukuran kartu (KTP) dan baru tersimpan saat Anda menekan <span class="g-btn">Save</span>. Tautan <b>Perbesar</b> membuka pratinjau di tengah layar (zoom, geser, unduh, Esc untuk menutup). KTP berbentuk PDF diunggah apa adanya lewat kolom di bawah kotak KTP. Berkas privat: hanya pemegang hak Karyawan yang bisa membukanya.</li>
@@ -66,7 +66,7 @@
 <p>Peran Supervisor ke atas yang Grup-nya punya modul <b>Rekrutmen</b> (RO untuk membaca, RW untuk menambah, memindah, dan mengubah).</p>
 <h4>Langkah: mendaftarkan kandidat</h4>
 <ol class="g-steps">
-    <li>Buka <b>HR</b> lalu <b>Rekrutmen</b>, tekan <span class="g-btn">Kandidat</span>.</li>
+    <li>Buka <b>SDM</b> lalu <b>Rekrutmen</b>, tekan <span class="g-btn">Kandidat</span>.</li>
     <li>Isi <b>NIK KTP</b> (16 angka), nama, dan <b>Bagian Dilamar</b> (boleh lebih dari satu). HP, e-mail, pendidikan, sumber, foto KTP, dan CV boleh diisi. Di HP, Pilih File bisa langsung membuka kamera.</li>
     <li>Tekan <span class="g-btn">Save</span>. Kandidat baru selalu mulai dari tahap <b>Daftar</b>.</li>
 </ol>
@@ -102,7 +102,7 @@
 <p>Peran Supervisor ke atas yang Grup-nya punya modul <b>Kedisiplinan</b> (RO untuk membaca dan mencetak, RW untuk menerbitkan dan mencabut).</p>
 <h4>Langkah: menerbitkan surat</h4>
 <ol class="g-steps">
-    <li>Buka karyawannya, tab <b>Disiplin</b>, tekan <span class="g-btn">Terbitkan SP</span>. Atau buka <b>HR</b> lalu <b>Kedisiplinan</b> dan tekan <span class="g-btn">New</span>, lalu pilih karyawan.</li>
+    <li>Buka karyawannya, tab <b>Disiplin</b>, tekan <span class="g-btn">Terbitkan SP</span>. Atau buka <b>SDM</b> lalu <b>Kedisiplinan</b> dan tekan <span class="g-btn">New</span>, lalu pilih karyawan.</li>
     <li>Jenis yang sesuai urutan sudah terpilih (SP 1 bila belum ada SP yang berlaku, lalu SP 2, SP 3, PHK). Isi <b>Tanggal Terbit</b>, <b>Pelanggaran / Alasan</b>, rujukan aturan, serta nama dan jabatan penandatangan (bawaan dari penerbitan terakhir).</li>
     <li><b>Berlaku s/d</b> boleh kosong: SP berlaku 6 bulan sejak terbit. Untuk PHK isi <b>Tanggal Efektif</b> (wajib).</li>
     <li>Tekan <span class="g-btn">Save</span>. Surat mendapat nomor (mis. 012/SP2/XI/2026). Tekan <span class="g-btn">Cetak</span> untuk surat A4 dengan kop perusahaan dan kotak tanda tangan.</li>
