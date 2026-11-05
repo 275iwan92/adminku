@@ -83,7 +83,7 @@ final class Modules
             'PUK' => ['PUR', 'Keputusan Pesanan', 'fa-solid fa-scale-balanced', 'form', 'po-decision.index', 'entry', ['po-decision.']],
             'PUO' => ['PUR', 'Pesanan Pembelian (PO)', 'fa-solid fa-file-invoice', 'grid', 'po.index', 'entry', ['po.']],
             'PUV' => ['PUR', 'Penerimaan Pembelian (PV)', 'fa-solid fa-truck-ramp-box', 'grid', 'pv.index', 'entry', ['pv.']],
-            'KSM' => ['KEU', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.']],
+            'KSM' => ['KEU', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.', 'cash-sources.']],
             'KSK' => ['KEU', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.']],
             'KSR' => ['KEU', 'Kas / Rekening', 'fa-solid fa-building-columns', 'grid', 'cash-accounts.index', 'supervisor', ['cash-accounts.']],
             'R-KFLOW' => ['KEU', 'Laporan Arus Kas', 'fa-solid fa-book', 'report', 'reports.cash-flow', 'entry', ['reports.cash-flow']],
