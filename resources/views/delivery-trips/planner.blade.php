@@ -95,9 +95,33 @@
         S.forEach(s => { if (hasPt(s) && prev) s.travel_min = Math.max(1, window.TripMap.router.min(prev, s)); prev = hasPt(s) ? s : null; });
         all();
     }
+    // Urutkan terdekat: coba semua urutan (maks. 8 alamat), semua Ambil sebelum Antar, total jarak Kantor > alamat > Kantor terpendek lewat router; alamat harus bertitik semua.
+    function nearest() {
+        const note = m => { root.querySelector('[data-note]').textContent = m; };
+        if (S.length < 2) return note('Minimal dua alamat.');
+        if (S.length > 8) return note('Urutkan terdekat hanya sampai 8 alamat.');
+        if (!S.every(hasPt)) return note('Semua alamat perlu titik peta dulu.');
+        const R = window.TripMap.router, d = (a, b) => R.km(a, b);
+        let best = null, bestD = Infinity;
+        const dfs = (path, left, acc, last, ambLeft) => {
+            if (acc >= bestD) return;
+            if (!left.length) { const t = acc + d(last, OFFICE); if (t < bestD) { bestD = t; best = path; } return; }
+            left.forEach((s, k) => {
+                if (s.kind === 'ant' && ambLeft > 0) return;
+                dfs([...path, s], left.filter((_, j) => j !== k), acc + d(last, s), s, ambLeft - (s.kind === 'amb' ? 1 : 0));
+            });
+        };
+        dfs([], S.slice(), 0, OFFICE, S.filter(s => s.kind === 'amb').length);
+        const cur = S[sel];
+        best.forEach((s, i) => { S[i] = s; });
+        sel = cur ? S.indexOf(cur) : sel;
+        note('Urutan terdekat dipakai (± ' + Math.round(bestD) + ' km, Ambil dulu baru Antar).');
+        fillTravel();
+        drawMap(true);
+    }
 
     root.innerHTML = '<div class="sp-grid"><div class="sp-left"><div class="sp-bar" data-top></div><div data-list></div><div class="sp-bar" data-bot></div>'
-        + '<div class="sp-mapbar"><span class="sp-s">Peta rute (ilustrasi urutan, bukan navigasi)</span><span class="sp-push"></span>' + (LOCKED ? '' : '<button type="button" class="sp-lk" data-tt="1">Isi menit tempuh dari peta</button>') + '</div><div class="sp-map" data-map></div></div><div class="sp-right" data-det></div></div>';
+        + '<div class="sp-mapbar"><span class="sp-s">Peta rute (ilustrasi urutan, bukan navigasi)</span><span class="sp-s" data-note></span><span class="sp-push"></span>' + (LOCKED ? '' : '<button type="button" class="sp-lk" data-nn="1">Urutkan terdekat</button><button type="button" class="sp-lk" data-tt="1">Isi menit tempuh dari peta</button>') + '</div><div class="sp-map" data-map></div></div><div class="sp-right" data-det></div></div>';
     all();
     const initMap = () => { map = window.TripMap.mount(root.querySelector('[data-map]'), OFFICE, LOCKED, {
         onPick: (lat, lng) => { if (sel < 0) return; Object.assign(S[sel], { lat, lng }); all(); },
@@ -111,6 +135,7 @@
         const b = e.target.closest('button,a'); const row = e.target.closest('.sp-row[data-i]');
         if (b && b.dataset.open) { addAt = b.dataset.open; paintList(); return; }
         if (b && b.dataset.tt) { fillTravel(); return; }
+        if (b && b.dataset.nn) { nearest(); return; }
         if (b && b.dataset.add) {
             if (b.dataset.add !== 'x') { const n = { kind: b.dataset.add, customer: '', address: '', lat: null, lng: null, travel_min: 15, items: [['', 1, 'pcs', '']], docs: [] }; if (b.dataset.pos === 'top') { S.unshift(n); sel = 0; } else { S.push(n); sel = S.length - 1; } pickOpen = false; addAt = null; all(); } else { addAt = null; paintList(); }
             return;
