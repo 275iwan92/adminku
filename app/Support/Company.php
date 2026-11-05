@@ -44,7 +44,7 @@ final class Company
     {
         $path = self::logoPath();
 
-        return $path ? route('company.logo', ['v' => filemtime($path)], absolute: false) : null;
+        return $path ? parse_url(route('company.logo', ['v' => filemtime($path)]), PHP_URL_PATH).'?v='.filemtime($path) : null;
     }
 
     /** @return array{name: string, legal_name: string, address: string, phone: string, email: string, npwp: string, kop_style: string, configured: bool} */
