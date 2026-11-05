@@ -15,7 +15,7 @@
         $qty = fn ($n) => \Devlib\Locale::number($n, floor((float) $n) == (float) $n ? 0 : 3);
     @endphp
     @include('partials.flash')
-    <x-dl::box style="margin-top:14px">
+    <x-dl::box>
         <form method="get" action="{{ route('po-decision.index') }}" data-src-form>
             <input type="hidden" name="proses" value="1">
             @php $src = ($f('line') || $f('mode') === 'pp') ? 'pp' : 'master'; @endphp

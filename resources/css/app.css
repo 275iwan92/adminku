@@ -62,7 +62,7 @@
 .dl-logo-badge > img { width: 100%; height: 100%; object-fit: contain; display: block; background: transparent; border-radius: 0; }
 
 /* Layar di dalam tab Layer Shell diberi jarak kiri / kanan / bawah supaya tidak menempel ke menu. Login dan layar utama (shell) memakai kelas sstock-bare: tanpa jarak. */
-body.dl-body:not(.sstock-bare) { padding: 0 16px 16px; }
+body.dl-body:not(.sstock-bare) { padding: 12px 16px 16px; }
 /* DevLib mengunci body.dl-body (height 100vh, overflow hidden) karena layar DevLib biasanya punya wadah gulir sendiri; daftar panjang (Barang, Satuan, Lokasi, Log Aktivitas, ...) tidak, jadi body-nya yang menggulir:
    semua layar isi tab (bukan shell / login / panduan = sstock-bare) kecuali formulir (.dl-form menggulir sendiri dengan judul + tombol Simpan tetap di atas), dan layar desktop di dalam kerangka HP (body.dl-phone-shelled), formulir pun. */
 body.dl-body:not(.sstock-bare):not(:has(.dl-form)),
