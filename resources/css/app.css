@@ -572,3 +572,12 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 .sp-map { height: 280px; z-index: 0; }
 .sp-pin { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: #fff; font: 600 12px/1 system-ui, sans-serif; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
 .sp-pa { background: #2f7fd1; } .sp-pb { background: #d9822b; } .sp-pk { background: #475569; } .sp-ps { outline: 3px solid #facc15; }
+
+
+/* Tema bawaan AdminKU "sejuk": Soft Hijau dengan latar sage dan permukaan mint, bukan putih (tidak silau, ramah mata dan pengguna lanjut usia). Hanya menimpa token tema soft_green; tema lain tidak berubah. */
+html[data-dl-theme="soft_green"] {
+  --dl-bg: #cde3d3; --dl-surface: #e0f1e3; --dl-surface-alt: #d6ead9; --dl-surface-muted: #c9e2ce; --dl-hover: #c9e2ce;
+  --dl-border: #a9c9b2; --dl-border-soft: #b9d6c1; --dl-ink: #1f3328; --dl-ink-strong: #11221a; --dl-muted: #587064;
+  --dl-chip: #c9e2ce; --dl-tabbar: #d6ead9; --dl-tab: #c9e2ce;
+  --dl-f-ink: #11221a; --dl-f-label: #1f3328; --dl-f-muted: #587064; --dl-f-line-soft: #b9d6c1; --dl-f-bg-soft: #c9e2ce; --dl-f-ro: #c9e2ce;
+}

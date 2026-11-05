@@ -13,6 +13,9 @@ return [
 
     'lang' => env('DEVLIB_LANG', 'id'),
 
+    // Tema bawaan: Soft Hijau (disetel ulang "sejuk" di app.css, tidak silau). Pengguna bisa memilih tema lain lewat menu profil, Tema; pilihan tersimpan di browser.
+    'theme' => env('DEVLIB_THEME', 'soft_green'),
+
     // Aplikasi satu bahasa: istilah tombol / status DevLib yang biasanya dipaksa English ikut kamus aplikasi (App\Support\Indonesian).
     'translate_fixed' => true,
 
