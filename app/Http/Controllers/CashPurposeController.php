@@ -18,7 +18,7 @@ class CashPurposeController extends Controller
 {
     public function index()
     {
-        $rows = CashPurpose::query()->orderBy('name')->get()->map(fn (CashPurpose $s) => ['id' => $s->id, 'name' => $s->name, 'used' => $s->usedCount(), 'active' => true])->all();
+        $rows = CashPurpose::query()->orderBy('name')->get()->map(fn (CashPurpose $s) => ['id' => $s->id, 'name' => $s->name, 'used' => $s->usedCount(), 'active' => $s->is_active])->all();
 
         return view('cash-purposes.index', ['rows' => $rows]);
     }
@@ -45,10 +45,22 @@ class CashPurposeController extends Controller
 
     public function update(CashPurposeRequest $request, CashPurpose $purpose): RedirectResponse
     {
-        if ($request->input('_action') === 'delete') {
+        $action = $request->input('_action');
+        if (in_array($action, ['activate', 'deactivate'], true)) {
+            $purpose->update(['is_active' => $action === 'activate']);
+
+            return redirect()->route('cash-purposes.show', $purpose)->with('status', $action === 'activate' ? 'Diaktifkan.' : 'Dinonaktifkan.');
+        }
+        if ($action === 'delete') {
+            // Kategori yang sudah dipakai Uang Keluar tidak dihapus keras (grafik lama tetap utuh): dinonaktifkan, hilang dari dropdown.
+            if ($purpose->usedCount() > 0) {
+                $purpose->update(['is_active' => false]);
+
+                return redirect()->route('cash-purposes.index')->with('status', 'Kebutuhan sudah dipakai Uang Keluar, jadi dinonaktifkan (tidak dihapus) supaya laporan lama tetap utuh.');
+            }
             $purpose->delete();
 
-            return redirect()->route('cash-purposes.index')->with('status', 'Kebutuhan dihapus. Uang Keluar lama tetap memakai namanya.');
+            return redirect()->route('cash-purposes.index')->with('status', 'Kebutuhan dihapus.');
         }
         $purpose->update($request->validated());
 

@@ -45,7 +45,7 @@ class CashOutController extends Controller
     public function store(CashOutRequest $request): RedirectResponse
     {
         $cashOut = DB::transaction(function () use ($request) {
-            $cashOut = new CashOut($request->safe()->only(['doc_date', 'cash_in_id', 'amount', 'purpose', 'description']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
+            $cashOut = new CashOut($request->safe()->only(['doc_date', 'cash_in_id', 'amount', 'purpose', 'purpose_id', 'description']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
             if ($request->hasFile('attachment')) {
                 $cashOut->attachment = $request->file('attachment')->store('out', 'kas');
             }
@@ -73,7 +73,7 @@ class CashOutController extends Controller
                 case 'confirm':
                     $need(['draft']);
                     abort_unless($owner || $user->isSupervisor(), 403, 'Hanya pembuat atau Supervisor yang mengubah draf ini.');
-                    $cashOut->fill($request->safe()->only(['doc_date', 'cash_in_id', 'amount', 'purpose', 'description']));
+                    $cashOut->fill($request->safe()->only(['doc_date', 'cash_in_id', 'amount', 'purpose', 'purpose_id', 'description']));
                     if ($request->hasFile('attachment')) {
                         $cashOut->attachment = $request->file('attachment')->store('out', 'kas');
                     }
@@ -165,6 +165,6 @@ class CashOutController extends Controller
         $remaining = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->remainingAmount()])->all();
         $accountNames = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->cashAccount?->name])->all();
 
-        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining, 'accountNames' => $accountNames, 'purposes' => CashPurpose::query()->orderBy('name')->pluck('name', 'name')->all()];
+        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining, 'accountNames' => $accountNames, 'purposes' => CashPurpose::query()->where('is_active', true)->orderBy('name')->pluck('name', 'name')->all()];
     }
 }

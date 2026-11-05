@@ -13,11 +13,11 @@
     @endphp
     @include('partials.flash')
     <x-dl::form :title="$isNew ? 'Kebutuhan · Baru' : raw($purpose->name)" panel="top" kind="master" :deletable="! $isNew"
-        :status="$isNew ? 'new' : 'active'" :back="route('cash-purposes.index')" :new-url="route('cash-purposes.create')"
+        :status="$isNew ? 'new' : ($purpose->is_active ? 'active' : 'inactive')" :back="route('cash-purposes.index')" :new-url="route('cash-purposes.create')"
         :action="$isNew ? route('cash-purposes.store') : route('cash-purposes.update', $purpose)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
         :created-at="$purpose->created_at?->format('Y-m-d H:i:s')" :updated-at="$purpose->updated_at?->format('Y-m-d H:i:s')">
         <x-dl::form.row>
-            <x-dl::field.text name="name" label="Kebutuhan" :value="old('name', $purpose->name)" required maxlength="150" :error="$e('name')" hint="Mis. 'Operasional kantor' atau 'Konsumsi acara'." />
+            <x-dl::field.text name="name" label="Kebutuhan" :value="old('name', $purpose->name)" required maxlength="150" :error="$e('name')" hint="Kategori pendek untuk grafik, mis. 'Transportasi' atau 'Pembelian bahan pokok'. Rinciannya ditulis di Keterangan Uang Keluar. Yang sudah dipakai tidak dihapus, hanya dinonaktifkan." />
         </x-dl::form.row>
     </x-dl::form>
 @endsection

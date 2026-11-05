@@ -19,5 +19,5 @@
             ['key' => 'name', 'label' => 'Kebutuhan', 'type' => 'identity', 'box' => true],
             ['key' => 'used', 'label' => 'Dipakai di Uang Keluar', 'type' => 'number'],
         ]"
-        :stats="[['label' => 'Semua kebutuhan']]" />
+        :stats="[['label' => 'Semua kebutuhan'], ['label' => 'Nonaktif', 'where' => ['active' => false], 'tone' => 'warn']]" />
 @endsection

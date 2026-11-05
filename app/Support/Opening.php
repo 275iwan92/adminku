@@ -6,6 +6,7 @@ use App\Enums\StockDocumentType;
 use App\Models\AcOrder;
 use App\Models\Batch;
 use App\Models\Candidate;
+use App\Models\CashAccount;
 use App\Models\CashIn;
 use App\Models\CashOut;
 use App\Models\Discipline;
@@ -99,6 +100,10 @@ final class Opening
             }
         }
 
+        if ($section === 'kas' && ($user->canAccess('KSM') || $user->canAccess('KSK') || $user->canAccess('R-KFLOW'))) {
+            $page = array_merge($page, self::kasBoard());
+        }
+
         $page['tiles'] = $children->map(fn ($c) => [
             'code' => $c['code'], 'label' => $c['label'], 'icon' => $c['icon'], 'url' => $c['url'], 'badge' => $c['badge'] ?? null,
             'soon' => str_contains($c['url'], '/segera/'), 'write' => $user->canWrite($c['code']),
@@ -124,6 +129,39 @@ final class Opening
         }
 
         return $out;
+    }
+
+    /** Dashboard Kas: saldo Tunai dan Bank, masuk / keluar bulan ini, pengeluaran per Kebutuhan bulan ini, tren 6 bulan (hanya yang Disetujui). */
+    private static function kasBoard(): array
+    {
+        $money = fn (float $n) => 'Rp '.Locale::number($n, 0);
+        $accounts = CashAccount::query()->where('is_active', true)->get();
+        $balance = fn (string $type) => (float) $accounts->where('type', $type)->sum(fn (CashAccount $a) => $a->currentBalance());
+        $from = now()->startOfMonth();
+        $sum = fn ($q, $a, $b) => (float) $q->where('status', 'approved')->whereDate('doc_date', '>=', $a->toDateString())->whereDate('doc_date', '<=', $b->toDateString())->sum('amount');
+        $in = $sum(CashIn::query(), $from, now());
+        $out = $sum(CashOut::query(), $from, now());
+
+        $barsFrom = $from->copy()->subMonths(2);   // grafik per kebutuhan: 3 bulan terakhir (bulan ini + 2 sebelumnya)
+        $bars = CashOut::query()->with('category')->where('status', 'approved')->whereDate('doc_date', '>=', $barsFrom->toDateString())->whereDate('doc_date', '<=', now()->toDateString())->get()
+            ->groupBy(fn (CashOut $c) => $c->category?->name ?? 'Belum dikategorikan')->map(fn ($g) => (float) $g->sum('amount'))->sortDesc()->take(8)
+            ->map(fn ($total, $name) => ['label' => $name, 'value' => $total, 'text' => $money($total)])->values()->all();
+
+        $trend = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = now()->startOfMonth()->subMonths($i);
+            $trend[] = ['label' => $m->translatedFormat('M'), 'in' => $sum(CashIn::query(), $m, $m->copy()->endOfMonth()), 'out' => $sum(CashOut::query(), $m, $m->copy()->endOfMonth())];
+        }
+
+        return [
+            'stats' => [
+                ['value' => $money($balance('cash')), 'label' => 'Saldo kas tunai', 'alert' => false],
+                ['value' => $money($balance('bank')), 'label' => 'Saldo rekening bank', 'alert' => false],
+                ['value' => $money($in), 'label' => 'Masuk bulan ini', 'alert' => false],
+                ['value' => $money($out), 'label' => 'Keluar bulan ini', 'alert' => $out > $in],
+            ],
+            'charts' => ['bars' => $bars, 'trend' => $trend, 'month' => $barsFrom->translatedFormat('M').' - '.$from->translatedFormat('M Y'), 'max' => max([1.0, ...array_map(fn ($t) => max($t['in'], $t['out']), $trend)])],
+        ];
     }
 
     /** Angka HR per ubin: karyawan aktif (dan yang perlu perhatian), bagian aktif. @return array<string, array{n: string, note: string}> */

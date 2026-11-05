@@ -51,18 +51,18 @@ class DemoCashHistorySeeder extends Seeder
         $base = today();
         try {
             $um1 = $this->cashIn($http, $entry, $boss, $bca, 'Donatur Bapak Hadi', 10_000_000, $base->copy()->subDays(85), 'approved');
-            $this->cashOut($http, $entry, $boss, $um1, 5_000_000, 'Sewa tempat kegiatan', $base->copy()->subDays(80), 'approved');
+            $this->cashOut($http, $entry, $boss, $um1, 5_000_000, 'Operasional kantor', $base->copy()->subDays(80), 'approved', desc: 'Sewa tempat kegiatan');
             $um2 = $this->cashIn($http, $entry, $boss, $tunai, 'Donatur umum', 1_500_000, $base->copy()->subDays(70), 'approved');
-            $this->cashOut($http, $entry, $boss, $um2, 500_000, 'ATK', $base->copy()->subDays(65), 'approved');
-            $this->cashOut($http, $entry, $boss, $um1, 3_000_000, 'Konsumsi acara', $base->copy()->subDays(60), 'approved');
+            $this->cashOut($http, $entry, $boss, $um2, 500_000, 'Pembelian bahan pendukung', $base->copy()->subDays(65), 'approved', desc: 'ATK');
+            $this->cashOut($http, $entry, $boss, $um1, 3_000_000, 'Konsumsi', $base->copy()->subDays(60), 'approved', desc: 'Konsumsi acara');
             $um3 = $this->cashIn($http, $entry, $boss, $mandiri, 'Penjualan barang bekas', 6_000_000, $base->copy()->subDays(55), 'approved');
-            $this->cashOut($http, $entry, $boss, $um3, 1_000_000, 'Operasional kantor', $base->copy()->subDays(50), 'approved');
+            $this->cashOut($http, $entry, $boss, $um3, 1_000_000, 'Operasional kantor', $base->copy()->subDays(50), 'approved', desc: 'Listrik dan air kantor');
             $um4 = $this->cashIn($http, $entry, $boss, $bca, 'Pendapatan operasional', 3_000_000, $base->copy()->subDays(40), 'approved');
-            $this->cashOut($http, $entry, $boss, $um3, 1_000_000, 'Transportasi', $base->copy()->subDays(35), 'approved');
-            $this->cashOut($http, $entry, $boss, $um4, 2_900_000, 'ATK dan cetak', $base->copy()->subDays(30), 'approved');
+            $this->cashOut($http, $entry, $boss, $um3, 1_000_000, 'Transportasi', $base->copy()->subDays(35), 'approved', desc: 'Bensin dan parkir');
+            $this->cashOut($http, $entry, $boss, $um4, 2_900_000, 'Pembelian bahan pendukung', $base->copy()->subDays(30), 'approved', desc: 'ATK dan cetak');
             $this->cashIn($http, $entry, $boss, $tunai, 'Donatur umum', 800_000, $base->copy()->subDays(25), 'approved');
-            $this->cashOut($http, $entry, $boss, $um1, 1_500_000, 'Dokumentasi', $base->copy()->subDays(20), 'approval');
-            $this->cashOut($http, $entry, $boss, $um3, 500_000, 'Perjalanan dinas', $base->copy()->subDays(15), 'rejected', 'Melebihi anggaran triwulan ini.');
+            $this->cashOut($http, $entry, $boss, $um1, 1_500_000, 'Lainnya', $base->copy()->subDays(20), 'approval', desc: 'Dokumentasi kegiatan');
+            $this->cashOut($http, $entry, $boss, $um3, 500_000, 'Transportasi', $base->copy()->subDays(15), 'rejected', 'Melebihi anggaran triwulan ini.', desc: 'Perjalanan dinas');
             $this->cashIn($http, $entry, $boss, $mandiri, 'Penjualan barang bekas', 4_000_000, $base->copy()->subDays(10), 'approval');
             $this->cashIn($http, $entry, $boss, $bca, 'Donatur Bapak Hadi', 2_000_000, $base->copy()->subDays(3), 'draft');
         } finally {
@@ -90,10 +90,10 @@ class DemoCashHistorySeeder extends Seeder
     }
 
     // Uang Keluar: dibuat draf tertaut ke Uang Masuk, Confirm, lalu Approve atau Reject (alasan wajib).
-    private function cashOut($http, User $creator, User $approver, CashIn $cashIn, int $amount, string $purpose, Carbon $date, string $final, ?string $reason = null): CashOut
+    private function cashOut($http, User $creator, User $approver, CashIn $cashIn, int $amount, string $purpose, Carbon $date, string $final, ?string $reason = null, ?string $desc = null): CashOut
     {
         Carbon::setTestNow($date->copy()->setTime(9, 30));
-        $payload = ['doc_date' => $date->toDateString(), 'cash_in_id' => $cashIn->id, 'amount' => $amount, 'purpose' => $purpose];
+        $payload = ['doc_date' => $date->toDateString(), 'cash_in_id' => $cashIn->id, 'amount' => $amount, 'purpose' => $purpose, 'description' => $desc];
         $http->actingAs($creator)->post(route('cash-out.store'), $payload);
         $cashOut = CashOut::query()->latest('id')->firstOrFail();
         $http->put(route('cash-out.update', $cashOut), ['_action' => 'confirm'] + $payload);

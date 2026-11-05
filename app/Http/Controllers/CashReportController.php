@@ -89,13 +89,15 @@ class CashReportController extends Controller
         $status = $this->statusFilter($request);
         $source = Text::of($request->query('source'));
 
-        $rows = CashOut::query()->with(['cashIn.cashAccount'])->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])
+        $rows = CashOut::query()->with(['cashIn.cashAccount', 'category'])->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])
             ->when($accountId, fn ($q) => $q->whereHas('cashIn', fn ($w) => $w->where('cash_account_id', $accountId)))
             ->when($status !== '', fn ($q) => $q->where('status', $status))
             ->when($source !== '', fn ($q) => $q->whereHas('cashIn', fn ($w) => $w->where('source_name', 'like', '%'.$source.'%')))
             ->orderBy('doc_date')->get()->map(fn (CashOut $c) => [
                 'date' => Locale::d($c->doc_date), 'doc' => $c->doc_no ?? '(draf)', 'cash_in' => $c->cashIn->number(), 'source_name' => $c->cashIn->source_name,
-                'account' => $c->cashIn->cashAccount->name, 'purpose' => $c->purpose, 'amount' => (float) $c->amount, 'status' => $c->statusLabel(),
+                'account' => $c->cashIn->cashAccount->name, 'category' => $c->category?->name ?? 'Belum dikategorikan',
+                // Rincian = Keterangan; Uang Keluar lama bernama bebas (tanpa kategori) menampilkan nama lamanya di sini.
+                'purpose' => $c->description ?: ($c->purpose_id ? '' : $c->purpose), 'amount' => (float) $c->amount, 'status' => $c->statusLabel(),
             ])->all();
 
         return view('reports.cash-disbursements', [

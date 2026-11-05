@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Dipakai oleh : CashOutController.
  * Status       : Aktif.
  */
-#[Fillable(['doc_no', 'doc_date', 'cash_in_id', 'amount', 'purpose', 'description', 'attachment', 'status', 'created_by', 'submitted_at', 'approved_by', 'approved_at', 'reason'])]
+#[Fillable(['doc_no', 'doc_date', 'cash_in_id', 'amount', 'purpose', 'purpose_id', 'description', 'attachment', 'status', 'created_by', 'submitted_at', 'approved_by', 'approved_at', 'reason'])]
 class CashOut extends Model
 {
     protected $table = 'k_cash_out';
@@ -22,6 +22,12 @@ class CashOut extends Model
     protected function casts(): array
     {
         return ['doc_date' => 'date', 'amount' => 'decimal:2', 'submitted_at' => 'datetime', 'approved_at' => 'datetime'];
+    }
+
+    // Kategori Kebutuhan (m_cash_purpose); kosong = Uang Keluar lama bernama bebas ("Belum dikategorikan").
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(CashPurpose::class, 'purpose_id');
     }
 
     public function cashIn(): BelongsTo

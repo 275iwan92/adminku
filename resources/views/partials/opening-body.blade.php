@@ -24,6 +24,33 @@
         @endforeach
     </div>
 @endif
+@if (! empty($page['charts']))
+    @php
+        $top = max([1.0, ...array_column($page['charts']['bars'], 'value')]);
+        $kasReport = route('reports.cash-disbursements', ['from' => now()->startOfMonth()->subMonths(2)->toDateString(), 'to' => now()->toDateString()]);
+    @endphp
+    <div class="sstock-ocharts sstock-ohead--{{ $page['tone'] }}">
+        <section class="sstock-obox">
+            <h2>Pengeluaran per kebutuhan, 3 bulan terakhir ({{ $page['charts']['month'] }})</h2>
+            @forelse ($page['charts']['bars'] as $b)
+                <a class="sstock-obar" href="{{ $kasReport }}" @unless ($phone) data-dl-open-item="R-KOUT" data-label="Laporan Pengeluaran" @endunless>
+                    <span>{{ $b['label'] }}</span><i><u style="width: {{ round($b['value'] / $top * 100) }}%"></u></i><b>{{ $b['text'] }}</b>
+                </a>
+            @empty
+                <p class="sstock-onote">Belum ada pengeluaran yang disetujui dalam 3 bulan terakhir.</p>
+            @endforelse
+        </section>
+        <section class="sstock-obox">
+            <h2>Tren 6 bulan: masuk dan keluar</h2>
+            <div class="sstock-otrend">
+                @foreach ($page['charts']['trend'] as $t)
+                    <div><span><u class="in" style="height: {{ round($t['in'] / $page['charts']['max'] * 100) }}%" title="Masuk Rp {{ \Devlib\Locale::number($t['in'], 0) }}"></u><u class="out" style="height: {{ round($t['out'] / $page['charts']['max'] * 100) }}%" title="Keluar Rp {{ \Devlib\Locale::number($t['out'], 0) }}"></u></span>{{ $t['label'] }}</div>
+                @endforeach
+            </div>
+            <p class="sstock-onote"><i class="sstock-dot in"></i> masuk <i class="sstock-dot out"></i> keluar</p>
+        </section>
+    </div>
+@endif
 @if ($page['section'] === 'ga')
     <section class="sstock-obox sstock-ohead--{{ $page['tone'] }}">
         <h2>Perlu tindakan</h2>

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\CashIn;
+use App\Models\CashPurpose;
 use App\Support\Text;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -35,13 +36,16 @@ class CashOutRequest extends FormRequest
                 }
             }],
             'purpose' => ['required', 'string', 'max:150'],
-            'description' => ['nullable', 'string', 'max:255'],
+            'purpose_id' => ['nullable', 'integer'],
+            // Kategori "Lainnya" tidak menjelaskan apa pun: rincian wajib ditulis di Keterangan.
+            'description' => ['nullable', 'string', 'max:255', Rule::requiredIf(fn () => $this->input('purpose') === 'Lainnya')],
             'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['purpose' => Text::of($this->input('purpose')), 'description' => Text::of($this->input('description'))]);
+        $purpose = Text::of($this->input('purpose'));
+        $this->merge(['purpose' => $purpose, 'purpose_id' => CashPurpose::query()->where('name', $purpose)->value('id'), 'description' => Text::of($this->input('description'))]);
     }
 }
