@@ -506,3 +506,8 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 
 /* Lampiran bukti tersimpan: pratinjau 72px dipotong dari atas (nota panjang tidak merusak tata letak); klik membuka berkas utuh di tab baru. */
 .sstock-cash .dl-upload__thumb { width: 72px; height: 72px; object-fit: cover; object-position: top; border-radius: 6px; }
+
+/* Uang Keluar: saldo kas di bawah pilihan kas; saklar dan rekening terkunci bila Uang Masuk ditaut. */
+.sstock-cashsaldo { margin: 2px 0 4px; font-size: 14px; color: var(--dl-muted); }
+.sstock-cashsaldo b { color: var(--dl-ink-strong); font-weight: 600; }
+.sstock-cash .is-locked { opacity: .6; pointer-events: none; }

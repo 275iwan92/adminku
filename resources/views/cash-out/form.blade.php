@@ -24,7 +24,7 @@
     <x-dl::form :title="'Uang Keluar · '.($isNew ? 'Baru' : raw($cashOut->number()))" :subtitle="$isNew ? null : raw($cashOut->purpose)" panel="top" kind="document" :status="$isNew ? 'new' : $cashOut->status"
         :back="route('cash-out.index')" :new-url="route('cash-out.create')"
         :action="$isNew ? route('cash-out.store') : route('cash-out.update', $cashOut)" :hidden="$isNew ? [] : ['_method' => 'PUT']" enctype="multipart/form-data"
-        :pipeline="true" class="sstock-cash sstock-cash-out" data-cash-remaining="{{ json_encode($remaining) }}" data-cash-accounts="{{ json_encode($accountNames) }}" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
+        :pipeline="true" class="sstock-cash sstock-cash-out" data-cash-remaining="{{ json_encode($remaining) }}" data-cash-accounts="{{ json_encode($accountNames) }}" data-cash-balances="{{ json_encode($balances) }}" data-cash-links="{{ json_encode($links) }}" data-cash-banks="{{ json_encode($banks) }}" data-cash-main="{{ $cashId }}" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
         :hide="['hold', 'email', 'print']" :log="$log"
         :created-by="$cashOut->creator?->name" :created-at="$cashOut->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$cashOut->approver?->name ?? $cashOut->creator?->name" :updated-at="$cashOut->updated_at?->format('Y-m-d H:i:s')">
@@ -37,7 +37,10 @@
                 <x-dl::field.upload name="attachment" label="Lampiran Bukti" :value="$cashOut->attachment ? ['url' => route('cash-out.file', $cashOut), 'name' => 'Lampiran bukti ('.strtoupper(pathinfo($cashOut->attachment, PATHINFO_EXTENSION)).')'] : null" :preview="! str_ends_with(strtolower($cashOut->attachment ?? ''), '.pdf')" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti pengeluaran (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
             </x-dl::form.col>
             <x-dl::form.col class="sstock-panel">
-                <x-dl::field.select name="cash_in_id" label="Ditaut Ke Uang Masuk" :options="$cashIns" :value="$v('cash_in_id')" required :error="$e('cash_in_id')" hint="Hanya Uang Masuk yang sudah Disetujui. Sisa saldo tampil di tiap pilihan." />
+                <x-dl::field.select name="cash_in_id" label="Ditaut Ke Uang Masuk (opsional)" :options="['' => 'Tidak ditaut (pakai saldo kas)'] + $cashIns" :value="$v('cash_in_id')" :error="$e('cash_in_id')" hint="Hanya Uang Masuk yang sudah Disetujui. Bila dipilih, Kas Asal mengikuti kas Uang Masuk itu dan terkunci." />
+                <p class="sstock-cashhelp">Pilih salah satu: Tunai atau Rekening bank.</p>
+                <x-dl::field.toggle-group name="cash_kind" label="Kas Asal" :options="['cash' => 'Tunai', 'bank' => 'Rekening bank']" :value="old('cash_kind', $kind)" />
+                <x-dl::field.select class="sstock-cashbank" name="cash_account_id" label="Rekening Bank" :options="['' => 'Pilih rekening...'] + $banks" :value="$v('cash_account_id')" :add="\App\Support\QuickAdd::for('cash_bank_out')" :error="$e('cash_account_id')" />
                 <x-dl::field.decimal class="sstock-amount" name="amount" label="Jumlah (IDR)" :decimals="2" :value="$v('amount')" required :error="$e('amount')" />
             </x-dl::form.col>
         </x-dl::form.row>
