@@ -17,6 +17,7 @@
         "@laravel/multiplex": "^0.4.1"
     },
     "dependencies": {
+        "driver.js": "^1.10.2",
         "leaflet": "^1.9.4"
     }
 }
