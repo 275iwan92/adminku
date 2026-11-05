@@ -13,7 +13,7 @@
 <script>
 (() => {
     const DOCS = @js($docs), LOCKED = @js($locked), OFFICE = @js($office), UNITS = ['kg', 'karung', 'dus', 'pcs', 'sak'];
-    const S = @js($stops).map(s => ({ kind: s.kind, customer: s.customer, address: s.address || '', lat: s.lat ?? null, lng: s.lng ?? null, travel_min: +s.travel_min || 15, items: (s.items || []).map(r => r.slice()), docs: (s.docs || []).slice() }));
+    const S = @js($stops).map(s => ({ kind: s.kind, customer: s.customer, address: s.address || '', arr: s.arr ?? null, lat: s.lat ?? null, lng: s.lng ?? null, travel_min: +s.travel_min || 15, items: (s.items || []).map(r => r.slice()), docs: (s.docs || []).slice() }));
     let sel = S.length ? 0 : -1, pickOpen = false, pickSel = [], addAt = null, confirmDel = -1, dragI = -1;
     const root = document.getElementById('plan'), out = document.getElementById('stops_json');
     const q = n => document.querySelector('[name=' + n + ']');
@@ -26,7 +26,7 @@
     const hm = m => { m = Math.round(m); return String(Math.floor(m / 60) % 24).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
     const start = () => { const [h, m] = (q('depart_time')?.value || '08:00').split(':'); return (+h || 0) * 60 + (+m || 0); };
     const back = () => +q('return_min')?.value || 0;
-    const times = () => { let c = start(); const o = S.map(s => { c += s.travel_min; const a = c; c += svc(s); return [a, c]; }); return { o, home: c + back() }; };
+    const times = () => { let c = start(); const o = S.map(s => { const a = s.arr != null ? s.arr : c + s.travel_min; c = a + svc(s); return [a, c]; }); return { o, home: c + back() }; };
     const sync = () => { out.value = JSON.stringify(S); };
     const usedElsewhere = (id, i) => S.some((s, k) => k !== i && s.docs.includes(id));
     const badge = k => k === 'ant' ? '<span class="sp-b sp-ant">Antar</span>' : '<span class="sp-b sp-amb">Ambil</span>';
@@ -43,7 +43,7 @@
                 + (LOCKED ? '' : '<span class="sp-grip" title="Seret untuk mengubah urutan">⋮⋮</span>') + '<span class="sp-n">' + (i + 1) + '</span>'
                 + '<div class="sp-grow">' + badge(s.kind) + ' <b>' + esc(s.customer || 'Alamat baru') + '</b><div class="sp-s sp-cut">' + esc(s.address || 'Alamat belum diisi') + '</div>'
                 + '<div class="sp-s">' + n + ' barang, ' + Math.round(kg(s)) + ' kg' + (s.docs.length ? ' · ' + s.docs.length + ' SJ' : '') + ' · layanan ±' + svc(s) + ' mnt</div></div>'
-                + '<div class="sp-r"><b>' + hm(t.o[i][0]) + '</b><div class="sp-s">selesai ' + hm(t.o[i][1]) + '</div></div>'
+                + '<div class="sp-r"><b>' + hm(t.o[i][0]) + '</b><div class="sp-s">' + (s.arr != null ? 'sudah tiba' : 'selesai ' + hm(t.o[i][1])) + '</div></div>'
                 + (LOCKED ? '' : '<button type="button" class="sp-del' + (confirmDel === i ? ' sp-cf' : '') + '" data-del="' + i + '" title="Hapus alamat" aria-label="Hapus alamat">' + (confirmDel === i ? 'Hapus?' : '🗑') + '</button>') + '</div>';
         });
         return h + '<div class="sp-row sp-home"><span class="sp-n">K</span><div class="sp-grow"><span class="sp-b sp-kan">Kantor</span> Kembali</div><b>' + hm(t.home) + '</b></div>';

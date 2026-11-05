@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['active' => EnsureActive::class, 'supervisor' => EnsureSupervisor::class, 'approver' => EnsureApprover::class, 'administrator' => EnsureAdministrator::class, 'module' => EnsureModuleAccess::class, 'super' => EnsureSuperAdmin::class]);
         $middleware->web(append: [ScalarQuery::class, PhoneStaysPhone::class, TrackDevice::class, LogActivity::class]);
-        $middleware->preventRequestForgery(except: ['agent/report/*']);   // laporan agen Python: dijaga token sekali pakai, bukan sesi
+        $middleware->preventRequestForgery(except: ['agent/report/*', 'd/*']);   // laporan agen Python dan layar sopir: dijaga token, bukan sesi
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('home'));
     })

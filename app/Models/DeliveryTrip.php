@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Dipakai oleh : DeliveryTripController, DeliveryNoteController.
  * Status       : Aktif.
  */
-#[Fillable(['doc_no', 'trip_date', 'vehicle_id', 'driver', 'assistant', 'depart_time', 'return_min', 'note', 'status', 'created_by', 'assigned_by', 'assigned_at', 'reason'])]
+#[Fillable(['doc_no', 'token', 'trip_date', 'vehicle_id', 'driver', 'assistant', 'depart_time', 'return_min', 'note', 'status', 'created_by', 'assigned_by', 'assigned_at', 'reason'])]
 class DeliveryTrip extends Model
 {
     protected $table = 'delivery_trip';
@@ -49,6 +49,26 @@ class DeliveryTrip extends Model
     public function statusLabel(): string
     {
         return self::STATUS[$this->status] ?? $this->status;
+    }
+
+    // ETA tiap alamat (menit sejak 00:00, kunci = id alamat): yang sudah ditandai tiba memakai jam asli, sisanya dihitung dari alamat sebelumnya (selesai + tempuh). 'home' = tiba di kantor.
+    // Rumus layanan sama dengan planner (5 + 10 x kg / 100 menit, x 0,7 bila ada asisten); kg dari barang ketikan, surat jalan dihitung 0 seperti di planner.
+    public function schedule(): array
+    {
+        [$h, $m] = array_map('intval', explode(':', $this->depart_time));
+        $cursor = $h * 60 + $m;
+        $crew = $this->assistant ? 0.7 : 1;
+        $out = [];
+        foreach ($this->stops as $s) {
+            $kg = collect($s->items ?? [])->sum(fn ($r) => (float) ($r[3] ?? 0));
+            $svc = (int) round((5 + $kg / 100 * 10) * $crew);
+            $arrive = $s->arrived_at ? $s->arrived_at->hour * 60 + $s->arrived_at->minute : $cursor + $s->travel_min;
+            $out[$s->id] = ['arrive' => $arrive, 'done' => $arrive + $svc, 'actual' => (bool) $s->arrived_at];
+            $cursor = $arrive + $svc;
+        }
+        $out['home'] = $cursor + $this->return_min;
+
+        return $out;
     }
 
     // PGK-YYMM-0001, urut per bulan tanggal trip. Dipanggil di dalam transaksi.

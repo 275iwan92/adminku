@@ -30,6 +30,7 @@ use App\Http\Controllers\DeliveryTripController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DisciplineController;
+use App\Http\Controllers\DriverTripController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\GaSettingsController;
@@ -74,6 +75,13 @@ Route::view('ukur', 'ukur')->name('ukur');
 
 // Laporan agen Python "More details" (Perangkat Saya): publik tanpa CSRF, dijaga token sekali pakai buatan pengguna yang sudah setuju (lihat AgentReportController).
 Route::post('agent/report/{token}', [AgentReportController::class, 'store'])->middleware('throttle:10,1')->name('agent.report');
+
+// Layar sopir (Pengiriman): publik tanpa login, dijaga token rahasia per trip; sopir menandai alamat yang sudah tiba (lihat DriverTripController).
+Route::middleware('throttle:60,1')->prefix('d/{token}')->whereAlphaNumeric('token')->group(function () {
+    Route::get('/', [DriverTripController::class, 'show'])->name('driver.show');
+    Route::post('stop/{stop}/arrive', [DriverTripController::class, 'arrive'])->whereNumber('stop')->name('driver.arrive');
+    Route::post('stop/{stop}/undo', [DriverTripController::class, 'undo'])->whereNumber('stop')->name('driver.undo');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'show'])->name('login');

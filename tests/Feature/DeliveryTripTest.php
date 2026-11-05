@@ -159,4 +159,42 @@ class DeliveryTripTest extends TestCase
         $this->assertNull($stops[1]->lat);
         $this->assertNull($stops[1]->lng);
     }
+
+    public function test_driver_link_marks_arrival_and_recalculates_eta(): void
+    {
+        $this->actingAs($this->staff)->post(route('trips.store'), $this->payload([$this->typedStop('ant', 'Toko Satu'), $this->typedStop('ant', 'Toko Dua')]));
+        $trip = DeliveryTrip::firstOrFail();
+        $this->get(route('trips.show', $trip))->assertOk();
+        $this->actingAs($this->staff)->put(route('trips.update', $trip), $this->payload([$this->typedStop('ant', 'Toko Satu'), $this->typedStop('ant', 'Toko Dua')], ['_action' => 'confirm']));
+        $trip->refresh();
+        $this->assertSame(40, strlen($trip->token));
+
+        auth()->logout();
+        $this->get(route('driver.show', $trip->token))->assertOk()->assertSee('Toko Satu')->assertSee('Perkiraan tiba');
+        $first = $trip->stops()->first();
+        $this->travelTo(now()->setTime(9, 30));
+        $this->post(route('driver.arrive', [$trip->token, $first->id]))->assertRedirect(route('driver.show', $trip->token));
+        $this->assertSame('09:30', $first->fresh()->arrived_at->format('H:i'));
+        // ETA alamat kedua dihitung dari jam tiba asli: 09:30 + layanan 4 mnt (asisten, 60 kg = 11 x 0,7 = 8) + tempuh 15
+        $sched = $trip->fresh()->load('stops')->schedule();
+        $second = $trip->stops()->skip(1)->first();
+        $this->assertTrue($sched[$first->id]['actual']);
+        $this->assertSame(9 * 60 + 30 + 8 + 15, $sched[$second->id]['arrive']);
+
+        $this->post(route('driver.undo', [$trip->token, $first->id]));
+        $this->assertNull($first->fresh()->arrived_at);
+        $this->get(route('driver.show', 'tokensalah123'))->assertNotFound();
+    }
+
+    public function test_driver_link_refuses_cancelled_trip(): void
+    {
+        $this->actingAs($this->staff)->post(route('trips.store'), $this->payload([$this->typedStop()]));
+        $trip = DeliveryTrip::firstOrFail();
+        $this->put(route('trips.update', $trip), $this->payload([$this->typedStop()], ['_action' => 'confirm']));
+        $token = $trip->fresh()->token;
+        $this->actingAs($this->boss)->put(route('trips.update', $trip), ['_action' => 'cancel', '_reason' => 'Salah alamat']);
+        auth()->logout();
+        $this->get(route('driver.show', $token))->assertStatus(410);
+        $this->post(route('driver.arrive', [$token, $trip->stops()->first()->id]))->assertStatus(410);
+    }
 }

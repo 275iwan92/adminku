@@ -12,6 +12,7 @@ use App\Support\Text;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /* REMARK
@@ -79,7 +80,7 @@ class DeliveryTripController extends Controller
                     if ($action === 'save') {
                         return 'Draf disimpan.';
                     }
-                    $trip->update(['doc_no' => $trip->doc_no ?? DeliveryTrip::nextNo($trip->trip_date), 'status' => 'assigned', 'assigned_by' => $user->id, 'assigned_at' => now()]);
+                    $trip->update(['doc_no' => $trip->doc_no ?? DeliveryTrip::nextNo($trip->trip_date), 'token' => $trip->token ?? Str::random(40), 'status' => 'assigned', 'assigned_by' => $user->id, 'assigned_at' => now()]);
 
                     return "{$trip->doc_no} ditugaskan ke {$trip->driver}.";
                 case 'cancel':
@@ -200,7 +201,7 @@ class DeliveryTripController extends Controller
             ->map(fn (StockDocument $d) => ['id' => $d->id, 'no' => $d->doc_no, 'cu' => $d->recipient ?? '', 'it' => $d->lines->map(fn ($l) => [$l->batch->name, (float) $l->qty, $l->batch->unit, 0])->all()])->all();
 
         $stops = $trip->exists ? $trip->stops->map(fn (DeliveryStop $s) => [
-            'kind' => $s->kind, 'customer' => $s->customer, 'address' => $s->address ?? '', 'travel_min' => $s->travel_min, 'lat' => $s->lat !== null ? (float) $s->lat : null, 'lng' => $s->lng !== null ? (float) $s->lng : null, 'items' => $s->items ?? [], 'docs' => $s->docs->pluck('id')->all(),
+            'kind' => $s->kind, 'customer' => $s->customer, 'address' => $s->address ?? '', 'arr' => $s->arrived_at ? $s->arrived_at->hour * 60 + $s->arrived_at->minute : null, 'travel_min' => $s->travel_min, 'lat' => $s->lat !== null ? (float) $s->lat : null, 'lng' => $s->lng !== null ? (float) $s->lng : null, 'items' => $s->items ?? [], 'docs' => $s->docs->pluck('id')->all(),
         ])->all() : [];
 
         $log = [];

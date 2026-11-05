@@ -13,14 +13,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Dipakai oleh : DeliveryTrip, DeliveryTripController.
  * Status       : Aktif.
  */
-#[Fillable(['trip_id', 'seq', 'kind', 'customer', 'address', 'lat', 'lng', 'travel_min', 'items'])]
+#[Fillable(['trip_id', 'seq', 'kind', 'customer', 'address', 'lat', 'lng', 'travel_min', 'arrived_at', 'items'])]
 class DeliveryStop extends Model
 {
     protected $table = 'delivery_stop';
 
     protected function casts(): array
     {
-        return ['items' => 'array'];
+        return ['items' => 'array', 'arrived_at' => 'datetime'];
     }
 
     public function trip(): BelongsTo

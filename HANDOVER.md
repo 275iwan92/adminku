@@ -55,3 +55,5 @@ git clone https://github.com/275iwan92/stoku.git stoku   # taruh sejajar dengan 
 composer setup    # install, .env, key, buat DB + user MySQL, migrate, seed, build
 ```
 Daftarkan folder ke Herd (park/link) lalu buka http://stoku.test.
+
+- **Pengiriman (PGK) dan Surat Jalan (SJL):** planner trip per kendaraan (stop antar/ambil, ETA); peta rute Leaflet hanya di planner (`resources/js/trip-map.js`, router jarak dapat diganti, tombol Urutkan terdekat maks. 8 alamat, Ambil dulu baru Antar); layar sopir tanpa login `d/{token}` (`DriverTripController`, tanda Sudah tiba mencatat `arrived_at` dan ETA dihitung ulang). Belum: GPS, foto/tanda tangan bukti, notifikasi. Titik kantor: `SSTOCK_OFFICE_LAT/LNG`. Tes `DeliveryTripTest`.

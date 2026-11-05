@@ -21,6 +21,9 @@
     @error('stops_json')
         <x-dl::alert tone="danger" :message="raw($message)" />
     @enderror
+    @if ($trip->status === 'assigned' && $trip->token)
+        <x-dl::alert tone="info" :message="'Tautan untuk sopir (kirim ke HP sopir, tanpa login): '.route('driver.show', $trip->token)" />
+    @endif
     @if ($now === 'cancelled')
         <x-dl::alert tone="warn" :message="raw('Trip dibatalkan'.($trip->reason ? '. Alasan: '.$trip->reason : '').'. Surat jalannya bebas dipakai lagi.')" />
     @endif
