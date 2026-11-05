@@ -51,6 +51,21 @@ class EmployeeTest extends TestCase
         return Employee::create($over + ['code' => 'E-'.random_int(1000, 9999), 'name' => 'Budi', 'gender' => 'L', 'department_id' => $this->dept->id, 'employment' => 'tetap', 'join_date' => '2021-02-03', 'nik_ktp' => '3273010101010001', 'phone' => '0812', 'ktp_area_id' => 1, 'ktp_area_level' => 'CITY']);
     }
 
+    public function test_recipient_becomes_employee_and_gets_linked(): void
+    {
+        $r = \App\Models\Recipient::create(['name' => 'Agus', 'department_id' => $this->dept->id]);
+
+        $this->actingAs($this->admin)->get(route('recipients.show', $r))->assertOk()->assertSee('Jika penerima ini karyawan');
+        $this->get(route('employees.create', ['penerima' => $r->id]))->assertOk()->assertSee('value="Agus"', false)->assertSee('name="penerima" value="'.$r->id.'"', false);
+
+        $this->post(route('employees.store'), $this->payload(['name' => 'Agus', 'penerima' => $r->id]))->assertRedirect();
+        $emp = Employee::where('name', 'Agus')->firstOrFail();
+        $this->assertSame($emp->id, $r->fresh()->employee_id);
+
+        $this->get(route('recipients.show', $r))->assertOk()->assertDontSee('Jika penerima ini karyawan')->assertSee($emp->code);
+        $this->get(route('employees.create', ['penerima' => $r->id]))->assertOk()->assertDontSee('name="penerima"', false);   // sudah terhubung: tidak ditawarkan lagi
+    }
+
     public function test_saves_an_employee_with_family_documents_and_contracts(): void
     {
         $this->actingAs($this->admin)->post(route('employees.store'), $this->payload([

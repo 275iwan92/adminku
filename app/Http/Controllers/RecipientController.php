@@ -19,11 +19,18 @@ class RecipientController extends Controller
 {
     public function index()
     {
-        $rows = Recipient::query()->with('department')->withCount('documents')->orderBy('name')->get()->map(fn (Recipient $r) => [
+        $rows = Recipient::query()->with(['department', 'employee:id,code'])->withCount('documents')->orderBy('name')->get()->map(fn (Recipient $r) => [
             'id' => $r->id, 'name' => $r->name, 'department' => $r->department?->name ?? '—', 'documents' => $r->documents_count, 'active' => $r->is_active,
+            'employee' => $r->employee?->code ?? '—', 'initials' => collect(preg_split('/\s+/', trim($r->name)))->filter(fn ($w) => preg_match('/^\p{L}/u', $w))->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode(''), 'hue' => abs(crc32($r->department?->name ?? '')) % 360,   // warna per departemen, sama dengan kartu Karyawan
         ])->all();
 
-        return view('recipients.index', ['rows' => $rows]);
+        $rows = collect($rows);
+
+        return view('recipients.index', [
+            'rows' => $rows->all(), 'view' => request()->query('view') === 'list' ? 'list' : 'cards',
+            'departments' => $rows->pluck('department')->unique()->sort()->values()->all(),
+            'counts' => ['all' => $rows->count(), 'off' => $rows->where('active', false)->count()],
+        ]);
     }
 
     public function create()
@@ -33,7 +40,7 @@ class RecipientController extends Controller
 
     public function show(Recipient $recipient)
     {
-        return view('recipients.form', ['recipient' => $recipient->loadCount('documents')] + $this->formData());
+        return view('recipients.form', ['recipient' => $recipient->loadCount('documents')->load('employee:id,code,name')] + $this->formData());
     }
 
     public function store(RecipientRequest $request): RedirectResponse|JsonResponse

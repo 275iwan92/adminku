@@ -27,6 +27,19 @@
             <x-dl::form.row :cols="3">
                 <x-dl::field.display label="Issuance Documents" :value="(string) $recipient->documents_count" />
             </x-dl::form.row>
+            @if ($recipient->employee)
+                <x-dl::form.row>
+                    @if (auth()->user()->canAccess('HRE'))
+                        <x-dl::button icon="fa-id-card" :label="'Karyawan: '.$recipient->employee->code.' · '.$recipient->employee->name" :href="route('employees.show', $recipient->employee)" />
+                    @else
+                        <x-dl::field.display label="Karyawan" :value="$recipient->employee->code.' · '.$recipient->employee->name" />
+                    @endif
+                </x-dl::form.row>
+            @elseif (auth()->user()->canWrite('HRE'))
+                <x-dl::form.row>
+                    <x-dl::button class="sstock-btn-teal" variant="primary" icon="fa-id-card" label="Jika penerima ini karyawan, klik di sini" :href="route('employees.create', ['penerima' => $recipient->id])" />
+                </x-dl::form.row>
+            @endif
         @endunless
     </x-dl::form>
 @endsection

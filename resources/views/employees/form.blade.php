@@ -21,7 +21,7 @@
     <x-dl::form :title="$isNew ? 'Karyawan · Baru' : 'Karyawan · '.raw($employee->code)" :subtitle="$isNew ? null : raw($employee->name)" panel="top" kind="master" enctype="multipart/form-data"
         :tabs="['profile' => 'Profil', 'job' => 'Pekerjaan', 'docs' => 'Dokumen', 'family' => 'Keluarga', 'contracts' => 'Kontrak'] + ($isNew ? [] : ['discipline' => 'Disiplin'])"
         :status="$isNew ? 'new' : ($employee->is_active ? 'active' : 'inactive')" :back="route('employees.index')" :new-url="route('employees.create')"
-        :action="$isNew ? route('employees.store') : route('employees.update', $employee)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
+        :action="$isNew ? route('employees.store') : route('employees.update', $employee)" :hidden="$isNew ? array_filter(['penerima' => $recipientId ?? old('penerima')]) : ['_method' => 'PUT']"
         :created-at="$employee->created_at?->format('Y-m-d H:i:s')" :updated-at="$employee->updated_at?->format('Y-m-d H:i:s')">
         <x-slot:profile>
             <div class="rk-photos">

@@ -7,6 +7,7 @@ use App\Models\Candidate;
 use App\Models\Department;
 use App\Models\Discipline;
 use App\Models\Employee;
+use App\Models\Recipient;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,7 +65,10 @@ class EmployeeController extends Controller
             $employee->fill(['name' => $candidate->name, 'nik_ktp' => $candidate->nik, 'phone' => $candidate->phone, 'email' => $candidate->email, 'birth_date' => $candidate->birth_date, 'department_id' => $candidate->departments->first()?->id, 'position' => $candidate->position]);
         }
 
-        return view('employees.form', $this->formData($employee));
+        $recipient = Recipient::whereNull('employee_id')->find($request->query('penerima'));   // Jadikan karyawan dari Penerima: nama dan bagian terisi, tautan dibuat saat disimpan
+        $recipient && $employee->fill(['name' => $recipient->name, 'department_id' => $recipient->department_id]);
+
+        return view('employees.form', $this->formData($employee) + ['recipientId' => $recipient?->id]);
     }
 
     public function show(Request $request, Employee $employee)
@@ -81,6 +85,7 @@ class EmployeeController extends Controller
         $employee = DB::transaction(function () use ($request) {
             $employee = $this->save(new Employee, $request->employeeData());
             $this->saveFiles($employee, $request);
+            Recipient::whereNull('employee_id')->whereKey($request->input('penerima'))->update(['employee_id' => $employee->id]);
 
             return $employee;
         });
