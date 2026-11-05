@@ -55,6 +55,20 @@ class CashSourceBankTest extends TestCase
         $this->assertFalse(CashSource::where('name', 'Donatur Ibu Sari')->exists());
     }
 
+    public function test_sources_follow_the_cash_in_module_rights(): void
+    {
+        $none = UserGroup::create(['code' => 'NOKAS', 'name' => 'Tanpa kas']);
+        $none->syncAccess(['KSK' => 'rw']);
+        $ro = UserGroup::create(['code' => 'KASRO', 'name' => 'Kas RO']);
+        $ro->syncAccess(['KSM' => 'ro']);
+
+        $this->actingAs(User::factory()->create(['group_id' => $none->id]))->get(route('cash-sources.index'))->assertForbidden();
+        $reader = User::factory()->create(['group_id' => $ro->id]);
+        $this->actingAs($reader)->get(route('cash-sources.index'))->assertOk();
+        $this->actingAs($reader)->postJson(route('cash-sources.store'), ['name' => 'X'])->assertForbidden();
+        $this->actingAs($reader)->postJson(route('cash-in.bank-account'), ['bank_name' => 'BNI', 'account_no' => '1'])->assertForbidden();
+    }
+
     public function test_deleting_a_source_keeps_old_cash_ins_readable(): void
     {
         $source = CashSource::create(['name' => 'Sumber Lama']);
