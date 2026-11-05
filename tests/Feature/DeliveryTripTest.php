@@ -147,4 +147,16 @@ class DeliveryTripTest extends TestCase
         $this->actingAs($other)->get(route('trips.index'))->assertForbidden();
         $this->actingAs($other)->get(route('delivery-notes.index'))->assertForbidden();
     }
+
+    public function test_stop_coordinates_are_saved_and_out_of_range_ignored(): void
+    {
+        $ok = $this->typedStop() + ['lat' => -6.2, 'lng' => 106.8];
+        $bad = $this->typedStop('ant', 'Toko Jauh') + ['lat' => 'abc', 'lng' => 999];
+        $this->actingAs($this->staff)->post(route('trips.store'), $this->payload([$ok, $bad]))->assertRedirect();
+        $stops = DeliveryTrip::firstOrFail()->stops;
+        $this->assertSame(-6.2, (float) $stops[0]->lat);
+        $this->assertSame(106.8, (float) $stops[0]->lng);
+        $this->assertNull($stops[1]->lat);
+        $this->assertNull($stops[1]->lng);
+    }
 }

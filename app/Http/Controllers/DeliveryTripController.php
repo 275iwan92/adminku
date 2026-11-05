@@ -168,11 +168,17 @@ class DeliveryTripController extends Controller
             } elseif ($confirm && ! $items) {
                 throw ValidationException::withMessages(['stops_json' => "Alamat {$n} ({$customer}): isi barang atau pilih surat jalan."]);
             }
-            $stops[] = ['kind' => $kind, 'customer' => $customer, 'address' => Text::of($s['address'] ?? '') ?: null, 'travel_min' => min(600, max(0, (int) ($s['travel_min'] ?? 15))), 'items' => $items, 'docs' => $docs];
+            $stops[] = ['kind' => $kind, 'customer' => $customer, 'address' => Text::of($s['address'] ?? '') ?: null, 'travel_min' => min(600, max(0, (int) ($s['travel_min'] ?? 15))), 'lat' => self::coord($s['lat'] ?? null, 90), 'lng' => self::coord($s['lng'] ?? null, 180), 'items' => $items, 'docs' => $docs];
         }
         $data['stops'] = $stops;
 
         return $data;
+    }
+
+    // Koordinat peta: angka dalam rentang, selain itu kosong (alamat tanpa titik tidak digambar).
+    private static function coord(mixed $v, int $max): ?float
+    {
+        return is_numeric($v) && abs((float) $v) <= $max ? round((float) $v, 6) : null;
     }
 
     private function saveStops(DeliveryTrip $trip, array $stops): void
@@ -180,7 +186,7 @@ class DeliveryTripController extends Controller
         DB::table('delivery_stop_doc')->whereIn('stop_id', $trip->stops()->pluck('id'))->delete();
         $trip->stops()->delete();
         foreach ($stops as $i => $s) {
-            $stop = $trip->stops()->create(['seq' => $i + 1, 'kind' => $s['kind'], 'customer' => $s['customer'], 'address' => $s['address'], 'travel_min' => $s['travel_min'], 'items' => $s['items']]);
+            $stop = $trip->stops()->create(['seq' => $i + 1, 'kind' => $s['kind'], 'customer' => $s['customer'], 'address' => $s['address'], 'travel_min' => $s['travel_min'], 'lat' => $s['lat'], 'lng' => $s['lng'], 'items' => $s['items']]);
             $stop->docs()->sync($s['docs']);
         }
     }
@@ -194,7 +200,7 @@ class DeliveryTripController extends Controller
             ->map(fn (StockDocument $d) => ['id' => $d->id, 'no' => $d->doc_no, 'cu' => $d->recipient ?? '', 'it' => $d->lines->map(fn ($l) => [$l->batch->name, (float) $l->qty, $l->batch->unit, 0])->all()])->all();
 
         $stops = $trip->exists ? $trip->stops->map(fn (DeliveryStop $s) => [
-            'kind' => $s->kind, 'customer' => $s->customer, 'address' => $s->address ?? '', 'travel_min' => $s->travel_min, 'items' => $s->items ?? [], 'docs' => $s->docs->pluck('id')->all(),
+            'kind' => $s->kind, 'customer' => $s->customer, 'address' => $s->address ?? '', 'travel_min' => $s->travel_min, 'lat' => $s->lat !== null ? (float) $s->lat : null, 'lng' => $s->lng !== null ? (float) $s->lng : null, 'items' => $s->items ?? [], 'docs' => $s->docs->pluck('id')->all(),
         ])->all() : [];
 
         $log = [];
@@ -209,7 +215,7 @@ class DeliveryTripController extends Controller
         }
 
         return [
-            'trip' => $trip, 'stops' => old('stops_json') ? (json_decode(old('stops_json'), true) ?: []) : $stops, 'docs' => $docs, 'log' => $log,
+            'trip' => $trip, 'office' => config('sstock.office_geo'), 'stops' => old('stops_json') ? (json_decode(old('stops_json'), true) ?: []) : $stops, 'docs' => $docs, 'log' => $log,
             'vehicles' => Vehicle::query()->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $trip->vehicle_id))->orderBy('plate')->get()->mapWithKeys(fn (Vehicle $v) => [$v->id => $v->label()])->all(),
         ];
     }

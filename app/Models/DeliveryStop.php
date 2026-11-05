@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Dipakai oleh : DeliveryTrip, DeliveryTripController.
  * Status       : Aktif.
  */
-#[Fillable(['trip_id', 'seq', 'kind', 'customer', 'address', 'travel_min', 'items'])]
+#[Fillable(['trip_id', 'seq', 'kind', 'customer', 'address', 'lat', 'lng', 'travel_min', 'items'])]
 class DeliveryStop extends Model
 {
     protected $table = 'delivery_stop';

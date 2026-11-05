@@ -2,17 +2,18 @@
  Tujuan       : Planner alamat satu trip (kiri daftar berurutan dengan ETA, kanan detail alamat terpilih): tambah alamat di awal / akhir, seret untuk mengubah urutan, hapus dengan konfirmasi, barang diketik banyak baris atau diambil dari Surat Jalan (boleh banyak, pratinjau barang), waktu layanan otomatis dari berat.
  Sumber hulu  : DeliveryTripController (stops, docs). Kantor = titik berangkat dan kembali.
  Input        : stops [{kind, customer, address, travel_min, items [[nama, jumlah, satuan, kg]], docs [id]}], docs [{id, no, cu, it}], locked.
- Output       : isian tersembunyi stops_json (dibaca controller), ETA hanya tampilan.
+ Output       : isian tersembunyi stops_json (dibaca controller; tiap alamat membawa lat/lng), ETA hanya tampilan. Peta rute (resources/js/trip-map.js, Leaflet + tile OSM) hanya ilustrasi: klik peta menaruh titik alamat terpilih, penanda bisa digeser; jarak lewat TripMap.router (garis lurus x 1,3, dapat diganti).
  Rumus ETA    : layanan = (5 + 10 x kg / 100) menit, dikali 0,7 bila ada asisten; tiba = berangkat + tempuh + layanan alamat sebelumnya. Angka awal asumsi, perlu dikalibrasi dari pengiriman nyata.
  Dipakai oleh : delivery-trips/form.blade.php.
  Status       : Aktif.
 --}}
 <input type="hidden" name="stops_json" id="stops_json" value="">
 <div id="plan" class="sp"></div>
+@vite('resources/js/trip-map.js')
 <script>
 (() => {
-    const DOCS = @js($docs), LOCKED = @js($locked), UNITS = ['kg', 'karung', 'dus', 'pcs', 'sak'];
-    const S = @js($stops).map(s => ({ kind: s.kind, customer: s.customer, address: s.address || '', travel_min: +s.travel_min || 15, items: (s.items || []).map(r => r.slice()), docs: (s.docs || []).slice() }));
+    const DOCS = @js($docs), LOCKED = @js($locked), OFFICE = @js($office), UNITS = ['kg', 'karung', 'dus', 'pcs', 'sak'];
+    const S = @js($stops).map(s => ({ kind: s.kind, customer: s.customer, address: s.address || '', lat: s.lat ?? null, lng: s.lng ?? null, travel_min: +s.travel_min || 15, items: (s.items || []).map(r => r.slice()), docs: (s.docs || []).slice() }));
     let sel = S.length ? 0 : -1, pickOpen = false, pickSel = [], addAt = null, confirmDel = -1, dragI = -1;
     const root = document.getElementById('plan'), out = document.getElementById('stops_json');
     const q = n => document.querySelector('[name=' + n + ']');
@@ -78,23 +79,40 @@
                 + (LOCKED ? '<span></span>' : '<button type="button" class="sp-x" data-r="' + j + '" aria-label="Hapus barang">×</button>') + '</div>').join('') + '</div>'
                 + (LOCKED ? '' : '<button type="button" class="sp-lk" data-ai="1">+ Tambah barang</button>');
         }
-        return h + '<p class="sp-s" id="sp-tot"></p>';
+        return h + '<p class="sp-s">' + (hasPt(s) ? 'Titik peta sudah ada' + (LOCKED ? '' : ' (seret penanda untuk menggeser)') : (LOCKED ? 'Tanpa titik peta' : 'Klik peta untuk menaruh titik alamat ini')) + '</p><p class="sp-s" id="sp-tot"></p>';
     }
 
     function totals() { const s = S[sel], e = document.getElementById('sp-tot'); if (s && e) e.textContent = Math.round(kg(s)) + ' kg · layanan ±' + svc(s) + ' mnt' + (crew() < 1 ? ' (sopir + asisten)' : ' (sopir sendiri)'); }
-    function paintList() { root.querySelector('[data-list]').innerHTML = listHtml(); root.querySelector('[data-top]').innerHTML = bar('top'); root.querySelector('[data-bot]').innerHTML = bar('bot'); sync(); }
+    let map = null;
+    const drawMap = fit => map?.draw(S, sel, fit);
+    function paintList() { root.querySelector('[data-list]').innerHTML = listHtml(); root.querySelector('[data-top]').innerHTML = bar('top'); root.querySelector('[data-bot]').innerHTML = bar('bot'); sync(); drawMap(false); }
     function paintDetail() { root.querySelector('[data-det]').innerHTML = detailHtml(); totals(); sync(); }
     const all = () => { paintList(); paintDetail(); };
+    const hasPt = s => s.lat != null && s.lng != null;
+    // Menit tempuh tiap alamat dari titik sebelumnya (kantor untuk yang pertama), lewat router peta; alamat tanpa titik tidak diubah.
+    function fillTravel() {
+        let prev = OFFICE;
+        S.forEach(s => { if (hasPt(s) && prev) s.travel_min = Math.max(1, window.TripMap.router.min(prev, s)); prev = hasPt(s) ? s : null; });
+        all();
+    }
 
-    root.innerHTML = '<div class="sp-grid"><div class="sp-left"><div class="sp-bar" data-top></div><div data-list></div><div class="sp-bar" data-bot></div></div><div class="sp-right" data-det></div></div>';
+    root.innerHTML = '<div class="sp-grid"><div class="sp-left"><div class="sp-bar" data-top></div><div data-list></div><div class="sp-bar" data-bot></div>'
+        + '<div class="sp-mapbar"><span class="sp-s">Peta rute (ilustrasi urutan, bukan navigasi)</span><span class="sp-push"></span>' + (LOCKED ? '' : '<button type="button" class="sp-lk" data-tt="1">Isi menit tempuh dari peta</button>') + '</div><div class="sp-map" data-map></div></div><div class="sp-right" data-det></div></div>';
     all();
+    const initMap = () => { map = window.TripMap.mount(root.querySelector('[data-map]'), OFFICE, LOCKED, {
+        onPick: (lat, lng) => { if (sel < 0) return; Object.assign(S[sel], { lat, lng }); all(); },
+        onMove: (i, lat, lng) => { Object.assign(S[i], { lat, lng }); paintList(); },
+        onSelect: i => { sel = i; confirmDel = -1; pickOpen = false; all(); },
+    }); drawMap(true); };
+    window.TripMap ? initMap() : addEventListener('DOMContentLoaded', initMap);
     ['depart_time', 'assistant', 'return_min'].forEach(n => q(n)?.addEventListener('input', () => { paintList(); totals(); }));
 
     root.addEventListener('click', e => {
         const b = e.target.closest('button,a'); const row = e.target.closest('.sp-row[data-i]');
         if (b && b.dataset.open) { addAt = b.dataset.open; paintList(); return; }
+        if (b && b.dataset.tt) { fillTravel(); return; }
         if (b && b.dataset.add) {
-            if (b.dataset.add !== 'x') { const n = { kind: b.dataset.add, customer: '', address: '', travel_min: 15, items: [['', 1, 'pcs', '']], docs: [] }; if (b.dataset.pos === 'top') { S.unshift(n); sel = 0; } else { S.push(n); sel = S.length - 1; } pickOpen = false; addAt = null; all(); } else { addAt = null; paintList(); }
+            if (b.dataset.add !== 'x') { const n = { kind: b.dataset.add, customer: '', address: '', lat: null, lng: null, travel_min: 15, items: [['', 1, 'pcs', '']], docs: [] }; if (b.dataset.pos === 'top') { S.unshift(n); sel = 0; } else { S.push(n); sel = S.length - 1; } pickOpen = false; addAt = null; all(); } else { addAt = null; paintList(); }
             return;
         }
         if (b && b.dataset.del !== undefined) { const i = +b.dataset.del; if (confirmDel === i) { S.splice(i, 1); sel = Math.min(sel, S.length - 1); confirmDel = -1; pickOpen = false; all(); } else { confirmDel = i; paintList(); } return; }
