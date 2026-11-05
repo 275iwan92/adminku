@@ -25,7 +25,13 @@
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
 @include('help.tabs', ['active' => 'ug'])
-<div class="sstock-guide">
+<div class="sstock-guide" id="ug-root">
+    <script>document.getElementById('ug-root').dataset.mode = location.hash.length > 1 ? 'detail' : 'deck';</script>
+    <div class="ug-mode" role="group" aria-label="Tampilan panduan">
+        <button type="button" data-mode="deck">Presentasi</button>
+        <button type="button" data-mode="detail">Detail</button>
+    </div>
+    @include('help.ug.deck')
     <nav class="g-toc" aria-label="Daftar isi">
         <strong>Panduan Pengguna</strong>
         <a href="#mulai">1. Mulai di sini</a>
@@ -144,4 +150,77 @@
         @include('help.ug.tanya')
     </main>
 </div>
+<script>
+(function () {
+    var root = document.getElementById('ug-root'), deck = root.querySelector('.ug-deck');
+    var slides = [].slice.call(deck.querySelectorAll('.ug-s')), dots = [].slice.call(deck.querySelectorAll('.ug-dots button'));
+    var bar = deck.querySelector('.ug-bar i'), playBtn = deck.querySelector('[data-play]'), cur = 0, timer = null, DUR = 8000;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function mode(m) { root.dataset.mode = m; if (m === 'deck') { if (!reduce) start(); } else stop(); }
+    function show(n, dir) {
+        n = (n + slides.length) % slides.length;
+        slides.forEach(function (s, k) { s.classList.toggle('is-on', k === n); s.dataset.dir = dir || 1; delete s.dataset.manual; });
+        dots.forEach(function (d, k) { d.classList.toggle('on', k === n); d.setAttribute('aria-selected', k === n); });
+        cur = n;
+        if (timer) start();
+    }
+    // Putar otomatis: slide biasa maju tiap DUR; Misi "dimainkan sendiri" (titik diklik otomatis) kecuali pengguna ikut bermain.
+    function start() {
+        stop(true); bar.style.animation = 'none'; bar.offsetWidth; bar.style.animation = ''; deck.classList.add('is-playing');
+        playBtn.setAttribute('aria-pressed', 'true'); playBtn.textContent = 'Jeda'; tick(slides[cur]);
+    }
+    function tick(s) {
+        if (!s.dataset.misi) { timer = setTimeout(function () { show(cur + 1, 1); }, DUR); return; }
+        timer = setTimeout(function () {
+            if (slides[cur] !== s) return;
+            var h = s.querySelector('.ug-hot.cur');
+            if (s.dataset.manual) { if (h) return tick(s); }
+            else if (h) { s._auto = 1; h.click(); return tick(s); }
+            timer = setTimeout(function () { show(cur + 1, 1); }, 2600);
+        }, 2300);
+    }
+    function stop(keep) { clearTimeout(timer); timer = null; deck.classList.remove('is-playing'); if (!keep) { playBtn.setAttribute('aria-pressed', 'false'); playBtn.textContent = 'Putar otomatis'; } }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); });
+    root.querySelectorAll('[data-mode]').forEach(function (b) { b.onclick = function () { mode(b.dataset.mode); }; });
+    deck.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-go],[data-slide],[data-play],[data-detail]'); if (!t) return;
+        if (t.dataset.go) show(cur + (t.dataset.go === 'next' ? 1 : -1), t.dataset.go === 'next' ? 1 : -1);
+        else if (t.dataset.slide) show(+t.dataset.slide, +t.dataset.slide >= cur ? 1 : -1);
+        else if (t.hasAttribute('data-play')) { timer ? stop() : start(); }
+        else { mode('detail'); var id = t.getAttribute('href').slice(1); history.replaceState(null, '', '#' + id); setTimeout(function () { var el = document.getElementById(id); if (el) el.scrollIntoView(); }, 0); e.preventDefault(); }
+    });
+    document.addEventListener('keydown', function (e) {
+        if (root.dataset.mode !== 'deck' || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+        if (e.key === 'ArrowRight' || e.key === 'PageDown') show(cur + 1, 1); else if (e.key === 'ArrowLeft' || e.key === 'PageUp') show(cur - 1, -1);
+    });
+    var x0 = null;
+    deck.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    deck.addEventListener('touchend', function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 70) show(cur + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); });
+    if (reduce) playBtn.hidden = true;
+
+    // Misi interaktif: satu titik aktif sekali waktu; klik = zoom kamera ke titik berikutnya.
+    deck.querySelectorAll('.ug-misi').forEach(function (m) {
+        var hots = [].slice.call(m.querySelectorAll('.ug-hot')), cam = m.querySelector('.ug-cam'), step = 0;
+        var prog = m.querySelector('.ug-prog span'), st = m.querySelector('.ug-st'), sd = m.querySelector('.ug-sd');
+        function focus(h) { cam.style.transformOrigin = h ? h.dataset.x + '% ' + h.dataset.y + '%' : '50% 50%'; m.classList.toggle('zoomed', !!h); }
+        function paint() {
+            hots.forEach(function (h, k) { h.classList.toggle('cur', k === step); h.classList.toggle('ok', k < step); });
+            prog.textContent = step; m.classList.toggle('done', step >= hots.length); focus(hots[step]);
+        }
+        hots.forEach(function (h, k) {
+            h.onclick = function () {
+                if (k !== step) return;
+                if (!m._auto) m.dataset.manual = 1; m._auto = 0;
+                st.textContent = h.dataset.t; sd.textContent = h.dataset.d; step++;
+                m.querySelector('.ug-say').classList.remove('pop'); void m.offsetWidth; m.querySelector('.ug-say').classList.add('pop');
+                paint();
+            };
+        });
+        m.querySelector('.ug-redo').onclick = function () { delete m.dataset.manual; step = 0; st.textContent = 'Klik titik yang berdenyut'; sd.textContent = 'Jelajahi tangkapan layar ini. Setiap titik mengungkap satu fitur.'; paint(); };
+        paint();
+    });
+    show(0, 1);
+    if (!reduce && root.dataset.mode === 'deck') start();
+})();
+</script>
 @endsection

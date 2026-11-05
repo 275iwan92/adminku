@@ -1,0 +1,133 @@
+/*
+ * Tujuan       : Gaya Panduan Pengguna mode Presentasi (slide promosi, tangkapan layar zoom, Tahukah Anda, Misi interaktif) dan penukar Presentasi / Detail. Tanpa JS halaman jatuh ke Detail; skrip di help/user-guide memasang data-mode.
+ * Dipakai oleh : resources/views/help/user-guide.blade.php dan help/ug/deck.blade.php (di-import dari app.css).
+ */
+#ug-root[data-mode="deck"] .g-toc, #ug-root[data-mode="deck"] .g-body { display: none; }
+#ug-root[data-mode="detail"] .ug-deck { display: none; }
+#ug-root:not([data-mode]) .ug-deck, #ug-root:not([data-mode]) .ug-mode { display: none; }
+#ug-root[data-mode="deck"] { grid-template-columns: minmax(0, 1fr); }
+.ug-mode { display: inline-flex; justify-self: start; padding: 3px; gap: 2px; border-radius: 999px; background: var(--dl-accent-soft); grid-column: 1 / -1; }
+.ug-mode button { border: 0; background: transparent; padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; color: inherit; cursor: pointer; }
+#ug-root[data-mode="deck"] .ug-mode [data-mode="deck"], #ug-root[data-mode="detail"] .ug-mode [data-mode="detail"] { background: var(--dl-accent); color: #fff; }
+.ug-deck { grid-column: 1 / -1; }
+.ug-stage { position: relative; height: clamp(520px, 78vh, 720px); border-radius: 18px; overflow: hidden; background: var(--dl-surface); border: 1px solid var(--dl-border); }
+.ug-s { display: none; position: absolute; inset: 0; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 14px; padding: 28px clamp(16px, 5vw, 64px); overflow-y: auto; }
+.ug-s.is-on { display: flex; }
+.sstock-guide .ug-s h2 { font-size: clamp(22px, 3.6vw, 36px); font-weight: 800; margin: 0; border: 0; padding: 0; line-height: 1.2; }
+.ug-s.is-on > *, .ug-s.is-on .ug-copy > * { animation: ug-in .55s cubic-bezier(.2, .8, .2, 1) both; }
+.ug-s.is-on > *:nth-child(2), .ug-s.is-on .ug-copy > *:nth-child(2) { animation-delay: .08s; }
+.ug-s.is-on > *:nth-child(3), .ug-s.is-on .ug-copy > *:nth-child(3) { animation-delay: .16s; }
+.ug-s.is-on > *:nth-child(4), .ug-s.is-on .ug-copy > *:nth-child(4) { animation-delay: .24s; }
+.ug-s.is-on > *:nth-child(5) { animation-delay: .32s; }
+.ug-s.is-on[data-dir="-1"] > *, .ug-s.is-on[data-dir="-1"] .ug-copy > * { animation-name: ug-in-r; }
+@keyframes ug-in { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes ug-in-r { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+.ug-sub { max-width: 640px; font-size: clamp(14px, 1.6vw, 17px) !important; opacity: .8; }
+.ug-badge { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--dl-accent); color: #fff; font-weight: 800; }
+.ug-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ug-chip { padding: 8px 14px; border-radius: 999px; background: var(--dl-accent-soft); border: 1px solid var(--dl-accent); color: inherit; text-decoration: none; font-weight: 600; font-size: 13.5px; transition: transform .15s; }
+.ug-chip:hover { transform: translateY(-2px); }
+.ug-more { color: var(--dl-accent); font-weight: 700; font-size: 14px; text-decoration: none; }
+.ug-cta { background: var(--dl-accent); color: #fff; border: 0; padding: 12px 26px; border-radius: 999px; cursor: pointer; font-size: 15px; font-weight: 700; text-decoration: none; }
+.ug-flow { list-style: none; display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; padding: 0; }
+.ug-flow li { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 190px; padding: 18px 12px; border-radius: 14px; background: var(--dl-surface); border: 1px solid var(--dl-border); font-size: 14px; }
+.ug-flow.five li { width: 140px; }
+.ug-flow li b { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--dl-accent); color: #fff; }
+.ug-s.is-on .ug-flow li { animation: ug-in .5s both; }
+.ug-s.is-on .ug-flow li:nth-child(2) { animation-delay: .25s; } .ug-s.is-on .ug-flow li:nth-child(3) { animation-delay: .4s; } .ug-s.is-on .ug-flow li:nth-child(4) { animation-delay: .55s; } .ug-s.is-on .ug-flow li:nth-child(5) { animation-delay: .7s; }
+.ug-flow small { opacity: .7; font-size: 12px; }
+.ug-hero { background: linear-gradient(135deg, #0f2e33, #1a5b5a 60%, #1f8a78); color: #fff; }
+.ug-hero .ug-sub { color: #fff; opacity: .85; }
+.ug-hero .ug-cta { background: #fff; color: #0f4a44; }
+.ug-logo { font-size: clamp(40px, 8vw, 78px) !important; letter-spacing: -.02em; }
+.ug-tag { letter-spacing: .4em; font-size: 13px !important; opacity: .8; }
+.ug-orb { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(45, 212, 191, .45), transparent 70%); animation: ug-float 9s ease-in-out infinite !important; pointer-events: none; }
+.ug-orb.o1 { width: 340px; height: 340px; left: -80px; top: -90px; } .ug-orb.o2 { width: 260px; height: 260px; right: -60px; bottom: -70px; animation-delay: -3s !important; } .ug-orb.o3 { width: 160px; height: 160px; right: 22%; top: 8%; animation-delay: -6s !important; }
+@keyframes ug-float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(24px, 30px); } }
+.ug-promo { flex-direction: row; gap: 28px; text-align: left; justify-content: space-between; }
+.ug-copy { flex: 0 0 38%; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.ug-frame { flex: 1; min-width: 0; border-radius: 12px; border: 1px solid var(--dl-border); background: var(--dl-surface); box-shadow: 0 18px 50px rgba(15, 60, 55, .22); overflow: hidden; }
+.ug-bt { display: flex; gap: 6px; padding: 8px 10px; background: var(--dl-accent-soft); }
+.ug-bt i { width: 9px; height: 9px; border-radius: 50%; background: var(--dl-border); }
+.ug-clip { aspect-ratio: 16 / 10; overflow: hidden; }
+.ug-clip img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.ug-promo.is-on.zin .ug-clip img { animation: ug-zin 14s ease-in-out infinite alternate; transform-origin: 20% 25%; }
+.ug-promo.is-on.zout .ug-clip img { animation: ug-zout 14s ease-in-out infinite alternate; transform-origin: 75% 30%; }
+@keyframes ug-zin { from { transform: scale(1); } to { transform: scale(1.55); } }
+@keyframes ug-zout { from { transform: scale(1.6); } to { transform: scale(1); } }
+.ug-tipgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 980px; }
+.ug-tipcard { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; padding: 14px; border-radius: 14px; background: var(--dl-surface); border: 1px solid var(--dl-border); color: inherit; text-decoration: none; transition: transform .15s, border-color .15s; }
+.ug-tipcard:hover { transform: translateY(-3px); border-color: var(--dl-accent); }
+.ug-tipcard b { min-width: 40px; height: 32px; padding: 0 8px; border-radius: 8px; display: grid; place-items: center; background: var(--dl-accent); color: #fff; font-size: 13px; }
+.ug-tipcard span { font-weight: 700; font-size: 14px; }
+.ug-tipcard small { font-size: 12.5px; opacity: .75; line-height: 1.4; }
+.ug-s.is-on .ug-tipcard { animation: ug-in .5s both; animation-delay: calc(.12s * var(--i)); }
+.ug-play-area { display: flex; gap: 20px; width: 100%; max-width: 1080px; align-items: stretch; text-align: left; }
+.ug-shotbox { flex: 1 1 62%; min-width: 0; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 12px; border: 1px solid var(--dl-border); box-shadow: 0 14px 40px rgba(15, 60, 55, .2); background: #fff; }
+.ug-cam { position: relative; width: 100%; height: 100%; transition: transform .9s cubic-bezier(.2, .8, .2, 1); }
+.ug-misi.zoomed .ug-cam { transform: scale(1.7); }
+.ug-cam img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ug-hot { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 0; padding: 0; cursor: default; background: transparent; opacity: 0; pointer-events: none; transform: scale(.6); transition: opacity .3s, transform .3s; }
+.ug-hot.cur { opacity: 1; pointer-events: auto; cursor: pointer; transform: scale(1); background: #f59e0b; box-shadow: 0 0 0 3px #fff; animation: ug-pulse 1.4s ease-out infinite; }
+.ug-hot.ok { opacity: 1; background: #16a34a; box-shadow: 0 0 0 3px #fff; transform: scale(.7); }
+.ug-hot.ok::after { content: "\2713"; color: #fff; font-size: 14px; line-height: 26px; font-weight: 800; }
+.ug-misi.zoomed .ug-hot { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
+@keyframes ug-pulse { 0% { box-shadow: 0 0 0 3px #fff, 0 0 0 3px rgba(245, 158, 11, .7); } 100% { box-shadow: 0 0 0 3px #fff, 0 0 0 22px rgba(245, 158, 11, 0); } }
+.ug-say { flex: 1 1 34%; display: flex; flex-direction: column; gap: 10px; justify-content: center; padding: 18px; border-radius: 14px; background: var(--dl-accent-soft); border: 1px solid var(--dl-accent); }
+.ug-say.pop { animation: ug-pop .45s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes ug-pop { from { transform: scale(.94); } to { transform: none; } }
+.ug-prog { font-size: 13px; font-weight: 800; color: var(--dl-accent); }
+.ug-prog span { font-size: 22px; }
+.ug-st { font-size: 18px; }
+.ug-sd { font-size: 14px; margin: 0; }
+.ug-win, .ug-redo { display: none; }
+.ug-misi.done .ug-win { display: block; font-weight: 800; color: #166534; animation: ug-pop .6s both; }
+.ug-misi.done .ug-redo { display: inline-block; align-self: flex-start; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--dl-accent); background: transparent; color: var(--dl-accent); font-weight: 700; cursor: pointer; }
+.ug-ctl { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.ug-ctl > button:not(.ug-play) { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--dl-border); background: var(--dl-surface); font-size: 22px; cursor: pointer; color: inherit; }
+.ug-play { border: 1px solid var(--dl-border); background: var(--dl-surface); border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; color: inherit; }
+.ug-play[aria-pressed="true"] { border-color: var(--dl-accent); color: var(--dl-accent); font-weight: 700; }
+.ug-dots { display: flex; gap: 6px; align-items: center; }
+.ug-dots button { width: 12px; height: 12px; padding: 0; border-radius: 6px; border: 0; background: var(--dl-border); cursor: pointer; transition: width .3s, background .3s; position: relative; }
+.ug-dots button::after { content: ""; position: absolute; inset: -16px -3px; }
+.ug-dots button.on { width: 28px; background: var(--dl-accent); }
+.ug-bar { height: 3px; margin-top: 10px; border-radius: 3px; overflow: hidden; visibility: hidden; }
+.ug-deck.is-playing .ug-bar { visibility: visible; }
+.ug-bar i { display: block; height: 100%; background: var(--dl-accent); animation: ug-bar 8s linear both; }
+@keyframes ug-bar { from { width: 0; } to { width: 100%; } }
+@media (max-width: 860px) {
+    .ug-stage { height: auto; min-height: 82vh; }
+    .ug-s { justify-content: flex-start; padding-top: 22px; }
+    .ug-promo, .ug-play-area { flex-direction: column; }
+    .ug-copy { flex: none; align-items: center; text-align: center; }
+    .ug-chips { justify-content: center; }
+    .ug-frame, .ug-shotbox { width: 100%; flex: none; }
+    .ug-tipgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ug-flow li, .ug-flow.five li { width: 100%; flex-direction: row; justify-content: flex-start; }
+    .ug-ctl > button:not(.ug-play) { width: 48px; height: 48px; }
+    .ug-hot { width: 34px; height: 34px; margin: -17px 0 0 -17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ug-s.is-on > *, .ug-s.is-on .ug-copy > *, .ug-s.is-on .ug-flow li, .ug-s.is-on .ug-tipcard, .ug-orb, .ug-bar i, .ug-clip img, .ug-hot.cur, .ug-say.pop { animation: none !important; }
+    .ug-cam, .ug-hot, .ug-chip, .ug-tipcard { transition: none; }
+}
+/* Gerak berkelanjutan: tiap slide terus bergerak selama tampil (seperti video) */
+.ug-flow li { position: relative; }
+.ug-s.is-on .ug-flow li { animation: ug-in .5s both, ug-glow 4.5s ease-in-out 1.2s infinite; }
+.ug-s.is-on .ug-flow li:nth-child(2) { animation-delay: .25s, 2.2s; }
+.ug-s.is-on .ug-flow li:nth-child(3) { animation-delay: .4s, 3.2s; }
+.ug-s.is-on .ug-flow li:nth-child(4) { animation-delay: .55s, 4.2s; }
+.ug-s.is-on .ug-flow li:nth-child(5) { animation-delay: .7s, 5.2s; }
+.ug-flow li + li::before { content: ""; position: absolute; left: -17px; top: 50%; width: 16px; height: 3px; border-radius: 2px; background: var(--dl-accent); transform-origin: left; animation: ug-line 1.6s ease-in-out infinite; }
+.ug-flow li b { animation: ug-bob 3s ease-in-out infinite; }
+@keyframes ug-glow { 0%, 100% { box-shadow: 0 0 0 0 transparent; transform: none; } 12% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--dl-accent) 30%, transparent); transform: translateY(-6px); } 30% { box-shadow: 0 0 0 0 transparent; transform: none; } }
+@keyframes ug-line { 0% { transform: scaleX(0); opacity: 1; } 70% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+@keyframes ug-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.ug-logo { background: linear-gradient(100deg, #fff 30%, #5eead4 50%, #fff 70%) 0 0 / 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: ug-in .55s both, ug-shine 5s linear infinite !important; }
+@keyframes ug-shine { from { background-position: 100% 0; } to { background-position: -120% 0; } }
+.ug-badge { animation: ug-bob 3s ease-in-out infinite; }
+.ug-s.is-on .ug-chip { animation: ug-in .5s both; }
+.ug-s.is-on .ug-chip:nth-child(2) { animation-delay: .1s; } .ug-s.is-on .ug-chip:nth-child(3) { animation-delay: .2s; } .ug-s.is-on .ug-chip:nth-child(4) { animation-delay: .3s; } .ug-s.is-on .ug-chip:nth-child(5) { animation-delay: .4s; }
+.ug-s.is-on .ug-tipcard b { animation: ug-bob 3.2s ease-in-out infinite; animation-delay: calc(.25s * var(--i)); }
+@media (max-width: 860px) { .ug-flow li + li::before { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ug-flow li + li::before, .ug-flow li b, .ug-badge, .ug-logo, .ug-s.is-on .ug-chip, .ug-s.is-on .ug-tipcard b { animation: none !important; } .ug-logo { background: none; color: #fff; } }
