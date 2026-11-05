@@ -8,7 +8,7 @@
 --}}
 @extends('layout', ['title' => 'Stock Card'])
 @section('body')
-    <x-report-filter :from="$from" :to="$to" apply="Show">
+    <x-report-filter :from="$from" :to="$to">
         <x-dl::field.select name="batch_id" label="Item" :options="$items" :value="$item?->id" required />
     </x-report-filter>
     @if (! $item)

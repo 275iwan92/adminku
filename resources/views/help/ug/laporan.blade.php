@@ -10,7 +10,7 @@
 <ol class="g-steps">
     <li>Buka laporan dari menu <b>Laporan</b>.</li>
     <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>. Bawaannya awal bulan ini sampai hari ini. Atur saringan lain bila ada.</li>
-    <li>Tekan <b>Terapkan</b>.</li>
+    <li>Tekan <b>Tampilkan</b>.</li>
     <li>Tekan <b>Cetak</b> untuk mencetak, atau simpan sebagai PDF dari dialog cetak browser. <b>Hemat Tinta</b> mencetak tanpa warna latar.</li>
 </ol>
 <ul class="g-list">
@@ -88,7 +88,7 @@
 <ol class="g-steps">
     <li>Buka <b>Ringkasan Stok</b>.</li>
     <li>Atur periode. Pilih saringan: <b>Kategori</b>, <b>Hanya barang di / bawah titik pesan ulang</b>, atau <b>Termasuk barang nonaktif</b>.</li>
-    <li>Tekan <b>Terapkan</b>.</li>
+    <li>Tekan <b>Tampilkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
@@ -114,7 +114,7 @@
 <ol class="g-steps">
     <li>Buka <b>Laporan Penerimaan</b>.</li>
     <li>Atur periode. Pilih <b>Pemasok</b> bila ingin satu pemasok saja.</li>
-    <li>Tekan <b>Terapkan</b>.</li>
+    <li>Tekan <b>Tampilkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
@@ -138,7 +138,7 @@
 <ol class="g-steps">
     <li>Buka <b>Laporan Pengeluaran</b>.</li>
     <li>Atur periode. Isi <b>Penerima / Departemen</b> bila ingin menyaring. Cukup ketik sebagian nama.</li>
-    <li>Tekan <b>Terapkan</b>.</li>
+    <li>Tekan <b>Tampilkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
@@ -161,7 +161,7 @@
 <ol class="g-steps">
     <li>Buka <b>Laporan Kedaluwarsa</b>.</li>
     <li>Isi <b>Kedaluwarsa dalam (hari)</b> (bawaan 30) dan pilih <b>Kategori</b> bila perlu.</li>
-    <li>Tekan <b>Terapkan</b>. Kolom <b>Sisa Hari</b> menunjukkan sisa waktunya. Angka minus berarti sudah lewat.</li>
+    <li>Tekan <b>Tampilkan</b>. Kolom <b>Sisa Hari</b> menunjukkan sisa waktunya. Angka minus berarti sudah lewat.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
@@ -185,7 +185,7 @@
 <ol class="g-steps">
     <li>Buka <b>Laporan Opname &amp; Penyesuaian</b>.</li>
     <li>Atur periode. Pilih <b>Status</b>: Semua, Draf, Menunggu Persetujuan, Disetujui, atau Ditolak.</li>
-    <li>Tekan <b>Terapkan</b>.</li>
+    <li>Tekan <b>Tampilkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">

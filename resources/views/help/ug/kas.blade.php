@@ -139,7 +139,7 @@
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>Buka <b>Keuangan</b> lalu <b>Laporan Arus Kas</b>.</li>
-    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, pilih <b>Kas</b> (atau biarkan Semua kas), lalu tekan <b>Terapkan</b>.</li>
+    <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, pilih <b>Kas</b> (atau biarkan Semua kas), lalu tekan <b>Tampilkan</b>.</li>
     <li>Pilih kelompok <b>Per Kas / Rekening</b> (satu buku per kas) atau <b>Gabungan Semua Kas</b> lewat tombol Grup di atas tabel.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
@@ -163,7 +163,7 @@
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>Buka <b>Keuangan</b> lalu <b>Laporan Penerimaan</b>.</li>
-    <li>Atur periode, pilih <b>Sumber Dana</b> (atau Semua sumber dana) dan <b>Status</b> (bawaan: Disetujui), lalu tekan <b>Terapkan</b>.</li>
+    <li>Atur periode, pilih <b>Sumber Dana</b> (atau Semua sumber dana) dan <b>Status</b> (bawaan: Disetujui), lalu tekan <b>Tampilkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
@@ -185,7 +185,7 @@
 <h4>Langkah</h4>
 <ol class="g-steps">
     <li>Buka <b>Keuangan</b> lalu <b>Laporan Pengeluaran</b>.</li>
-    <li>Atur periode, pilih <b>Kas</b>, <b>Sumber Dana</b>, dan <b>Status</b> (bawaan: Disetujui, atau Semua), lalu tekan <b>Terapkan</b>.</li>
+    <li>Atur periode, pilih <b>Kas</b>, <b>Sumber Dana</b>, dan <b>Status</b> (bawaan: Disetujui, atau Semua), lalu tekan <b>Tampilkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">

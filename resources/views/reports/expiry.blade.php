@@ -14,7 +14,7 @@
             <x-dl::field.select name="category_id" label="Category" :options="['' => 'Semua kategori'] + $categories" :value="request('category_id')" />
         </x-dl::form.row>
         <x-dl::action-bar>
-            <x-dl::button type="submit" icon="fa-filter" label="Apply" size="sm" />
+            <x-dl::button type="submit" icon="fa-eye" label="Show" size="sm" />
         </x-dl::action-bar>
     </x-dl::action-form>
     <x-dl::report phone-list title="Expiry Report" subtitle="Items with stock that are expired or about to expire" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
