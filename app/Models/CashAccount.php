@@ -34,12 +34,11 @@ class CashAccount extends Model
         return self::TYPES[$this->type] ?? $this->type;
     }
 
-    // Saldo awal + Uang Masuk disetujui - Uang Keluar disetujui (lewat Uang Masuk kas ini).
+    // Saldo awal + Uang Masuk disetujui di kas ini - Uang Keluar disetujui di kas ini (k_cash_out.cash_account_id).
     public function currentBalance(): float
     {
         $in = (float) $this->cashIns()->where('status', 'approved')->sum('amount');
-        $out = (float) DB::table('k_cash_out')->join('k_cash_in', 'k_cash_in.id', '=', 'k_cash_out.cash_in_id')
-            ->where('k_cash_in.cash_account_id', $this->id)->where('k_cash_out.status', 'approved')->sum('k_cash_out.amount');
+        $out = (float) DB::table('k_cash_out')->where('cash_account_id', $this->id)->where('status', 'approved')->sum('amount');
 
         return (float) $this->opening_balance + $in - $out;
     }

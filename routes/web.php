@@ -349,6 +349,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('cash-sources/{source}', [CashSourceController::class, 'show'])->whereNumber('source')->name('cash-sources.show');
     Route::put('cash-sources/{source}', [CashSourceController::class, 'update'])->whereNumber('source')->name('cash-sources.update');
     Route::post('cash-in/bank-account', [CashInController::class, 'storeBank'])->name('cash-in.bank-account');
+    Route::post('cash-out/bank-account', [CashInController::class, 'storeBank'])->name('cash-out.bank-account');
     Route::get('cash-accounts/create', [CashAccountController::class, 'create'])->name('cash-accounts.create');
     Route::post('cash-accounts', [CashAccountController::class, 'store'])->name('cash-accounts.store');
     Route::get('cash-accounts', [CashAccountController::class, 'index'])->name('cash-accounts.index');

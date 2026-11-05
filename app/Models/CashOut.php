@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Dipakai oleh : CashOutController.
  * Status       : Aktif.
  */
-#[Fillable(['doc_no', 'doc_date', 'cash_in_id', 'amount', 'purpose', 'purpose_id', 'description', 'attachment', 'status', 'created_by', 'submitted_at', 'approved_by', 'approved_at', 'reason'])]
+#[Fillable(['doc_no', 'doc_date', 'cash_in_id', 'cash_account_id', 'amount', 'purpose', 'purpose_id', 'description', 'attachment', 'status', 'created_by', 'submitted_at', 'approved_by', 'approved_at', 'reason'])]
 class CashOut extends Model
 {
     protected $table = 'k_cash_out';
@@ -45,9 +45,15 @@ class CashOut extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    // Kas Asal sendiri (k_cash_out.cash_account_id); Uang Keluar lama diisi migrasi dari kas Uang Masuk yang ditaut.
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(CashAccount::class, 'cash_account_id');
+    }
+
     public function cashAccount(): ?CashAccount
     {
-        return $this->cashIn->cashAccount;
+        return $this->account ?? $this->cashIn?->cashAccount;
     }
 
     public function number(): string

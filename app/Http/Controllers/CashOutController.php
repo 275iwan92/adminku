@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CashOutRequest;
+use App\Models\CashAccount;
 use App\Models\CashIn;
 use App\Models\CashPurpose;
 use App\Models\CashOut;
@@ -45,7 +46,7 @@ class CashOutController extends Controller
     public function store(CashOutRequest $request): RedirectResponse
     {
         $cashOut = DB::transaction(function () use ($request) {
-            $cashOut = new CashOut($request->safe()->only(['doc_date', 'cash_in_id', 'amount', 'purpose', 'purpose_id', 'description']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
+            $cashOut = new CashOut($request->safe()->only(['doc_date', 'cash_in_id', 'cash_account_id', 'amount', 'purpose', 'purpose_id', 'description']) + ['status' => 'draft', 'created_by' => $request->user()->id]);
             if ($request->hasFile('attachment')) {
                 $cashOut->attachment = $request->file('attachment')->store('out', 'kas');
             }
@@ -73,7 +74,7 @@ class CashOutController extends Controller
                 case 'confirm':
                     $need(['draft']);
                     abort_unless($owner || $user->isSupervisor(), 403, 'Hanya pembuat atau Supervisor yang mengubah draf ini.');
-                    $cashOut->fill($request->safe()->only(['doc_date', 'cash_in_id', 'amount', 'purpose', 'purpose_id', 'description']));
+                    $cashOut->fill($request->safe()->only(['doc_date', 'cash_in_id', 'cash_account_id', 'amount', 'purpose', 'purpose_id', 'description']));
                     if ($request->hasFile('attachment')) {
                         $cashOut->attachment = $request->file('attachment')->store('out', 'kas');
                     }
@@ -87,8 +88,13 @@ class CashOutController extends Controller
                     $need(['approval']);
                     abort_unless($user->canApprove(), 403, 'Hanya Supervisor yang menyetujui atau menolak.');
                     abort_if($owner, 403, 'Pembuat tidak boleh menyetujui atau menolak Uang Keluar miliknya sendiri.');
-                    $cashIn = CashIn::query()->lockForUpdate()->find($cashOut->cash_in_id);
-                    abort_if(! $cashIn || (float) $cashOut->amount > $cashIn->remainingAmount(), 422, 'Sisa saldo Uang Masuk tidak cukup lagi (sudah terpakai transaksi lain).');
+                    // Kas dikunci dulu supaya dua Approve yang berebut saldo yang sama berjalan berurutan; saldo dihitung ulang setelah kunci.
+                    $account = CashAccount::query()->lockForUpdate()->find($cashOut->cash_account_id);
+                    if ($cashOut->cash_in_id) {
+                        $cashIn = CashIn::query()->lockForUpdate()->find($cashOut->cash_in_id);
+                        abort_if(! $cashIn || (float) $cashOut->amount > $cashIn->remainingAmount(), 422, 'Sisa saldo Uang Masuk tidak cukup lagi (sudah terpakai transaksi lain).');
+                    }
+                    abort_if(! $account || (float) $cashOut->amount > $account->currentBalance(), 422, 'Saldo kas tidak cukup lagi (sudah terpakai transaksi lain).');
                     $cashOut->update(['status' => 'approved', 'approved_by' => $user->id, 'approved_at' => now()]);
 
                     return "{$cashOut->doc_no} disetujui.";
@@ -165,6 +171,14 @@ class CashOutController extends Controller
         $remaining = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->remainingAmount()])->all();
         $accountNames = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->cashAccount?->name])->all();
 
-        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining, 'accountNames' => $accountNames, 'purposes' => CashPurpose::query()->where('is_active', true)->orderBy('name')->pluck('name', 'name')->all()];
+        $accounts = CashAccount::query()->where(fn ($q) => $q->where('is_active', true)->orWhere('id', $cashOut->cash_account_id))->get();
+        $banks = $accounts->where('type', 'bank')->sortBy('name')->pluck('name', 'id')->all();
+        // Untuk JS form: saldo tiap kas, kas tiap Uang Masuk (terkunci bila ditaut), id kas tunai.
+        $balances = $accounts->mapWithKeys(fn (CashAccount $a) => [$a->id => $a->currentBalance()])->all();
+        $links = $approved->mapWithKeys(fn (CashIn $c) => [$c->id => $c->cash_account_id])->all();
+        $cashId = $accounts->firstWhere('type', 'cash')?->id;
+        $kind = ($cashOut->cash_account_id ? $accounts->firstWhere('id', $cashOut->cash_account_id)?->type : 'cash') === 'bank' ? 'bank' : 'cash';
+
+        return ['cashOut' => $cashOut, 'log' => $log, 'cashIns' => $cashIns, 'remaining' => $remaining, 'accountNames' => $accountNames, 'banks' => $banks, 'balances' => $balances, 'links' => $links, 'cashId' => $cashId, 'kind' => $kind, 'purposes' => CashPurpose::query()->where('is_active', true)->orderBy('name')->pluck('name', 'name')->all()];
     }
 }

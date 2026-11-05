@@ -28,6 +28,7 @@ final class QuickAdd
         'cash_source' => ['KSM', 'cash-sources.store', 'Add Source of Funds', 'fa-hand-holding-dollar', [['name', 'Source of Funds', true, 'text', 150]], null, 'name'],
         'cash_purpose' => ['KSK', 'cash-purposes.store', 'Add Purpose', 'fa-bullseye', [['name', 'Purpose', true, 'text', 150]], null, 'name'],
         'cash_bank' => ['KSM', 'cash-in.bank-account', 'Add Bank Account', 'fa-building-columns', [['bank_name', 'Bank Name', true, 'text', 100], ['account_no', 'Account Number', true, 'text', 30], ['account_holder', 'Account Holder', false, 'text', 100]], null, 'id'],
+        'cash_bank_out' => ['KSK', 'cash-out.bank-account', 'Add Bank Account', 'fa-building-columns', [['bank_name', 'Bank Name', true, 'text', 100], ['account_no', 'Account Number', true, 'text', 30], ['account_holder', 'Account Holder', false, 'text', 100]], null, 'id'],
     ];
 
     public static function for(string $kind, ?User $user = null): array
