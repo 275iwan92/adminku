@@ -41,7 +41,7 @@ final class Menu
         return $out;
     }
 
-    // Menu desktop: Transaksi dan Laporan jadi dua subkelompok di bawah satu induk "Stok"; modul Keuangan (KEU) dibungkus satu subkelompok "Kas" (modul keuangan lain nanti jadi subkelompok sejajar, tanpa ubah kode Kas). Kode modul dan hak akses tidak berubah; HP tetap memakai modules().
+    // Menu desktop: Transaksi dan Laporan jadi dua subkelompok di bawah satu induk "Stok"; modul Keuangan (KEU) tampil langsung di bawah induknya (Uang Masuk, Uang Keluar, laporan) tanpa subkelompok. Kode modul dan hak akses tidak berubah; HP tetap memakai modules().
     public static function layers(User $user): array
     {
         $stok = ['TRX', 'RPT'];
@@ -62,9 +62,6 @@ final class Menu
                 $bagian = $user->canAccess('DEP') ? [['code' => 'HR-DEP', 'label' => 'Bagian', 'url' => route('departments.index'), 'type' => 'grid', 'icon' => 'fa-solid fa-sitemap']] : [];
                 $own = collect($p['children']);   // urutan: Karyawan, Bagian, Rekrutmen, Kedisiplinan
                 $p['children'] = [...$own->where('code', 'HRE')->all(), ...$bagian, ...$own->where('code', '!=', 'HRE')->all()];
-            }
-            if ($code === 'KEU') {   // Kas = satu-satunya sub-kelompok Keuangan untuk sekarang; modul keuangan lain nanti (mis. Piutang, Anggaran) jadi sub-kelompok sejajar di sini, tanpa mengubah kode Kas.
-                $p['children'] = [['code' => 'H-KAS', 'label' => 'Kas', 'icon' => 'fa-solid fa-wallet', 'items' => $p['children'], 'open' => Opening::url('kas')]];
             }
             if (! in_array($code, $stok)) {
                 $out[] = $p;

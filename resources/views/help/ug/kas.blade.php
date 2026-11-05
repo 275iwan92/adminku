@@ -8,7 +8,7 @@
 --}}
 @if ($anyKas)
 <h2 id="kas">9c. Kas</h2>
-<p>Menu <b>Keuangan</b> &gt; <b>Kas</b> mencatat dana yang masuk ke kas atau rekening perusahaan dan dana yang keluar darinya: <b>Uang Masuk</b>, <b>Uang Keluar</b>, tiga laporan, dan master <b>Kas / Rekening</b> (dibuka lewat tombol Setup, bukan butir menu terpisah). Kas sekarang satu-satunya sub-kelompok di bawah induk Keuangan; bagian ini menyebutnya singkat sebagai &quot;Kas&quot;.</p>
+<p>Menu <b>Keuangan</b> mencatat dana yang masuk ke kas atau rekening perusahaan dan dana yang keluar darinya: <b>Uang Masuk</b>, <b>Uang Keluar</b>, tiga laporan, dan master <b>Kas / Rekening</b> (dibuka lewat tombol Setup, bukan butir menu terpisah). Kas sekarang satu-satunya sub-kelompok di bawah induk Keuangan; bagian ini menyebutnya singkat sebagai &quot;Kas&quot;.</p>
 <table class="g-table">
     <thead><tr><th>Layar</th><th>Isi singkat</th></tr></thead>
     <tbody>
@@ -23,7 +23,7 @@
 <ul class="g-list">
     <li><b>Hak Kas datang dari Grup, bukan dari peran.</b> Menu Kas hanya tampil bila Grup Anda diberi modul <b>Uang Masuk</b> atau <b>Uang Keluar</b> (RO untuk membaca, RW untuk menyimpan dan mengajukan). Administrator melihat semuanya.</li>
     <li>Menyetujui atau menolak Uang Masuk dan Uang Keluar hanya untuk peran <b>Supervisor</b>, bukan <b>Admin Data</b> dan bukan pembuat dokumen itu sendiri. Admin Data membuka dan mengisi layar Kas seperti Supervisor, tetapi tombol <span class="g-btn">Approve</span> / <span class="g-btn">Reject</span> tidak tampil baginya.</li>
-    <li><b>Beranda Kas (dashboard).</b> Klik <b>Kas</b> di panel kiri: angka saldo kas tunai dan rekening bank, masuk dan keluar bulan ini, grafik <b>pengeluaran per kebutuhan</b> (3 bulan terakhir), dan tren masuk dan keluar 6 bulan. Batang grafik bisa diklik dan membuka Laporan Pengeluaran. Hanya yang <b>Disetujui</b> yang dihitung.</li>
+    <li><b>Beranda Kas (dashboard).</b> Klik <b>Keuangan</b> di panel kiri: angka saldo kas tunai dan rekening bank, masuk dan keluar bulan ini, grafik <b>pengeluaran per kebutuhan</b> (3 bulan terakhir), dan tren masuk dan keluar 6 bulan. Batang grafik bisa diklik dan membuka Laporan Pengeluaran. Hanya yang <b>Disetujui</b> yang dihitung.</li>
     <li><b>Transfer antar-kas belum ada.</b> Memindahkan dana dari satu Kas/Rekening ke Kas/Rekening lain belum bisa dicatat; ditunda untuk versi berikutnya.</li>
 </ul>
 @include('help.diagram', ['name' => 'ug-kas-alur', 'caption' => 'Uang Masuk disetujui menjadi sumber dana; Uang Keluar wajib menautnya dan dibatasi sisa saldo.'])
@@ -36,7 +36,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Uang Masuk</b> (RO untuk membaca, RW untuk menyimpan dan mengajukan). Menyetujui atau menolak hanya untuk Supervisor, bukan Admin Data dan bukan pembuatnya sendiri.</p>
 <h4>Langkah: membuat dan mengajukan</h4>
 <ol class="g-steps">
-    <li>Buka <b>Kas</b> lalu <b>Uang Masuk</b>, tekan <span class="g-btn">New</span>.</li>
+    <li>Buka <b>Keuangan</b> lalu <b>Uang Masuk</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Isi <b>Tanggal</b>. Pada <b>Kas Tujuan</b> pilih <b>Tunai</b> (otomatis masuk Kas Tunai) atau <b>Rekening bank</b>. Bila Rekening bank, pilih rekeningnya di daftar <b>Rekening Bank</b>. Rekening belum ada? Tekan tombol <span class="g-btn">+</span> di sebelahnya, isi <b>Nama Bank</b>, <b>No. Rekening</b>, <b>Atas Nama</b>, lalu <b>Simpan</b>: rekening baru langsung terpilih.</li>
     <li>Isi <b>Jumlah (IDR)</b> (angka besar berwarna hijau) dan pilih <b>Sumber Dana</b> di daftar. Sumber belum ada? Tekan <span class="g-btn">+</span> di sebelahnya, ketik namanya, <b>Simpan</b>. <b>Keterangan</b> boleh kosong.</li>
     <li>Lampirkan foto atau PDF bukti penerimaan dana di <b>Lampiran Bukti</b> bila ada (tidak wajib; JPG, PNG, atau PDF, paling besar 5 MB).</li>
@@ -72,7 +72,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Uang Keluar</b> (RO untuk membaca, RW untuk menyimpan dan mengajukan). Menyetujui atau menolak hanya untuk Supervisor, bukan Admin Data dan bukan pembuatnya sendiri.</p>
 <h4>Langkah: membuat dan mengajukan</h4>
 <ol class="g-steps">
-    <li>Buka <b>Kas</b> lalu <b>Uang Keluar</b>, tekan <span class="g-btn">New</span>.</li>
+    <li>Buka <b>Keuangan</b> lalu <b>Uang Keluar</b>, tekan <span class="g-btn">New</span>.</li>
     <li>Form terbagi dua bagian. Bagian kiri: <b>No. Uang Keluar</b>, <b>Tanggal</b>, <b>Digunakan Untuk Kebutuhan</b>, <b>Keterangan</b>, <b>Lampiran Bukti</b>. Bagian kanan (panel abu-abu): <b>Ditaut Ke Uang Masuk</b> dan <b>Jumlah (IDR)</b>.</li>
     <li>Pilih <b>Ditaut Ke Uang Masuk</b>. Pilihannya hanya Uang Masuk yang sudah <b>Disetujui</b>, dengan sisa saldo tertulis di tiap pilihan. Di bawah Jumlah tampil ringkasan: <b>Kas asal</b>, <b>Sisa saldo Uang Masuk</b>, dan <b>Sisa setelah ini</b>.</li>
     <li>Isi <b>Jumlah (IDR)</b> (angka besar berwarna merah). Bila melebihi sisa saldo, angka berubah kuning dan muncul peringatan &quot;Jumlah melebihi sisa&quot;; kurangi jumlahnya atau pilih Uang Masuk lain.</li>
@@ -110,7 +110,7 @@
 <p>Peran Supervisor ke atas yang Grup-nya punya modul <b>Kas / Rekening</b> (RO untuk membaca, RW untuk menambah dan mengubah). Dibuka lewat tombol <span class="g-btn">Setup</span> di layar Uang Masuk atau Uang Keluar.</p>
 <h4>Langkah: menambah Kas / Rekening</h4>
 <ol class="g-steps">
-    <li>Buka <b>Kas</b> lalu <b>Uang Masuk</b> atau <b>Uang Keluar</b>, tekan <span class="g-btn">Setup</span>, lalu <span class="g-btn">New</span>.</li>
+    <li>Buka <b>Keuangan</b> lalu <b>Uang Masuk</b> atau <b>Uang Keluar</b>, tekan <span class="g-btn">Setup</span>, lalu <span class="g-btn">New</span>.</li>
     <li>Isi <b>Nama</b> dan pilih <b>Jenis</b>: <i>Tunai</i> atau <i>Bank</i>.</li>
     <li>Isi <b>Saldo Awal (IDR)</b>. Untuk Bank, isi juga <b>Nama Bank</b>, <b>No. Rekening</b>, dan <b>Atas Nama</b> (boleh kosong untuk Tunai).</li>
     <li>Tekan <b>Simpan</b>.</li>
@@ -136,7 +136,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Laporan Arus Kas</b> (RO cukup, laporan ini hanya membaca).</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>Kas</b> lalu <b>Laporan Arus Kas</b>.</li>
+    <li>Buka <b>Keuangan</b> lalu <b>Laporan Arus Kas</b>.</li>
     <li>Atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, pilih <b>Kas</b> (atau biarkan Semua kas), lalu tekan <b>Terapkan</b>.</li>
     <li>Pilih kelompok <b>Per Kas / Rekening</b> (satu buku per kas) atau <b>Gabungan Semua Kas</b> lewat tombol Grup di atas tabel.</li>
 </ol>
@@ -160,7 +160,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Laporan Penerimaan</b> (RO cukup).</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>Kas</b> lalu <b>Laporan Penerimaan</b>.</li>
+    <li>Buka <b>Keuangan</b> lalu <b>Laporan Penerimaan</b>.</li>
     <li>Atur periode, pilih <b>Sumber Dana</b> (atau Semua sumber dana) dan <b>Status</b> (bawaan: Disetujui), lalu tekan <b>Terapkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
@@ -182,7 +182,7 @@
 <p>Pengguna yang Grup-nya punya modul <b>Laporan Pengeluaran</b> (RO cukup).</p>
 <h4>Langkah</h4>
 <ol class="g-steps">
-    <li>Buka <b>Kas</b> lalu <b>Laporan Pengeluaran</b>.</li>
+    <li>Buka <b>Keuangan</b> lalu <b>Laporan Pengeluaran</b>.</li>
     <li>Atur periode, pilih <b>Kas</b>, <b>Sumber Dana</b>, dan <b>Status</b> (bawaan: Disetujui, atau Semua), lalu tekan <b>Terapkan</b>.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>

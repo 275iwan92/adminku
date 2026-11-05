@@ -38,8 +38,8 @@ final class Opening
         'laporan' => ['RPT', 'Laporan', 'fa-solid fa-chart-column', 'coral', 'Hanya membaca data; tidak mengubah apa pun'],
         'ga' => ['GA', 'GA', 'fa-solid fa-building-user', 'slate', 'Kendaraan, AC, dan gedung'],
         'hr' => ['HR', 'HR', 'fa-solid fa-user-tie', 'slate', 'Karyawan, bagian, rekrutmen, kedisiplinan'],
-        'purchase' => ['PUR', 'Purchase', 'fa-solid fa-cart-shopping', 'coral', 'PP, keputusan pesanan, PO, dan penerimaan pembelian'],
-        'kas' => ['KEU', 'Kas', 'fa-solid fa-wallet', 'teal', 'Uang masuk dan keluar per kas, dilacak per sumber dana'],
+        'purchase' => ['PUR', 'Pembelian', 'fa-solid fa-cart-shopping', 'coral', 'PP, keputusan pesanan, PO, dan penerimaan pembelian'],
+        'kas' => ['KEU', 'Keuangan', 'fa-solid fa-wallet', 'teal', 'Uang masuk dan keluar per kas, dilacak per sumber dana'],
     ];
 
     // Tabel master yang dihitung: kode modul => tabel.

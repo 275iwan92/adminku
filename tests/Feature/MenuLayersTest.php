@@ -35,14 +35,11 @@ class MenuLayersTest extends TestCase
         $this->assertNotContains('STB', collect($stok['children'])->flatMap(fn ($g) => collect($g['items'])->pluck('code'))->all());
         $this->assertSame(['MST' => route('opening', 'master'), 'GA' => route('opening', 'ga'), 'HR' => route('opening', 'hr'), 'PUR' => route('opening', 'purchase')], $layers->whereIn('code', ['MST', 'GA', 'HR', 'PUR'])->pluck('open', 'code')->all());
 
-        // Keuangan membungkus satu subkelompok "Kas" (KSM, KSK, 3 laporan; KSR tersembunyi lewat MENU_UNDER), siap untuk subkelompok keuangan lain nanti tanpa ubah kode Kas.
+        // Keuangan langsung berisi modulnya tanpa subkelompok (KSM, KSK, 3 laporan; KSR tersembunyi lewat MENU_UNDER).
         $keu = $layers->firstWhere('code', 'KEU');
         $this->assertSame(route('opening', 'kas'), $keu['open']);
-        $this->assertSame(['Kas'], collect($keu['children'])->pluck('label')->all());
-        $kas = $keu['children'][0];
-        $this->assertSame('H-KAS', $kas['code']);
-        $this->assertSame(route('opening', 'kas'), $kas['open']);
-        $this->assertSame(['KSM', 'KSK', 'R-KFLOW', 'R-KIN', 'R-KOUT'], collect($kas['items'])->pluck('code')->all());
+        $this->assertSame(['KSM', 'KSK', 'R-KFLOW', 'R-KIN', 'R-KOUT'], collect($keu['children'])->pluck('code')->all());
+        $this->assertNotContains('H-KAS', collect($keu['children'])->pluck('code')->all());
     }
 
     public function test_entry_keeps_only_allowed_items_and_no_security(): void
