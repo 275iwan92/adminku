@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\UserGroup;
+use App\Support\Company;
 use App\Support\Constants;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 /* REMARK
  * Tujuan       : Identitas perusahaan fiktif untuk produk demo AdminKU. Disimpan di data (menu Perusahaan, tabel sys_constant), bukan di kode, sehingga bisa diubah dari layar.
@@ -15,11 +17,11 @@ use Illuminate\Database\Seeder;
 class DemoSeeder extends Seeder
 {
     public const COMPANY = [
-        'name' => 'PT Contoh Sejahtera',
-        'legal_name' => 'PT Contoh Sejahtera',
+        'name' => 'PT XYZ',
+        'legal_name' => 'PT XYZ',
         'address' => "Jl. Contoh Raya No. 1\nSurabaya, Jawa Timur",
         'phone' => '031-0000000',
-        'email' => 'info@contoh-sejahtera.example',
+        'email' => 'info@xyz.example',
         'npwp' => '00.000.000.0-000.000',
         'weather_city' => 'Surabaya',
         'weather_lat' => '-7.2575',
@@ -31,7 +33,11 @@ class DemoSeeder extends Seeder
         foreach (self::COMPANY as $key => $value) {
             Constants::set('company.'.$key, $value, 'company');
         }
-        Constants::set('company.kop_style', 'name', 'company');
+        Constants::set('company.kop_style', 'logo_name_address', 'company');
+        // Logo contoh: tabel reset menghapus storage/app/company, jadi dipasang ulang dari berkas seeder.
+        File::ensureDirectoryExists(Company::dir());
+        File::copy(__DIR__.'/assets/logo-xyz.png', Company::dir().DIRECTORY_SEPARATOR.Company::LOGO_FILE);
+        Constants::set('company.logo', Company::LOGO_FILE, 'company');
 
         // Hak Purchase contoh: Supervisor mengelola seluruh alur dan menyetujui; Data Entry hanya membuat PP. Administrator sudah penuh.
         foreach (['SUPERVISOR' => ['PUP', 'PUK', 'PUO', 'PUV'], 'DATAENTRY' => ['PUP']] as $code => $modules) {

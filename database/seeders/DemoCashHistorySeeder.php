@@ -45,8 +45,8 @@ class DemoCashHistorySeeder extends Seeder
         $entry = User::where('username', 'adm')->firstOrFail();
 
         $tunai = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 2_000_000, 'is_active' => true]);
-        $bca = CashAccount::create(['name' => 'Bank BCA', 'type' => 'bank', 'bank_name' => 'Bank BCA', 'account_no' => '1234567890', 'account_holder' => 'PT Contoh Sejahtera', 'opening_balance' => 15_000_000, 'is_active' => true]);
-        $mandiri = CashAccount::create(['name' => 'Bank Mandiri', 'type' => 'bank', 'bank_name' => 'Bank Mandiri', 'account_no' => '9876543210', 'account_holder' => 'PT Contoh Sejahtera', 'opening_balance' => 8_000_000, 'is_active' => true]);
+        $bca = CashAccount::create(['name' => 'Bank BCA', 'type' => 'bank', 'bank_name' => 'Bank BCA', 'account_no' => '1234567890', 'account_holder' => 'PT XYZ', 'opening_balance' => 15_000_000, 'is_active' => true]);
+        $mandiri = CashAccount::create(['name' => 'Bank Mandiri', 'type' => 'bank', 'bank_name' => 'Bank Mandiri', 'account_no' => '9876543210', 'account_holder' => 'PT XYZ', 'opening_balance' => 8_000_000, 'is_active' => true]);
 
         $base = today();
         try {

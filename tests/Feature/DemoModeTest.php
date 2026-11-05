@@ -53,7 +53,7 @@ class DemoModeTest extends TestCase
         URL::forceRootUrl('http://localhost/adminku');   // seperti hosting dengan APP_URL berawalan
         $this->seed(DatabaseSeeder::class);
 
-        $this->assertSame('PT Contoh Sejahtera', Company::get()['name']);
+        $this->assertSame('PT XYZ', Company::get()['name']);
         $this->assertTrue(User::where('username', 'admin')->first()->is_active);
         $this->assertSame(['adm' => '12345677', 'spv' => '12345678', 'admin' => '123456788'], collect(UserSeeder::DEMO_ACCOUNTS)->pluck('password', 'username')->all());
         $this->assertSame('confirmed', PurchaseReceipt::query()->orderBy('id')->firstOrFail()->status);
