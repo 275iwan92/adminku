@@ -25,7 +25,7 @@
     <x-dl::form :title="'Uang Masuk · '.($isNew ? 'Baru' : raw($cashIn->number()))" :subtitle="$isNew ? null : raw($cashIn->source_name)" panel="top" kind="document" :status="$isNew ? 'new' : $cashIn->status"
         :back="route('cash-in.index')" :new-url="route('cash-in.create')"
         :action="$isNew ? route('cash-in.store') : route('cash-in.update', $cashIn)" :hidden="$isNew ? [] : ['_method' => 'PUT']" enctype="multipart/form-data"
-        :pipeline="true" class="sstock-cash" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
+        :pipeline="true" class="sstock-cash sstock-cash-in" :approval-levels="1" :approval-at="1" :can-approve="$me->canApprove() && ! $mine"
         :hide="['hold', 'email', 'print']" :log="$log"
         :created-by="$cashIn->creator?->name" :created-at="$cashIn->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$cashIn->approver?->name ?? $cashIn->creator?->name" :updated-at="$cashIn->updated_at?->format('Y-m-d H:i:s')">
