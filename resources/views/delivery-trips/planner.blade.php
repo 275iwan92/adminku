@@ -12,7 +12,7 @@
 @vite('resources/js/trip-map.js')
 <script>
 (() => {
-    const DOCS = @js($docs), LOCKED = @js($locked), OFFICE = @js($office), UNITS = ['kg', 'karung', 'dus', 'pcs', 'sak'];
+    const DOCS = @js($docs), LOCKED = @js($locked), OFFICE = @js($office), ROUTE_URL = @js(config('sstock.route_url')), UNITS = ['kg', 'karung', 'dus', 'pcs', 'sak'];
     const S = @js($stops).map(s => ({ kind: s.kind, customer: s.customer, address: s.address || '', arr: s.arr ?? null, lat: s.lat ?? null, lng: s.lng ?? null, travel_min: +s.travel_min || 15, items: (s.items || []).map(r => r.slice()), docs: (s.docs || []).slice() }));
     let sel = S.length ? 0 : -1, pickOpen = false, pickSel = [], addAt = null, confirmDel = -1, dragI = -1;
     const root = document.getElementById('plan'), out = document.getElementById('stops_json');
@@ -89,51 +89,64 @@
     function paintDetail() { root.querySelector('[data-det]').innerHTML = detailHtml(); totals(); sync(); }
     const all = () => { paintList(); paintDetail(); };
     const hasPt = s => s.lat != null && s.lng != null;
-    // Menit tempuh tiap alamat dari titik sebelumnya (kantor untuk yang pertama), lewat router peta; alamat tanpa titik tidak diubah.
-    function fillTravel() {
-        let prev = OFFICE;
-        S.forEach(s => { if (hasPt(s) && prev) s.travel_min = Math.max(1, window.TripMap.router.min(prev, s)); prev = hasPt(s) ? s : null; });
+    const note = m => { const e = root.querySelector('[data-note]'); if (e) e.textContent = m; };
+    // Matriks waktu/jarak lewat mesin rute (OSRM); bila gagal jatuh ke garis lurus x 1,3 dan memberi tahu.
+    async function matrix(pts) {
+        const R = window.TripMap.router;
+        try { return await R.matrix(pts); } catch (e) { note('Mesin rute tidak menjawab, dipakai perkiraan garis lurus.'); return window.TripMap.straight.matrix(pts); }
+    }
+    // Menit tempuh tiap alamat dari titik sebelumnya (kantor untuk yang pertama), dari mesin rute; alamat tanpa titik tidak diubah.
+    async function fillTravel() {
+        const pts = [OFFICE, ...S.filter(hasPt)], M = await matrix(pts);
+        let prev = 0, k = 0;
+        S.forEach(s => { if (hasPt(s)) { k++; if (prev != null) s.travel_min = Math.max(1, M.min[prev][k]); prev = k; } else prev = null; });
         all();
     }
-    // Urutkan terdekat: coba semua urutan (maks. 8 alamat), semua Ambil sebelum Antar, total jarak Kantor > alamat > Kantor terpendek lewat router; alamat harus bertitik semua.
-    function nearest() {
-        const note = m => { root.querySelector('[data-note]').textContent = m; };
+    // Urutkan terdekat: coba semua urutan (maks. 8 alamat), semua Ambil sebelum Antar, total waktu Kantor > alamat > Kantor tersingkat menurut mesin rute; alamat harus bertitik semua.
+    async function nearest() {
         if (S.length < 2) return note('Minimal dua alamat.');
         if (S.length > 8) return note('Urutkan terdekat hanya sampai 8 alamat.');
         if (!S.every(hasPt)) return note('Semua alamat perlu titik peta dulu.');
-        const R = window.TripMap.router, d = (a, b) => R.km(a, b);
+        note('Menghitung...');
+        const M = await matrix([OFFICE, ...S]), n = S.length, d = (i, j) => M.min[i][j];
         let best = null, bestD = Infinity;
         const dfs = (path, left, acc, last, ambLeft) => {
             if (acc >= bestD) return;
-            if (!left.length) { const t = acc + d(last, OFFICE); if (t < bestD) { bestD = t; best = path; } return; }
-            left.forEach((s, k) => {
-                if (s.kind === 'ant' && ambLeft > 0) return;
-                dfs([...path, s], left.filter((_, j) => j !== k), acc + d(last, s), s, ambLeft - (s.kind === 'amb' ? 1 : 0));
+            if (!left.length) { const t = acc + d(last, 0); if (t < bestD) { bestD = t; best = path; } return; }
+            left.forEach((i, k) => {
+                if (S[i].kind === 'ant' && ambLeft > 0) return;
+                dfs([...path, i], left.filter((_, j) => j !== k), acc + d(last, i + 1), i + 1, ambLeft - (S[i].kind === 'amb' ? 1 : 0));
             });
         };
-        dfs([], S.slice(), 0, OFFICE, S.filter(s => s.kind === 'amb').length);
-        const cur = S[sel];
-        best.forEach((s, i) => { S[i] = s; });
+        dfs([], [...Array(n).keys()], 0, 0, S.filter(s => s.kind === 'amb').length);
+        const cur = S[sel], list = best.map(i => S[i]);
+        list.forEach((s, i) => { S[i] = s; });
         sel = cur ? S.indexOf(cur) : sel;
-        note('Urutan terdekat dipakai (± ' + Math.round(bestD) + ' km, Ambil dulu baru Antar).');
-        fillTravel();
+        await fillTravel();
+        note('Urutan tercepat dipakai (± ' + Math.round(bestD) + ' menit jalan, Ambil dulu baru Antar; ' + window.TripMap.router.name + ').');
         drawMap(true);
     }
 
     root.innerHTML = '<div class="sp-grid"><div class="sp-left"><div class="sp-bar" data-top></div><div data-list></div><div class="sp-bar" data-bot></div>'
-        + '<div class="sp-mapbar"><span class="sp-s">Peta rute (ilustrasi urutan, bukan navigasi)</span><span class="sp-s" data-note></span><span class="sp-push"></span>' + (LOCKED ? '' : '<button type="button" class="sp-lk" data-nn="1">Urutkan terdekat</button><button type="button" class="sp-lk" data-tt="1">Isi menit tempuh dari peta</button>') + '</div><div class="sp-map" data-map></div></div><div class="sp-right" data-det></div></div>';
+        + '<div class="sp-mapbar"><button type="button" class="sp-lk sp-bold" data-mp="1">Lihat rute di peta</button></div><div data-mapwrap hidden><div class="sp-mapbar"><span class="sp-s">Peta rute (ilustrasi urutan, bukan navigasi)</span><span class="sp-s" data-note></span><span class="sp-push"></span>' + (LOCKED ? '' : '<button type="button" class="sp-lk" data-nn="1">Urutkan terdekat</button><button type="button" class="sp-lk" data-tt="1">Isi menit tempuh dari peta</button>') + '</div><div class="sp-map" data-map></div></div></div><div class="sp-right" data-det></div></div>';
     all();
-    const initMap = () => { map = window.TripMap.mount(root.querySelector('[data-map]'), OFFICE, LOCKED, {
+    const initMap = () => { if (ROUTE_URL) window.TripMap.router = window.TripMap.osrm(ROUTE_URL); map = window.TripMap.mount(root.querySelector('[data-map]'), OFFICE, LOCKED, {
         onPick: (lat, lng) => { if (sel < 0) return; Object.assign(S[sel], { lat, lng }); all(); },
         onMove: (i, lat, lng) => { Object.assign(S[i], { lat, lng }); paintList(); },
         onSelect: i => { sel = i; confirmDel = -1; pickOpen = false; all(); },
     }); drawMap(true); };
-    window.TripMap ? initMap() : addEventListener('DOMContentLoaded', initMap);
+    // Peta hanya dibuka bila diminta (Lihat rute di peta); dibuat saat pertama dibuka karena Leaflet butuh kotak yang terlihat.
+    const toggleMap = btn => {
+        const w = root.querySelector('[data-mapwrap]'), open = w.hidden;
+        w.hidden = !open; btn.textContent = open ? 'Sembunyikan peta' : 'Lihat rute di peta';
+        if (open) { map ? dispatchEvent(new Event('resize')) : initMap(); }
+    };
     ['depart_time', 'assistant', 'return_min'].forEach(n => q(n)?.addEventListener('input', () => { paintList(); totals(); }));
 
     root.addEventListener('click', e => {
         const b = e.target.closest('button,a'); const row = e.target.closest('.sp-row[data-i]');
         if (b && b.dataset.open) { addAt = b.dataset.open; paintList(); return; }
+        if (b && b.dataset.mp) { toggleMap(b); return; }
         if (b && b.dataset.tt) { fillTravel(); return; }
         if (b && b.dataset.nn) { nearest(); return; }
         if (b && b.dataset.add) {

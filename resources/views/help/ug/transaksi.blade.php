@@ -313,13 +313,13 @@
     <li>Tekan <b>+ Tambah alamat</b> di awal atau di akhir daftar, lalu pilih <b>Antar</b> atau <b>Ambil</b>. Isi nama pelanggan dan alamat di panel kanan.</li>
     <li>Isi barang: ketik nama, jumlah, satuan, dan berat (kg), satu baris per barang. Untuk alamat antar, tekan <b>Ambil dari surat jalan</b>, centang satu atau beberapa surat jalan (barangnya tampil sebagai pratinjau), lalu <b>Pilih</b>. Barang dikelompokkan menurut nomor surat jalan.</li>
     <li>Ubah urutan dengan menyeret baris di daftar kiri. ETA semua alamat dihitung ulang. Hapus alamat dengan ikon tempat sampah (klik dua kali).</li>
-    <li>Di bawah daftar ada <b>peta rute</b> (ilustrasi saja, bukan navigasi). Pilih alamat di daftar lalu klik peta untuk menaruh titiknya; geser penanda bila kurang pas. Tekan <b>Urutkan terdekat</b> agar urutan alamat dicari otomatis (maksimal 8 alamat, semua titik harus ada; alamat Ambil didahulukan, baru Antar), lalu <b>Isi menit tempuh dari peta</b> untuk mengisi menit tempuh.</li>
+    <li>Tekan <b>Lihat rute di peta</b> di bawah daftar untuk membuka <b>peta rute</b> (ilustrasi saja, bukan navigasi; ada juga di trip yang sudah ditugaskan). Pilih alamat di daftar lalu klik peta untuk menaruh titiknya; geser penanda bila kurang pas. Tekan <b>Urutkan terdekat</b> agar urutan alamat dicari otomatis (maksimal 8 alamat, semua titik harus ada; alamat Ambil didahulukan, baru Antar; urutan dengan total waktu tempuh tersingkat), lalu <b>Isi menit tempuh dari peta</b> untuk mengisi menit tempuh.</li>
     <li>Tekan <b>Save</b> untuk menyimpan draf. Bila sudah benar, tekan <b>Confirm</b> untuk <b>menugaskan</b> trip: nomor PGK dibuat dan trip terkunci.</li>
 </ol>
 <h4>Yang perlu diperhatikan</h4>
 <ul class="g-list">
     <li>Waktu layanan tiap alamat otomatis: 5 menit ditambah 10 menit per 100 kg, dikali 0,7 bila ada asisten. Angka ini perkiraan awal, belum dikalibrasi dari pengiriman nyata.</li>
-    <li><b>Menit tempuh dari titik sebelumnya</b> awalnya 15 menit dan bisa diketik. Tombol <b>Isi menit tempuh dari peta</b> menghitungnya dari jarak garis lurus x 1,3 dengan kecepatan 30 km/jam (perkiraan kasar, bukan jarak jalan sebenarnya).</li>
+    <li><b>Menit tempuh dari titik sebelumnya</b> awalnya 15 menit dan bisa diketik. Tombol <b>Isi menit tempuh dari peta</b> dan <b>Urutkan terdekat</b> memakai mesin rute (waktu tempuh lewat jalan, perkiraan tanpa macet). Bila mesin rute tidak menjawab, dipakai perkiraan garis lurus dan layar memberi tahu.</li>
     <li><b>Tautan sopir:</b> setelah trip ditugaskan, bagian atas layar menampilkan tautan untuk sopir. Kirim ke HP sopir; dibuka tanpa login. Sopir menekan <b>Sudah tiba</b> di tiap alamat (bisa dibatalkan bila salah pencet). Jam tiba asli tercatat dan perkiraan jam tiba alamat berikutnya dihitung ulang; di layar ini alamat itu tampil "sudah tiba". Pelacakan GPS belum ada.</li>
     <li>Satu surat jalan hanya bisa dipakai di satu alamat. Surat jalan yang dipakai alamat lain tampil redup di daftar pilih.</li>
     <li>Barang dari surat jalan tidak diedit di sini. Ubah barangnya di surat jalan (Pengeluaran Barang).</li>

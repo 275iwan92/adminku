@@ -14,6 +14,8 @@ return [
     // Batch yang kedaluwarsa dalam N hari ke depan tidak dihitung sebagai stok tersedia untuk titik pesan ulang. 0 = hanya yang sudah lewat (bawaan).
     'reorder_exclude_days' => (int) env('SSTOCK_REORDER_EXCLUDE_DAYS', 0),
     'sample_refresh' => (bool) env('SSTOCK_SAMPLE_REFRESH', env('APP_ENV', 'production') !== 'production'),
+    // Mesin rute (OSRM, API tabel) untuk estimasi waktu tempuh planner Pengiriman; kosong = garis lurus x 1,3. Bawaan server demo publik OSRM (hanya untuk uji, pasang server sendiri di produksi).
+    'route_url' => env('SSTOCK_ROUTE_URL', 'https://router.project-osrm.org'),
     // Titik kantor di peta planner Pengiriman (berangkat dan kembali); bawaan Monas Jakarta, isi lewat .env.
     'office_geo' => ['lat' => (float) env('SSTOCK_OFFICE_LAT', -6.175392), 'lng' => (float) env('SSTOCK_OFFICE_LNG', 106.827153)],
     'demo' => (bool) env('SSTOCK_DEMO', false),  // produk demo AdminKU (data dummy, bisa direset): lencana DEMO, teks layar masuk, akun demo, adminku:reset-demo

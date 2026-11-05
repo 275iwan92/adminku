@@ -1,4 +1,4 @@
-// Peta rute planner Pengiriman: ilustrasi urutan alamat (bukan navigasi). Jarak lewat satu antarmuka `router` (km, min) supaya bisa diganti Mapbox / Google tanpa menyentuh planner.
+// Peta rute planner Pengiriman: ilustrasi urutan alamat (bukan navigasi). Jarak dan waktu tempuh lewat satu antarmuka `router.matrix` supaya bisa diganti Mapbox / Google tanpa menyentuh planner.
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../css/trip-map.css';
@@ -9,18 +9,33 @@ const line = (a, b) => {
     return 12742 * Math.asin(Math.sqrt(h));
 };
 
-// shortcut: garis lurus x 1,3 dan 30 km/jam, ganti dengan router jalan nyata (Mapbox / Google) bila perlu akurasi.
+// Antarmuka router: `matrix(pts)` -> Promise<{min: menit[][], km: km[][]}> untuk titik [{lat, lng}]. Dua isi: mesin jalan nyata (OSRM, mudah diganti Mapbox / Google) dan cadangan garis lurus.
+// shortcut: cadangan garis lurus x 1,3 pada 30 km/jam bila mesin rute tidak menjawab; mesin demo OSRM publik bukan untuk beban produksi, pasang server OSRM sendiri lewat SSTOCK_ROUTE_URL.
 export const straightRouter = {
-    factor: 1.3,
-    kmh: 30,
-    km(a, b) { return line(a, b) * this.factor; },
-    min(a, b) { return Math.round((this.km(a, b) / this.kmh) * 60); },
+    name: 'garis lurus',
+    async matrix(pts) {
+        const km = pts.map((a) => pts.map((b) => line(a, b) * 1.3));
+        return { km, min: km.map((r) => r.map((v) => Math.round((v / 30) * 60))) };
+    },
 };
+
+export const osrmRouter = (base) => ({
+    name: 'mesin rute',
+    async matrix(pts) {
+        const url = base.replace(/\/$/, '') + '/table/v1/driving/' + pts.map((p) => p.lng + ',' + p.lat).join(';') + '?annotations=duration,distance';
+        const res = await fetch(url);
+        const j = await res.json();
+        if (!res.ok || j.code !== 'Ok' || !j.durations || j.durations.some((r) => r.some((v) => v == null))) throw new Error('route');
+        return { min: j.durations.map((r) => r.map((v) => Math.round(v / 60))), km: j.distances.map((r) => r.map((v) => v / 1000)) };
+    },
+});
 
 const icon = (txt, cls) => L.divIcon({ className: '', html: '<span class="sp-pin ' + cls + '">' + txt + '</span>', iconSize: [26, 26], iconAnchor: [13, 13] });
 
 window.TripMap = {
     router: straightRouter,
+    straight: straightRouter,
+    osrm: osrmRouter,
     // cb: { onPick(lat,lng) klik peta, onMove(i,lat,lng) seret titik, onSelect(i) klik titik }
     mount(el, office, locked, cb) {
         const map = L.map(el, { scrollWheelZoom: false }).setView([office.lat, office.lng], 12);
