@@ -219,4 +219,15 @@ return [
             ['Pengguna tidak dihapus. Nonaktifkan bila sudah tidak dipakai.'],
             ['grid']],
     ],
+
+    // Pin alur di mode Blog: flows[id] = [judul, id tur tujuan "Baca artikelnya", [[aktor, langkah], ...]]; aktor: de = Data Entry, sp = Supervisor, si = Sistem, vn = Vendor.
+    'flows' => [
+        'f-input' => ['Input data sampai stok berubah', 'alur-input', [['de', 'Isi Data Master'], ['de', 'Buat dokumen dan isi baris barang'], ['de', 'Simpan: jadi Draf, stok belum berubah'], ['de', 'Konfirmasi'], ['si', 'Dokumen terkunci, stok berubah']]],
+        'f-approval' => ['Persetujuan dokumen (PP, PO, Kas)', 'alur-approval', [['de', 'Simpan Draf'], ['de', 'Confirm: nomor lahir, dokumen terkunci'], ['si', 'Masuk antrean persetujuan'], ['sp', 'Approve atau Reject (alasan wajib)'], ['si', 'Disetujui: dokumen berlaku']]],
+        'f-batal' => ['Membatalkan dokumen terkonfirmasi', 'alur-approval', [['de', 'Batalkan dengan alasan wajib'], ['si', 'Menunggu persetujuan (oleh Data Entry)'], ['sp', 'Setujui atau Tolak'], ['si', 'Stok dikembalikan, riwayat tetap ada']]],
+        'f-beli' => ['Pembelian: permintaan sampai barang datang', 'pr', [['de', 'Permintaan Pembelian (PP)'], ['sp', 'Setujui PP'], ['de', 'Susun Pesanan Pembelian (PO)'], ['sp', 'Setujui PO'], ['de', 'Penerimaan Pembelian (PV)'], ['si', 'PO Diterima sebagian atau Selesai']]],
+        'f-pesan' => ['Stok menipis sampai barang masuk', 'beranda', [['si', 'Stok di titik pesan ulang, tampil di Beranda'], ['de', 'Catat Pemesanan'], ['de', 'Penerimaan Barang saat barang datang'], ['si', 'Pesanan tertutup bila jumlah terpenuhi']]],
+        'f-laporan' => ['Dari dokumen ke laporan', 'alur-laporan', [['si', 'Dokumen Terkonfirmasi masuk stok'], ['de', 'Pilih laporan dan periode'], ['de', 'Tampilkan'], ['de', 'Cetak atau ekspor']]],
+        'f-ac' => ['Perawatan AC dari jadwal sampai selesai', 'ac', [['de', 'Penjadwalan: kunjungan Draf'], ['de', 'Kirim ke vendor (Terkirim)'], ['vn', 'Vendor mengonfirmasi'], ['de', 'Tandai Selesai'], ['si', 'Jatuh tempo AC dihitung ulang']]],
+    ],
 ];

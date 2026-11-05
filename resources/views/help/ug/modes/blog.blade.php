@@ -8,6 +8,8 @@
 @php
     $groups = $catalog['groups'];
     $tours = $catalog['tours'];
+    $flows = $catalog['flows'];
+    $actors = ['de' => 'Data Entry', 'sp' => 'Supervisor', 'si' => 'Sistem', 'vn' => 'Vendor'];
     $mins = fn (array $t) => max(1, (int) round(count($t['steps']) * 0.5));
 @endphp
 <section class="ug-blog" id="gb" aria-label="Panduan bergambar">
@@ -37,7 +39,22 @@
             @endforeach
         </div>
 
+        <ul class="ug-legend" aria-label="Pelaku di diagram alur">
+            @foreach ($actors as $k => $label)<li class="a-{{ $k }}"><i aria-hidden="true"></i>{{ $label }}</li>@endforeach
+        </ul>
         <div class="ug-masonry" data-bcards>
+            @foreach ($flows as $f)
+                <article class="ug-card ug-pin" style="--h: 280" data-bgroup-card="alur" data-btext="{{ mb_strtolower($f['title'].' alur '.implode(' ', array_column($f['nodes'], 1))) }}">
+                    <span class="ug-tag2">Alur</span>
+                    <h3><a href="#gb-{{ $f['tour'] }}" data-blog-link>{{ $f['title'] }}</a></h3>
+                    <ol class="ug-pinflow">
+                        @foreach ($f['nodes'] as $i => [$actor, $label])
+                            <li class="a-{{ $actor }}" style="--i: {{ $i }}"><em>{{ $actors[$actor] }}</em><span>{{ $label }}</span></li>
+                        @endforeach
+                    </ol>
+                    <div class="ug-cardact"><a href="#gb-{{ $f['tour'] }}" data-blog-link>Baca artikelnya</a><button type="button" data-open-deck="t-{{ $f['tour'] }}">Presentasi</button></div>
+                </article>
+            @endforeach
             @foreach ($tours as $t)
                 @php $g = $groups[$t['group']]; $s0 = $t['steps'][0]; @endphp
                 <article class="ug-card" style="--h: {{ $g['hue'] }}" data-bgroup-card="{{ $t['group'] }}" data-btext="{{ mb_strtolower($t['title'].' '.$t['summary'].' '.$g['title'].' '.implode(' ', $t['flow'])) }}">
