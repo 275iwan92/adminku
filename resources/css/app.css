@@ -497,3 +497,6 @@ a.sstock-otile:hover, a.sstock-otile:focus-visible { box-shadow: 0 6px 16px rgba
 .sstock-otrend u.out, .sstock-dot.out { background: var(--dl-danger); }
 .sstock-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 4px 0 10px; }
 @media (max-width: 900px) { .sstock-ocharts { grid-template-columns: minmax(0, 1fr); } .sstock-obar { grid-template-columns: 1fr 90px; } .sstock-obar i { grid-column: 1 / -1; order: 3; } }
+
+/* Lampiran bukti tersimpan: pratinjau 72px dipotong dari atas (nota panjang tidak merusak tata letak); klik membuka berkas utuh di tab baru. */
+.sstock-cash .dl-upload__thumb { width: 72px; height: 72px; object-fit: cover; object-position: top; border-radius: 6px; }

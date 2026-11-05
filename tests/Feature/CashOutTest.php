@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\UserGroup;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /* REMARK
@@ -145,6 +147,18 @@ class CashOutTest extends TestCase
         $draft = $this->create();
         $this->act($draft, 'delete', $this->staff)->assertRedirect(route('cash-out.index'));
         $this->assertNull(CashOut::find($draft->id));
+    }
+
+    public function test_a_saved_attachment_is_linked_on_the_form_even_when_the_receipt_is_very_tall(): void
+    {
+        Storage::fake('kas');
+        $file = UploadedFile::fake()->image('nota.png', 600, 3000);   // nota supermarket panjang
+        $cashOut = $this->create();
+        $this->actingAs($this->staff)->put(route('cash-out.update', $cashOut), $this->payload() + ['_action' => 'save', 'attachment' => $file])->assertSessionHasNoErrors();
+
+        $this->get(route('cash-out.show', $cashOut))->assertOk()
+            ->assertSee(route('cash-out.file', $cashOut), false)->assertSee('Lampiran bukti (PNG)', false);
+        $this->get(route('cash-out.file', $cashOut))->assertOk();
     }
 
     public function test_screens_open_and_the_module_is_guarded_by_group_rights(): void

@@ -34,7 +34,7 @@
                 <x-dl::field.date name="doc_date" label="Tanggal" :value="$d('doc_date')" required :error="$e('doc_date')" />
                 <x-dl::field.select class="sstock-wrap" name="purpose" label="Digunakan Untuk Kebutuhan" :options="['' => 'Pilih kebutuhan...'] + $purposes + ($v('purpose') && ! isset($purposes[$v('purpose')]) ? [$v('purpose') => $v('purpose')] : [])" :value="$v('purpose')" required :add="\App\Support\QuickAdd::for('cash_purpose')" :error="$e('purpose')" />
                 <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
-                <x-dl::field.upload name="attachment" label="Lampiran Bukti" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti pengeluaran (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
+                <x-dl::field.upload name="attachment" label="Lampiran Bukti" :value="$cashOut->attachment ? ['url' => route('cash-out.file', $cashOut), 'name' => 'Lampiran bukti ('.strtoupper(pathinfo($cashOut->attachment, PATHINFO_EXTENSION)).')'] : null" :preview="! str_ends_with(strtolower($cashOut->attachment ?? ''), '.pdf')" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti pengeluaran (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
             </x-dl::form.col>
             <x-dl::form.col class="sstock-panel">
                 <x-dl::field.select name="cash_in_id" label="Ditaut Ke Uang Masuk" :options="$cashIns" :value="$v('cash_in_id')" required :error="$e('cash_in_id')" hint="Hanya Uang Masuk yang sudah Disetujui. Sisa saldo tampil di tiap pilihan." />

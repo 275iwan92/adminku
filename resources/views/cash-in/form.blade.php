@@ -35,7 +35,7 @@
                 <x-dl::field.date name="doc_date" label="Tanggal" :value="$d('doc_date')" required :error="$e('doc_date')" />
                 <x-dl::field.select name="source_name" label="Sumber Dana" :options="['' => 'Pilih sumber dana...'] + $sources + ($v('source_name') && ! isset($sources[$v('source_name')]) ? [$v('source_name') => $v('source_name')] : [])" :value="$v('source_name')" required :add="\App\Support\QuickAdd::for('cash_source')" :error="$e('source_name')" />
                 <x-dl::field.text name="description" label="Keterangan" :value="$v('description')" maxlength="255" :error="$e('description')" />
-                <x-dl::field.upload name="attachment" label="Lampiran Bukti" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti penerimaan dana (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
+                <x-dl::field.upload name="attachment" label="Lampiran Bukti" :value="$cashIn->attachment ? ['url' => route('cash-in.file', $cashIn), 'name' => 'Lampiran bukti ('.strtoupper(pathinfo($cashIn->attachment, PATHINFO_EXTENSION)).')'] : null" :preview="! str_ends_with(strtolower($cashIn->attachment ?? ''), '.pdf')" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti penerimaan dana (tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
             </x-dl::form.col>
             <x-dl::form.col class="sstock-panel">
                 <x-dl::field.toggle-group name="cash_kind" label="Kas Tujuan" :options="['cash' => 'Tunai', 'bank' => 'Rekening bank']" :value="old('cash_kind', $kind)" />
