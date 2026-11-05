@@ -30,10 +30,14 @@ export const osrmRouter = (base) => ({
     },
 });
 
-const icon = (txt, cls) => L.divIcon({ className: '', html: '<span class="sp-pin ' + cls + '">' + txt + '</span>', iconSize: [26, 26], iconAnchor: [13, 13] });
+// Warna ruas: tiap ruas (dari titik sebelumnya ke alamat ini) satu warna; sama di garis peta, penanda, dan nomor di daftar planner.
+const LEG = ['#2f7fd1', '#e5742b', '#2fa46a', '#9b59d0', '#e0457b', '#12a8b8', '#c9a01a', '#6b7bd6'];
+const legColor = (i) => LEG[i % LEG.length];
+const icon = (txt, cls, color) => L.divIcon({ className: '', html: '<span class="sp-pin ' + cls + '" style="background:' + color + '">' + txt + '</span>', iconSize: [28, 28], iconAnchor: [14, 14] });
 
 window.TripMap = {
     router: straightRouter,
+    legColor,
     straight: straightRouter,
     osrm: osrmRouter,
     // cb: { onPick(lat,lng) klik peta, onMove(i,lat,lng) seret titik, onSelect(i) klik titik }
@@ -47,16 +51,16 @@ window.TripMap = {
             draw(stops, sel, fit) {
                 layer.clearLayers();
                 const pts = [[office.lat, office.lng]];
-                L.marker(pts[0], { icon: icon('K', 'sp-pk'), interactive: false }).addTo(layer);
+                L.marker(pts[0], { icon: icon('K', 'sp-pk', '#475569'), interactive: false }).addTo(layer);
                 stops.forEach((s, i) => {
                     if (s.lat == null || s.lng == null) return;
-                    const m = L.marker([s.lat, s.lng], { icon: icon(i + 1, (s.kind === 'ant' ? 'sp-pa' : 'sp-pb') + (i === sel ? ' sp-ps' : '')), draggable: !locked, zIndexOffset: i === sel ? 500 : 0 }).addTo(layer);
+                    const m = L.marker([s.lat, s.lng], { icon: icon(i + 1, (s.kind === 'ant' ? 'sp-pa' : 'sp-pb') + (i === sel ? ' sp-ps' : ''), legColor(i)), draggable: !locked, zIndexOffset: i === sel ? 500 : 0 }).addTo(layer);
                     m.on('click', () => cb.onSelect(i));
                     m.on('dragend', () => { const p = m.getLatLng(); cb.onMove(i, +p.lat.toFixed(6), +p.lng.toFixed(6)); });
                     pts.push([s.lat, s.lng]);
                 });
                 if (pts.length > 1) {
-                    L.polyline([...pts, pts[0]], { color: '#2f7fd1', weight: 3, opacity: 0.8, dashArray: '6 6' }).addTo(layer);
+                    [...pts, pts[0]].slice(1).forEach((p, k) => L.polyline([[...pts, pts[0]][k], p], { color: k < pts.length - 1 ? legColor(k) : '#64748b', weight: 5, opacity: 0.85, dashArray: k < pts.length - 1 ? null : '6 8' }).addTo(layer));
                     if (fit) map.fitBounds(pts, { padding: [30, 30], maxZoom: 15 });
                 }
             },

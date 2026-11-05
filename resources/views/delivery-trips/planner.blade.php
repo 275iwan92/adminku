@@ -40,7 +40,7 @@
         S.forEach((s, i) => {
             const n = itemsOf(s).length;
             h += '<div class="sp-row' + (i === sel ? ' sp-on' : '') + '" ' + (LOCKED ? '' : 'draggable="true" ') + 'data-i="' + i + '">'
-                + (LOCKED ? '' : '<span class="sp-grip" title="Seret untuk mengubah urutan">⋮⋮</span>') + '<span class="sp-n">' + (i + 1) + '</span>'
+                + (LOCKED ? '' : '<span class="sp-grip" title="Seret untuk mengubah urutan">⋮⋮</span>') + '<span class="sp-n" style="background:' + (window.TripMap ? window.TripMap.legColor(i) : '#2f7fd1') + ';color:#fff">' + (i + 1) + '</span>'
                 + '<div class="sp-grow">' + badge(s.kind) + ' <b>' + esc(s.customer || 'Alamat baru') + '</b><div class="sp-s sp-cut">' + esc(s.address || 'Alamat belum diisi') + '</div>'
                 + '<div class="sp-s">' + n + ' barang, ' + Math.round(kg(s)) + ' kg' + (s.docs.length ? ' · ' + s.docs.length + ' SJ' : '') + ' · layanan ±' + svc(s) + ' mnt</div></div>'
                 + '<div class="sp-r"><b>' + hm(t.o[i][0]) + '</b><div class="sp-s">' + (s.arr != null ? 'sudah tiba' : 'selesai ' + hm(t.o[i][1])) + '</div></div>'
@@ -135,6 +135,7 @@
         onMove: (i, lat, lng) => { Object.assign(S[i], { lat, lng }); paintList(); },
         onSelect: i => { sel = i; confirmDel = -1; pickOpen = false; all(); },
     }); drawMap(true); };
+    addEventListener('DOMContentLoaded', paintList);   // warna nomor ruas butuh trip-map.js (modul, dimuat setelah halaman)
     // Peta hanya dibuka bila diminta (Lihat rute di peta); dibuat saat pertama dibuka karena Leaflet butuh kotak yang terlihat.
     const toggleMap = btn => {
         const w = root.querySelector('[data-mapwrap]'), open = w.hidden;
