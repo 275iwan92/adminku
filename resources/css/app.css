@@ -665,3 +665,6 @@ html[data-dl-theme="soft_green"] .dl-lm { --dl-side-ink: #eaf4f1; --dl-side-leaf
 /* Scan barang datang (PV): kamera hanya di HP */
 .sstock-scan { margin: 4px 0 12px; }
 body:not(.dl-on-phone) .sstock-scan .dl-scan__cam { display: none; }
+
+/* Beranda: tanpa tulisan "Belum ada menu terbuka" di bilah tab kosong (teks bawaan DevLib). */
+.sstock-bare .dl-tabbar:empty::before { content: none; }
