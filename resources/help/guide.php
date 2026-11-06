@@ -16,7 +16,7 @@ return [
         'stok' => ['Stok','Barang masuk, keluar, dan hitung fisik, sisa stok dihitung otomatis.', 165, 'products', ['ITM', 'RCV', 'ISS', 'ADJ', 'SO', 'ORD', 'OPN'], 'Gudang dan opname'],
         'beli' => ['Pembelian', 'Dari permintaan sampai pesanan dan barang datang.', 215, 'po', ['PUP', 'PUK', 'PUO', 'PUV'], 'PP, PO, PV'],
         'kirim' => ['Pengiriman', 'Surat jalan dan rencana kirim barang keluar.', 35, 'delnotes', ['SJL', 'PGK'], 'Surat jalan dan trip'],
-        'kas' => ['Keuangan', 'Uang masuk, uang keluar, dan arus kas per rekening.', 95, 'cashoutnew', ['KSM', 'KSK', 'KSR', 'KSB', 'R-KFLOW', 'R-KIN', 'R-KOUT'], 'Kas dan laporan kas'],
+        'kas' => ['Keuangan', 'Uang masuk, uang keluar, dan arus kas per rekening.', 95, 'cashoutnew', ['KSM', 'KSK', 'KSR', 'KSB', 'KSA', 'R-KFLOW', 'R-KIN', 'R-KOUT'], 'Kas dan laporan kas'],
         'sdm' => ['SDM', 'Karyawan, rekrutmen, dan catatan kedisiplinan.', 320, 'employees', ['HRE', 'HRR', 'HRD'], 'Kepegawaian'],
         'ga' => ['Personalia (GA)', 'Perawatan kendaraan dan AC sebelum terlambat.', 190, 'fleet', ['GVM', 'GAM', 'GVS', 'GAS'], 'Kendaraan dan AC'],
         'lap' => ['Laporan', 'Baca stok, riwayat, dan kedaluwarsa kapan saja.', 260, 'summary', ['R-SUM', 'R-CARD', 'R-IN', 'R-OUT', 'R-EXP', 'R-ADJ', 'STB'], 'Stok dan riwayat'],

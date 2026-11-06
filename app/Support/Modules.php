@@ -97,6 +97,7 @@ final class Modules
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
             'MOD' => ['SEC', 'Daftar Modul', 'fa-solid fa-table-list', 'grid', 'modules.index', 'administrator', ['modules.']],
+            'KSA' => ['KEU', 'Penyesuaian Kas', 'fa-solid fa-scale-balanced', 'grid', 'cash-adjust.index', 'entry', ['cash-adjust.']],
         ];
     }
 

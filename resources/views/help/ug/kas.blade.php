@@ -2,7 +2,7 @@
  Tujuan       : Panduan Pengguna bagian 9c Kas: Uang Masuk (sumber dana ke satu Kas/Rekening), Uang Keluar (wajib ditaut ke satu Uang Masuk, jumlah dibatasi sisa saldo), Kas/Rekening (master, dibuka lewat Setup),
                 dan tiga laporan (Arus Kas, Penerimaan, Pengeluaran) per Sumber Dana. Pola tetap tiap modul: Untuk apa, Siapa yang bisa, Langkah, Yang perlu diperhatikan, Masalah umum. Istilah sama persis dengan label di layar.
  Sumber hulu  : CashInController / cash-in.*, CashOutController / cash-out.*, CashAccountController / cash-accounts.*, CashReportController / reports.cash-*, CashIn, CashOut, CashAccount,
-                Modules (kode KSM, KSK, KSR, R-KFLOW, R-KIN, R-KOUT), User::canAccess / canWrite / canApprove.
+                Modules (kode KSM, KSK, KSR, KSB, KSA, R-KFLOW, R-KIN, R-KOUT), User::canAccess / canWrite / canApprove.
  Dipakai oleh : help/user-guide.blade.php (hanya bila pengguna punya salah satu modul Kas). Diagram: ug-kas-alur.
  Status       : Aktif.
 --}}
@@ -15,6 +15,7 @@
         @if ($can('KSM'))<tr><td><a href="#kas-ksm">Uang Masuk</a></td><td>Dana diterima ke Kas Tunai atau satu rekening bank, dari satu sumber dana (dipilih dari daftar)</td></tr>@endif
         @if ($can('KSK'))<tr><td><a href="#kas-ksk">Uang Keluar</a></td><td>Pengeluaran per kebutuhan (kategori) dari Kas Tunai atau satu rekening bank; boleh ditaut ke satu Uang Masuk</td></tr>@endif
         @if ($can('KSR'))<tr><td><a href="#kas-ksr">Kas / Rekening</a></td><td>Daftar kas tunai dan rekening bank beserta saldo berjalan</td></tr>@endif
+        @if ($can('KSA'))<tr><td><a href="#kas-ksa">Penyesuaian Kas</a></td><td>Koreksi saldo satu kas (tambah / kurangi) dengan alasan wajib; disetujui Supervisor</td></tr>@endif
         @if ($can('KSB'))<tr><td><a href="#kas-ksb">Kartu Saldo Kas</a></td><td>Mutasi satu kas (Tunai atau rekening bank) dengan saldo berjalan, per periode</td></tr>@endif
         @if ($can('R-KFLOW'))<tr><td><a href="#kas-rflow">Laporan Arus Kas</a></td><td>Buku kas per kas/rekening: saldo awal, baris kronologis, saldo akhir</td></tr>@endif
         @if ($can('R-KIN'))<tr><td><a href="#kas-rkin">Laporan Penerimaan</a></td><td>Uang Masuk: total Tunai, total Bank, rincian per rekening, per sumber dana</td></tr>@endif
@@ -23,7 +24,7 @@
 </table>
 <ul class="g-list">
     <li><b>Hak Kas datang dari Grup, bukan dari peran.</b> Menu Kas hanya tampil bila Grup Anda diberi modul <b>Uang Masuk</b> atau <b>Uang Keluar</b> (RO untuk membaca, RW untuk menyimpan dan mengajukan). Administrator melihat semuanya.</li>
-    <li>Menyetujui atau menolak Uang Masuk dan Uang Keluar hanya untuk peran <b>Supervisor</b>, bukan <b>Admin Data</b> dan bukan pembuat dokumen itu sendiri. Admin Data membuka dan mengisi layar Kas seperti Supervisor, tetapi tombol <span class="g-btn">Approve</span> / <span class="g-btn">Reject</span> tidak tampil baginya.</li>
+    <li>Menyetujui atau menolak Uang Masuk, Uang Keluar, dan Penyesuaian Kas hanya untuk peran <b>Supervisor</b>, bukan <b>Admin Data</b> dan bukan pembuat dokumen itu sendiri. Admin Data membuka dan mengisi layar Kas seperti Supervisor, tetapi tombol <span class="g-btn">Approve</span> / <span class="g-btn">Reject</span> tidak tampil baginya.</li>
     <li><b>Beranda Kas (dashboard).</b> Klik <b>Keuangan</b> di panel kiri: angka saldo kas tunai dan rekening bank, masuk dan keluar bulan ini, grafik <b>pengeluaran per kebutuhan</b> (3 bulan terakhir), dan tren masuk dan keluar 6 bulan. Batang grafik bisa diklik dan membuka Laporan Pengeluaran. Hanya yang <b>Disetujui</b> yang dihitung.</li>
     <li><b>Transfer antar-kas belum ada.</b> Memindahkan dana dari satu Kas/Rekening ke Kas/Rekening lain belum bisa dicatat; ditunda untuk versi berikutnya.</li>
 </ul>
@@ -128,6 +129,31 @@
 <ul class="g-list">
     <li><b>Kas / Rekening tidak ada di pilihan Kas Tujuan.</b> Sudah dinonaktifkan. Aktifkan kembali di Setup bila masih dipakai.</li>
     <li><b>Simpan ditolak.</b> Nama kosong, atau Jenis belum dipilih.</li>
+</ul>
+@endif
+
+@if ($can('KSA'))
+<h3 id="kas-ksa">Penyesuaian Kas</h3>
+<h4>Untuk apa</h4>
+<p>Mengoreksi saldo satu kas (Tunai atau rekening bank) ketika saldo di buku tidak sama dengan kenyataan, misalnya selisih hitung uang fisik atau salah catat lama. Penyesuaian <b>Tambah saldo</b> menambah, <b>Kurangi saldo</b> mengurangi. <b>Alasan</b> wajib diisi.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Penyesuaian Kas</b> (RO untuk membaca, RW untuk menyimpan dan mengajukan). Yang menyetujui <b>selalu Supervisor</b>, bukan pembuatnya dan bukan Admin Data.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Keuangan</b> lalu <b>Penyesuaian Kas</b>, tekan <span class="g-btn">New</span>.</li>
+    <li>Pilih <b>Kas / Rekening</b> (saldo kas tampil di pilihan), <b>Arah</b>, isi <b>Jumlah (IDR)</b> dan <b>Alasan Penyesuaian</b>.</li>
+    <li>Tekan <span class="g-btn">Save</span> lalu <span class="g-btn">Confirm</span>; nomor <b>PK-YYMM-0001</b> lahir saat Confirm.</li>
+    <li>Supervisor lain menekan <span class="g-btn">Approve</span>. Baru setelah itu saldo kas berubah dan baris muncul di <b>Kartu Saldo Kas</b>.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Sebelum Approve saldo kas <b>tidak</b> berubah. Membatalkan penyesuaian yang sudah Disetujui (alasan wajib) menulis baris pembalik; baris aslinya tetap tampil di Kartu Saldo.</li>
+    <li>Pengurangan yang melebihi saldo kas ditolak saat disimpan dan saat Approve.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Approve ditolak: saldo tidak cukup.</b> Setelah diajukan, saldo kas berkurang karena transaksi lain. Kurangi jumlahnya lewat Reject lalu Duplicate.</li>
+    <li><b>Tombol Approve tidak tampil.</b> Anda pembuat dokumen ini, atau peran Anda Admin Data; minta Supervisor lain.</li>
 </ul>
 @endif
 

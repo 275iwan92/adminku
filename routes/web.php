@@ -18,6 +18,7 @@ use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CashAccountController;
+use App\Http\Controllers\CashAdjustmentController;
 use App\Http\Controllers\CashCardController;
 use App\Http\Controllers\CashInController;
 use App\Http\Controllers\CashOutController;
@@ -388,6 +389,11 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('recruit-steps/{step}', [RecruitStepController::class, 'show'])->name('recruit-steps.show');
     Route::put('recruit-steps/{step}', [RecruitStepController::class, 'update'])->name('recruit-steps.update');
 
+    Route::get('cash-adjust', [CashAdjustmentController::class, 'index'])->name('cash-adjust.index');
+    Route::get('cash-adjust/create', [CashAdjustmentController::class, 'create'])->name('cash-adjust.create');
+    Route::post('cash-adjust', [CashAdjustmentController::class, 'store'])->name('cash-adjust.store');
+    Route::get('cash-adjust/{adjustment}', [CashAdjustmentController::class, 'show'])->whereNumber('adjustment')->name('cash-adjust.show');
+    Route::put('cash-adjust/{adjustment}', [CashAdjustmentController::class, 'update'])->whereNumber('adjustment')->name('cash-adjust.update');
     // GA Perawatan AC (GAM): satu butir menu; panel Monitoring dan hub Setup. Layar lain dibuka lewat tombol di panel (hak per modul tetap).
     Route::get('ac-care', [AcCareController::class, 'index'])->name('ac-care.index');
     Route::get('ac-care/{unit}', [AcCareController::class, 'show'])->whereNumber('unit')->name('ac-care.show');

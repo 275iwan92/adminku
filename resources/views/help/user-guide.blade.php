@@ -124,6 +124,7 @@
             @if ($can('KSM'))<a class="g-toc-sub" href="#kas-ksm">Uang Masuk</a>@endif
             @if ($can('KSK'))<a class="g-toc-sub" href="#kas-ksk">Uang Keluar</a>@endif
             @if ($can('KSR'))<a class="g-toc-sub" href="#kas-ksr">Kas / Rekening</a>@endif
+            @if ($can('KSA'))<a class="g-toc-sub" href="#kas-ksa">Penyesuaian Kas</a>@endif
             @if ($can('KSB'))<a class="g-toc-sub" href="#kas-ksb">Kartu Saldo Kas</a>@endif
             @if ($can('R-KFLOW'))<a class="g-toc-sub" href="#kas-rflow">Laporan Arus Kas</a>@endif
             @if ($can('R-KIN'))<a class="g-toc-sub" href="#kas-rkin">Laporan Penerimaan</a>@endif

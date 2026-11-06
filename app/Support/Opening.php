@@ -7,6 +7,7 @@ use App\Models\AcOrder;
 use App\Models\Batch;
 use App\Models\Candidate;
 use App\Models\CashAccount;
+use App\Models\CashAdjustment;
 use App\Models\CashIn;
 use App\Models\CashOut;
 use App\Models\Discipline;
@@ -108,8 +109,11 @@ final class Opening
                 $facts['KSK'] = ['n' => Locale::number(CashOut::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
             }
         }
+            if ($user->canAccess('KSA')) {
+                $facts['KSA'] = ['n' => Locale::number(CashAdjustment::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
+            }
 
-        if ($section === 'kas' && ($user->canAccess('KSM') || $user->canAccess('KSK') || $user->canAccess('R-KFLOW'))) {
+        if ($section === 'kas' && ($user->canAccess('KSM') || $user->canAccess('KSK') || $user->canAccess('KSA') || $user->canAccess('R-KFLOW'))) {
             $page = array_merge($page, self::kasBoard());
         }
 
