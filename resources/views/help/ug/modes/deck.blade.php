@@ -47,7 +47,7 @@
                         </div>
                         <button type="button" class="ug-more" data-open="g-{{ $g['key'] }}">Presentasi {{ $g['title'] }} &rsaquo;</button>
                     </div>
-                    <div class="ug-frame" aria-hidden="true"><div class="ug-bt"><i></i><i></i><i></i></div><div class="ug-clip"><img src="{{ $img($g['shot']) }}" alt="" width="1440" height="900" decoding="async"></div></div>
+                    <div class="ug-frame" aria-hidden="true"><div class="ug-bt"><i></i><i></i><i></i></div><div class="ug-clip"><img src="{{ $img($g['shot']) }}" alt="" width="1440" height="900" loading="lazy"></div></div>
                 </article>
             @endforeach
 
@@ -111,7 +111,7 @@
                                 <a class="ug-chip" href="#{{ $t['anchor'] }}" data-detail>Detail</a>
                             </div>
                         </div>
-                        <div class="ug-frame" aria-hidden="true"><div class="ug-bt"><i></i><i></i><i></i></div><div class="ug-clip"><img src="{{ $img($t['shot']) }}" alt="" width="1440" height="900" decoding="async"></div></div>
+                        <div class="ug-frame" aria-hidden="true"><div class="ug-bt"><i></i><i></i><i></i></div><div class="ug-clip"><img src="{{ $img($t['shot']) }}" alt="" width="1440" height="900" loading="lazy"></div></div>
                     </article>
                 @endforeach
             </div>
@@ -128,7 +128,7 @@
                         <p class="ug-sub">{{ $t['summary'] }}</p>
                         <p class="ug-meta">{{ count($t['steps']) }} langkah &middot; sekitar {{ $mins($t) }} menit</p>
                     </div>
-                    <div class="ug-frame" aria-hidden="true"><div class="ug-bt"><i></i><i></i><i></i></div><div class="ug-clip"><img src="{{ $img($t['shot']) }}" alt="" width="1440" height="900" decoding="async"></div></div>
+                    <div class="ug-frame" aria-hidden="true"><div class="ug-bt"><i></i><i></i><i></i></div><div class="ug-clip"><img src="{{ $img($t['shot']) }}" alt="" width="1440" height="900" loading="lazy"></div></div>
                 </article>
                 <article class="ug-s">
                     <h2>Alurnya</h2>
@@ -139,7 +139,7 @@
                 <article class="ug-s ug-walk" data-dur="{{ count($t['steps']) * 3400 + 1500 }}" data-steps="{{ json_encode(array_map(fn ($s) => ['x' => $s[0], 'y' => $s[1], 't' => $s[2], 'd' => $s[3]], $t['steps']), JSON_UNESCAPED_UNICODE) }}">
                     <h2>Lihat langsung</h2>
                     <div class="ug-walkbox">
-                        <div class="ug-cam"><img src="{{ $img($t['shot']) }}" alt="" width="1440" height="900" decoding="async"><i class="ug-ring"></i></div>
+                        <div class="ug-cam"><img src="{{ $img($t['shot']) }}" alt="" width="1440" height="900" loading="lazy"><i class="ug-ring"></i></div>
                         <div class="ug-cap" aria-live="polite"><b></b><span></span></div>
                     </div>
                 </article>

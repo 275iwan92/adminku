@@ -19,7 +19,12 @@ const store = {
 
 if (root) {
     const MODES = ['deck', 'tour', 'blog', 'detail'];
-    const deck = makeDeck();
+    // Gambar tangkapan layar yang gagal dimuat (koneksi putus, cache rusak) dicoba sekali lagi dengan alamat bercap waktu.
+    const retry = (img) => { if (img.dataset.retry) return; img.dataset.retry = '1'; img.src = img.src.split('?')[0] + '?r=' + Date.now(); };
+    $$('img').forEach((img) => {
+        img.addEventListener('error', () => retry(img));
+        if (img.complete && img.naturalWidth === 0 && img.currentSrc) retry(img);
+    });    const deck = makeDeck();
     const tour = makeTour();
     const blog = makeBlog();
     const fs = makeFullscreen({

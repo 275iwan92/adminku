@@ -17,7 +17,6 @@
         <div class="ugf-brand"><b>AdminKU</b><span>Bantuan &amp; dukungan</span></div>
         <div class="ugf-btns">
             <button type="button" data-ugf-full aria-label="Layar penuh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-            <button type="button" data-ugf-play aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Putar otomatis</span></button>
             <button type="button" class="ugf-close" data-ugf-close aria-label="Tutup bantuan layar penuh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Tutup</span></button>
         </div>
     </header>
@@ -30,7 +29,8 @@
                 <h2 class="ugf-logo rv">AdminKU</h2>
                 <p class="ugf-tag rv" style="--d: 150">KERJA JADI RAPI</p>
                 <p class="ugf-sub rv" style="--d: 300">Stok, pembelian, kas, kendaraan dan AC, serta kepegawaian dalam satu aplikasi. Gulir untuk berkenalan.</p>
-                <button type="button" class="ugf-cta rv" style="--d: 450" data-ugf-next>Mulai <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+                <button type="button" class="ugf-play rv" style="--d: 450" data-ugf-play aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Putar otomatis</span></button>
+                <button type="button" class="ugf-next rv" style="--d: 600" data-ugf-next aria-label="Mulai: ke bagian berikutnya"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
             </div>
         </section>
 
@@ -83,7 +83,7 @@
                             <button type="button" data-ugf-try="{{ $first }}">Coba sendiri</button>
                         </div>
                     </div>
-                    <div class="ugf-frame rv" style="--d: 250" aria-hidden="true"><div class="ugf-bt"><i></i><i></i><i></i></div><div class="ugf-clip"><img src="{{ $img($g['shot']) }}" alt="" width="1440" height="900" decoding="async"></div></div>
+                    <div class="ugf-frame rv" style="--d: 250" aria-hidden="true"><div class="ugf-bt"><i></i><i></i><i></i></div><div class="ugf-clip"><img src="{{ $img($g['shot']) }}" alt="" width="1440" height="900" loading="lazy"></div></div>
                 </div>
             </section>
         @endforeach
