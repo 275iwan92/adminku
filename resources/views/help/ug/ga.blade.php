@@ -29,6 +29,13 @@
         @if ($can('GAA'))<tr><td>{!! $ref('GAA', 'ga-gaa', 'Area dan Gedung AC') !!}</td><td>Area atau gedung beserta gambar denahnya</td></tr>@endif
         @if ($can('GAR'))<tr><td>{!! $ref('GAR', 'ga-gar', 'Ruang AC') !!}</td><td>Ruang di tiap area, kode ruang, dan PIC</td></tr>@endif
         @if ($can('GAE'))<tr><td>{!! $ref('GAE', 'ga-gae', 'Vendor AC') !!}</td><td>Vendor jasa AC beserta nomor WhatsApp dan e-mail</td></tr>@endif
+        @if ($can('FAM'))<tr><td>{!! $ref('FAM', 'ga-fam', 'Perawatan Gedung dan Aset') !!}</td><td>Dashboard aset, jadwal, tiket, dan biaya perawatan gedung</td></tr>@endif
+        @if ($can('FAT'))<tr><td>{!! $ref('FAT', 'ga-fat', 'Tiket Perawatan') !!}</td><td>Perintah Kerja: lapor kerusakan, kerjakan, setujui</td></tr>@endif
+        @if ($can('FAJ'))<tr><td>{!! $ref('FAJ', 'ga-faj', 'Jadwal Perawatan') !!}</td><td>Perawatan berkala per aset atau per gedung</td></tr>@endif
+        @if ($can('FAA'))<tr><td>{!! $ref('FAA', 'ga-faa', 'Master Aset') !!}</td><td>Daftar aset, kode otomatis, kondisi, garansi</td></tr>@endif
+        @if ($can('FAG'))<tr><td>{!! $ref('FAG', 'ga-fag', 'Gedung dan Ruang') !!}</td><td>Gedung beserta ruang atau areanya</td></tr>@endif
+        @if ($can('FAC'))<tr><td>{!! $ref('FAC', 'ga-fac', 'Kategori Aset') !!}</td><td>Pengelompokan aset <span class="g-role">hanya Supervisor ke atas</span></td></tr>@endif
+        @if ($can('FAR'))<tr><td>{!! $ref('FAR', 'ga-far', 'Laporan Biaya Perawatan') !!}</td><td>Biaya perawatan per aset, gedung, dan kategori</td></tr>@endif
         @if ($can('GAP'))<tr><td>{!! $ref('GAP', 'ga-gap', 'Pengaturan GA') !!}</td><td>Ambang Segera, interval cuci dan servis besar, hari dan jam kunjungan, kapasitas harian <span class="g-role">hanya Supervisor ke atas</span></td></tr>@endif
     </tbody>
 </table>
@@ -41,7 +48,7 @@
     <li>Pembagian yang lazim: petugas admin GA mendapat semua modul GA, sopir hanya <b>Catat Odometer</b>. Administrator mengatur ini di menu {!! $can('GRP') ? '<a href="#sec-grp">Grup</a>' : 'Grup' !!}.</li>
     <li><b>Pengaturan GA</b> hanya untuk peran Supervisor ke atas: Data Entry tidak bisa memakainya walau Grup-nya dicentang.</li>
     <li><b>Menu Personalia ringkas:</b> satu butir <b>Perawatan Kendaraan</b> dan satu butir <b>Perawatan AC</b>, tanpa butir Pengaturan terpisah. Layar lainnya dibuka lewat tombol di panelnya (<span class="g-btn">Setup</span>, <span class="g-btn">Penjadwalan</span>, dan seterusnya). Pengguna yang tidak punya panelnya (mis. sopir yang hanya punya Catat Odometer) tetap melihat layar yang diizinkan di menu.</li>
-    <li>Menu Personalia milik Administrator juga memuat <b>Perawatan Gedung</b>. Itu layar sementara bertuliskan "Segera hadir"; belum bisa dipakai.</li>
+    <li>Perawatan gedung dan aset juga satu butir menu: <b>Perawatan Gedung dan Aset</b>. Tiket, Jadwal, Aset, Setup, dan Laporan Biaya dibuka lewat tombol di panelnya.</li>
 </ul>
 
 <h3 id="ga-status">Arti Aman, Segera, dan Terlambat</h3>
@@ -519,6 +526,163 @@
     <li><b>Kode vendor sudah dipakai.</b> Pakai kode lain.</li>
     <li><b>Tombol Buka WhatsApp tidak ada di Kunjungan AC.</b> Nomor WhatsApp vendor kosong atau kurang dari 9 angka.</li>
     <li><b>Vendor tidak ada di Penjadwalan AC.</b> Vendornya nonaktif.</li>
+</ul>
+@endif
+
+@if ($can('FAM'))
+<h3 id="ga-fam">Perawatan Gedung dan Aset</h3>
+<h4>Untuk apa</h4>
+<p>Satu layar untuk memantau perawatan gedung dan seluruh aset perusahaan (bangunan, listrik, plumbing, mebel, elektronik, kendaraan ringan, alat keselamatan): aset yang perlu perawatan, tiket terbuka, jadwal berkala yang terlambat, dan biaya perawatan enam bulan terakhir.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Perawatan Gedung dan Aset</b> (RO cukup untuk membaca). Tombol <span class="g-btn">Tiket</span>, <span class="g-btn">Jadwal</span>, <span class="g-btn">Aset</span>, <span class="g-btn">Laporan Biaya</span>, dan <span class="g-btn">Setup</span> tampil sesuai modul yang Anda punya.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Personalia</b> lalu <b>Perawatan Gedung dan Aset</b>.</li>
+    <li>Baca lima kotak: <b>Aset aktif</b>, <b>Perlu perawatan</b> (kondisi Perlu perawatan atau Rusak), <b>Tiket terbuka</b> (Draf dan Diajukan), <b>Jadwal terlambat</b>, dan <b>Biaya bulan ini</b> (hanya tiket yang sudah disetujui).</li>
+    <li>Baca <b>Perlu tindakan</b>: baris merah untuk yang mendesak (tiket Darurat, aset Rusak, jadwal Terlambat), baris kuning untuk yang mendekat. Klik baris untuk membuka daftarnya.</li>
+    <li>Lihat grafik <b>Biaya perawatan 6 bulan terakhir</b> (tenaga dan material), <b>Tiket per status</b>, dan <b>Tiket terbuka per kategori</b>.</li>
+    <li>Buka sebuah aset di Master Aset lalu tekan <span class="g-btn">Kartu Aset</span> untuk melihat seluruh riwayat perawatannya beserta total biaya.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Biaya hanya dihitung dari Perintah Kerja yang sudah <b>disetujui Supervisor</b> (status Selesai), menurut tanggal selesainya.</li>
+    <li>Vendor memakai master yang sama dengan Vendor AC.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Tombol Tiket, Jadwal, atau Aset tidak ada.</b> Grup Anda belum diberi modul layar tujuannya. Minta Administrator memeriksa di Grup.</li>
+    <li><b>Biaya bulan ini nol.</b> Belum ada tiket yang disetujui bulan ini.</li>
+</ul>
+@endif
+
+@if ($can('FAT'))
+<h3 id="ga-fat">Tiket Perawatan (Perintah Kerja)</h3>
+<h4>Untuk apa</h4>
+<p>Mencatat laporan kerusakan sampai pekerjaannya selesai dan disetujui, lengkap dengan vendor atau teknisi internal, biaya tenaga dan material, serta foto sebelum dan sesudah.</p>
+<h4>Siapa yang bisa</h4>
+<p>Siapa pun yang Grup-nya punya modul <b>Tiket Perawatan</b> dengan hak RW boleh melapor dan mengisi tiket. <b>Approve hanya oleh Supervisor</b>, dan bukan oleh pembuat tiketnya sendiri.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Tiket</b> lalu <span class="g-btn">New Record</span>, atau tekan <span class="g-btn">Lapor Kerusakan</span> di form Aset, atau <span class="g-btn">Buat Tiket dari Jadwal</span> di form Jadwal.</li>
+    <li>Isi <b>Judul</b>, pilih <b>Aset</b> (atau Gedung / ruang bila bukan satu aset), <b>Prioritas</b> (Rendah, Normal, Tinggi, Darurat), dan uraian. Tekan <span class="g-btn">Save</span>: tiket tersimpan sebagai <b>Draf</b>.</li>
+    <li>Setelah dikerjakan isi <b>Dikerjakan oleh</b> (Vendor atau Teknisi internal), <b>Tanggal selesai</b>, <b>Biaya tenaga</b>, <b>Biaya material</b>, dan unggah foto sebelum dan sesudah.</li>
+    <li>Tekan <span class="g-btn">Confirm</span>: nomor <b>WO</b> terbit dan tiket berstatus <b>Diajukan</b>, terkunci dan menunggu Supervisor.</li>
+    <li>Supervisor menekan <span class="g-btn">Approve</span> (tiket menjadi <b>Selesai</b>) atau <span class="g-btn">Reject</span> dengan alasan. Pembuat atau Supervisor dapat <span class="g-btn">Cancel</span> dengan alasan.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Saat disetujui, jadwal asal tiket maju otomatis, dan aset berkondisi Rusak atau Perlu perawatan kembali menjadi Baik bila tidak ada tiket terbuka lain.</li>
+    <li>Draf boleh dihapus; yang sudah bernomor tidak dihapus, hanya dibatalkan.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Tombol Approve tidak ada.</b> Hanya Supervisor yang bukan pembuat tiket yang melihatnya.</li>
+    <li><b>Confirm ditolak.</b> Isi tanggal selesai, serta vendor atau nama teknisi internal.</li>
+</ul>
+@endif
+
+@if ($can('FAJ'))
+<h3 id="ga-faj">Jadwal Perawatan</h3>
+<h4>Untuk apa</h4>
+<p>Perawatan berkala (preventif) per aset atau per gedung / ruang: Mingguan, Bulanan, Triwulan, atau Tahunan. Tanggal berikutnya dihitung otomatis dari pekerjaan terakhir yang disetujui.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Jadwal Perawatan</b>; RW untuk membuat dan mengubah jadwal.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Jadwal</b> lalu <span class="g-btn">New Record</span>. Isi <b>Judul</b>, <b>Periode</b>, <b>Tanggal mulai</b>, dan pilih <b>Aset</b> atau <b>Gedung / ruang</b> (salah satu). Vendor kosong berarti teknisi internal.</li>
+    <li>Baca kolom <b>Berikutnya</b> dan <b>Status</b>: <i>Aman</i>, <i>Segera</i> (dalam 14 hari), atau <i>Terlambat</i>.</li>
+    <li>Saat jatuh tempo, buka jadwal lalu tekan <span class="g-btn">Buat Tiket dari Jadwal</span>.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Jadwal tidak dihapus, hanya dinonaktifkan. Setelah tiket dari jadwal disetujui, jatuh tempo berikutnya maju satu periode dari tanggal selesai.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Simpan ditolak.</b> Pilih aset atau gedung / ruang, tidak keduanya.</li>
+</ul>
+@endif
+
+@if ($can('FAA'))
+<h3 id="ga-faa">Master Aset</h3>
+<h4>Untuk apa</h4>
+<p>Daftar aset perusahaan. Kode <b>AST-0001</b> dan seterusnya dibuat otomatis dan tidak berubah. Aset ditampilkan sebagai kartu per kategori; klik kategori untuk membukanya.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Master Aset</b>; RW untuk menambah dan mengubah.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Aset</b> lalu <span class="g-btn">New Record</span>. Isi nama, kategori, gedung / ruang, tanggal beli, nilai, garansi s.d., kondisi (Baik, Perlu perawatan, Rusak, Dihapus), penanggung jawab, dan foto bila ada.</li>
+    <li>Untuk berhenti memakai aset, tekan <span class="g-btn">Deactivate</span> (aset tidak dihapus).</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Aset dengan tiket terbuka tidak bisa dinonaktifkan. Kondisi kembali Baik otomatis saat tiket perbaikannya disetujui.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Kategori atau gedung tidak ada di pilihan.</b> Tambahkan dulu di Kategori Aset atau Gedung dan Ruang.</li>
+</ul>
+@endif
+
+@if ($can('FAG'))
+<h3 id="ga-fag">Gedung dan Ruang</h3>
+<h4>Untuk apa</h4>
+<p>Gedung dan ruang atau area di dalamnya (dua tingkat). Kosongkan <b>Gedung induk</b> untuk membuat gedung; pilih gedung untuk membuat ruang. Kode dibuat otomatis dari nama bila dikosongkan.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Gedung dan Ruang</b>; RW untuk menambah dan mengubah.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Setup</b> lalu <b>Gedung dan Ruang</b>. Klik kelompok gedung untuk melihat ruangnya.</li>
+    <li>Tekan <span class="g-btn">New Record</span> atau tombol <i>Ruang di ...</i>, isi nama, dan simpan.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Gedung yang masih punya ruang aktif, atau tempat yang masih punya aset aktif, tidak bisa dinonaktifkan.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Nonaktifkan ditolak.</b> Nonaktifkan atau pindahkan dulu ruang dan aset di dalamnya.</li>
+</ul>
+@endif
+
+@if ($can('FAC'))
+<h3 id="ga-fac">Kategori Aset <span class="g-role">hanya Supervisor ke atas</span></h3>
+<h4>Untuk apa</h4>
+<p>Pengelompokan aset (Bangunan, Listrik, Plumbing, Mebel, Elektronik, Kendaraan ringan, Keselamatan) lengkap dengan ikonnya.</p>
+<h4>Siapa yang bisa</h4>
+<p>Peran Supervisor atau Administrator yang Grup-nya punya modul <b>Kategori Aset</b>; Data Entry tidak bisa memakainya.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Setup</b> lalu <b>Kategori Aset</b>, tekan <span class="g-btn">New Record</span>, isi nama dan pilih ikon.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Kategori yang masih punya aset aktif tidak bisa dinonaktifkan.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Menu Kategori Aset tidak ada.</b> Grup Anda belum diberi modulnya, atau peran Anda Data Entry.</li>
+</ul>
+@endif
+
+@if ($can('FAR'))
+<h3 id="ga-far">Laporan Biaya Perawatan</h3>
+<h4>Untuk apa</h4>
+<p>Total biaya tenaga dan material dari Perintah Kerja yang sudah disetujui dalam satu periode.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Laporan Biaya Perawatan</b> (RO cukup).</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Laporan Biaya</b> dari panel Perawatan Gedung dan Aset. Pilih periode, gedung, dan kategori lalu tekan <span class="g-btn">Tampilkan</span>.</li>
+    <li>Kelompokkan <b>per Aset</b>, <b>per Gedung</b>, atau <b>per Kategori</b>; cetak atau ekspor dari bilah laporan.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Hanya tiket berstatus Selesai (disetujui) yang masuk, menurut tanggal selesainya.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Laporan kosong.</b> Belum ada tiket yang disetujui pada periode itu, atau saringan terlalu sempit.</li>
 </ul>
 @endif
 

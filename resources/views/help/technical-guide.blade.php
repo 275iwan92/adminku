@@ -350,7 +350,7 @@
                 <tr><td>RCV, ISS</td><td>Penerimaan Barang, Pengeluaran Barang</td><td>Transaksi</td><td>Data Entry</td><td><code>docs.*</code> with <code>{type}</code> = receiving / issuance</td></tr>
                 <tr><td>R-CARD, R-SUM, R-IN, R-OUT, R-EXP</td><td>Kartu Stok, Ringkasan Stok, Laporan Penerimaan / Pengeluaran / Kedaluwarsa</td><td>Laporan</td><td>Data Entry</td><td><code>reports.*</code></td></tr>
                 <tr><td>R-ADJ</td><td>Laporan Opname &amp; Penyesuaian</td><td>Laporan</td><td>Supervisor</td><td><code>reports.adjustment</code></td></tr>
-                <tr><td>GVM, GVD, GVS, GVO, GVK, GVT, GAS, GAV, GAK, GAA, GAR, GAE</td><td>Perawatan Kendaraan and Perawatan AC screens</td><td>GA</td><td>Data Entry (rights only through a group, never by role default)</td><td>see <a href="#ga-modules">13. GA</a></td></tr>
+                <tr><td>GVM, GVD, GVS, GVO, GVK, GVT, GAS, GAV, GAK, GAA, GAR, GAE, FAM, FAT, FAJ, FAA, FAG, FAC, FAR</td><td>Perawatan Kendaraan, Perawatan AC and Perawatan Gedung dan Aset screens</td><td>GA</td><td>Data Entry (rights only through a group, never by role default)</td><td>see <a href="#ga-modules">13. GA</a></td></tr>
                 <tr><td>GAP</td><td>Pengaturan GA</td><td>GA</td><td>Supervisor (group right needed)</td><td><code>ga-settings.</code></td></tr>
                 <tr><td>USR, GRP, SMP, MOD</td><td>Pengguna, Grup, Data Contoh, Daftar Modul</td><td>Keamanan</td><td>Administrator</td><td><code>users.</code>, <code>groups.</code>, <code>sample.</code>, <code>modules.</code></td></tr>
             </tbody>
@@ -550,7 +550,7 @@ composer test                        # config:clear, then php artisan test</pre>
         </ul>
 
         <h2 id="ga">13. GA: vehicle care and AC care</h2>
-        <p>General Affairs modules of AdminKU for Jays: <b>Perawatan Kendaraan</b> (vehicle documents, service schedule, odometer) and <b>Perawatan AC</b> (cleaning schedule, vendor visits, floor plan). Both are self-contained: they never touch warehouse stock. Permission codes <code>GV*</code> (vehicle) and <code>GA*</code> (AC) sit under the menu parent <code>GA</code>. Perawatan Gedung is still a placeholder (<a href="#ga-open">open items</a>); HR (<a href="#hr">section 14</a>), Purchase (<a href="#purchase">section 15</a>) and Kas (<a href="#kas">section 16</a>) are built.</p>
+        <p>General Affairs modules of AdminKU for Jays: <b>Perawatan Kendaraan</b> (vehicle documents, service schedule, odometer) and <b>Perawatan AC</b> (cleaning schedule, vendor visits, floor plan). Both are self-contained: they never touch warehouse stock. Permission codes <code>GV*</code> (vehicle) and <code>GA*</code> (AC) sit under the menu parent <code>GA</code>. <b>Perawatan Gedung dan Aset</b> (codes <code>FA*</code>) is built: see the card below. HR (<a href="#hr">section 14</a>), Purchase (<a href="#purchase">section 15</a>) and Kas (<a href="#kas">section 16</a>) are built.</p>
         <table class="g-table">
             <thead><tr><th>Layer</th><th>What it is</th><th>Where</th></tr></thead>
             <tbody>
@@ -715,7 +715,7 @@ composer test                        # config:clear, then php artisan test</pre>
         </table>
         <ul class="g-list">
             <li><b>Rights migrations</b> give the built-in group <code>ADMIN</code> read-write on the new codes with <code>insertOrIgnore</code> (safe to re-run; <code>down()</code> deletes those rows): <code>2026_11_18_120000_give_vehicle_care_to_admin_groups</code> (GVM, GVD, GVS, GVO, GVK, GVT), <code>2026_11_19_120000_give_ac_care_to_admin_groups</code> (GAS, GAV, GAK, GAA, GAR, GAE) and <code>2026_11_20_120000_give_ga_settings_to_admin_groups</code> (GAP). No other group receives anything: the Administrator ticks GA modules per group in the Grup screen (typically a GA officer group with everything, and a driver group with only GVO).</li>
-            <li><b>Menu:</b> <code>Menu::layers</code> builds the GA parent from <code>Modules</code>; for Administrators only it appends the placeholder <b>Perawatan Gedung</b> (route <code>soon</code>, view <code>soon.blade.php</code>). It is the only remaining placeholder: HR and Purchase menus are now built the same way as GA (parent built from <code>Modules</code>), and Kas the same way again.</li>
+            <li><b>Menu:</b> <code>Menu::layers</code> builds the GA parent from <code>Modules</code> (including the real <b>Perawatan Gedung dan Aset</b> item). The older <code>soon</code> route and view remain but no menu item points to them. HR, Purchase and Kas are built the same way.</li>
             <li><b>Phone view:</b> GA has no native phone screens; its pages are the desktop pages and use the DevLib phone rules (<code>:phone-cards</code> on the grids, <code>dl-table--stack</code> tables).</li>
         </ul>
 
@@ -758,6 +758,19 @@ composer test                        # config:clear, then php artisan test</pre>
             </tbody>
         </table>
 
+        <h3 id="ga-fac-card">Perawatan Gedung dan Aset (FAM, FAT, FAJ, FAA, FAG, FAC, FAR)</h3>
+        <table class="g-table">
+            <tbody>
+                <tr><td>Tables</td><td><code>m_fac_place</code> (building when <code>parent_id</code> is null, room otherwise), <code>m_fac_category</code>, <code>m_fac_asset</code> (<code>asset_code</code> AST-0001, permanent; <code>cond</code> baik / perlu / rusak / dihapus), <code>g_fac_plan</code> (periodic schedule for an asset or a place), <code>g_fac_order</code> (work order, status draft / approval / approved / rejected / cancelled). Vendors reuse <code>m_ac_vendor</code>.</td></tr>
+                <tr><td>Service</td><td><code>FacCare</code>: labels and tones, <code>nextDue()</code> (last done + period, or start date), <code>overview()</code> (Aman / Segera / Terlambat, <code>ga.fac.soon_days</code> default 14), <code>dashboard()</code> (fixed query count), <code>costByMonth()</code>, <code>onApproved()</code>.</td></tr>
+                <tr><td>Screens</td><td><code>FacCareController</code> (dashboard, Kartu Aset, Setup; read only), <code>FacOrderController</code>, <code>FacPlanController</code>, <code>FacAssetController</code>, <code>FacPlaceController</code>, <code>FacCategoryController</code> (Supervisor), <code>FacReportController</code> (<code>reports.fac-cost</code>); views <code>fac-*</code> and <code>partials/fac-cardlist</code>.</td></tr>
+                <tr><td>Lifecycle</td><td>Work order: draft (owner or Supervisor edits) &gt; Confirm (number WO-YYMM-0001 under <code>lockForUpdate</code>, needs finish date and vendor or technician) &gt; Approve by a Supervisor who is not the creator (<code>canApprove()</code>) = "Selesai" | Reject (reason). Approve calls <code>FacCare::onApproved</code>: the plan's <code>last_done_at</code> moves forward and a damaged asset returns to Baik when no other open ticket exists.</td></tr>
+                <tr><td>Costs</td><td>Only approved orders count (labor + material), by <code>date(coalesce(finished_at, reported_at))</code>. Photos are stored on the private disk <code>ga</code> (<code>storage/app/ga/fac</code>) and served through controllers behind the module rights.</td></tr>
+                <tr><td>Rights</td><td>Menu parent <code>GA</code>; <code>FAM</code> is the panel (the others sit under it through <code>Modules::MENU_UNDER</code>); <code>FAC</code> needs Supervisor. Migration <code>create_facility_assets</code> gives group <code>ADMIN</code> read-write with <code>insertOrIgnore</code>.</td></tr>
+                <tr><td>Sample data</td><td><code>FacSeeder</code> (3 buildings, 26 assets, 9 schedules, 12 work orders, dates relative to today), called by <code>DatabaseSeeder</code>, so <code>adminku:reset-demo</code> restores it.</td></tr>
+            </tbody>
+        </table>
+
         <h3 id="ga-open">GA open items (not built)</h3>
         <ul class="g-list">
             <li>No WhatsApp Cloud API and no automatic sending: the PIC copy at 15:00 the day before is only a suggested time. There is no scheduled job, so a reminder service would need <code>routes/console.php</code> plus a queue worker or a cron entry.</li>
@@ -765,7 +778,6 @@ composer test                        # config:clear, then php artisan test</pre>
             <li>Vehicle documents, services and odometer readings cannot be edited or deleted from a screen; a wrong entry needs a database correction by an Administrator.</li>
             <li>No alerts: Segera and Terlambat items appear only on the GA screens (no Beranda card, no e-mail digest, no GA report screens).</li>
             <li>Servicing does not deduct stock; oil and filters taken from the warehouse are issued manually in Pengeluaran Barang.</li>
-            <li>Perawatan Gedung is still a placeholder ("Segera hadir"), visible to Administrators only; the table <code>g_maintenance_order</code> from the prefix plan does not exist. HR, Purchase and Kas are built (<a href="#hr">14</a>, <a href="#purchase">15</a>, <a href="#kas">16</a>).</li>
             <li>No scan or signature capture for the printed minutes (Berita Acara); the paper is signed by hand.</li>
             <li>No spare-part master list and no cost report yet: parts are free text with an optional total cost per row.</li>
         </ul>
