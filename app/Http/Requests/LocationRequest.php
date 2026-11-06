@@ -27,6 +27,7 @@ class LocationRequest extends FormRequest
 
         return [
             'code' => ['required', 'string', 'max:50', 'regex:/^\S+$/', Rule::unique('m_location', 'code')->ignore($this->route('location'))],
+            'type' => ['nullable', Rule::in(array_keys(\App\Models\Location::TYPES))],
             'name' => ['required', 'string', 'max:100', new UniqueName('m_location', $this->route('location'))],
         ];
     }
@@ -38,6 +39,6 @@ class LocationRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['code' => strtoupper(Text::of($this->input('code'))), 'name' => Text::of($this->input('name'))]);
+        $this->merge(['code' => strtoupper(Text::of($this->input('code'))), 'name' => Text::of($this->input('name')), 'type' => $this->input('type') ?: null]);
     }
 }

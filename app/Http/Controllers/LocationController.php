@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LocationRequest;
 use App\Models\Location;
-use App\Support\Palette;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 
@@ -20,7 +19,7 @@ class LocationController extends Controller
     public function index()
     {
         $rows = Location::query()->withCount('items')->orderBy('code')->get()->map(fn (Location $l) => [
-            'id' => $l->id, 'code' => $l->code, 'name' => $l->name, 'hue' => Palette::item('LOC', $l->code), 'items' => $l->items_count, 'active' => $l->is_active,
+            'id' => $l->id, 'code' => $l->code, 'name' => $l->name, 'type' => $l->type, 'items' => $l->items_count, 'active' => $l->is_active,
         ])->all();
 
         return view('locations.index', ['rows' => $rows]);
@@ -54,7 +53,7 @@ class LocationController extends Controller
 
             return redirect()->route('locations.show', $location)->with('status', $action === 'activate' ? 'Lokasi diaktifkan.' : 'Lokasi dinonaktifkan.');
         }
-        $location->update($request->safe()->only('name'));  // kode tidak berubah setelah disimpan
+        $location->update($request->safe()->only(['name', 'type']));  // kode tidak berubah setelah disimpan
 
         return redirect()->route('locations.show', $location)->with('status', 'Lokasi disimpan.');
     }

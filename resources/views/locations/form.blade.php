@@ -21,6 +21,7 @@
         <x-dl::form.row :cols="3">
             <x-dl::field.text name="code" label="Location Code" :value="$v('code')" code :case-toggle="false" required :readonly="! $isNew" maxlength="50" :error="$e('code')" hint="Unique, for example A1-01. Cannot be changed after saving." />
             <x-dl::field.text name="name" label="Location Name" :value="$v('name')" required maxlength="100" :error="$e('name')" />
+            <x-dl::field.select name="type" label="Location Type" :options="['' => 'Belum ditentukan'] + \App\Models\Location::TYPES" :value="(string) $v('type')" :error="$e('type')" tooltip="Groups the location in the list (cabinet, closed warehouse, open warehouse, wide area)." />
         </x-dl::form.row>
         @unless ($isNew)
             <x-dl::form.row :cols="3">

@@ -52,12 +52,24 @@ class ItemSeeder extends Seeder
         ['Cat Semprot Pelindung', 'SPR', 'can', 'B5-03', 45000, 4, 12, 7, 20, 150],
     ];
 
+    // Jenis demo dari kode rak: A1-A2 lemari, B1-B3 gudang tertutup, B4-B5 gudang terbuka, C area luas.
+    private static function locationType(string $code): ?string
+    {
+        return match (true) {
+            str_starts_with($code, 'A') => 'lemari',
+            (int) substr($code, 1, 1) >= 4 && $code[0] === 'B' => 'gudang_terbuka',
+            $code[0] === 'B' => 'gudang_tertutup',
+            $code[0] === 'C' => 'area_luas',
+            default => null,
+        };
+    }
+
     public function run(): void
     {
         $categories = Category::pluck('id', 'code');
 
         foreach (self::ITEMS as [$code, $name, $cat, $unit, $location, $price, $rop, $roq, $lead]) {
-            Location::firstOrCreate(['code' => $location], ['name' => 'Rak '.$location]);
+            Location::firstOrCreate(['code' => $location], ['name' => 'Rak '.$location, 'type' => self::locationType($location)]);
             Item::where('code', $code)->exists() || Item::register([
                 'name' => $name, 'category_id' => $categories[$cat], 'unit' => $unit, 'location' => $location,
                 'unit_price' => $price, 'reorder_point' => $rop, 'reorder_qty' => $roq, 'lead_time_days' => $lead,
@@ -65,7 +77,7 @@ class ItemSeeder extends Seeder
         }
 
         foreach (self::EXPIRING as [$name, $cat, $unit, $location, $price, $rop, $roq, $lead, , $days]) {
-            Location::firstOrCreate(['code' => $location], ['name' => 'Rak '.$location]);
+            Location::firstOrCreate(['code' => $location], ['name' => 'Rak '.$location, 'type' => self::locationType($location)]);
             $product = Item::where('name', $name)->first() ?? Item::register([
                 'name' => $name, 'category_id' => $categories[$cat], 'unit' => $unit, 'location' => $location, 'tracks_expiry' => true,
                 'unit_price' => $price, 'reorder_point' => $rop, 'reorder_qty' => $roq, 'lead_time_days' => $lead,
