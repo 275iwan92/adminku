@@ -13,9 +13,9 @@
             ? $expired.' barang sudah kedaluwarsa dan '.($expiring->count() - $expired).' barang hampir kedaluwarsa (kurang dari '.\App\Models\Batch::EXPIRY_WARN_DAYS.' hari). Pisahkan dari rak dan keluarkan lewat Penyesuaian Stok.'
             : $expiring->count().' barang akan kedaluwarsa dalam '.\App\Models\Batch::EXPIRY_WARN_DAYS.' hari. Gunakan lebih dulu.';
     @endphp
-    <x-dl::alert :tone="$expired ? 'danger' : 'warn'" :message="$text">
-        <x-dl::button variant="secondary" size="sm" icon="fa-hourglass-end" label="Expiry Report" href="#" data-open-tab="R-EXP" />
-    </x-dl::alert>
+    <x-alert-bar :tone="$expired ? 'danger' : 'warn'" :message="$text" icon="fa-hourglass-end">
+        <x-dl::button size="sm" icon="fa-hourglass-end" label="Expiry Report" href="#" data-open-tab="R-EXP" />
+    </x-alert-bar>
     {{-- Tabel ditulis langsung (bukan x-dl::table) karena kolom status memakai x-dl::badge berwarna. --}}
     <div class="dl-table-wrap sstock-reorder">
         <table class="dl-table is-striped">

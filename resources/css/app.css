@@ -719,3 +719,33 @@ a.sstock-otile[data-hue]:is(:hover, :focus-visible) { box-shadow: 0 8px 20px col
 .sstock-otile__bar u { background: var(--h); }
 @media (prefers-reduced-motion: no-preference) { html[data-gaya="baru"] .sstock-mod__bar u, html[data-gaya="baru"] .sstock-otile__bar u { transform-origin: left; animation: sstock-grow .8s .3s ease-out both; } }
 @keyframes sstock-grow { from { transform: scaleX(0); } to { transform: none; } }
+
+/* Banner peringatan berbaris (components/alert-bar): ikon, teks, tombol di kanan sejajar; membungkus di layar sempit. Aksi utama = tombol terisi sesuai tingkat, sekunder = outline; tinggi 40px dan radius pil konsisten. */
+.sstock-abar { --a: #c2413b; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 16px; padding: 12px 16px; color: var(--dl-ink); background: color-mix(in srgb, var(--a) 12%, var(--dl-surface)); border: 1px solid color-mix(in srgb, var(--a) 45%, var(--dl-surface)); border-left: 6px solid var(--a); border-radius: 14px; }
+.sstock-abar--warn { --a: #d99a1c; }
+.sstock-abar--info { --a: #3b82c4; }
+.sstock-abar__i { display: grid; place-items: center; flex: none; width: 36px; height: 36px; font-size: 17px; color: #fff; background: var(--a); border-radius: 10px; }
+.sstock-abar__t { flex: 1 1 260px; margin: 0; font-size: 14px; line-height: 1.45; }
+.sstock-abar__act { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.sstock-abar .dl-btn { min-height: 40px; padding: 0 16px; margin: 0; font-size: 14px; font-weight: 600; border-radius: 99px; }
+.sstock-abar .dl-btn--primary { color: #fff; background: var(--a); }
+.sstock-abar--warn .dl-btn--primary { color: #3b2a00; }
+.sstock-abar .dl-btn--primary:hover { background: color-mix(in srgb, var(--a) 85%, #000); }
+.sstock-abar .dl-btn--secondary { color: var(--dl-ink); background: transparent; border: 2px solid var(--a); }
+.sstock-abar .dl-btn--secondary:hover { background: color-mix(in srgb, var(--a) 15%, transparent); }
+@media (max-width: 600px) { .sstock-abar__act { width: 100%; margin-left: 0; } .sstock-abar__act .dl-btn { flex: 1 1 auto; justify-content: center; } }
+
+/* Kotak Perlu tindakan (opening-body, section ga): judul berikon + jumlah total, tiap item baris berwarna menurut tingkat (danger merah, warn amber), ikon modul, angka besar, panah; seluruh baris tautan. Kosong = pesan hijau. */
+.sstock-todo { display: grid; gap: 8px; margin: 0 0 14px; }
+.sstock-todo h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 16px; }
+.sstock-todo__n { padding: 1px 10px; font-size: 13px; color: #fff; background: #c2413b; border-radius: 99px; }
+.sstock-trow { --a: #d99a1c; display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 16px; color: var(--dl-ink); text-decoration: none; background: color-mix(in srgb, var(--a) 14%, var(--dl-surface)); border: 1px solid color-mix(in srgb, var(--a) 45%, var(--dl-surface)); border-left: 6px solid var(--a); border-radius: 14px; }
+.sstock-trow.is-danger { --a: #c2413b; }
+.sstock-trow > i:first-child { display: grid; place-items: center; flex: none; width: 36px; height: 36px; font-size: 16px; color: #fff; background: var(--a); border-radius: 10px; }
+.sstock-trow b { min-width: 32px; font-size: 28px; line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--a) 80%, var(--dl-ink)); }
+.sstock-trow span { flex: 1; font-size: 15px; }
+.sstock-trow__go { opacity: .55; }
+.sstock-trow:is(:hover, :focus-visible) { box-shadow: 0 6px 16px color-mix(in srgb, var(--a) 25%, transparent); outline: none; }
+.sstock-trow:hover .sstock-trow__go { opacity: 1; }
+.sstock-tok { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 16px; font-size: 15px; font-weight: 600; color: #1f6b3d; background: color-mix(in srgb, #2f9e5b 14%, var(--dl-surface)); border: 1px solid color-mix(in srgb, #2f9e5b 45%, var(--dl-surface)); border-left: 6px solid #2f9e5b; border-radius: 14px; }
+.sstock-tok i { font-size: 20px; color: #2f9e5b; }

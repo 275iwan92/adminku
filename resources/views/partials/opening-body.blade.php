@@ -52,12 +52,18 @@
     </div>
 @endif
 @if ($page['section'] === 'ga')
-    <section class="sstock-obox sstock-ohead--{{ $page['tone'] }}">
-        <h2>Perlu tindakan</h2>
-        @forelse ($page['todo'] as [$tone, $n, $text])
-            <div class="sstock-orow"><span class="sstock-opill is-{{ $tone }}">{{ \Devlib\Locale::number($n, 0) }}</span><span>{{ $text }}</span></div>
+    @php $todoTotal = array_sum(array_column($page['todo'], 1)); @endphp
+    <section class="sstock-todo">
+        <h2><i class="fa-solid fa-bell" aria-hidden="true"></i> Perlu tindakan @if ($todoTotal)<span class="sstock-todo__n">{{ \Devlib\Locale::number($todoTotal, 0) }}</span>@endif</h2>
+        @forelse ($page['todo'] as [$tone, $n, $text, $icon, $code])
+            <a class="sstock-trow is-{{ $tone }}" href="{{ $href(['code' => $code, 'url' => route(\App\Support\Modules::all()[$code][4])]) }}" @unless ($phone) data-dl-open-item="{{ $code }}" data-label="{{ \App\Support\Modules::all()[$code][1] }}" @endunless>
+                <i class="{{ $icon }}" aria-hidden="true"></i>
+                <b>{{ \Devlib\Locale::number($n, 0) }}</b>
+                <span>{{ $text }}</span>
+                <i class="fa-solid fa-chevron-right sstock-trow__go" aria-hidden="true"></i>
+            </a>
         @empty
-            <p class="sstock-onote">Tidak ada yang perlu ditindaklanjuti.</p>
+            <p class="sstock-tok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Semua aman. Tidak ada yang perlu ditindaklanjuti.</p>
         @endforelse
     </section>
 @endif

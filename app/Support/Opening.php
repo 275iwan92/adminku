@@ -236,16 +236,16 @@ final class Opening
         if ($user->canAccess('GVM')) {
             $f = HomeCards::fleet();
             array_push($stats, ['value' => Locale::number($f['active'], 0), 'label' => 'Kendaraan aktif', 'alert' => false], ['value' => Locale::number($f['late'] + $f['soon'], 0), 'label' => 'Kendaraan perlu tindakan', 'alert' => $f['late'] + $f['soon'] > 0]);
-            $f['late'] && $todo[] = ['danger', $f['late'], 'kendaraan Terlambat'];
-            $f['soon'] && $todo[] = ['warn', $f['soon'], 'kendaraan Segera'];
+            $f['late'] && $todo[] = ['danger', $f['late'], 'kendaraan Terlambat', 'fa-solid fa-car-side', 'GVM'];
+            $f['soon'] && $todo[] = ['warn', $f['soon'], 'kendaraan Segera', 'fa-solid fa-car-side', 'GVM'];
             $facts['GVM'] = ['n' => Locale::number($f['active'], 0), 'note' => 'kendaraan aktif'];
         }
         if ($user->canAccess('GAM')) {
             $a = HomeCards::acCounts();
             array_push($stats, ['value' => Locale::number($a['late'], 0), 'label' => 'AC terlambat', 'alert' => $a['late'] > 0], ['value' => Locale::number($a['week'], 0), 'label' => 'AC terjadwal minggu ini', 'alert' => false]);
-            $a['late'] && $todo[] = ['danger', $a['late'], 'AC terlambat dicuci'];
+            $a['late'] && $todo[] = ['danger', $a['late'], 'AC terlambat dicuci', 'fa-solid fa-snowflake', 'GAM'];
             $draft = $user->canAccess('GAV') || $user->canAccess('GAS') ? AcOrder::query()->where('status', 'draft')->count() : 0;
-            $draft && $todo[] = ['warn', $draft, 'pesanan kunjungan AC masih Draf'];
+            $draft && $todo[] = ['warn', $draft, 'pesanan kunjungan AC masih Draf', 'fa-solid fa-snowflake', 'GAM'];
             $facts['GAM'] = ['n' => Locale::number($a['units'], 0), 'note' => 'AC aktif'];
         }
         foreach ([['GVO', 'fa-gauge-high', 'Catat Odometer'], ['GVS', 'fa-screwdriver-wrench', 'Catat Servis'], ['GAS', 'fa-calendar-check', 'Jadwalkan AC']] as [$code, $icon, $label]) {

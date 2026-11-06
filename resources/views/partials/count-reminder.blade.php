@@ -13,15 +13,15 @@
         $tone = ['neutral' => 'info', 'warn' => 'warn', 'danger' => 'danger'][$r['tone']];
     @endphp
     @if ($r['running'])
-        <x-dl::alert tone="info" :message="raw('Stok Opname '.$r['running']->doc_no.' sedang berjalan ('.$r['running']->statusLabel().', terisi '.$r['running_progress'].').')">
+        <x-alert-bar tone="info" icon="fa-clipboard-check" :message="('Stok Opname '.$r['running']->doc_no.' sedang berjalan ('.$r['running']->statusLabel().', terisi '.$r['running_progress'].').')">
             <x-dl::button size="sm" variant="secondary" icon="fa-clipboard-check" label="Open Stok Opname" href="#" data-open-tab="SO" />
-        </x-dl::alert>
+        </x-alert-bar>
     @else
-        <x-dl::alert :tone="$tone" :message="raw($r['headline'].' '.$r['detail'].'.')">
+        <x-alert-bar :tone="$tone" icon="fa-clipboard-check" :message="($r['headline'].' '.$r['detail'].'.')">
             <x-dl::button size="sm" variant="secondary" icon="fa-clipboard-check" label="Open Stok Opname" href="#" data-open-tab="SO" />
             @if ($canStartCount)
                 <x-dl::button size="sm" icon="fa-play" label="Start Count" :href="route('stock-counts.create')" target="_blank" />
             @endif
-        </x-dl::alert>
+        </x-alert-bar>
     @endif
 @endif

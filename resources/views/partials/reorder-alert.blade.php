@@ -14,12 +14,12 @@
         $orderable = $below->filter(fn ($i) => ! $i->openOrder)->mapWithKeys(fn ($i) => [$i->id => $i->name])->all();
         $units = $below->filter(fn ($i) => ! $i->openOrder)->mapWithKeys(fn ($i) => [$i->id => $i->unit])->all();
     @endphp
-    <x-dl::alert tone="danger" :message="$text">
+    <x-alert-bar tone="danger" :message="$text">
         <x-dl::button variant="secondary" size="sm" icon="fa-truck-ramp-box" label="Open Receiving" href="#" data-open-tab="RCV" />
         @if ($orderable && $canOrder)
             <x-dl::button size="sm" icon="fa-cart-shopping" label="Record Order" data-dl-open="reorder-modal" />
         @endif
-    </x-dl::alert>
+    </x-alert-bar>
     @if ($orderable && $canOrder)
         <x-dl::modal id="reorder-modal" title="Record Order" icon="fa-cart-shopping" size="sm">
             <form id="reorder-form" method="POST" action="{{ route('reorder-orders.store') }}">
