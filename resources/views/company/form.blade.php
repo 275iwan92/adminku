@@ -4,7 +4,7 @@
  Sumber hulu  : CompanyController@edit (company = Company::get(), logoUrl).
  Input        : company, logoUrl.
  Output       : PUT company.update (multipart: logo).
- Dipakai oleh : route company.edit (menu Data Master > Perusahaan, hanya Supervisor).
+ Dipakai oleh : route company.edit (menu Data Master > Perusahaan, hanya Administrator).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Company'])

@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 /* REMARK
- * Tujuan       : Menjaga modul Perusahaan (kop cetakan): hak akses (hanya Supervisor), validasi, unggah logo (tipe palsu / SVG / terlalu besar / terlalu kecil ditolak, ukuran diubah), rute logo publik dengan header,
+ * Tujuan       : Menjaga modul Perusahaan (kop cetakan): hak akses (hanya Administrator), validasi, unggah logo (tipe palsu / SVG / terlalu besar / terlalu kecil ditolak, ukuran diubah), rute logo publik dengan header,
  *                kop tiga gaya pada cetak dokumen dan laporan, nama PT yang sama dengan nama tidak muncul dua kali, logo kosong jatuh ke nama saja, bawaan saat belum diisi, dan pemberian modul ke Grup.
  *                Berkas logo ditulis ke folder storage sementara, bukan storage kerja.
  * Dipakai oleh : php artisan test.
@@ -45,7 +45,7 @@ class CompanyTest extends TestCase
 
     private function sup(): User
     {
-        return User::factory()->supervisor()->create();
+        return User::factory()->administrator()->create();
     }
 
     /** @param array<string, mixed> $extra */
@@ -68,7 +68,7 @@ class CompanyTest extends TestCase
         return $docs->create(StockDocumentType::Receiving, ['supplier_id' => $supplier->id], [['batch_id' => $item->id, 'qty' => 2, 'unit_cost' => 1000]], $sup);
     }
 
-    public function test_only_supervisors_open_and_save_the_company_screen_and_it_is_in_the_menu(): void
+    public function test_only_administrators_open_and_save_the_company_screen_and_it_is_in_the_menu(): void
     {
         $this->actingAs(User::factory()->create());
         $this->get(route('company.edit'))->assertForbidden();
@@ -76,19 +76,9 @@ class CompanyTest extends TestCase
 
         $this->actingAs($this->sup())->get(route('company.edit'))->assertOk()->assertSee('Nama Perusahaan')->assertSee('Pratinjau kop')->assertSee('Logo + Nama + Alamat')->assertSee('multipart/form-data', false);
         $this->get(route('home'))->assertSee('Perusahaan');
+        $this->actingAs(User::factory()->supervisor()->create())->get(route('company.edit'))->assertForbidden();
         $this->actingAs(User::factory()->administrator()->create())->get(route('company.edit'))->assertOk();
         $this->actingAs(User::factory()->create())->get(route('home'))->assertDontSee('company.edit', false);
-    }
-
-    public function test_a_read_only_group_can_open_but_not_save(): void
-    {
-        $group = UserGroup::create(['code' => 'RO', 'name' => 'Baca']);
-        $group->syncAccess(['CMP' => 'ro']);
-        $user = User::factory()->supervisor()->create(['group_id' => $group->id]);
-
-        $this->actingAs($user)->get(route('company.edit'))->assertOk();
-        $this->save(as: $user)->assertForbidden();
-        $this->assertNull(Constants::get('company.name'));
     }
 
     public function test_validation_and_saving_the_data(): void

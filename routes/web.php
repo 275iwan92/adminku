@@ -184,7 +184,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::put('units/{unit}', [UnitController::class, 'update'])->name('units.update');
         Route::post('units/{unit}/toggle', [UnitController::class, 'toggle'])->name('units.toggle');
 
-        // Perusahaan (kop cetakan): satu formulir, hanya Supervisor.
+        // Perusahaan (kop cetakan): satu formulir, hanya Administrator.
         Route::get('company', [CompanyController::class, 'edit'])->name('company.edit');
         Route::put('company', [CompanyController::class, 'update'])->name('company.update');
 

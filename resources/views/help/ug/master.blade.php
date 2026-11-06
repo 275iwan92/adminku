@@ -18,7 +18,7 @@
         @if ($can('UOM'))<tr><td><a href="#m-uom">Satuan</a></td><td>pcs, box, kg, dan hitungan antar satuan</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
         @if ($can('CAT'))<tr><td><a href="#m-cat">Kategori</a></td><td>Pengelompokan barang dan awalan kode</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
         @if ($can('LOC'))<tr><td><a href="#m-loc">Lokasi Penyimpanan</a></td><td>Rak atau gudang</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
-        @if ($can('CMP'))<tr><td><a href="#m-cmp">Perusahaan</a></td><td>Nama, alamat, dan logo untuk kop semua cetakan</td><td><span class="g-role">hanya Supervisor</span></td></tr>@endif
+        @if ($can('CMP'))<tr><td><a href="#m-cmp">Perusahaan</a></td><td>Nama, alamat, dan logo untuk kop semua cetakan</td><td><span class="g-role">hanya Administrator</span></td></tr>@endif
     </tbody>
 </table>
 <div class="g-tip"><b>Urutan menyiapkan data baru:</b> Kategori, Lokasi Penyimpanan, Satuan, Pemasok, Departemen, Penerima, lalu Barang. Barang butuh kategori, satuan, dan (bila ada) lokasi yang sudah ada. Datanya belum ada? Pakai <a href="#tombol-plus">tombol plus</a> di samping pilihan.</div>
@@ -233,7 +233,7 @@
 @endif
 
 @if ($can('CMP'))
-<h3 id="m-cmp">Perusahaan <span class="g-role">hanya Supervisor</span></h3>
+<h3 id="m-cmp">Perusahaan <span class="g-role">hanya Administrator</span></h3>
 <h4>Untuk apa</h4>
 <p>Menyimpan data perusahaan Anda. Data ini dicetak di <b>kop</b>, yaitu bagian paling atas kertas. Kop ada di semua cetakan: dokumen stok, Lembar Hitung, Berita Acara Stok Opname, dan keenam laporan. Anda mengisinya sekali di sini.</p>
 <h4>Siapa yang bisa</h4>
@@ -267,7 +267,7 @@
     <li><b>Logo ditolak.</b> Periksa jenis berkasnya (PNG, JPG, atau WebP), ukurannya (paling besar 1 MB), dan sisi gambarnya (32 sampai 4000 piksel). Berkas yang namanya berakhiran .png tetapi bukan gambar juga ditolak.</li>
     <li><b>Kop cetakan tidak berubah.</b> Muat ulang halaman cetak. Pastikan Anda sudah menekan <b>Simpan</b> dan pesan hijau muncul.</li>
     <li><b>Lintang atau Bujur ditolak.</b> Isi angka saja (boleh minus dan titik atau koma desimal), keduanya berpasangan, dalam batasnya (-90 sampai 90 dan -180 sampai 180). Koordinat kota bisa dilihat di peta (klik kanan pada kota, salin angkanya).</li>
-    <li><b>Menu Perusahaan tidak ada.</b> Menu ini hanya untuk Supervisor dan Administrator.</li>
+    <li><b>Menu Perusahaan tidak ada.</b> Menu ini hanya untuk Administrator.</li>
 </ul>
 @endif
 @endif
