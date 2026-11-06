@@ -236,7 +236,7 @@
             search="Cari NIK, nama, bagian..."
             :phone-cards="['title' => 'name', 'sub' => 'nik', 'meta' => ['depts', 'step', 'result']]"
             :columns="[
-                ['key' => 'name', 'label' => 'Kandidat', 'type' => 'identity', 'code' => 'nik', 'box' => true],
+                ['key' => 'name', 'label' => 'Kandidat', 'type' => 'identity', 'code' => 'nik', 'box' => false],
                 ['key' => 'depts', 'label' => 'Bagian dilamar'],
                 ['key' => 'step', 'label' => 'Tahap'],
                 ['key' => 'result', 'label' => 'Hasil'],

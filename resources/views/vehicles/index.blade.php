@@ -14,7 +14,7 @@
         search="Cari plat, nama, jenis..."
         :phone-cards="['title' => 'plate', 'sub' => 'name', 'meta' => ['type', 'kir', 'odometer']]"
         :columns="[
-            ['key' => 'plate', 'label' => 'Kendaraan', 'type' => 'identity', 'code' => 'name', 'hue' => 'hue', 'box' => true],
+            ['key' => 'plate', 'label' => 'Kendaraan', 'type' => 'identity', 'code' => 'name', 'hue' => 'hue', 'box' => false],
             ['key' => 'type', 'label' => 'Jenis'],
             ['key' => 'year', 'label' => 'Tahun', 'type' => 'integer'],
             ['key' => 'kir', 'label' => 'KIR'],

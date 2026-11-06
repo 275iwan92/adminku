@@ -64,7 +64,7 @@
             search="Search name, department..."
             :phone-cards="['title' => 'name', 'sub' => 'department', 'meta' => ['documents']]"
             :columns="[
-                ['key' => 'name', 'label' => 'Recipient', 'type' => 'identity', 'code' => 'department', 'box' => true],
+                ['key' => 'name', 'label' => 'Recipient', 'type' => 'identity', 'code' => 'department', 'box' => false],
                 ['key' => 'employee', 'label' => 'Karyawan'],
                 ['key' => 'documents', 'label' => 'Issuance Documents', 'type' => 'number'],
             ]"

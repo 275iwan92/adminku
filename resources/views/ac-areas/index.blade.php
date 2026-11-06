@@ -8,6 +8,7 @@
 --}}
 @extends('layout', ['title' => 'Area dan Gedung AC'])
 @section('body')
+    @php $rows = collect($rows)->map(fn ($r) => $r + ['roomsTone' => $r['rooms'] ? 'neutral' : 'warn'])->all(); @endphp
     @include('partials.flash')
     @include('partials.back-to-hub', ['hub' => 'ac'])
     <div style="max-width: 820px">
@@ -15,8 +16,8 @@
         search="Cari kode atau nama..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['rooms', 'plan']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Area / Gedung', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => true],
-            ['key' => 'rooms', 'label' => 'Ruang', 'type' => 'integer'],
+            ['key' => 'name', 'label' => 'Area / Gedung', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => false],
+            ['key' => 'rooms', 'label' => 'Ruang', 'type' => 'badge', 'toneKey' => 'roomsTone'],
             ['key' => 'plan', 'label' => 'Denah'],
         ]"
         :stats="[['label' => 'Semua area'], ['label' => 'Nonaktif', 'where' => ['active' => false], 'tone' => 'warn']]" />

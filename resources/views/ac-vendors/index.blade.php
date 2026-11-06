@@ -14,7 +14,7 @@
         search="Cari kode, nama, kontak..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['contact', 'phone']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Vendor', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => true],
+            ['key' => 'name', 'label' => 'Vendor', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => false],
             ['key' => 'contact', 'label' => 'Kontak'],
             ['key' => 'phone', 'label' => 'WhatsApp'],
             ['key' => 'email', 'label' => 'E-mail'],

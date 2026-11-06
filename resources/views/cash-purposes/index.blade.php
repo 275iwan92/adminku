@@ -8,6 +8,7 @@
 --}}
 @extends('layout', ['title' => 'Kebutuhan'])
 @section('body')
+    @php $rows = collect($rows)->map(fn ($r) => $r + ['usedTone' => $r['used'] ? 'neutral' : 'warn'])->all(); @endphp
     @include('partials.flash')
     <x-dl::action-bar align="start">
         <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali ke Uang Keluar" :href="route('cash-out.index')" />
@@ -16,8 +17,8 @@
         search="Cari kebutuhan..."
         :phone-cards="['title' => 'name', 'meta' => ['used']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Kebutuhan', 'type' => 'identity', 'box' => true],
-            ['key' => 'used', 'label' => 'Dipakai di Uang Keluar', 'type' => 'number'],
+            ['key' => 'name', 'label' => 'Kebutuhan', 'type' => 'identity', 'avatar' => false, 'box' => false],
+            ['key' => 'used', 'label' => 'Dipakai di Uang Keluar', 'type' => 'badge', 'toneKey' => 'usedTone'],
         ]"
         :stats="[['label' => 'Semua kebutuhan'], ['label' => 'Nonaktif', 'where' => ['active' => false], 'tone' => 'warn']]" />
 @endsection

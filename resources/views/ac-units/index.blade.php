@@ -14,7 +14,7 @@
         search="Cari kode aset, ruang, area, merek..."
         :phone-cards="['title' => 'asset_code', 'sub' => 'room', 'meta' => ['type', 'area']]"
         :columns="[
-            ['key' => 'asset_code', 'label' => 'Unit AC', 'type' => 'identity', 'code' => 'room', 'hue' => 'hue', 'box' => true],
+            ['key' => 'asset_code', 'label' => 'Unit AC', 'type' => 'identity', 'code' => 'room', 'hue' => 'hue', 'box' => false],
             ['key' => 'area', 'label' => 'Area'],
             ['key' => 'type', 'label' => 'Merek / tipe / PK'],
             ['key' => 'installed', 'label' => 'Dipasang'],

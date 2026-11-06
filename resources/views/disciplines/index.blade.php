@@ -25,7 +25,7 @@
         $columns = [
             ['key' => 'doc_no', 'label' => 'No. Surat'],
             ['key' => 'issued_on', 'label' => 'Tanggal', 'type' => 'date'],
-            ['key' => 'employee', 'label' => 'Karyawan', 'type' => 'identity', 'code' => 'code', 'box' => true],
+            ['key' => 'employee', 'label' => 'Karyawan', 'type' => 'identity', 'code' => 'code', 'box' => false],
             ['key' => 'department', 'label' => 'Bagian'],
             ['key' => 'type', 'label' => 'Jenis', 'type' => 'badge', 'toneKey' => 'tone'],
             ['key' => 'until_on', 'label' => 'Berlaku s/d', 'type' => 'date'],

@@ -8,14 +8,15 @@
 --}}
 @extends('layout', ['title' => 'Groups'])
 @section('body')
+    @php $rows = collect($rows)->map(fn ($r) => $r + ['usersTone' => $r['users'] ? 'neutral' : 'warn', 'modulesTone' => $r['modules'] ? 'neutral' : 'warn'])->all(); @endphp
     @include('partials.flash')
     <x-dl::grid id="groups" :rows="$rows" actions="edit" :new-url="route('groups.create')" :open-url="url('groups/{id}')" :toggle-url="url('groups/{id}/toggle')"
         search="Search code, name..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['users', 'modules']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Group', 'type' => 'identity', 'code' => 'code', 'box' => true],
-            ['key' => 'users', 'label' => 'Members', 'type' => 'number'],
-            ['key' => 'modules', 'label' => 'Modules', 'type' => 'number'],
+            ['key' => 'name', 'label' => 'Group', 'type' => 'identity', 'code' => 'code', 'avatar' => false, 'box' => false],
+            ['key' => 'users', 'label' => 'Members', 'type' => 'badge', 'toneKey' => 'usersTone'],
+            ['key' => 'modules', 'label' => 'Modules', 'type' => 'badge', 'toneKey' => 'modulesTone'],
         ]"
         :stats="[['label' => 'All groups'], ['label' => 'Inactive', 'where' => ['active' => false], 'tone' => 'warn']]" />
 @endsection

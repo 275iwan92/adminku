@@ -67,7 +67,7 @@
             search="Cari kode, nama, jabatan, bagian..."
             :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['position', 'department', 'status', 'attention']]"
             :columns="[
-                ['key' => 'name', 'label' => 'Karyawan', 'type' => 'identity', 'code' => 'code', 'box' => true],
+                ['key' => 'name', 'label' => 'Karyawan', 'type' => 'identity', 'code' => 'code', 'box' => false],
                 ['key' => 'position', 'label' => 'Jabatan'],
                 ['key' => 'department', 'label' => 'Bagian'],
                 ['key' => 'employment', 'label' => 'Status kerja'],

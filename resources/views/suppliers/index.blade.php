@@ -13,7 +13,7 @@
         search="Search code, name, contact, city..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['contact', 'mobile', 'term', 'place']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Supplier', 'type' => 'identity', 'code' => 'code', 'box' => true],
+            ['key' => 'name', 'label' => 'Supplier', 'type' => 'identity', 'code' => 'code', 'box' => false],
             ['key' => 'phone', 'label' => 'Company Phone'],
             ['key' => 'contact', 'label' => 'Contact'],
             ['key' => 'mobile', 'label' => 'Contact Mobile'],

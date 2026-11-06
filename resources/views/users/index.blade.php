@@ -13,7 +13,7 @@
         search="Search name, username, email..."
         :phone-cards="['title' => 'name', 'sub' => 'username', 'meta' => ['email', 'role', 'group']]"
         :columns="[
-            ['key' => 'name', 'label' => 'User', 'type' => 'identity', 'code' => 'username', 'box' => true],
+            ['key' => 'name', 'label' => 'User', 'type' => 'identity', 'code' => 'username', 'box' => false],
             ['key' => 'email', 'label' => 'Email'],
             ['key' => 'role', 'label' => 'Role'],
             ['key' => 'group', 'label' => 'Group'],

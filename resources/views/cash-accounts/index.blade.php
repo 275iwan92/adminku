@@ -16,7 +16,7 @@
         search="Cari nama, no. rekening..."
         :phone-cards="['title' => 'name', 'sub' => 'type', 'meta' => ['account_no', 'balance']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Nama', 'type' => 'identity', 'code' => 'type', 'box' => true],
+            ['key' => 'name', 'label' => 'Nama', 'type' => 'identity', 'code' => 'type', 'avatar' => false, 'box' => false],
             ['key' => 'account_no', 'label' => 'No. Rekening'],
             ['key' => 'balance', 'label' => 'Saldo Berjalan', 'type' => 'money'],
         ]"

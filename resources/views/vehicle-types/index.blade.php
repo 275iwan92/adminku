@@ -8,6 +8,7 @@
 --}}
 @extends('layout', ['title' => 'Jenis Kendaraan'])
 @section('body')
+    @php $rows = collect($rows)->map(fn ($r) => $r + ['plansTone' => $r['plans'] ? 'neutral' : 'warn', 'vehiclesTone' => $r['vehicles'] ? 'neutral' : 'warn'])->all(); @endphp
     @include('partials.flash')
     @include('partials.back-to-hub', ['hub' => 'fleet'])
     <div style="max-width: 820px">
@@ -15,9 +16,9 @@
         search="Cari kode atau nama..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['plans', 'vehicles']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Jenis Kendaraan', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => true],
-            ['key' => 'plans', 'label' => 'Butir perawatan', 'type' => 'integer'],
-            ['key' => 'vehicles', 'label' => 'Kendaraan', 'type' => 'integer'],
+            ['key' => 'name', 'label' => 'Jenis Kendaraan', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => false],
+            ['key' => 'plans', 'label' => 'Butir perawatan', 'type' => 'badge', 'toneKey' => 'plansTone'],
+            ['key' => 'vehicles', 'label' => 'Kendaraan', 'type' => 'badge', 'toneKey' => 'vehiclesTone'],
         ]"
         :stats="[['label' => 'Semua jenis'], ['label' => 'Nonaktif', 'where' => ['active' => false], 'tone' => 'warn']]" />
     </div>
