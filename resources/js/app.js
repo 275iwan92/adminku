@@ -37,3 +37,14 @@ import './hp-find';
 
 // Form Uang Masuk / Uang Keluar: saklar kas, saldo, ringkasan, dan peringatan batas (resources/js/cash-form.js).
 import './cash-form';
+
+// /help yang dibuka langsung (tanpa shell) dilempar ke Beranda dengan ?bantuan=<anchor|1> (skrip di help/user-guide); di sini Shell diminta membuka tab Bantuan, jadi panduan selalu tampil di dalam shell (sidebar + tab).
+{
+    const p = new URLSearchParams(location.search), want = p.get('bantuan');
+    if (want) {
+        p.delete('bantuan');
+        history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash);
+        const fire = () => window.postMessage({ dl: 'help', hash: want === '1' ? undefined : want }, location.origin);
+        document.readyState === 'complete' ? setTimeout(fire, 300) : window.addEventListener('load', () => setTimeout(fire, 300));
+    }
+}
