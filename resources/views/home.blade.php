@@ -14,6 +14,7 @@
             @include('partials.flash')
             @include('partials.home-hero', ['hero' => $hero])
             @include('partials.home-cards', ['cards' => $cards, 'phone' => false])
+            @include('partials.home-welcome')
         </x-slot:dashboard>
         {{-- Musik latar: halaman Musik Latar di panel Profil (bawaan mati); pil kredit + pemutar di partials.music. --}}
         <x-slot:profilePages>@include('partials.music-page')</x-slot:profilePages>

@@ -60,6 +60,7 @@ class HomeCardsTest extends TestCase
 
         $this->assertStringContainsString('class="sstock-mods is-baru"', $html);
         $this->assertStringContainsString('data-gaya="lama"', $html);
+        $this->assertStringContainsString('id="sstock-welcome"', $html);   // jendela sambutan pendatang baru
     }
 
     public function test_home_no_longer_carries_the_stock_content(): void

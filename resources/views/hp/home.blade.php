@@ -11,4 +11,5 @@
     @include('partials.flash')
     @include('partials.home-hero', ['hero' => $hero])
     @include('partials.home-cards', ['cards' => $cards, 'phone' => true])
+    @include('partials.home-welcome')
 @endsection
