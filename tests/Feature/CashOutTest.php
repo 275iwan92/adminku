@@ -192,6 +192,25 @@ class CashOutTest extends TestCase
         $this->assertSame(300_000.0, $tunai->fresh()->currentBalance());
     }
 
+    // Approve menulis baris keluar ke buku besar kas; pembatalan menulis baris pembalik; daftar tetap terbuka untuk Uang Keluar tanpa tautan.
+    public function test_approve_posts_to_the_cash_ledger_and_cancel_reverses_it(): void
+    {
+        $tunai = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 1_000_000]);
+        $free = ['cash_in_id' => null, 'cash_kind' => 'cash', 'amount' => 300_000];
+        $out = $this->actingAs($this->staff)->create($free);
+        $this->act($out, 'confirm', $this->staff, $this->payload($free))->assertSessionHasNoErrors();
+        $this->assertSame(0, \App\Models\CashMovement::where('doc_type', 'cash_out')->count());   // belum disetujui: belum ada baris
+        $this->act($out, 'approve', $this->boss)->assertRedirect();
+
+        $row = \App\Models\CashMovement::where('doc_type', 'cash_out')->where('doc_id', $out->id)->firstOrFail();
+        $this->assertSame([$tunai->id, -300_000.0], [$row->cash_account_id, (float) $row->amount]);
+        $this->actingAs($this->boss)->get(route('cash-out.index'))->assertOk();
+
+        $this->act($out, 'cancel', $this->boss, ['_reason' => 'Salah catat'])->assertSessionHasNoErrors();
+        $this->assertSame(1_000_000.0, $tunai->fresh()->currentBalance());
+        $this->assertSame(1, \App\Models\CashMovement::where('reversal_of', $row->id)->count());
+    }
+
     public function test_a_saved_attachment_is_linked_on_the_form_even_when_the_receipt_is_very_tall(): void
     {
         Storage::fake('kas');
