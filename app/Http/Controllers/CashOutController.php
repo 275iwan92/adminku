@@ -7,6 +7,7 @@ use App\Models\CashAccount;
 use App\Models\CashIn;
 use App\Models\CashOut;
 use App\Models\CashPurpose;
+use App\Services\CashLedger;
 use App\Support\Text;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +26,9 @@ class CashOutController extends Controller
 {
     public function index()
     {
-        $rows = CashOut::query()->with(['cashIn.cashAccount', 'creator'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (CashOut $c) => [
-            'id' => $c->id, 'doc_no' => $c->doc_no ?? '(draf)', 'doc_date' => $c->doc_date->format('Y-m-d'), 'cash_in' => $c->cashIn->number().' ('.$c->cashIn->source_name.')',
-            'cash_account' => $c->cashIn->cashAccount->name, 'amount' => (float) $c->amount, 'purpose' => $c->purpose, 'status' => $c->statusLabel(), 'open' => in_array($c->status, ['approval', 'approved'], true),
+        $rows = CashOut::query()->with(['cashIn', 'account', 'creator'])->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn (CashOut $c) => [
+            'id' => $c->id, 'doc_no' => $c->doc_no ?? '(draf)', 'doc_date' => $c->doc_date->format('Y-m-d'), 'cash_in' => $c->cashIn ? $c->cashIn->number().' ('.$c->cashIn->source_name.')' : '—',
+            'cash_account' => $c->account?->name ?? '—', 'amount' => (float) $c->amount, 'purpose' => $c->purpose, 'status' => $c->statusLabel(), 'open' => in_array($c->status, ['approval', 'approved'], true),
         ])->all();
 
         return view('cash-out.index', ['rows' => $rows]);
@@ -96,6 +97,7 @@ class CashOutController extends Controller
                     }
                     abort_if(! $account || (float) $cashOut->amount > $account->currentBalance(), 422, 'Saldo kas tidak cukup lagi (sudah terpakai transaksi lain).');
                     $cashOut->update(['status' => 'approved', 'approved_by' => $user->id, 'approved_at' => now()]);
+                    app(CashLedger::class)->postOut($cashOut, $user);
 
                     return "{$cashOut->doc_no} disetujui.";
                 case 'reject':
@@ -110,6 +112,7 @@ class CashOutController extends Controller
                     $need(['approval', 'approved']);
                     abort_unless($owner || $user->isSupervisor(), 403, 'Hanya pembuat atau Supervisor yang membatalkan Uang Keluar ini.');
                     abort_if($reason === '', 422, 'Isi alasan pembatalan.');
+                    app(CashLedger::class)->reverse('cash_out', $cashOut->id, $user);
                     $cashOut->update(['status' => 'cancelled', 'reason' => $reason]);
 
                     return "{$cashOut->doc_no} dibatalkan.";

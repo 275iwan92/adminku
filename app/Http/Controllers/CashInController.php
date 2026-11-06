@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CashInRequest;
 use App\Models\CashAccount;
 use App\Models\CashIn;
+use App\Services\CashLedger;
 use App\Models\CashOut;
 use App\Models\CashSource;
 use App\Support\Text;
@@ -93,6 +94,9 @@ class CashInController extends Controller
                     abort_if($owner, 403, 'Pembuat tidak boleh menyetujui atau menolak Uang Masuk miliknya sendiri.');
                     abort_if($action === 'reject' && $reason === '', 422, 'Isi alasan penolakan.');
                     $cashIn->update(['status' => $action === 'approve' ? 'approved' : 'rejected', 'approved_by' => $user->id, 'approved_at' => now(), 'reason' => $action === 'reject' ? $reason : null]);
+                    if ($action === 'approve') {
+                        app(CashLedger::class)->postIn($cashIn, $user);
+                    }
 
                     return $action === 'approve' ? "{$cashIn->doc_no} disetujui." : "{$cashIn->doc_no} ditolak.";
                 case 'cancel':
@@ -100,6 +104,8 @@ class CashInController extends Controller
                     abort_unless($owner || $user->isSupervisor(), 403, 'Hanya pembuat atau Supervisor yang membatalkan Uang Masuk ini.');
                     abort_if($cashIn->cashOuts()->whereIn('status', ['approval', 'approved'])->exists(), 422, 'Uang Masuk ini sudah punya Uang Keluar tertaut: tidak bisa dibatalkan.');
                     abort_if($reason === '', 422, 'Isi alasan pembatalan.');
+                    // Pembatalan yang sudah masuk buku besar dibalik dengan baris baru; ditolak bila saldo kas jadi negatif.
+                    app(CashLedger::class)->reverse('cash_in', $cashIn->id, $user);
                     $cashIn->update(['status' => 'cancelled', 'reason' => $reason]);
 
                     return "{$cashIn->doc_no} dibatalkan.";

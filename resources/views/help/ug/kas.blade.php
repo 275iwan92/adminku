@@ -15,6 +15,7 @@
         @if ($can('KSM'))<tr><td><a href="#kas-ksm">Uang Masuk</a></td><td>Dana diterima ke Kas Tunai atau satu rekening bank, dari satu sumber dana (dipilih dari daftar)</td></tr>@endif
         @if ($can('KSK'))<tr><td><a href="#kas-ksk">Uang Keluar</a></td><td>Pengeluaran per kebutuhan (kategori) dari Kas Tunai atau satu rekening bank; boleh ditaut ke satu Uang Masuk</td></tr>@endif
         @if ($can('KSR'))<tr><td><a href="#kas-ksr">Kas / Rekening</a></td><td>Daftar kas tunai dan rekening bank beserta saldo berjalan</td></tr>@endif
+        @if ($can('KSB'))<tr><td><a href="#kas-ksb">Kartu Saldo Kas</a></td><td>Mutasi satu kas (Tunai atau rekening bank) dengan saldo berjalan, per periode</td></tr>@endif
         @if ($can('R-KFLOW'))<tr><td><a href="#kas-rflow">Laporan Arus Kas</a></td><td>Buku kas per kas/rekening: saldo awal, baris kronologis, saldo akhir</td></tr>@endif
         @if ($can('R-KIN'))<tr><td><a href="#kas-rkin">Laporan Penerimaan</a></td><td>Uang Masuk: total Tunai, total Bank, rincian per rekening, per sumber dana</td></tr>@endif
         @if ($can('R-KOUT'))<tr><td><a href="#kas-rkout">Laporan Pengeluaran</a></td><td>Uang Keluar per kebutuhan (kategori), bisa diganti per sumber dana</td></tr>@endif
@@ -107,7 +108,7 @@
 @if ($can('KSR'))
 <h3 id="kas-ksr">Kas / Rekening</h3>
 <h4>Untuk apa</h4>
-<p>Daftar kas tunai dan rekening bank perusahaan, masing-masing dengan saldo awal sendiri. <b>Saldo Berjalan</b> dihitung, bukan diketik: saldo awal ditambah semua Uang Masuk Disetujui ke kas itu, dikurangi semua Uang Keluar Disetujui yang ditaut ke Uang Masuk kas itu.</p>
+<p>Daftar kas tunai dan rekening bank perusahaan, masing-masing dengan saldo awal sendiri. <b>Saldo Berjalan</b> dihitung, bukan diketik: jumlah semua baris buku besar kas itu (saldo awal sebagai baris pertama, Uang Masuk, Uang Keluar, dan Penyesuaian yang Disetujui, serta baris pembalik pembatalan).</p>
 <h4>Siapa yang bisa</h4>
 <p>Peran Supervisor ke atas yang Grup-nya punya modul <b>Kas / Rekening</b> (RO untuk membaca, RW untuk menambah dan mengubah). Dibuka lewat tombol <span class="g-btn">Setup</span> di layar Uang Masuk atau Uang Keluar.</p>
 <h4>Langkah: menambah Kas / Rekening</h4>
@@ -127,6 +128,30 @@
 <ul class="g-list">
     <li><b>Kas / Rekening tidak ada di pilihan Kas Tujuan.</b> Sudah dinonaktifkan. Aktifkan kembali di Setup bila masih dipakai.</li>
     <li><b>Simpan ditolak.</b> Nama kosong, atau Jenis belum dipilih.</li>
+</ul>
+@endif
+
+@if ($can('KSB'))
+<h3 id="kas-ksb">Kartu Saldo Kas</h3>
+<h4>Untuk apa</h4>
+<p>Riwayat satu kas (Tunai atau satu rekening bank) dari buku besar kas: saldo awal, lalu tiap Uang Masuk, Uang Keluar, Penyesuaian Kas, dan pembatalan secara berurutan dengan <b>Saldo Berjalan</b>, sampai saldo akhir.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Kartu Saldo Kas</b> (RO cukup, layar ini hanya membaca).</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Keuangan</b> lalu <b>Kartu Saldo Kas</b>.</li>
+    <li>Pilih <b>Kas</b>, atur <b>Dari tanggal</b> dan <b>Sampai tanggal</b>, lalu tekan <b>Tampilkan</b>.</li>
+    <li>Cetak atau ekspor lewat tombol di atas tabel.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Buku besar kas tidak pernah diubah atau dihapus. Dokumen yang dibatalkan muncul sebagai baris pembalik bertanda <i>(pembatalan)</i>, baris aslinya tetap ada.</li>
+    <li>Uang Keluar, Penyesuaian kurang, dan pembatalan Uang Masuk ditolak bila membuat saldo kas negatif.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Kas tidak ada di pilihan.</b> Kas / Rekening belum dibuat; tambahkan lewat Setup di layar Uang Masuk atau Uang Keluar.</li>
+    <li><b>Layar menolak dibuka.</b> Grup Anda belum diberi modul Kartu Saldo Kas.</li>
 </ul>
 @endif
 

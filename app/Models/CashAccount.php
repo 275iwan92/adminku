@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Services\CashLedger;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 
 /* REMARK
- * Tujuan       : Master Kas / Rekening (KSR): kas tunai atau rekening bank, saldo awal sendiri. Saldo berjalan = saldo awal + Uang Masuk disetujui - Uang Keluar disetujui (dihitung, tidak disimpan).
+ * Tujuan       : Master Kas / Rekening (KSR): kas tunai atau rekening bank, saldo awal sendiri. Saldo berjalan = jumlah baris buku besar kas (CashLedger), tidak disimpan di sini.
  * Dipakai oleh : CashAccountController, CashIn.
  * Status       : Aktif.
  */
@@ -34,12 +34,15 @@ class CashAccount extends Model
         return self::TYPES[$this->type] ?? $this->type;
     }
 
-    // Saldo awal + Uang Masuk disetujui di kas ini - Uang Keluar disetujui di kas ini (k_cash_out.cash_account_id).
+    // Saldo = jumlah baris buku besar kas (CashLedger); saldo awal masuk sebagai baris pertama.
     public function currentBalance(): float
     {
-        $in = (float) $this->cashIns()->where('status', 'approved')->sum('amount');
-        $out = (float) DB::table('k_cash_out')->where('cash_account_id', $this->id)->where('status', 'approved')->sum('amount');
+        return app(CashLedger::class)->balance($this->id);
+    }
 
-        return (float) $this->opening_balance + $in - $out;
+    protected static function booted(): void
+    {
+        // Saldo awal (baru atau diubah) ditulis ke buku besar; tidak mengubah baris lama.
+        static::saved(fn (CashAccount $a) => app(CashLedger::class)->syncOpening($a));
     }
 }

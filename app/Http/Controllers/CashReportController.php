@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CashAccount;
 use App\Models\CashIn;
+use App\Services\CashLedger;
 use App\Models\CashOut;
 use App\Support\Text;
 use Devlib\Locale;
@@ -32,21 +33,16 @@ class CashReportController extends Controller
         $totalOpen = $totalIn = $totalOut = 0.0;
         $closeByType = ['cash' => 0.0, 'bank' => 0.0];   // saldo akhir Tunai dan Bank (jumlah semua rekening bank)
         foreach ($accounts as $account) {
-            $priorIn = (float) CashIn::query()->where('cash_account_id', $account->id)->where('status', 'approved')->where('doc_date', '<', $from->toDateString())->sum('amount');
-            $priorOut = (float) CashOut::query()->where('cash_account_id', $account->id)->where('status', 'approved')->where('doc_date', '<', $from->toDateString())->sum('amount');
-            $balance = (float) $account->opening_balance + $priorIn - $priorOut;
+            [$balance, $moves] = app(CashLedger::class)->period($account->id, $from->toDateString(), $to->toDateString());
             $totalOpen += $balance;
             $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($from), 'doc' => '—', 'uraian' => 'Saldo awal', 'masuk' => null, 'keluar' => null, 'saldo' => $balance];
 
-            $ins = CashIn::query()->where('cash_account_id', $account->id)->where('status', 'approved')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])->get()
-                ->map(fn (CashIn $c) => ['at' => $c->doc_date, 'doc' => $c->doc_no, 'uraian' => $c->source_name, 'masuk' => (float) $c->amount, 'keluar' => null]);
-            $outs = CashOut::query()->where('cash_account_id', $account->id)->where('status', 'approved')->whereBetween('doc_date', [$from->toDateString(), $to->toDateString()])->get()
-                ->map(fn (CashOut $c) => ['at' => $c->doc_date, 'doc' => $c->doc_no, 'uraian' => $c->purpose, 'masuk' => null, 'keluar' => (float) $c->amount]);
-            foreach ($ins->concat($outs)->sortBy('at')->values() as $e) {
-                $balance += ($e['masuk'] ?? 0) - ($e['keluar'] ?? 0);
-                $totalIn += $e['masuk'] ?? 0;
-                $totalOut += $e['keluar'] ?? 0;
-                $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($e['at']), 'doc' => $e['doc'], 'uraian' => $e['uraian'], 'masuk' => $e['masuk'], 'keluar' => $e['keluar'], 'saldo' => $balance];
+            foreach ($moves as $m) {
+                $amount = (float) $m->amount;
+                $balance += $amount;
+                $totalIn += max($amount, 0);
+                $totalOut += max(-$amount, 0);
+                $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($m->moved_at), 'doc' => $m->doc_no ?? $m->typeLabel(), 'uraian' => $m->note ?? $m->typeLabel(), 'masuk' => $amount > 0 ? $amount : null, 'keluar' => $amount < 0 ? -$amount : null, 'saldo' => $balance];
             }
             $rows[] = ['cash_account' => $account->name, 'all' => 'Semua Kas', 'date' => Locale::d($to), 'doc' => '—', 'uraian' => 'Saldo akhir', 'masuk' => null, 'keluar' => null, 'saldo' => $balance];
             $closeByType[$account->type === 'bank' ? 'bank' : 'cash'] += $balance;

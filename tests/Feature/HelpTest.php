@@ -27,7 +27,7 @@ class HelpTest extends TestCase
         'STB' => 'r-stb', 'R-CARD' => 'r-card', 'R-SUM' => 'r-sum', 'R-IN' => 'r-in', 'R-OUT' => 'r-out', 'R-EXP' => 'r-exp', 'R-ADJ' => 'r-adj',
         'GVM' => 'ga-gvm', 'GVD' => 'ga-gvd', 'GVS' => 'ga-gvs', 'GVO' => 'ga-gvo', 'GVK' => 'ga-gvk', 'GVT' => 'ga-gvt',
         'GAM' => 'ga-gam', 'GAS' => 'ga-gas', 'GAV' => 'ga-gav', 'GAK' => 'ga-gak', 'GAA' => 'ga-gaa', 'GAR' => 'ga-gar', 'GAE' => 'ga-gae', 'GAP' => 'ga-gap', 'PUP' => 'pur-pup', 'PUK' => 'pur-puk', 'PUO' => 'pur-puo', 'PUV' => 'pur-puv', 'HRE' => 'hr-hre', 'HRR' => 'hr-hrr', 'HRD' => 'hr-hrd',
-        'KSM' => 'kas-ksm', 'KSK' => 'kas-ksk', 'KSR' => 'kas-ksr', 'R-KFLOW' => 'kas-rflow', 'R-KIN' => 'kas-rkin', 'R-KOUT' => 'kas-rkout',
+        'KSM' => 'kas-ksm', 'KSK' => 'kas-ksk', 'KSR' => 'kas-ksr', 'KSB' => 'kas-ksb', 'R-KFLOW' => 'kas-rflow', 'R-KIN' => 'kas-rkin', 'R-KOUT' => 'kas-rkout',
         'USR' => 'sec-usr', 'GRP' => 'sec-grp', 'SMP' => 'sec-smp', 'MOD' => 'sec-mod',
     ];
 

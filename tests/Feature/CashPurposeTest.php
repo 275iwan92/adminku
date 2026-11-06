@@ -81,6 +81,7 @@ class CashPurposeTest extends TestCase
     {
         $account = CashAccount::create(['name' => 'Kas Tunai', 'type' => 'cash', 'opening_balance' => 0]);
         $in = CashIn::create(['doc_no' => 'UM-1', 'doc_date' => '2026-11-02', 'cash_account_id' => $account->id, 'source_name' => 'X', 'amount' => 90000, 'status' => 'approved', 'created_by' => $this->staff->id]);
+        app(\App\Services\CashLedger::class)->postIn($in, null);
         $base = ['doc_date' => '2026-11-02', 'cash_in_id' => $in->id, 'cash_account_id' => $in->cash_account_id, 'amount' => 1000];
         $this->actingAs($this->staff);
 

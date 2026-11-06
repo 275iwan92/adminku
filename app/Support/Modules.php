@@ -89,6 +89,7 @@ final class Modules
             'KSM' => ['KEU', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.', 'cash-sources.']],
             'KSK' => ['KEU', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.', 'cash-purposes.']],
             'KSR' => ['KEU', 'Kas / Rekening', 'fa-solid fa-building-columns', 'grid', 'cash-accounts.index', 'supervisor', ['cash-accounts.']],
+            'KSB' => ['KEU', 'Kartu Saldo Kas', 'fa-solid fa-id-card', 'report', 'cash-card.index', 'entry', ['cash-card.']],
             'R-KFLOW' => ['KEU', 'Laporan Arus Kas', 'fa-solid fa-book', 'report', 'reports.cash-flow', 'entry', ['reports.cash-flow']],
             'R-KIN' => ['KEU', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.cash-receipts', 'entry', ['reports.cash-receipts']],
             'R-KOUT' => ['KEU', 'Laporan Pengeluaran', 'fa-solid fa-file-arrow-up', 'report', 'reports.cash-disbursements', 'entry', ['reports.cash-disbursements']],

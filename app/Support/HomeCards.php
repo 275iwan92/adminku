@@ -136,11 +136,10 @@ final class HomeCards
         if (! $user->canAccess('KSM') && ! $user->canAccess('KSK')) {
             return null;
         }
-        $accounts = CashAccount::query()->where('is_active', true)->get(['id', 'opening_balance']);
-        $ids = $accounts->pluck('id');
+        $ids = fn ($q) => $q->select('id')->from('m_cash_account')->where('is_active', true);   // subquery: tanpa query tambahan
         $sums = fn ($m) => $m::query()->where('status', 'approved')->whereIn('cash_account_id', $ids)->selectRaw('coalesce(sum(amount), 0) total, coalesce(sum(case when doc_date >= ? then amount end), 0) month', [now()->startOfMonth()->toDateString()])->first();
         [$ins, $outs] = [$sums(CashIn::class), $sums(CashOut::class)];
-        $balance = (float) $accounts->sum('opening_balance') + (float) $ins->total - (float) $outs->total;
+        $balance = (float) \App\Models\CashMovement::query()->whereIn('cash_account_id', $ids)->sum('amount');   // buku besar kas (termasuk saldo awal dan Penyesuaian)
         [$in, $out] = [(float) $ins->month, (float) $outs->month];
         $wait = ($user->canAccess('KSM') ? CashIn::query()->where('status', 'approval')->count() : 0) + ($user->canAccess('KSK') ? CashOut::query()->where('status', 'approval')->count() : 0);
 

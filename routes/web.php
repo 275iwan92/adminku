@@ -18,6 +18,7 @@ use App\Http\Controllers\AgentReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\CashAccountController;
+use App\Http\Controllers\CashCardController;
 use App\Http\Controllers\CashInController;
 use App\Http\Controllers\CashOutController;
 use App\Http\Controllers\CashPurposeController;
@@ -380,6 +381,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('cash-accounts/{account}', [CashAccountController::class, 'show'])->whereNumber('account')->name('cash-accounts.show');
     Route::put('cash-accounts/{account}', [CashAccountController::class, 'update'])->whereNumber('account')->name('cash-accounts.update');
     Route::post('cash-accounts/{account}/toggle', [CashAccountController::class, 'toggle'])->whereNumber('account')->name('cash-accounts.toggle');
+    Route::get('cash-card', [CashCardController::class, 'index'])->name('cash-card.index');
     Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
     Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
     Route::post('recruit-steps', [RecruitStepController::class, 'store'])->name('recruit-steps.store');
