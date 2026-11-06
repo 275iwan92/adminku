@@ -417,19 +417,10 @@ function makeFullscreen(ctx) {
     }
     function open() { html.classList.add('ugf-on'); scroller.scrollTop = 0; scroller.scrollLeft = 0; cur = 0; paint(); ctx.restore(); scroller.focus({ preventScroll: true }); }
     function close() { stopPlay(); music.off(); html.classList.remove('ugf-on'); leaveFull(); ctx.restore(); }
-    // Tutup (X): keluar dari layar penuh lalu kembali ke Beranda; bila dibuka di dalam shell (iframe), seluruh shell yang kembali ke Beranda.
-    function exit() {
-        const home = el.dataset.home;
-        close();
-        if (!home) return;
-        try { (window.top !== window ? window.top : window).location.assign(home); } catch { window.location.assign(home); }
-    }
-
     el.addEventListener('click', (e) => {
         const t = e.target.closest('[data-ugf-close],[data-ugf-dismiss],[data-ugf-full],[data-ugf-play],[data-ugf-music],[data-ugf-next],[data-ugf-prev],[data-ugf-go],[data-ugf-try],[data-ugf-mode],[data-i]');
         if (!t) return;
-        if (t.hasAttribute('data-ugf-close')) exit();
-        else if (t.hasAttribute('data-ugf-dismiss')) close();
+        if (t.hasAttribute('data-ugf-close') || t.hasAttribute('data-ugf-dismiss')) close();
         else if (t.hasAttribute('data-ugf-full')) (document.fullscreenElement ? leaveFull() : enterFull());
         else if (t.hasAttribute('data-ugf-play')) (timer ? stopPlay() : startPlay());
         else if (t.hasAttribute('data-ugf-music')) music.toggle();

@@ -431,3 +431,10 @@ html.ugf-on body { overflow: hidden !important; }
 /* Bar progres dan titik naik dari tepi bawah supaya tetap terlihat di layar penuh (tepi bawah bisa terpotong taskbar atau overscan) */
 .ugf-prog { left: 50%; right: auto; width: min(560px, 70%); transform: translateX(-50%); bottom: calc(22px + env(safe-area-inset-bottom)); height: 5px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, .22); }
 .ugf-dots { bottom: calc(40px + env(safe-area-inset-bottom)); }
+/* Tombol Tutup di halaman /help (layar #2): kanan atas, gaya sama dengan Tutup layar penuh; menuju Beranda */
+.g-tabs .g-close { margin: 0 0 4px auto; align-self: center; display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255, 200, 190, .75); color: #fff; opacity: 1; font-size: 13px; font-weight: 700; text-decoration: none; background: linear-gradient(160deg, #cf6a58, #a8443a); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 6px 16px rgba(120, 40, 30, .28); transition: transform .2s, box-shadow .2s; }
+.g-tabs .g-close:hover { transform: translateY(-2px); opacity: 1; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 10px 22px rgba(120, 40, 30, .35); }
+.g-tabs .g-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.g-tabs .g-close:focus-visible { outline: 3px solid var(--dl-accent); outline-offset: 2px; }
+@media (max-width: 520px) { .g-tabs .g-close span { display: none; } .g-tabs .g-close { padding: 0; width: 40px; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .g-tabs .g-close { transition: none; } }
