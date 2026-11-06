@@ -74,7 +74,7 @@
     (() => {
         const root = document.querySelector('[data-sstock-hero]'), cv = root?.querySelector('.sstock-hero__fx');
         if (!cv || window.sstockGaya.reduced) return;
-        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [], tok = n => getComputedStyle(root).getPropertyValue(n).trim() || '#5eead4', accent = tok('--dl-accent'), warm = tok('--dl-amber');   // warna ikut tema (token --dl-*)
+        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [], tok = n => getComputedStyle(root).getPropertyValue(n).trim() || '#14b8a6', accent = tok('--dl-accent'), warm = tok('--dl-amber');   // warna ikut tema (token --dl-*)
         let w = 0, h = 0, raf = 0;
         const size = () => {
             const r = root.getBoundingClientRect(), d = devicePixelRatio || 1;
