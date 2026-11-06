@@ -15,7 +15,10 @@
             @include('partials.home-hero', ['hero' => $hero])
             @include('partials.home-cards', ['cards' => $cards, 'phone' => false])
         </x-slot:dashboard>
+        {{-- Musik latar: halaman Musik Latar di panel Profil (bawaan mati); pil kredit + pemutar di partials.music. --}}
+        <x-slot:profilePages>@include('partials.music-page')</x-slot:profilePages>
     </x-dl::layer-shell>
+    @include('partials.music')
     {{-- Jendela / layar sempit tanpa pilihan tampilan (mis. login lewat tab lama atau mode Responsive DevTools): pindah ke Tampilan HP di Beranda juga (auto); hanya Beranda, tab-tab di dalamnya adalah iframe. --}}
     <x-dl::phone-offer :action="route('ui.set')" auto />
     {{-- Kartu modul ber-data-open-tab membuka menu yang sama sebagai tab kerja Layer Shell (pesan open-tab ke Shell). --}}
