@@ -12,14 +12,14 @@
     $tips = $catalog['tips'];
     $actors = ['de' => 'Data Entry', 'sp' => 'Supervisor', 'si' => 'Sistem', 'vn' => 'Vendor'];
 @endphp
-<div class="ugf" id="ugf" role="dialog" aria-modal="true" aria-label="Bantuan dan dukungan layar penuh">
+<div class="ugf" id="ugf" role="dialog" aria-modal="true" aria-label="Bantuan dan dukungan layar penuh" data-home="{{ route('home') }}">
     <header class="ugf-top">
         <div class="ugf-brand"><b>AdminKU</b><span>Bantuan &amp; dukungan</span></div>
         <div class="ugf-btns">
             <button type="button" class="ugf-ic" data-ugf-play aria-pressed="false" aria-label="Putar otomatis" title="Putar otomatis"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button>
             <button type="button" class="ugf-ic" data-ugf-music aria-pressed="false" aria-label="Musik latar, mati" title="Musik latar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/><path class="i-off" d="M3 3l18 18"/></svg></button>
             <button type="button" data-ugf-full aria-label="Layar penuh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-            <button type="button" class="ugf-close" data-ugf-close aria-label="Tutup bantuan layar penuh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Tutup</span></button>
+            <button type="button" class="ugf-close" data-ugf-close aria-label="Tutup bantuan dan kembali ke Beranda" title="Tutup dan kembali ke Beranda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Tutup</span></button>
         </div>
     </header>
     <nav class="ugf-dots" aria-label="Bagian bantuan"></nav>
@@ -114,7 +114,7 @@
                     <button type="button" class="rv" style="--d: 450" data-ugf-mode="blog"><b>Blog</b><small>Artikel bergambar, diagram alur, dan tautan antar artikel.</small></button>
                     <button type="button" class="rv" style="--d: 600" data-ugf-mode="detail"><b>Detail</b><small>Panduan lengkap per menu, untuk dicari dan dibaca runtut.</small></button>
                 </div>
-                <button type="button" class="ugf-link rv" style="--d: 750" data-ugf-close>Tutup dan lihat halaman panduan</button>
+                <button type="button" class="ugf-link rv" style="--d: 750" data-ugf-dismiss>Lihat halaman panduan</button>
             </div>
         </section>
     </div>

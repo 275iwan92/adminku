@@ -428,3 +428,6 @@ html.ugf-on body { overflow: hidden !important; }
 .ugf-s.is-in .ugf-flow li + li::before { background: linear-gradient(90deg, rgba(255, 255, 255, .2), #fff); animation: ugf-run 2.4s ease-in-out infinite; animation-delay: calc(1.4s + var(--i) * .35s); }
 .ugf-s.is-in .ugf-flow:nth-child(2) li b, .ugf-s.is-in .ugf-flow:nth-child(2) li + li::before { animation-delay: calc(1.1s + var(--i) * .2s), calc(2.6s + var(--i) * .7s); }
 @media (prefers-reduced-motion: reduce) { .ugf-nav, .ugf-prog i { transition: none; } .ugf-s.is-in .ugf-flow li b, .ugf-s.is-in .ugf-flow li + li::before { animation: none !important; } .ugf-btns [data-ugf-music][aria-pressed="true"] svg { animation: none; } }
+/* Bar progres dan titik naik dari tepi bawah supaya tetap terlihat di layar penuh (tepi bawah bisa terpotong taskbar atau overscan) */
+.ugf-prog { left: 50%; right: auto; width: min(560px, 70%); transform: translateX(-50%); bottom: calc(22px + env(safe-area-inset-bottom)); height: 5px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, .22); }
+.ugf-dots { bottom: calc(40px + env(safe-area-inset-bottom)); }

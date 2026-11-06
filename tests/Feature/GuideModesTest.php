@@ -85,6 +85,7 @@ class GuideModesTest extends TestCase
         }
         $this->assertStringContainsString('id="ugf"', $html, 'Bantuan layar penuh');
         $this->assertStringContainsString('data-ugf-close', $html, 'Tombol Tutup layar penuh');
+        $this->assertStringContainsString('data-home="'.route('home').'"', $html, 'Tutup kembali ke Beranda');
         $this->assertStringContainsString('prefers-reduced-motion', file_get_contents(resource_path('css/ug.css')));
         $this->assertStringContainsString('orientation: portrait', file_get_contents(resource_path('css/ug.css')), 'Putar otomatis ke landscape di HP');
     }
