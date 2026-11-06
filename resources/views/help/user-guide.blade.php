@@ -28,10 +28,10 @@
 <div class="sstock-guide" id="ug-root" data-uid="{{ $user->id }}">
     <script>(function () { var h = location.hash, r = document.getElementById('ug-root'); var m = /^#gb/.test(h) ? 'blog' : /^#gt/.test(h) ? 'tour' : /^#gd/.test(h) ? 'deck' : h.length > 1 ? 'detail' : (localStorage.getItem('adminku.ug.mode') || 'deck'); r.dataset.mode = ['deck', 'tour', 'blog', 'detail'].indexOf(m) < 0 ? 'deck' : m; })();</script>
     <div class="ug-mode" role="group" aria-label="Tampilan panduan">
-        <button type="button" data-mode="deck">Presentasi</button>
-        <button type="button" data-mode="tour">Interaktif</button>
-        <button type="button" data-mode="blog">Blog</button>
-        <button type="button" data-mode="detail">Detail</button>
+        <button type="button" data-mode="deck"><span class="ug-mi" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M10 8.5v5l4-2.5z"/><path d="M8 21h8M12 17v4"/></svg></span><b>Presentasi</b><small>Ringkasan bergerak seperti video</small></button>
+        <button type="button" data-mode="tour"><span class="ug-mi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 3l1.2 3M4.2 7.2l2.4 1.8M3 12.5l3-.8"/><path d="M12 11l7.5 3.3-3.3 1.4-1.4 3.3z"/></svg></span><b>Interaktif</b><small>Klik titik, belajar sambil coba</small></button>
+        <button type="button" data-mode="blog"><span class="ug-mi" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="10" rx="2"/><rect x="13" y="3" width="8" height="6" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="15" width="8" height="6" rx="2"/></svg></span><b>Blog</b><small>Artikel bergambar dan diagram alur</small></button>
+        <button type="button" data-mode="detail"><span class="ug-mi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h10a3 3 0 013 3v13H8a3 3 0 01-3-3z"/><path d="M8 8h6M8 12h6M8 16h3"/></svg></span><b>Detail</b><small>Panduan lengkap per menu</small></button>
     </div>
     @php $catalog = \App\Support\GuideCatalog::forUser($user); @endphp
     @include('help.ug.modes.deck')
