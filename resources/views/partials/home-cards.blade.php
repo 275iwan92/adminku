@@ -30,6 +30,9 @@
         (() => {
             const box = document.getElementById('sstock-mods'), btns = document.querySelectorAll('.sstock-gaya [data-gaya]');
             const show = () => btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.gaya === sstockGaya.get()));
+            // Desktop: saklar pindah ke bilah tab (tempat tulisan "Belum ada menu terbuka" dulu); hilang sendiri begitu ada tab terbuka (CSS :not(:empty)).
+            const bar = document.querySelector('[data-dl-tabbar]'), sw = document.querySelector('.sstock-gaya');
+            if (bar && sw) { bar.parentElement.style.position = 'relative'; bar.after(sw); sw.classList.add('is-bar'); }
             addEventListener('sstock-gaya', show); show();
             btns.forEach(b => b.addEventListener('click', () => sstockGaya.set(b.dataset.gaya, true)));
             // Efek gaya baru (dilewati bila pengguna memilih kurangi gerakan): kartu miring 3D + sorot cahaya mengikuti kursor, angka menghitung naik saat Beranda dibuka.

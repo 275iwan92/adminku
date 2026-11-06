@@ -668,3 +668,7 @@ body:not(.dl-on-phone) .sstock-scan .dl-scan__cam { display: none; }
 
 /* Beranda: tanpa tulisan "Belum ada menu terbuka" di bilah tab kosong (teks bawaan DevLib). */
 .sstock-bare .dl-tabbar:empty::before { content: none; }
+/* Saklar Animasi di bilah tab Beranda: kecil, sejajar kiri; tersembunyi saat bilah berisi tab. */
+.sstock-gaya.is-bar { position: absolute; top: 5px; left: 12px; z-index: 5; margin: 0; padding: 2px; }
+.sstock-gaya.is-bar button { min-height: 28px; padding: 0 12px; font-size: 12.5px; }
+.dl-tabbar:not(:empty) ~ .sstock-gaya.is-bar { display: none; }
