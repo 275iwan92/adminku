@@ -28,6 +28,8 @@
       if (s.visibility === 'hidden' || s.display === 'none' || +s.opacity === 0 || !el.getClientRects().length) return;
       let hid = false; for (let e = el; e; e = e.parentElement) { const t = win.getComputedStyle(e); if (+t.opacity === 0 || t.visibility === 'hidden') { hid = true; break; } }
       if (hid) return;
+      const rc = el.getClientRects()[0], cx = rc.left + rc.width / 2, cy = rc.top + rc.height / 2;
+      if (cx >= 0 && cy >= 0 && cx < win.innerWidth && cy < win.innerHeight) { const top = doc.elementFromPoint(cx, cy); if (top && !el.contains(top) && !top.contains(el)) return; } // tertutup overlay
       const bg = bgOf(el, win); if (!bg) return;
       const fg = rgba(s.color), eff = fg[3] < 1 ? over(fg, bg) : fg;
       const px = parseFloat(s.fontSize), big = px >= 24 || (px >= 18.66 && +s.fontWeight >= 700), need = big ? 3 : 4.5;
