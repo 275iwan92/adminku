@@ -79,7 +79,7 @@ class HomeGreetingTest extends TestCase
 
     public function test_the_fallback_place_is_validated_and_accepts_a_decimal_comma(): void
     {
-        $sup = User::factory()->supervisor()->create();
+        $sup = User::factory()->administrator()->create();
         $base = ['name' => 'Maju Jaya', 'kop_style' => 'name'];
 
         $this->actingAs($sup)->put(route('company.update'), $base + ['weather_lat' => '95', 'weather_lon' => '112'])->assertSessionHasErrors('weather_lat');

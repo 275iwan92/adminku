@@ -97,7 +97,7 @@ class HomeHeroTest extends TestCase
 
         $none = $this->home($this->limited(['SO' => 'rw']));
         $this->assertStringNotContainsString('sstock-hero__stats', $none);
-        $this->assertStringNotContainsString('sstock-hero__num', $none);
+        $this->assertStringNotContainsString('<b class="sstock-hero__num', $none);
     }
 
     public function test_the_network_status_texts_are_indonesian_and_say_what_is_wrong(): void

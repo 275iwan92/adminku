@@ -21,9 +21,9 @@ class MenuLayersTest extends TestCase
     {
         $layers = collect(Menu::layers(User::factory()->administrator()->create()));
 
-        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'KEU', 'SEC'], $layers->pluck('code')->all());
+        $this->assertSame(['MST', 'STK', 'GA', 'HR', 'PUR', 'DLV', 'KEU', 'SEC'], $layers->pluck('code')->all());
         $this->assertSame(['Karyawan', 'Bagian', 'Rekrutmen', 'Kedisiplinan'], collect($layers->firstWhere('code', 'HR')['children'])->pluck('label')->all());
-        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
+        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung dan Aset'], collect($layers->firstWhere('code', 'GA')['children'])->pluck('label')->all());
         $this->assertSame(['Permintaan Pembelian', 'Keputusan Pesanan', 'Pesanan Pembelian (PO)', 'Penerimaan Pembelian (PV)'], collect($layers->firstWhere('code', 'PUR')['children'])->pluck('label')->all());
         $stok = $layers->firstWhere('code', 'STK');
         $this->assertSame(['Transaksi', 'Laporan'], collect($stok['children'])->pluck('label')->all());   // tanpa butir Beranda Stok: induk Stok membuka Beranda Stok saat diklik
@@ -35,10 +35,10 @@ class MenuLayersTest extends TestCase
         $this->assertNotContains('STB', collect($stok['children'])->flatMap(fn ($g) => collect($g['items'])->pluck('code'))->all());
         $this->assertSame(['MST' => route('opening', 'master'), 'GA' => route('opening', 'ga'), 'HR' => route('opening', 'hr'), 'PUR' => route('opening', 'purchase')], $layers->whereIn('code', ['MST', 'GA', 'HR', 'PUR'])->pluck('open', 'code')->all());
 
-        // Keuangan langsung berisi modulnya tanpa subkelompok (KSM, KSK, 3 laporan; KSR tersembunyi lewat MENU_UNDER).
+        // Keuangan langsung berisi modulnya tanpa subkelompok (KSM, KSK, KSA, KSB, 3 laporan; KSR tersembunyi lewat MENU_UNDER).
         $keu = $layers->firstWhere('code', 'KEU');
         $this->assertSame(route('opening', 'kas'), $keu['open']);
-        $this->assertSame(['KSM', 'KSK', 'R-KFLOW', 'R-KIN', 'R-KOUT'], collect($keu['children'])->pluck('code')->all());
+        $this->assertSame(['KSM', 'KSK', 'KSA', 'KSB', 'R-KFLOW', 'R-KIN', 'R-KOUT'], collect($keu['children'])->pluck('code')->all());
         $this->assertNotContains('H-KAS', collect($keu['children'])->pluck('code')->all());
     }
 
@@ -46,7 +46,7 @@ class MenuLayersTest extends TestCase
     {
         $layers = collect(Menu::layers(User::factory()->create()));
 
-        $this->assertSame(['MST', 'STK'], $layers->pluck('code')->all());
+        $this->assertSame(['MST', 'STK', 'DLV'], $layers->pluck('code')->all());
         $items = collect($layers->firstWhere('code', 'STK')['children'])->flatMap(fn ($g) => isset($g['items']) ? collect($g['items'])->pluck('code') : [$g['code']])->all();
         $this->assertContains('RCV', $items);
         $this->assertNotContains('OPN', $items);

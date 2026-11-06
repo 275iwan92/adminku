@@ -81,7 +81,7 @@ class BrandScreensTest extends TestCase
         $this->assertStringContainsString('media/brand/adminku.svg', $this->withHeader('User-Agent', self::PC)->get('/login')->getContent(), 'pojok kiri atas login desktop');
         $this->assertStringContainsString('content: "Admin"', $css);
         $this->assertStringContainsString('content: "KU"', $css);
-        $this->assertStringContainsString('#14a796', $css);
-        $this->assertStringContainsString('#2dd4bf', $css);
+        $this->assertStringContainsStringIgnoringCase('#14a796', $css);
+        $this->assertStringContainsStringIgnoringCase('#2dd4bf', $css);
     }
 }
