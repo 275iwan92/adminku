@@ -43,12 +43,23 @@ class HomeCardsTest extends TestCase
 
     public function test_every_role_gets_the_home_and_only_the_cards_it_may_open(): void
     {
-        $this->assertSame(['STB'], $this->codes(User::factory()->create()));
-        $this->assertSame(['STB'], $this->codes(User::factory()->supervisor()->create()));
-        $this->assertSame(['STB', 'GVM', 'GAM'], $this->codes(User::factory()->administrator()->create()));
+        $this->assertSame(['STB', 'PGK'], $this->codes(User::factory()->create()));
+        $this->assertSame(['STB', 'PGK'], $this->codes(User::factory()->supervisor()->create()));
+        $this->assertSame(['STB', 'PGK', 'KSM', 'GVM', 'GAM'], $this->codes(User::factory()->administrator()->create()));
+        $this->assertSame(['PGK'], $this->codes($this->group(['PGK' => 'ro'])));
+        $this->assertSame(['KSK'], $this->codes($this->group(['KSK' => 'rw'])));   // kartu Keuangan membuka layar pertama yang boleh dibuka
+        $this->assertSame([], $this->codes($this->group(['KSR' => 'ro'])));   // Kas / Rekening saja: tanpa kartu (hanya Uang Masuk / Keluar yang punya angka)
         $this->assertSame(['GVM', 'GAM'], $this->codes($this->group(['GVM' => 'ro', 'GAM' => 'ro'])));
         $this->assertSame([], $this->codes($this->group(['GVO' => 'rw'])));   // sopir: tidak ada kartu, bukan kartu berangka 0
         $this->assertSame(['STB'], $this->codes($this->group(['STB' => 'ro'])));
+    }
+
+    public function test_new_style_is_default_and_old_style_stays_switchable(): void
+    {
+        $html = $this->actingAs(User::factory()->administrator()->create())->get(route('home'))->assertOk()->assertSee('Trip hari ini')->assertSee('Saldo kas')->getContent();
+
+        $this->assertStringContainsString('class="sstock-mods is-baru"', $html);
+        $this->assertStringContainsString('data-gaya="lama"', $html);
     }
 
     public function test_home_no_longer_carries_the_stock_content(): void

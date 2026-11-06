@@ -396,6 +396,82 @@ body.dl-on-phone .dl-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-cor
 @container (max-width: 270px) { .sstock-mod__stats b { font-size: 18px; } }
 @media (max-width: 900px) { .sstock-mods { grid-template-columns: minmax(0, 1fr); } }
 
+/* Gaya baru kartu Beranda (bawaan; .sstock-mods.is-baru): latar gradien halus per modul, lencana ikon berwarna, angka besar. Gaya lama = tanpa is-baru (aturan di atas tetap utuh). Warna modul: Stok toska, Pengiriman biru, Keuangan emas, Kendaraan slate, AC koral. */
+.sstock-gaya { display: inline-flex; margin: 0 0 12px; padding: 3px; gap: 2px; background: var(--dl-surface); border: 1px solid var(--dl-border); border-radius: 99px; }
+.sstock-gaya button { min-height: 32px; padding: 0 14px; font: inherit; font-size: 13px; color: var(--dl-ink); background: transparent; border: 0; border-radius: 99px; cursor: pointer; }
+.sstock-gaya button[aria-pressed="true"] { color: #fff; background: #17414a; font-weight: 600; }
+.sstock-gaya button:focus-visible { outline: 3px solid var(--dl-ink-strong); outline-offset: 1px; }
+.sstock-mod--blue { --c: #3b82c4; }
+.sstock-mod--gold { --c: #d99a1c; }
+.sstock-mods.is-baru { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.is-baru .sstock-mod { position: relative; gap: 16px; padding: 18px 20px; border: 1px solid color-mix(in srgb, var(--c) 28%, var(--dl-border)); border-top-width: 1px; border-radius: 18px; background: linear-gradient(150deg, color-mix(in srgb, var(--c) 14%, var(--dl-surface)) 0%, var(--dl-surface) 62%); box-shadow: 0 1px 2px rgba(15, 42, 51, .06); }
+.is-baru .sstock-mod::before { content: ''; position: absolute; left: 20px; right: 20px; top: 0; height: 4px; border-radius: 0 0 4px 4px; background: var(--c); }
+.is-baru .sstock-mod.sstock-link { cursor: pointer; }
+html[data-gaya="baru"] .is-baru .sstock-mod { transition: box-shadow .15s, transform .12s ease-out; transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0)); }
+.is-baru .sstock-mod:is(:hover, :focus-visible) { box-shadow: 0 12px 28px color-mix(in srgb, var(--c) 26%, transparent); outline: none; }
+html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) { --ty: -3px; }
+/* Sorot cahaya mengikuti kursor (--mx/--my diisi JS di partial home-cards). */
+html[data-gaya="baru"] .is-baru .sstock-mod::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .2s; background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--c) 22%, transparent), transparent 70%); }
+html[data-gaya="baru"] .is-baru .sstock-mod:hover::after { opacity: 1; }
+.is-baru .sstock-mod__title { display: flex; align-items: center; gap: 12px; font-size: 18px; }
+.is-baru .sstock-mod__title i { display: grid; place-items: center; flex: none; width: 40px; height: 40px; font-size: 18px; color: #fff; background: var(--c); border-radius: 12px; box-shadow: 0 4px 10px color-mix(in srgb, var(--c) 40%, transparent); }
+.is-baru .sstock-mod__stats { flex-wrap: wrap; }
+.is-baru .sstock-mod__stats b { font-size: 26px; }
+.is-baru .sstock-mod__stats b.is-alert { color: #c2410c; }
+.is-baru .sstock-mod__stats span { font-size: 13px; opacity: .75; }
+.is-baru .sstock-mod__go { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 6px 14px; font-size: 14px; color: color-mix(in srgb, var(--c) 55%, #0f2a33); background: color-mix(in srgb, var(--c) 14%, transparent); border-radius: 99px; }
+@container (max-width: 270px) { .is-baru .sstock-mod__stats b { font-size: 22px; } }
+/* Animasi gaya baru: kartu muncul bergantian, ikon bergerak saat kursor di atas kartu (hover) atau kartu terfokus, menurut modulnya (truk meluncur, salju berputar, kotak melompat, gedung berdenyut, mobil bergoyang); hover mempercepat. Mati bila pengguna memilih kurangi gerakan. */
+@keyframes sstock-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes sstock-spin { to { transform: rotate(360deg); } }
+@keyframes sstock-hop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-5px); } 90% { transform: translateY(0); } }
+@keyframes sstock-slide { 0%, 100% { transform: translateX(-2px); } 50% { transform: translateX(3px); } }
+@keyframes sstock-beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes sstock-sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@media (prefers-reduced-motion: no-preference) {
+    html[data-gaya="baru"] .is-baru .sstock-mod { animation: sstock-rise .5s ease-out both; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:nth-child(2) { animation-delay: .08s; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:nth-child(3) { animation-delay: .16s; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:nth-child(4) { animation-delay: .24s; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:nth-child(5) { animation-delay: .32s; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) .sstock-mod__title i { animation: sstock-beat 1.2s ease-in-out infinite; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) .sstock-mod__title i.fa-boxes-packing { animation: sstock-hop 1.2s ease-in-out infinite; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) .sstock-mod__title i.fa-truck-fast { animation: sstock-slide 1s ease-in-out infinite; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) .sstock-mod__title i.fa-car-side { animation: sstock-sway 1s ease-in-out infinite; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) .sstock-mod__title i.fa-snowflake { animation: sstock-spin 3s linear infinite; }
+    html[data-gaya="baru"] .is-baru .sstock-mod__go i { transition: transform .15s; }
+    html[data-gaya="baru"] .is-baru .sstock-mod:is(:hover, :focus-visible) .sstock-mod__go i { transform: translateX(4px); }
+}
+/* Hero mode animasi (html[data-gaya=baru], diatur partial home-hero): kanvas konstelasi di latar, aurora bergerak, masuk bertahap, kilau tombol. Mode tanpa animasi = hero polos di atas. */
+.sstock-hero { position: relative; overflow: hidden; }
+.sstock-hero__fx { display: none; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+html[data-gaya="baru"] .sstock-hero__fx { display: block; }
+.sstock-hero__main, .sstock-hero__side { position: relative; z-index: 1; }
+html[data-gaya="baru"] .sstock-hero::before { content: ''; position: absolute; inset: -40%; pointer-events: none; background: radial-gradient(40% 40% at 25% 40%, rgba(45, 212, 191, .22), transparent 70%), radial-gradient(35% 35% at 75% 60%, rgba(255, 122, 89, .16), transparent 70%); }
+html[data-gaya="baru"] .sstock-hero__stat { transition: transform .15s, background .15s; }
+html[data-gaya="baru"] .sstock-hero__stat:hover { transform: translateY(-3px); background: #ffffff26; }
+html[data-gaya="baru"] .sstock-hero__btn { position: relative; overflow: hidden; }
+html[data-gaya="baru"] .sstock-hero__btn::after { content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; transform: skewX(-20deg); background: linear-gradient(90deg, transparent, rgba(45, 212, 191, .45), transparent); }
+@keyframes sstock-aurora { 0%, 100% { transform: translate(-4%, -3%) rotate(0deg); } 50% { transform: translate(5%, 4%) rotate(8deg); } }
+@keyframes sstock-shine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+@keyframes sstock-pulse { 0%, 100% { text-shadow: 0 0 0 transparent; } 50% { text-shadow: 0 0 14px rgba(255, 177, 153, .75); } }
+@media (prefers-reduced-motion: no-preference) {
+    html[data-gaya="baru"] .sstock-hero::before { animation: sstock-aurora 14s ease-in-out infinite; }
+    html[data-gaya="baru"] .sstock-hero__btn::after { animation: sstock-shine 4.5s ease-in-out infinite; }
+    html[data-gaya="baru"] .sstock-hero__num.is-alert { animation: sstock-pulse 2.4s ease-in-out infinite; }
+    html[data-gaya="baru"] :is(.sstock-hero__kicker, .sstock-hero__hi, .sstock-hero__meta, .sstock-hero__stat, .sstock-hero__clock, .sstock-hero__date, .sstock-hero__wx) { animation: sstock-rise .6s ease-out both; }
+    html[data-gaya="baru"] .sstock-hero__btn { animation: sstock-rise .6s .5s ease-out both; }
+    html[data-gaya="baru"] .sstock-hero__hi { animation-delay: .08s; }
+    html[data-gaya="baru"] .sstock-hero__meta { animation-delay: .16s; }
+    html[data-gaya="baru"] .sstock-hero__stat:nth-child(1) { animation-delay: .22s; }
+    html[data-gaya="baru"] .sstock-hero__stat:nth-child(2) { animation-delay: .3s; }
+    html[data-gaya="baru"] .sstock-hero__stat:nth-child(3) { animation-delay: .38s; }
+    html[data-gaya="baru"] .sstock-hero__stat:nth-child(4) { animation-delay: .46s; }
+    html[data-gaya="baru"] .sstock-hero__clock { animation-delay: .2s; }
+    html[data-gaya="baru"] .sstock-hero__date { animation-delay: .28s; }
+}
+@media (max-width: 700px) { .sstock-mods.is-baru { grid-template-columns: minmax(0, 1fr); } }
+
 /* REMARK
  * Tujuan       : Layar pembuka kelompok menu / modul (partial opening-body): header gelap bergaris warna, angka utama, perlu tindakan, pintasan, ubin layar anak. Lebar mengikuti isi (grid auto-fill), jadi menumpuk sendiri di HP.
  * Output       : hanya .sstock-o*; warna lewat --c (toska / slate / koral) pada .sstock-ohead--*.

@@ -9,6 +9,7 @@
  Status       : Aktif.
 --}}
 <div class="sstock-herobox"><section class="sstock-hero" data-sstock-hero data-tz="{{ $hero['tz'] }}" data-now="{{ $hero['now'] }}">
+    <canvas class="sstock-hero__fx" aria-hidden="true"></canvas>
     <div class="sstock-hero__main">
         <div class="sstock-hero__kicker">AdminKU · Beranda</div>
         <h1 class="sstock-hero__hi"><span data-hero-greet>{{ $hero['greeting'] }}</span>, {{ $hero['name'] }}</h1>
@@ -47,5 +48,67 @@
         };
         tick();
         setInterval(tick, 1000);
+    })();
+</script>
+{{-- Mode gerak Beranda (hero + kartu): 'baru' = beranimasi, 'lama' = tanpa animasi (kartu tetap bertampilan baru, statis). Urutan pilihan: ?gaya= di alamat, pilihan tersimpan (saklar, localStorage), lalu pengaturan sistem pengguna "kurangi gerakan" (prefers-reduced-motion) = tanpa animasi, selain itu beranimasi. Hasilnya di <html data-gaya>; saklar memanggil sstockGaya.set. --}}
+<script>
+    window.sstockGaya = (() => {
+        const ok = g => g === 'baru' || g === 'lama', reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const saved = () => { try { return localStorage.getItem('adminku.gaya'); } catch (e) { return null; } };
+        const q = new URLSearchParams(location.search).get('gaya');
+        const api = {
+            reduced,
+            get: () => document.documentElement.dataset.gaya,
+            set(g, save) {
+                document.documentElement.dataset.gaya = g;
+                if (save) try { localStorage.setItem('adminku.gaya', g); } catch (e) {}
+                window.dispatchEvent(new CustomEvent('sstock-gaya', {detail: g}));
+            },
+        };
+        api.set(ok(q) ? q : ok(saved()) ? saved() : reduced ? 'lama' : 'baru', ok(q));
+        return api;
+    })();
+</script>
+{{-- Efek hero mode animasi: konstelasi titik di latar yang bereaksi pada kursor (canvas), angka ringkasan menghitung naik. Berhenti total di mode tanpa animasi atau saat tab tersembunyi. --}}
+<script>
+    (() => {
+        const root = document.querySelector('[data-sstock-hero]'), cv = root?.querySelector('.sstock-hero__fx');
+        if (!cv || window.sstockGaya.reduced) return;
+        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [];
+        let w = 0, h = 0, raf = 0;
+        const size = () => {
+            const r = root.getBoundingClientRect(), d = devicePixelRatio || 1;
+            w = r.width; h = r.height; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0);
+            dots.length = 0;
+            for (let i = 0, n = Math.min(70, Math.round(w * h / 9000)); i < n; i++) dots.push({x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35, r: 1 + Math.random() * 1.6});
+        };
+        const draw = () => {
+            ctx.clearRect(0, 0, w, h);
+            for (const a of dots) {
+                a.x += a.vx; a.y += a.vy;
+                if (a.x < 0 || a.x > w) a.vx *= -1;
+                if (a.y < 0 || a.y > h) a.vy *= -1;
+                const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+                if (dm < 150) { a.x += (a.x - mouse.x) * .004; a.y += (a.y - mouse.y) * .004; }
+                ctx.fillStyle = 'rgba(94,234,212,.65)'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
+                if (dm < 170) { ctx.strokeStyle = `rgba(255,177,153,${.55 * (1 - dm / 170)})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
+                for (const b of dots) {
+                    const d = Math.hypot(a.x - b.x, a.y - b.y);
+                    if (d < 105 && a < b) { ctx.strokeStyle = `rgba(94,234,212,${.28 * (1 - d / 105)})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+                }
+            }
+            raf = requestAnimationFrame(draw);
+        };
+        const run = () => { cancelAnimationFrame(raf); if (window.sstockGaya.get() === 'baru' && !document.hidden) { size(); raf = requestAnimationFrame(draw); } };
+        root.addEventListener('pointermove', e => { const r = root.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; });
+        root.addEventListener('pointerleave', () => { mouse.x = mouse.y = -999; });
+        new ResizeObserver(run).observe(root);
+        addEventListener('sstock-gaya', run); document.addEventListener('visibilitychange', run);
+        if (window.sstockGaya.get() === 'baru') root.querySelectorAll('.sstock-hero__num').forEach(b => {
+            const end = parseInt(b.textContent.replace(/\D/g, ''), 10), t0 = performance.now();
+            if (isNaN(end)) return;
+            const tick = t => { const k = Math.min(1, (t - t0) / 1000); b.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))).toLocaleString('id-ID'); if (k < 1) requestAnimationFrame(tick); };
+            requestAnimationFrame(tick);
+        });
     })();
 </script>
