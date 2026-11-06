@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
             OrganizationSeeder::class,
             VehicleSeeder::class,
             AcSeeder::class,
-            FacSeeder::class,
             RecruitmentSeeder::class,
             EmployeeSampleSeeder::class,
+            FacSeeder::class,
             SampleTransactionSeeder::class,
         ]);
 

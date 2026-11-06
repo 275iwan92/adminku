@@ -263,7 +263,7 @@ class FacCareTest extends TestCase
         $this->seed(DatabaseSeeder::class);
         $counts = fn () => [FacPlace::count(), FacCategory::count(), FacAsset::count(), FacPlan::count(), FacOrder::count()];
         $first = $counts();
-        $this->assertSame([11, 7, 26, 9, 13], $first);
+        $this->assertSame([11, 8, 34, 9, 13], $first);
         $this->assertEqualsCanonicalizing(['draft', 'approval', 'approved', 'rejected', 'cancelled'], FacOrder::distinct()->pluck('status')->all());
         $by = collect(FacCare::overview(FacPlan::all()))->countBy('status');
         $this->assertTrue($by->has('aman') && $by->has('segera') && $by->has('terlambat'));
@@ -271,6 +271,6 @@ class FacCareTest extends TestCase
 
         $this->seed(DatabaseSeeder::class);
         $this->assertSame($first, $counts());
-        $this->assertSame(26, FacAsset::distinct()->count('asset_code'));
+        $this->assertSame(34, FacAsset::distinct()->count('asset_code'));
     }
 }

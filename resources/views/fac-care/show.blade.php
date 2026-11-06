@@ -10,6 +10,10 @@
 @section('body')
     @php
         use App\Services\FacCare;
+        use App\Services\FacCustody;
+        $moves = $asset->handovers()->with('employee', 'department')->orderByDesc('doc_date')->orderByDesc('id')->get()->map(fn ($h) => [
+            'id' => $h->id, 'no' => $h->number(), 'type' => \App\Models\FacHandover::TYPES[$h->type], 'holder' => $h->holderText(), 'date' => $h->doc_date->format('Y-m-d'), 'back' => $h->expected_return?->format('Y-m-d'), 'status' => FacCustody::STATUS[$h->status],
+        ])->all();
         $u = auth()->user();
         $rp = fn ($v) => 'Rp '.number_format((float) $v, 0, ',', '.');
         $rows = $orders->map(fn ($o) => [
@@ -35,9 +39,24 @@
         <x-dl::stat-box label="12 bulan terakhir" :value="$rp($year)" tone="accent" />
         <x-dl::stat-box label="Garansi" :value="$asset->warranty_until ? $asset->warranty_until->format('d-m-Y') : '-'" :tone="$asset->warranty_until ? ($asset->inWarranty() ? 'success' : 'warn') : 'neutral'" :sub="$asset->warranty_until ? ($asset->inWarranty() ? 'Masih berlaku' : 'Sudah habis') : 'Tidak dicatat'" />
     </x-dl::kpi-row>
+    <p class="dl-note"><b>Posisi:</b> {{ FacCustody::POSITIONS[$asset->position] }}@if ($asset->holderText()) · pemegang <b>{{ $asset->holderText() }}</b>@endif @if ($asset->due_back) · wajib kembali {{ $asset->due_back->format('d-m-Y') }}@if ($asset->overdue()) <b>(terlambat)</b>@endif @endif @if ($asset->monitored) · dimonitor GA @endif</p>
     <p class="dl-note">Dibeli {{ $asset->bought_at?->format('d-m-Y') ?? '-' }} · nilai {{ $rp($asset->price) }}.
         @foreach ($plans as $p) Jadwal {{ $p->title }} ({{ FacCare::PERIODS[$p->period] }}): berikutnya {{ $over[$p->id]['due']->format('d-m-Y') }}, {{ $over[$p->id]['label'] }}.@endforeach
     </p>
+    @if ($moves)
+        <h3 style="margin:14px 0 6px">Riwayat pemegang</h3>
+        <x-dl::grid id="fac-card-holders" :rows="$moves" actions="open" :new-record="null" :open-url="$u->canAccess('FAH') ? url('fac-handovers/{id}') : null"
+            :phone-cards="['title' => 'type', 'sub' => 'holder', 'badge' => 'status', 'tones' => FacCustody::STATUS_TONES, 'meta' => ['date']]"
+            :columns="[
+                ['key' => 'no', 'label' => 'No. ST', 'type' => 'identity', 'avatar' => false],
+                ['key' => 'type', 'label' => 'Jenis'],
+                ['key' => 'holder', 'label' => 'Pemegang'],
+                ['key' => 'date', 'label' => 'Tanggal', 'type' => 'date'],
+                ['key' => 'back', 'label' => 'Kembali s.d.', 'type' => 'date'],
+                ['key' => 'status', 'label' => 'Status', 'type' => 'badge', 'tones' => FacCustody::STATUS_TONES],
+            ]" />
+        <h3 style="margin:14px 0 6px">Riwayat perawatan</h3>
+    @endif
     <x-dl::grid id="fac-card" :rows="$rows" actions="open" :new-record="null" :open-url="$u->canAccess('FAT') ? url('fac-orders/{id}') : null" search="Cari riwayat perawatan..."
         :phone-cards="['title' => 'title', 'sub' => 'no', 'badge' => 'status', 'tones' => FacCare::STATUS_TONES, 'meta' => ['date', 'total']]"
         :columns="[

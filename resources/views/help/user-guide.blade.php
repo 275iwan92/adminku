@@ -21,7 +21,7 @@
     $anyHr = $can('HRE') || $can('HRR') || $can('HRD');
     $anyPur = $can('PUP') || $can('PUK') || $can('PUO') || $can('PUV');
     $anyKas = $can('KSM') || $can('KSK') || $can('KSR') || $can('R-KFLOW') || $can('R-KIN') || $can('R-KOUT');
-    $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP', 'FAM', 'FAT', 'FAJ', 'FAA', 'FAG', 'FAC', 'FAR'])->contains($can);
+    $anyGa = collect(['GVM', 'GVD', 'GVS', 'GVO', 'GVK', 'GVT', 'GAM', 'GAS', 'GAV', 'GAK', 'GAA', 'GAR', 'GAE', 'GAP', 'FAM', 'FAT', 'FAJ', 'FAA', 'FAG', 'FAC', 'FAR', 'FAH', 'FAO', 'FAP'])->contains($can);
     $anySec = collect(['USR', 'GRP', 'SMP', 'MOD'])->contains($can);
 @endphp
 @include('help.tabs', ['active' => 'ug'])
@@ -106,6 +106,9 @@
             @if ($can('GAE'))<a class="g-toc-sub" href="#ga-gae">Vendor AC</a>@endif
             @if ($can('FAM'))<a class="g-toc-sub" href="#ga-fam">Perawatan Gedung dan Aset</a>@endif
             @if ($can('FAT'))<a class="g-toc-sub" href="#ga-fat">Tiket Perawatan</a>@endif
+            @if ($can('FAH'))<a class="g-toc-sub" href="#ga-fah">Serah Terima Aset</a>@endif
+            @if ($can('FAO'))<a class="g-toc-sub" href="#ga-fao">Opname Aset</a>@endif
+            @if ($can('FAP'))<a class="g-toc-sub" href="#ga-fap">Aset per Pemegang</a>@endif
             @if ($can('FAJ'))<a class="g-toc-sub" href="#ga-faj">Jadwal Perawatan</a>@endif
             @if ($can('FAA'))<a class="g-toc-sub" href="#ga-faa">Master Aset</a>@endif
             @if ($can('FAG'))<a class="g-toc-sub" href="#ga-fag">Gedung dan Ruang</a>@endif

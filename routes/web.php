@@ -37,6 +37,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FacAssetController;
 use App\Http\Controllers\FacCareController;
 use App\Http\Controllers\FacCategoryController;
+use App\Http\Controllers\FacCheckController;
+use App\Http\Controllers\FacHandoverController;
 use App\Http\Controllers\FacOrderController;
 use App\Http\Controllers\FacPlaceController;
 use App\Http\Controllers\FacPlanController;
@@ -441,6 +443,17 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::post("{$path}/{{$param}}/toggle", [$controller, 'toggle'])->whereNumber($param)->name("{$path}.toggle");
     }
     Route::get('fac-assets/{asset}/photo', [FacAssetController::class, 'photo'])->whereNumber('asset')->name('fac-assets.photo');
+    // Penggunaan aset: Serah Terima (FAH, dokumen Draf > Confirm > Approve Supervisor) dan Opname Aset (FAO).
+    Route::get('fac-handovers', [FacHandoverController::class, 'index'])->name('fac-handovers.index');
+    Route::get('fac-handovers/create', [FacHandoverController::class, 'create'])->name('fac-handovers.create');
+    Route::post('fac-handovers', [FacHandoverController::class, 'store'])->name('fac-handovers.store');
+    Route::get('fac-handovers/{handover}', [FacHandoverController::class, 'show'])->whereNumber('handover')->name('fac-handovers.show');
+    Route::put('fac-handovers/{handover}', [FacHandoverController::class, 'update'])->whereNumber('handover')->name('fac-handovers.update');
+    Route::get('fac-handovers/{handover}/file', [FacHandoverController::class, 'file'])->whereNumber('handover')->name('fac-handovers.file');
+    Route::get('fac-checks', [FacCheckController::class, 'index'])->name('fac-checks.index');
+    Route::get('fac-checks/create', [FacCheckController::class, 'create'])->name('fac-checks.create');
+    Route::post('fac-checks', [FacCheckController::class, 'store'])->name('fac-checks.store');
+    Route::get('fac-checks/{check}', [FacCheckController::class, 'show'])->whereNumber('check')->name('fac-checks.show');
     Route::get('fac-orders', [FacOrderController::class, 'index'])->name('fac-orders.index');
     Route::get('fac-orders/create', [FacOrderController::class, 'create'])->name('fac-orders.create');
     Route::post('fac-orders', [FacOrderController::class, 'store'])->name('fac-orders.store');
@@ -460,6 +473,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::get('adjustment', 'adjustment')->middleware('supervisor')->name('reports.adjustment');
     });
     Route::get('reports/fac-cost', [FacReportController::class, 'cost'])->name('reports.fac-cost');
+    Route::get('reports/fac-holders', [FacReportController::class, 'holders'])->name('reports.fac-holders');
     Route::prefix('reports')->controller(CashReportController::class)->group(function () {
         Route::get('cash-flow', 'cashFlow')->name('reports.cash-flow');
         Route::get('cash-receipts', 'receipts')->name('reports.cash-receipts');

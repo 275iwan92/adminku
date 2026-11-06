@@ -7,6 +7,7 @@ use App\Models\FacCategory;
 use App\Models\FacOrder;
 use App\Models\FacPlace;
 use App\Services\FacCare;
+use App\Services\FacCustody;
 use App\Support\Text;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +35,7 @@ class FacAssetController extends Controller
             'label' => $c->name, 'icon' => $c->icon, 'unit' => 'aset', 'empty' => 'Belum ada aset pada kategori ini.',
             'items' => $assets->get($c->id, collect())->map(fn (FacAsset $a) => [
                 'url' => route('fac-assets.show', $a), 'title' => $a->name, 'code' => $a->asset_code, 'sub' => $a->place?->path(), 'off' => ! $a->is_active,
-                'pills' => [[FacCare::CONDITIONS[$a->cond], ['baik' => 'ok', 'perlu' => 'warn', 'rusak' => 'bad', 'dihapus' => 'plain'][$a->cond]]],
+                'pills' => array_values(array_filter([[FacCare::CONDITIONS[$a->cond], ['baik' => 'ok', 'perlu' => 'warn', 'rusak' => 'bad', 'dihapus' => 'plain'][$a->cond]], $a->position !== 'office' ? [FacCustody::POSITIONS[$a->position].($a->holderText() ? ': '.$a->holderText() : ''), $a->overdue() || $a->position === 'lost' ? 'bad' : 'warn'] : null])),
             ])->values()->all(),
         ])->all();
 
@@ -54,10 +55,16 @@ class FacAssetController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request);
-        $asset = FacAsset::create(['asset_code' => FacAsset::nextCode()] + $data);
-        $this->savePhoto($asset, $request->file('photo'), false);
+        // Input massal: "Jumlah unit" membuat beberapa aset sejenis sekaligus (mis. 10 kalkulator), tiap unit berkode sendiri; unit ke-2 dst. memakai nama + nomor urut.
+        $copies = max(1, min(50, (int) $request->input('copies', 1)));
+        $first = null;
+        for ($i = 1; $i <= $copies; $i++) {
+            $asset = FacAsset::create(['asset_code' => FacAsset::nextCode()] + ($copies > 1 ? ['name' => mb_substr($data['name'], 0, 140).' #'.$i] : []) + $data);
+            $this->savePhoto($asset, $request->file('photo'), false);
+            $first ??= $asset;
+        }
 
-        return redirect()->route('fac-assets.show', $asset)->with('status', 'Aset disimpan.');
+        return $copies > 1 ? redirect()->route('fac-assets.index')->with('status', "{$copies} aset disimpan (".$first->asset_code.' dst.).') : redirect()->route('fac-assets.show', $first)->with('status', 'Aset disimpan.');
     }
 
     public function update(Request $request, FacAsset $asset): RedirectResponse
@@ -102,10 +109,11 @@ class FacAssetController extends Controller
             'name' => ['required', 'string', 'max:150'], 'category_id' => ['required', 'integer', 'exists:m_fac_category,id'], 'place_id' => ['nullable', 'integer', 'exists:m_fac_place,id'],
             'bought_at' => ['nullable', 'date'], 'price' => ['nullable', 'numeric', 'min:0', 'max:999999999999'], 'warranty_until' => ['nullable', 'date', 'after_or_equal:bought_at'],
             'cond' => ['required', Rule::in(array_keys(FacCare::CONDITIONS))], 'pic_name' => ['nullable', 'string', 'max:100'], 'note' => ['nullable', 'string', 'max:255'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'], 'monitored' => ['nullable', 'boolean'], 'copies' => ['nullable', 'integer', 'min:1', 'max:50'],
         ], [], ['name' => 'Nama', 'category_id' => 'Kategori', 'cond' => 'Kondisi', 'warranty_until' => 'Garansi s.d.']);
-        unset($d['photo']);
+        unset($d['photo'], $d['copies']);
         $d['price'] = $d['price'] ?? 0;
+        $d['monitored'] = $request->boolean('monitored');
         foreach (['pic_name', 'note'] as $k) {
             $d[$k] = Text::of($d[$k] ?? '') ?: null;
         }

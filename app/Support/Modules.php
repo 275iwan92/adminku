@@ -34,7 +34,7 @@ final class Modules
     public const MENU_UNDER = [
         'GVD' => ['GVM'], 'GVS' => ['GVM'], 'GVO' => ['GVM'], 'GVK' => ['GVM'], 'GVT' => ['GVM'],
         'GAS' => ['GAM'], 'GAV' => ['GAM'], 'GAK' => ['GAM'], 'GAA' => ['GAM'], 'GAR' => ['GAM'], 'GAE' => ['GAM'],
-        'FAT' => ['FAM'], 'FAJ' => ['FAM'], 'FAA' => ['FAM'], 'FAG' => ['FAM'], 'FAC' => ['FAM'], 'FAR' => ['FAM'],
+        'FAT' => ['FAM'], 'FAJ' => ['FAM'], 'FAA' => ['FAM'], 'FAG' => ['FAM'], 'FAC' => ['FAM'], 'FAR' => ['FAM'], 'FAH' => ['FAM'], 'FAO' => ['FAM'], 'FAP' => ['FAM'],
         'GAP' => ['GVM', 'GAM'],
         'KSR' => ['KSM', 'KSK'],
     ];
@@ -85,6 +85,9 @@ final class Modules
             'FAA' => ['GA', 'Master Aset', 'fa-solid fa-boxes-stacked', 'grid', 'fac-assets.index', 'entry', ['fac-assets.']],
             'FAG' => ['GA', 'Gedung dan Ruang', 'fa-solid fa-building', 'grid', 'fac-places.index', 'entry', ['fac-places.']],
             'FAC' => ['GA', 'Kategori Aset', 'fa-solid fa-tags', 'grid', 'fac-categories.index', 'supervisor', ['fac-categories.']],
+            'FAH' => ['GA', 'Serah Terima Aset', 'fa-solid fa-hand-holding', 'grid', 'fac-handovers.index', 'entry', ['fac-handovers.']],
+            'FAO' => ['GA', 'Opname Aset', 'fa-solid fa-clipboard-check', 'grid', 'fac-checks.index', 'entry', ['fac-checks.']],
+            'FAP' => ['GA', 'Aset per Pemegang', 'fa-solid fa-user-tag', 'report', 'reports.fac-holders', 'entry', ['reports.fac-holders']],
             'FAR' => ['GA', 'Laporan Biaya Perawatan', 'fa-solid fa-file-invoice-dollar', 'report', 'reports.fac-cost', 'entry', ['reports.fac-cost']],
             'GAP' => ['GA', 'Pengaturan GA', 'fa-solid fa-sliders', 'form', 'ga-settings.edit', 'supervisor', ['ga-settings.']],
             'HRE' => ['HR', 'Karyawan', 'fa-solid fa-id-card', 'grid', 'employees.index', 'supervisor', ['employees.']],

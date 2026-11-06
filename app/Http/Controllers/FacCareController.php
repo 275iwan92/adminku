@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FacAsset;
 use App\Models\FacOrder;
 use App\Services\FacCare;
+use App\Services\FacCustody;
 
 /* REMARK
  * Tujuan       : Panel Perawatan Gedung dan Aset (GA, modul FAM): dashboard (aset aktif, perlu perawatan, tiket terbuka, jadwal terlambat, biaya bulan ini), "Perlu tindakan" berwarna, grafik biaya perawatan 6 bulan,
@@ -31,6 +32,17 @@ class FacCareController extends Controller
         $n['late'] && $todo[] = ['danger', $n['late'], 'jadwal perawatan Terlambat', 'fa-solid fa-calendar-xmark', route('fac-plans.index')];
         $n['waiting'] && $todo[] = ['warn', $n['waiting'], 'tiket menunggu persetujuan Supervisor', 'fa-solid fa-stamp', route('fac-orders.index')];
         $n['soon'] && $todo[] = ['warn', $n['soon'], 'jadwal perawatan Segera jatuh tempo', 'fa-solid fa-calendar-day', route('fac-plans.index')];
+        // Penggunaan aset: terlambat kembali dan hilang (merah), di luar kantor, dalam perbaikan, pemegang keluar, temuan opname.
+        $cu = FacCustody::counts();
+        $left = FacCustody::leftHolders();
+        $found = FacCustody::findings()->count();
+        $cu['overdue'] && array_unshift($todo, ['danger', $cu['overdue'], 'aset terlambat dikembalikan', 'fa-solid fa-clock', route('reports.fac-holders', ['late' => 1])]);
+        $cu['lost'] && $todo[] = ['danger', $cu['lost'], 'aset Hilang (tindak lanjuti)', 'fa-solid fa-circle-question', route('fac-assets.index')];
+        $left->isNotEmpty() && $todo[] = ['danger', $left->count(), 'karyawan sudah keluar masih memegang aset: '.$left->pluck('name')->take(3)->implode(', '), 'fa-solid fa-user-xmark', route('reports.fac-holders')];
+        $found && $todo[] = ['warn', $found, 'aset tidak ditemukan saat opname', 'fa-solid fa-magnifying-glass', route('fac-checks.index')];
+        $inside = $cu['out'] - $cu['overdue'];
+        $inside > 0 && $todo[] = ['warn', $inside, 'aset sedang di luar kantor (masih dalam waktu)', 'fa-solid fa-house-user', route('reports.fac-holders')];
+        $cu['repair'] && $todo[] = ['warn', $cu['repair'], 'aset Dalam perbaikan', 'fa-solid fa-screwdriver-wrench', route('fac-assets.index')];
         $need = $n['need'] - $broken;
         $need > 0 && $todo[] = ['warn', $need, 'aset Perlu perawatan', 'fa-solid fa-wrench', route('fac-assets.index')];
 
@@ -42,7 +54,7 @@ class FacCareController extends Controller
                 ['value' => (string) $n['late'], 'label' => 'Jadwal terlambat', 'alert' => $n['late'] > 0],
                 ['value' => $money($n['month_cost']), 'label' => 'Biaya bulan ini', 'alert' => false],
             ],
-            'todo' => $todo, 'trend' => $trend, 'trendMax' => max([1.0, ...array_column($trend, 'value')]), 'money' => $money,
+            'outside' => FacCustody::outside(8), 'todo' => $todo, 'trend' => $trend, 'trendMax' => max([1.0, ...array_column($trend, 'value')]), 'money' => $money,
             'byStatus' => FacCare::ticketsByStatus(), 'byCategory' => FacCare::ticketsByCategory(),
             'can' => fn (string $m) => $u->canAccess($m), 'write' => fn (string $m) => $u->canWrite($m),
         ]);

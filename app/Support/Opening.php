@@ -20,6 +20,7 @@ use App\Models\StockDocument;
 use App\Models\User;
 use App\Services\CountSchedule;
 use App\Services\FacCare;
+use App\Services\FacCustody;
 use Devlib\Locale;
 use Illuminate\Support\Facades\DB;
 
@@ -258,6 +259,9 @@ final class Opening
             array_push($stats, ['value' => Locale::number($f['need'], 0), 'label' => 'Aset perlu perawatan', 'alert' => $f['need'] > 0], ['value' => Locale::number($f['open'], 0), 'label' => 'Tiket perawatan terbuka', 'alert' => $f['open'] > 0]);
             $f['late'] && $todo[] = ['danger', $f['late'], 'jadwal perawatan gedung dan aset Terlambat', 'fa-solid fa-building-circle-check', 'FAM'];
             $f['waiting'] && $todo[] = ['warn', $f['waiting'], 'tiket perawatan menunggu persetujuan', 'fa-solid fa-building-circle-check', 'FAM'];
+            $cu = FacCustody::counts();
+            $cu['overdue'] && $todo[] = ['danger', $cu['overdue'], 'aset terlambat dikembalikan', 'fa-solid fa-building-circle-check', 'FAM'];
+            $cu['lost'] && $todo[] = ['danger', $cu['lost'], 'aset Hilang', 'fa-solid fa-building-circle-check', 'FAM'];
             $facts['FAM'] = ['n' => Locale::number($f['assets'], 0), 'note' => 'aset aktif · '.$f['open'].' tiket terbuka'];
         }
         foreach ([['GVO', 'fa-gauge-high', 'Catat Odometer'], ['GVS', 'fa-screwdriver-wrench', 'Catat Servis'], ['GAS', 'fa-calendar-check', 'Jadwalkan AC'], ['FAT', 'fa-triangle-exclamation', 'Lapor Kerusakan']] as [$code, $icon, $label]) {

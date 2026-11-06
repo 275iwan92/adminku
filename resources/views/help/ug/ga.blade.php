@@ -31,6 +31,9 @@
         @if ($can('GAE'))<tr><td>{!! $ref('GAE', 'ga-gae', 'Vendor AC') !!}</td><td>Vendor jasa AC beserta nomor WhatsApp dan e-mail</td></tr>@endif
         @if ($can('FAM'))<tr><td>{!! $ref('FAM', 'ga-fam', 'Perawatan Gedung dan Aset') !!}</td><td>Dashboard aset, jadwal, tiket, dan biaya perawatan gedung</td></tr>@endif
         @if ($can('FAT'))<tr><td>{!! $ref('FAT', 'ga-fat', 'Tiket Perawatan') !!}</td><td>Perintah Kerja: lapor kerusakan, kerjakan, setujui</td></tr>@endif
+        @if ($can('FAH'))<tr><td>{!! $ref('FAH', 'ga-fah', 'Serah Terima Aset') !!}</td><td>Pinjam, bawa pulang, pengembalian, dan laporan hilang aset</td></tr>@endif
+        @if ($can('FAO'))<tr><td>{!! $ref('FAO', 'ga-fao', 'Opname Aset') !!}</td><td>Cek fisik aset per orang atau ruang</td></tr>@endif
+        @if ($can('FAP'))<tr><td>{!! $ref('FAP', 'ga-fap', 'Aset per Pemegang') !!}</td><td>Siapa memegang aset apa, termasuk yang terlambat kembali</td></tr>@endif
         @if ($can('FAJ'))<tr><td>{!! $ref('FAJ', 'ga-faj', 'Jadwal Perawatan') !!}</td><td>Perawatan berkala per aset atau per gedung</td></tr>@endif
         @if ($can('FAA'))<tr><td>{!! $ref('FAA', 'ga-faa', 'Master Aset') !!}</td><td>Daftar aset, kode otomatis, kondisi, garansi</td></tr>@endif
         @if ($can('FAG'))<tr><td>{!! $ref('FAG', 'ga-fag', 'Gedung dan Ruang') !!}</td><td>Gedung beserta ruang atau areanya</td></tr>@endif
@@ -578,6 +581,76 @@
 <ul class="g-list">
     <li><b>Tombol Approve tidak ada.</b> Hanya Supervisor yang bukan pembuat tiket yang melihatnya.</li>
     <li><b>Confirm ditolak.</b> Isi tanggal selesai, serta vendor atau nama teknisi internal.</li>
+</ul>
+@endif
+
+@if ($can('FAH'))
+<h3 id="ga-fah">Serah Terima Aset</h3>
+<h4>Untuk apa</h4>
+<p>Mencatat aset yang tidak habis pakai (laptop, kalkulator, proyektor, stapler, dan sejenisnya) yang dipinjam, dibawa pulang, dikembalikan, atau hilang, supaya GA selalu tahu <b>siapa memegang apa</b> dan <b>kapan wajib kembali</b>.</p>
+<h4>Siapa yang bisa</h4>
+<p>Siapa pun yang Grup-nya punya modul <b>Serah Terima Aset</b> dengan hak RW boleh membuat dokumen. <b>Approve hanya oleh Supervisor</b> yang bukan pembuat dokumen.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Serah Terima</b> lalu <span class="g-btn">New Record</span></li>
+    <li>Atau buka aset di <b>Master Aset</b> lalu tekan <span class="g-btn">Pinjamkan</span>, <span class="g-btn">Bawa Pulang</span>, <span class="g-btn">Kembalikan</span>, atau <span class="g-btn">Lapor Hilang</span>: jenis dan aset terisi otomatis.</li>
+    <li>Pinjam / bawa pulang: pilih <b>Karyawan</b> (bawa pulang harus atas nama karyawan; pinjam boleh ke departemen), isi <b>Perkiraan kembali</b>, <b>Kondisi saat keluar</b>, tujuan, dan foto bila perlu. Tekan <span class="g-btn">Save</span> (Draf) lalu <span class="g-btn">Confirm</span>: nomor <b>ST</b> terbit.</li>
+    <li>Pengembalian: isi <b>Kondisi saat kembali</b> dan catatan selisih / kerusakan. Kondisi Rusak membuat aset berstatus <b>Dalam perbaikan</b>.</li>
+    <li>Laporan hilang: isi kronologi di <b>Tujuan / kronologi</b>.</li>
+    <li>Supervisor menekan <span class="g-btn">Approve</span> atau <span class="g-btn">Reject</span> (alasan wajib). Setelah disetujui posisi dan pemegang aset berubah dan tercatat di <b>Riwayat pemegang</b> pada Kartu Aset.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Satu aset hanya boleh punya satu dokumen yang belum selesai (Draf atau Diajukan). Aset yang sedang keluar tidak bisa dipinjamkan lagi sebelum dikembalikan.</li>
+    <li>Aset yang lewat tanggal wajib kembali tampil merah di <b>Perlu tindakan</b> dan di kartu Beranda. Karyawan yang sudah keluar tetapi masih memegang aset juga ditandai.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Confirm ditolak: aset tidak sedang di kantor.</b> Buat dulu dokumen Pengembalian untuk pemegang sebelumnya.</li>
+    <li><b>Karyawan tidak ada di pilihan.</b> Hanya karyawan aktif dari master Karyawan yang bisa menerima aset.</li>
+</ul>
+@endif
+
+@if ($can('FAO'))
+<h3 id="ga-fao">Opname Aset</h3>
+<h4>Untuk apa</h4>
+<p>Cek fisik berkala aset per orang (yang dipegang atau dibawanya) atau per ruang (yang seharusnya ada di kantor). Aset yang tidak ditemukan menjadi temuan.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Opname Aset</b>; RW untuk menyimpan hasil pemeriksaan.</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Opname</b> lalu <span class="g-btn">New Record</span>, pilih orang atau ruang, tekan <span class="g-btn">Tampilkan aset</span>.</li>
+    <li>Hilangkan centang pada aset yang tidak ada secara fisik, isi tanggal dan catatan, tekan <span class="g-btn">Simpan opname</span>.</li>
+    <li>Aset yang tidak ditemukan tampil di <b>Perlu tindakan</b> sampai pemeriksaan berikutnya menemukannya. Tindak lanjuti lewat Serah Terima (pengembalian atau laporan hilang).</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Opname tidak mengubah posisi aset; hanya mencatat selisih.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Daftar aset kosong.</b> Orang itu tidak sedang memegang aset, atau ruang itu tidak punya aset yang berposisi di kantor.</li>
+</ul>
+@endif
+
+@if ($can('FAP'))
+<h3 id="ga-fap">Aset per Pemegang</h3>
+<h4>Untuk apa</h4>
+<p>Laporan satu orang atau departemen memegang aset apa saja, sejak kapan, wajib kembali kapan, dan apakah sudah terlambat.</p>
+<h4>Siapa yang bisa</h4>
+<p>Pengguna yang Grup-nya punya modul <b>Aset per Pemegang</b> (RO cukup).</p>
+<h4>Langkah</h4>
+<ol class="g-steps">
+    <li>Buka <b>Per Pemegang</b> dari panel Perawatan Gedung dan Aset.</li>
+    <li>Pilih <b>Semua yang di luar kantor</b> atau <b>Hanya yang terlambat</b>; kelompokkan per pemegang atau per kategori; cetak atau ekspor dari bilah laporan.</li>
+</ol>
+<h4>Yang perlu diperhatikan</h4>
+<ul class="g-list">
+    <li>Pemegang yang sudah keluar dari perusahaan diberi catatan <i>Sudah keluar</i>.</li>
+</ul>
+<h4>Masalah umum</h4>
+<ul class="g-list">
+    <li><b>Laporan kosong.</b> Tidak ada aset yang sedang dipinjam atau dibawa pulang.</li>
 </ul>
 @endif
 

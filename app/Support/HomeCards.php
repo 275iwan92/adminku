@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\AcCare;
 use App\Services\FacCare;
+use App\Services\FacCustody;
 use App\Services\VehicleCare;
 use Devlib\Locale;
 
@@ -121,12 +122,13 @@ final class HomeCards
     private static function facility(): array
     {
         $f = FacCare::dashboard(false);
+        $c = FacCustody::counts();
 
         return self::card('FAM', 'GA · Gedung dan Aset', 'fa-solid fa-building-circle-check', 'blue', 'Perawatan Gedung dan Aset', [
             ['value' => Locale::number($f['assets'], 0), 'label' => 'Aset'],
-            ['value' => Locale::number($f['open'], 0), 'label' => 'Tiket terbuka', 'alert' => $f['open'] > 0],
-            ['value' => Locale::number($f['late'], 0), 'label' => 'Jadwal terlambat', 'alert' => $f['late'] > 0],
-        ], [[max(0, $f['assets'] - $f['need']), 'ok', 'Baik'], [max(0, $f['need'] - $f['broken']), 'warn', 'Perlu perawatan'], [$f['broken'], 'bad', 'Rusak']]);
+            ['value' => Locale::number($c['out'], 0), 'label' => 'Di luar kantor', 'alert' => $c['overdue'] > 0, 'title' => $c['overdue'].' terlambat kembali'],
+            ['value' => Locale::number($f['open'] + $f['late'] + $c['overdue'] + $c['lost'], 0), 'label' => 'Perlu tindakan', 'alert' => $f['open'] + $f['late'] + $c['overdue'] + $c['lost'] > 0],
+        ], [[max(0, $f['assets'] - $f['need']), 'ok', 'Baik'], [max(0, $f['need'] - $f['broken']), 'warn', 'Perlu perawatan'], [$f['broken'] + $c['lost'], 'bad', 'Rusak / hilang']]);
     }
 
     // Pengiriman: trip Ditugaskan hari ini, yang sedang jalan (sudah ada alamat ditandai tiba tapi belum semua), dan draf yang belum ditugaskan (hari ini dan seterusnya).

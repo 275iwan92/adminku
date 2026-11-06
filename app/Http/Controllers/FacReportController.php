@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FacAsset;
 use App\Models\FacCategory;
 use App\Models\FacOrder;
 use App\Models\FacPlace;
+use App\Services\FacCustody;
 use Devlib\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -18,6 +20,20 @@ use Illuminate\Support\Carbon;
  */
 class FacReportController extends Controller
 {
+    // Aset per pemegang: satu orang / departemen memegang apa saja (hanya aset yang sedang di luar kantor), dengan tanggal wajib kembali dan status terlambat.
+    public function holders(Request $request)
+    {
+        $only = $request->boolean('late');
+        $rows = FacAsset::query()->with('category', 'holderEmployee', 'holderDepartment')->where('is_active', true)->whereIn('position', ['loan', 'home'])
+            ->orderBy('due_back')->get()->filter(fn (FacAsset $a) => ! $only || $a->overdue())->map(fn (FacAsset $a) => [
+                'holder' => $a->holderText() ?? '-', 'left' => $a->holderEmployee && ! $a->holderEmployee->is_active ? 'Sudah keluar' : '', 'code' => $a->asset_code, 'asset' => $a->name, 'category' => $a->category->name,
+                'position' => FacCustody::POSITIONS[$a->position], 'since' => Locale::d($a->handovers()->where('status', 'approved')->whereIn('type', ['loan', 'home'])->latest('doc_date')->value('doc_date') ?? $a->updated_at),
+                'due' => $a->due_back ? Locale::d($a->due_back) : '-', 'status' => $a->overdue() ? 'Terlambat '.$a->due_back->diffInDays(today()).' hari' : 'Sesuai jadwal',
+            ])->sortBy('holder')->values()->all();
+
+        return view('reports.fac-holders', ['rows' => $rows, 'late' => $only]);
+    }
+
     public function cost(Request $request)
     {
         $parse = fn (?string $v, Carbon $default) => rescue(fn () => $v ? Carbon::parse($v) : $default, $default, false);
