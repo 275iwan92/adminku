@@ -14,7 +14,7 @@ use Illuminate\Database\Seeder;
 
 /* REMARK
  * Tujuan       : Data contoh GA Perawatan Gedung dan Aset (SEMUA FIKTIF, PT XYZ): 3 gedung dengan ruangnya, 7 kategori aset, 26 aset (kondisi Baik / Perlu perawatan / Rusak), 9 jadwal berkala (Aman, Segera, Terlambat),
- *                dan 12 Perintah Kerja berstatus beragam (Draf, Diajukan, Selesai, Ditolak, Dibatalkan) dengan biaya tersebar 6 bulan agar grafik terisi. Semua tanggal RELATIF terhadap hari ini. Master idempoten menurut kode;
+ *                dan 13 Perintah Kerja berstatus beragam (Draf, Diajukan, Selesai, Ditolak, Dibatalkan) dengan biaya tersebar 6 bulan agar grafik terisi. Semua tanggal RELATIF terhadap hari ini. Master idempoten menurut kode;
  *                jadwal dan tiket contoh hanya dibuat sekali (dilewati bila sudah ada).
  * Sumber hulu  : users (admin pembuat, spv penyetuju), m_ac_vendor (vendor bersama), FacCare.
  * Output       : m_fac_place, m_fac_category, m_fac_asset, g_fac_plan, g_fac_order.
@@ -108,6 +108,7 @@ class FacSeeder extends Seeder
             ['Perbaikan pintu kaca otomatis', 'Pintu kaca otomatis lobi', 'high', 'approved', 60, 3, true, 1200000, 3200000, 'Sensor dan motor diganti'],
             ['Isi ulang APAR', 'APAR 6 kg (set 10)', 'normal', 'approved', 41, 2, true, 400000, 2100000, null],
             ['Servis mobil operasional 40.000 km', 'Mobil operasional Avanza', 'normal', 'approved', 22, 1, true, 850000, 2950000, null],
+            ['Ganti kunci dan engsel pintu lobi', 'Pintu kaca otomatis lobi', 'normal', 'approved', 5, 1, false, 250000, 480000, null],
             ['Stabilizer listrik kantor rusak', 'Stabilizer listrik kantor', 'urgent', 'approval', 6, 3, true, 350000, 0, 'Menunggu persetujuan biaya'],
             ['Printer lobi macet kertas', 'Printer multifungsi lobi', 'normal', 'draft', 3, null, false, 0, 0, null],
             ['Kebocoran atap lobi saat hujan', '#KP-LOB', 'high', 'draft', 2, null, true, 0, 0, null],
