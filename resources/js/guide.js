@@ -332,9 +332,11 @@ function makeBlog() {
 /* ---------- Bantuan layar penuh ---------- */
 function makeFullscreen(ctx) {
     const el = $('#ugf');
-    const scroller = $('.ugf-scroll', el), secs = $$('.ugf-s', scroller), dotsEl = $('.ugf-dots', el), playBtn = $('[data-ugf-play]', el);
+    const scroller = $('.ugf-scroll', el), secs = $$('.ugf-s', scroller), dotsEl = $('.ugf-dots', el), prog = $('.ugf-prog i', el);
     const html = document.documentElement, isOpen = () => html.classList.contains('ugf-on');
     const phone = () => matchMedia('(pointer: coarse) and (max-width: 900px), (pointer: coarse) and (max-height: 500px)').matches;
+    const rotated = () => matchMedia('(orientation: portrait) and (pointer: coarse) and (max-width: 900px)').matches;
+    const DUR = 7500;
     let cur = 0, timer = null;
     const behavior = () => (reduce ? 'auto' : 'smooth');
 
@@ -342,18 +344,67 @@ function makeFullscreen(ctx) {
     const dots = $$('button', dotsEl);
     // Tinggi lokal (setelah diputar di HP tegak) menentukan mode ringkas, bukan tinggi layar.
     new ResizeObserver(() => el.toggleAttribute('data-compact', el.clientHeight <= 460)).observe(el);
-    const io =new IntersectionObserver((entries) => entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        e.target.classList.add('is-in');
-        cur = secs.indexOf(e.target);
-        dots.forEach((d, i) => d.classList.toggle('on', i === cur));
-    }), { root: scroller, threshold: 0.55 });
+
+    // is-in memicu animasi masuk; ambang rendah supaya bagian yang lebih tinggi dari layar tetap terhitung.
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('is-in'); }), { root: scroller, threshold: 0.15 });
     secs.forEach((s) => io.observe(s));
     if (reduce) secs.forEach((s) => s.classList.add('is-in'));
 
+    // Bagian aktif = yang paling dekat dengan tepi atas (atau kiri, saat HP tegak diputar).
+    function syncCur() {
+        const vertical = !rotated(), pos = vertical ? scroller.scrollTop : scroller.scrollLeft;
+        let best = 0, bd = Infinity;
+        secs.forEach((s, i) => { const d = Math.abs((vertical ? s.offsetTop : s.offsetLeft) - pos); if (d < bd) { bd = d; best = i; } });
+        if (best !== cur || !dots[best].classList.contains('on')) { cur = best; paint(); }
+    }
+    function paint() {
+        dots.forEach((d, i) => d.classList.toggle('on', i === cur));
+        $('.prev', el).disabled = cur === 0; $('.next', el).disabled = cur === secs.length - 1;
+        // Bar progres: saat putar otomatis terisi selama satu bagian; saat tidak, menunjukkan posisi di seluruh halaman.
+        prog.style.animation = 'none'; void prog.offsetWidth;
+        if (timer) { prog.style.width = '0'; prog.style.animation = `ug-bar ${DUR}ms linear forwards`; } else { prog.style.animation = ''; prog.style.width = ((cur + 1) / secs.length) * 100 + '%'; }
+    }
+    let raf = 0;
+    scroller.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(syncCur); }, { passive: true });
+
     function goTo(i) { i = Math.max(0, Math.min(secs.length - 1, i)); secs[i].scrollIntoView({ behavior: behavior(), block: 'start', inline: 'start' }); }
-    function stopPlay() { clearInterval(timer); timer = null; playBtn.setAttribute('aria-pressed', 'false'); $('span', playBtn).textContent = 'Putar otomatis'; }
-    function startPlay() { playBtn.setAttribute('aria-pressed', 'true'); $('span', playBtn).textContent = 'Jeda'; timer = setInterval(() => goTo(cur >= secs.length - 1 ? 0 : cur + 1), 7500); }
+    const setPlayUi = (on) => $$('[data-ugf-play]', el).forEach((b) => {
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.setAttribute('aria-label', on ? 'Jeda putar otomatis' : 'Putar otomatis');
+        const s = $('span', b); if (s) s.textContent = on ? 'Jeda' : 'Putar otomatis';
+    });
+    function stopPlay() { clearTimeout(timer); timer = null; setPlayUi(false); paint(); }
+    function startPlay() {
+        setPlayUi(true);
+        const tick = () => { goTo(cur >= secs.length - 1 ? 0 : cur + 1); timer = setTimeout(tick, DUR); };
+        timer = setTimeout(tick, DUR); paint();
+    }
+
+    // Musik latar: pad lembut dibangkitkan WebAudio (tanpa berkas audio), hanya menyala bila diklik.
+    const music = (() => {
+        let ac = null, master = null, loop = null, on = false;
+        const chords = [[261.63, 329.63, 392, 493.88], [220, 261.63, 329.63, 392], [174.61, 220, 261.63, 329.63], [196, 246.94, 293.66, 392]];
+        function note(freq, t, len) {
+            const o = ac.createOscillator(), g = ac.createGain(), f = ac.createBiquadFilter();
+            o.type = 'triangle'; o.frequency.value = freq; o.detune.value = (Math.random() - 0.5) * 14;
+            f.type = 'lowpass'; f.frequency.value = 1100;
+            g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.5, t + len * 0.35); g.gain.linearRampToValueAtTime(0.0001, t + len);
+            o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + len + 0.1);
+        }
+        function bar(i) { const t = ac.currentTime + 0.05; chords[i % chords.length].forEach((fq, k) => note(fq / (k ? 1 : 2), t, 7.5)); }
+        return {
+            toggle() {
+                on = !on;
+                if (on) {
+                    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+                    if (!master) { master = ac.createGain(); master.gain.value = 0.07; master.connect(ac.destination); }
+                    ac.resume(); let i = 0; bar(i++); loop = setInterval(() => bar(i++), 7000);
+                } else { clearInterval(loop); loop = null; ac?.suspend(); }
+                $$('[data-ugf-music]', el).forEach((b) => { b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.setAttribute('aria-label', on ? 'Musik latar, menyala' : 'Musik latar, mati'); });
+            },
+            off() { if (on) this.toggle(); },
+        };
+    })();
 
     // Layar penuh + kunci landscape (Android Chrome; iOS tidak mendukung kunci, di sana CSS memutar tampilan).
     async function enterFull() {
@@ -364,35 +415,39 @@ function makeFullscreen(ctx) {
         try { screen.orientation?.unlock?.(); } catch { /* abaikan */ }
         if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
     }
-    function open() { html.classList.add('ugf-on'); scroller.scrollTop = 0; scroller.scrollLeft = 0; ctx.restore(); scroller.focus({ preventScroll: true }); }
-    function close() { stopPlay(); html.classList.remove('ugf-on'); leaveFull(); ctx.restore(); }
+    function open() { html.classList.add('ugf-on'); scroller.scrollTop = 0; scroller.scrollLeft = 0; cur = 0; paint(); ctx.restore(); scroller.focus({ preventScroll: true }); }
+    function close() { stopPlay(); music.off(); html.classList.remove('ugf-on'); leaveFull(); ctx.restore(); }
 
     el.addEventListener('click', (e) => {
-        const t = e.target.closest('[data-ugf-close],[data-ugf-full],[data-ugf-play],[data-ugf-next],[data-ugf-go],[data-ugf-try],[data-ugf-mode],[data-i]');
+        const t = e.target.closest('[data-ugf-close],[data-ugf-full],[data-ugf-play],[data-ugf-music],[data-ugf-next],[data-ugf-prev],[data-ugf-go],[data-ugf-try],[data-ugf-mode],[data-i]');
         if (!t) return;
         if (t.hasAttribute('data-ugf-close')) close();
         else if (t.hasAttribute('data-ugf-full')) (document.fullscreenElement ? leaveFull() : enterFull());
         else if (t.hasAttribute('data-ugf-play')) (timer ? stopPlay() : startPlay());
-        else if (t.hasAttribute('data-ugf-next')) { if (phone()) enterFull(); goTo(cur + 1); }
+        else if (t.hasAttribute('data-ugf-music')) music.toggle();
+        else if (t.hasAttribute('data-ugf-next')) { if (phone() && cur === 0) enterFull(); goTo(cur + 1); if (timer) startPlay(); }
+        else if (t.hasAttribute('data-ugf-prev')) { goTo(cur - 1); if (timer) startPlay(); }
         else if (t.dataset.i) goTo(+t.dataset.i);
         else if (t.dataset.ugfGo) { e.preventDefault(); close(); ctx.go(t.dataset.ugfGo); }
         else if (t.dataset.ugfTry) { close(); ctx.tour.autostart = true; ctx.go('#gt-' + t.dataset.ugfTry); }
         else if (t.dataset.ugfMode) { close(); ctx.setMode(t.dataset.ugfMode); }
     });
     root.addEventListener('click', (e) => { if (e.target.closest('[data-ugf-open]')) open(); });
+    // Menggulir sendiri (roda, sentuh) menghentikan putar otomatis; ini tidak terpicu oleh gulir buatan program.
     scroller.addEventListener('wheel', stopPlay, { passive: true });
     scroller.addEventListener('touchstart', stopPlay, { passive: true });
     document.addEventListener('keydown', (e) => {
         if (!isOpen()) return;
         const k = e.key;
         if (k === 'Escape' && !document.fullscreenElement) close();
-        else if (k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && e.target === scroller)) { e.preventDefault(); stopPlay(); goTo(cur + 1); }
-        else if (k === 'ArrowUp' || k === 'PageUp') { e.preventDefault(); stopPlay(); goTo(cur - 1); }
+        else if (k === 'ArrowDown' || k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && e.target === scroller)) { e.preventDefault(); stopPlay(); goTo(cur + 1); }
+        else if (k === 'ArrowUp' || k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); stopPlay(); goTo(cur - 1); }
         else if (k === 'Home') { e.preventDefault(); goTo(0); }
         else if (k === 'End') { e.preventDefault(); goTo(secs.length - 1); }
     });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) stopPlay(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopPlay(); music.off(); } });
     window.addEventListener('hashchange', () => { if (location.hash && isOpen()) close(); });
+    paint();
     if (isOpen()) scroller.focus({ preventScroll: true });
     return { isOpen, open, close };
 }

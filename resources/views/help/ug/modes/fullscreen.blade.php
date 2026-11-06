@@ -16,11 +16,16 @@
     <header class="ugf-top">
         <div class="ugf-brand"><b>AdminKU</b><span>Bantuan &amp; dukungan</span></div>
         <div class="ugf-btns">
+            <button type="button" class="ugf-ic" data-ugf-play aria-pressed="false" aria-label="Putar otomatis" title="Putar otomatis"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button>
+            <button type="button" class="ugf-ic" data-ugf-music aria-pressed="false" aria-label="Musik latar, mati" title="Musik latar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/><path class="i-off" d="M3 3l18 18"/></svg></button>
             <button type="button" data-ugf-full aria-label="Layar penuh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
             <button type="button" class="ugf-close" data-ugf-close aria-label="Tutup bantuan layar penuh"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Tutup</span></button>
         </div>
     </header>
     <nav class="ugf-dots" aria-label="Bagian bantuan"></nav>
+    <button type="button" class="ugf-nav prev" data-ugf-prev aria-label="Bagian sebelumnya"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button type="button" class="ugf-nav next" data-ugf-next aria-label="Bagian berikutnya"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <div class="ugf-prog" aria-hidden="true"><i></i></div>
 
     <div class="ugf-scroll" tabindex="-1">
         <section class="ugf-s ugf-hero" aria-label="Pembuka">
