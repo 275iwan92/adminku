@@ -6,6 +6,7 @@
  Status       : Aktif.
 --}}
 <dialog class="sstock-welcome" id="sstock-welcome" aria-labelledby="sstock-welcome-h">
+    <button type="button" class="sstock-welcome__x" data-welcome-close aria-label="Tutup"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
     <h2 id="sstock-welcome-h">Selamat datang di AdminKU</h2>
     <p>Baru pertama masuk? Intinya:</p>
     <ul>
