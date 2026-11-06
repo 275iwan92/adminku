@@ -692,3 +692,18 @@ html[data-gaya="baru"] .sstock-welcome[open] { animation: sstock-rise .35s ease-
 .sstock-welcome { position: fixed; }
 .sstock-welcome__x { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 40px; height: 40px; font-size: 18px; color: var(--dl-ink); background: transparent; border: 0; border-radius: 99px; cursor: pointer; }
 .sstock-welcome__x:hover { background: var(--dl-accent-soft); }
+
+/* Layar pembuka berwarna (opening-body): tiap ubin dan angka punya hue sendiri lewat data-hue (tint lembut, ikon dalam kotak berwarna, angka tebal), serasi dengan kartu Beranda. Hue mengikuti Opening::hue. Aturan polos .sstock-otile / .sstock-ostat di atas tetap sebagai dasar. Warna dicampur dengan --dl-surface, jadi aman di mode gelap. */
+[data-hue] { --h: #64748b; }
+[data-hue="green"] { --h: #2f9e5b; } [data-hue="blue"] { --h: #3b82c4; } [data-hue="purple"] { --h: #7c5cc4; } [data-hue="coral"] { --h: #e0623f; }
+[data-hue="amber"] { --h: #d99a1c; } [data-hue="pink"] { --h: #d9559a; } [data-hue="teal"] { --h: #108476; } [data-hue="steel"] { --h: #5b7a94; }
+.sstock-otile[data-hue], .sstock-ostat[data-hue] { border: 1px solid color-mix(in srgb, var(--h) 30%, var(--dl-border)); border-top: 4px solid var(--h); background: linear-gradient(150deg, color-mix(in srgb, var(--h) 14%, var(--dl-surface)) 0%, var(--dl-surface) 70%); }
+.sstock-otile[data-hue] .sstock-otile__h { gap: 10px; }
+.sstock-otile[data-hue] .sstock-otile__h i { display: grid; place-items: center; flex: none; width: 34px; height: 34px; font-size: 15px; color: #fff; background: var(--h); border-radius: 10px; box-shadow: 0 3px 8px color-mix(in srgb, var(--h) 35%, transparent); }
+.sstock-otile[data-hue] b { font-size: 26px; color: color-mix(in srgb, var(--h) 70%, var(--dl-ink)); }
+.sstock-otile[data-hue].is-soon i { background: color-mix(in srgb, var(--h) 45%, var(--dl-surface)); box-shadow: none; }
+a.sstock-otile[data-hue]:is(:hover, :focus-visible) { box-shadow: 0 8px 20px color-mix(in srgb, var(--h) 25%, transparent); }
+.sstock-ostat[data-hue] b:not(.is-alert) { color: color-mix(in srgb, var(--h) 70%, var(--dl-ink)); }
+.sstock-ostat[data-hue] b { font-size: 28px; }
+.sstock-ohead--slate > i { color: #7fb3bd; }   /* ikon header slate terbaca di latar gelap */
+.sstock-ohead--slate { border-left-color: #3f7f8c; }

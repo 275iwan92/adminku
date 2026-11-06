@@ -20,7 +20,7 @@
 @if ($page['stats'])
     <div class="sstock-ostats sstock-ohead--{{ $page['tone'] }}">
         @foreach ($page['stats'] as $s)
-            <div class="sstock-ostat"><b class="{{ $s['alert'] ? 'is-alert' : '' }}">{{ $s['value'] }}</b><span>{{ $s['label'] }}</span></div>
+            <div class="sstock-ostat" data-hue="{{ ['teal', 'blue', 'amber', 'purple', 'coral', 'green'][$loop->index % 6] }}"><b class="{{ $s['alert'] ? 'is-alert' : '' }}">{{ $s['value'] }}</b><span>{{ $s['label'] }}</span></div>
         @endforeach
     </div>
 @endif
@@ -72,9 +72,9 @@
 <div class="sstock-otiles sstock-ohead--{{ $page['tone'] }}">
     @foreach ($page['tiles'] as $t)
         @if ($t['soon'])
-            <span class="sstock-otile is-soon"><span class="sstock-otile__h"><i class="{{ $t['icon'] }}" aria-hidden="true"></i> {{ $t['label'] }}<em>segera</em></span></span>
+            <span class="sstock-otile is-soon" data-hue="{{ $t['hue'] }}"><span class="sstock-otile__h"><i class="{{ $t['icon'] }}" aria-hidden="true"></i> {{ $t['label'] }}<em>segera</em></span></span>
         @else
-            <a class="sstock-otile" href="{{ $href($t) }}" @unless ($phone) data-dl-open-item="{{ $t['code'] }}" data-label="{{ $t['label'] }}" @endunless>
+            <a class="sstock-otile" data-hue="{{ $t['hue'] }}" href="{{ $href($t) }}" @unless ($phone) data-dl-open-item="{{ $t['code'] }}" data-label="{{ $t['label'] }}" @endunless>
                 <span class="sstock-otile__h"><i class="{{ $t['icon'] }}" aria-hidden="true"></i> {{ $t['label'] }}<em class="{{ $t['write'] ? 'is-w' : '' }}">{{ $t['write'] ? 'Tulis' : 'Baca' }}</em></span>
                 @if ($t['n'] !== null && $t['n'] !== '')<b>{{ $t['n'] }}</b>@endif
                 @if ($t['note'])<span class="sstock-otile__n">{{ $t['note'] }}</span>@endif
