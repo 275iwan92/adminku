@@ -115,9 +115,9 @@ body.dl-phone-shelled .sstock-pagetitle { display: none; }
 .sstock-guide .g-table th, .sstock-guide .g-table td { text-align: left; vertical-align: top; padding: 7px 10px; border: 1px solid var(--dl-border); }
 .sstock-guide .g-table th { background: var(--dl-surface); font-weight: 700; }
 .sstock-guide .g-st { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-.sstock-guide .g-green { background: color-mix(in srgb, var(--dl-success) 18%, transparent); color: var(--dl-success); }
-.sstock-guide .g-red { background: color-mix(in srgb, var(--dl-danger) 16%, transparent); color: var(--dl-danger); }
-.sstock-guide .g-yellow { background: color-mix(in srgb, #f59e0b 22%, transparent); color: #b45309; }
+.sstock-guide .g-green { background: color-mix(in srgb, var(--dl-success) 18%, transparent); color: color-mix(in srgb, var(--dl-success) 55%, var(--dl-ink-strong)); }
+.sstock-guide .g-red { background: color-mix(in srgb, var(--dl-danger) 16%, transparent); color: color-mix(in srgb, var(--dl-danger) 55%, var(--dl-ink-strong)); }
+.sstock-guide .g-yellow { background: color-mix(in srgb, #f59e0b 22%, transparent); color: color-mix(in srgb, #f59e0b 45%, var(--dl-ink-strong)); }
 .sstock-guide .g-grey { background: var(--dl-surface); border: 1px solid var(--dl-border); }
 @media (max-width: 860px) {
     .sstock-guide { grid-template-columns: minmax(0, 1fr); }
@@ -136,8 +136,8 @@ body.dl-body:has(.sstock-guide) { overflow-y: auto; }
 .g-tabs { display: flex; gap: 6px; max-width: 1180px; margin: 0 auto; padding: 14px 20px 0; border-bottom: 1px solid var(--dl-border); }
 .g-tabs a { padding: 8px 16px; font-size: 14px; font-weight: 600; text-decoration: none; color: inherit; opacity: .7; border-bottom: 3px solid transparent; margin-bottom: -1px; }
 .g-tabs a:hover { opacity: 1; }
-.g-tabs a.is-on { opacity: 1; color: var(--dl-accent); border-bottom-color: var(--dl-accent); }
-.sstock-guide .g-role { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; background: color-mix(in srgb, #f59e0b 22%, transparent); color: #b45309; white-space: nowrap; }
+.g-tabs a.is-on { opacity: 1; color: var(--dl-accent-ink); border-bottom-color: var(--dl-accent); }
+.sstock-guide .g-role { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 11.5px; font-weight: 700; background: color-mix(in srgb, #f59e0b 22%, transparent); color: color-mix(in srgb, #f59e0b 45%, var(--dl-ink-strong)); white-space: nowrap; }
 .sstock-guide .g-tip, .sstock-guide .g-warn { border-radius: 8px; padding: 9px 12px; margin: 10px 0; font-size: 13.5px; border: 1px solid var(--dl-border); }
 .sstock-guide .g-tip { background: var(--dl-accent-soft); border-color: var(--dl-accent); }
 .sstock-guide .g-warn { background: color-mix(in srgb, #f59e0b 14%, transparent); border-color: #f59e0b; }
@@ -392,7 +392,7 @@ body.dl-on-phone .dl-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-cor
 /* Gaya baru kartu Beranda (bawaan; .sstock-mods.is-baru): latar gradien halus per modul, lencana ikon berwarna, angka besar. Gaya lama = tanpa is-baru (aturan di atas tetap utuh). Warna modul: Stok toska, Pengiriman biru, Keuangan emas, Kendaraan slate, AC koral. */
 .sstock-gaya { display: inline-flex; margin: 0 0 12px; padding: 3px; gap: 2px; background: var(--dl-surface); border: 1px solid var(--dl-border); border-radius: 99px; }
 .sstock-gaya button { min-height: 32px; padding: 0 14px; font: inherit; font-size: 13px; color: var(--dl-ink); background: transparent; border: 0; border-radius: 99px; cursor: pointer; }
-.sstock-gaya button[aria-pressed="true"] { color: #fff; background: var(--dl-accent); font-weight: 600; }
+.sstock-gaya button[aria-pressed="true"] { color: var(--dl-on-accent); background: var(--dl-accent); font-weight: 600; }
 .sstock-gaya button:focus-visible { outline: 3px solid var(--dl-ink-strong); outline-offset: 1px; }
 .sstock-mod--blue { --c: #3b82c4; }
 .sstock-mod--gold { --c: #d99a1c; }
@@ -671,10 +671,10 @@ body:not(.dl-on-phone) .sstock-scan .dl-scan__cam { display: none; }
 .sstock-welcome p { margin: 0 0 12px; font-size: 15px; }
 .sstock-welcome ul { display: grid; gap: 12px; margin: 0 0 20px; padding: 0; list-style: none; font-size: 15px; line-height: 1.45; }
 .sstock-welcome li { display: flex; gap: 12px; align-items: flex-start; }
-.sstock-welcome li i { display: grid; place-items: center; flex: none; width: 34px; height: 34px; color: #fff; background: var(--dl-accent); border-radius: 10px; }
+.sstock-welcome li i { display: grid; place-items: center; flex: none; width: 34px; height: 34px; color: var(--dl-on-accent); background: var(--dl-accent); border-radius: 10px; }
 .sstock-welcome__act { display: flex; flex-wrap: wrap; gap: 10px; }
 .sstock-welcome__go, .sstock-welcome__skip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; font: inherit; font-size: 15px; font-weight: 600; text-decoration: none; border-radius: 99px; cursor: pointer; }
-.sstock-welcome__go { color: #fff; background: var(--dl-accent); border: 0; }
+.sstock-welcome__go { color: var(--dl-on-accent); background: var(--dl-accent); border: 0; }
 .sstock-welcome__skip { color: var(--dl-ink); background: transparent; border: 1px solid var(--dl-border); }
 .sstock-welcome :is(a, button):focus-visible { outline: 3px solid var(--dl-ink-strong); outline-offset: 2px; }
 html[data-gaya="baru"] .sstock-welcome[open] { animation: sstock-rise .35s ease-out both; }
