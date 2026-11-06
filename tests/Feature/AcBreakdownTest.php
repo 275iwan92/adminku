@@ -65,7 +65,7 @@ class AcBreakdownTest extends TestCase
     public function test_the_ga_menu_has_one_item_per_module_but_users_without_the_panel_keep_their_screens(): void
     {
         $labels = array_column(collect(Menu::layers($this->admin))->firstWhere('code', 'GA')['children'], 'label');
-        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'], $labels);
+        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung dan Aset'], $labels);
 
         // Sopir hanya Catat Odometer, petugas tanpa panel AC: tetap melihat layar yang diizinkan.
         $driver = $this->acUser(['GVO' => 'rw']);

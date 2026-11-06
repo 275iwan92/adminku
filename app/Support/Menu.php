@@ -50,14 +50,9 @@ final class Menu
         $groups = collect($stok)->filter(fn ($c) => $parents->has($c))
             ->map(fn ($c) => ['label' => $parents[$c]['label'], 'icon' => $parents[$c]['icon'], 'items' => $parents[$c]['children'], 'code' => 'H-'.$c, 'open' => Opening::url($c === 'TRX' ? 'transaksi' : 'laporan')])->values()->all();
 
-        // Induk GA: modul nyata (Perawatan Aset Kendaraan dan Perawatan AC) dari Modules, lalu layar sementara Perawatan Gedung yang belum dibuat: belum punya modul/hak Grup, jadi hanya Administrator yang melihat.
-        $soon = fn (string $code, string $label, string $icon, string $name) => ['code' => $code, 'label' => $label, 'url' => route('soon', $name), 'type' => 'form', 'icon' => $icon];
         $out = [];
         foreach ($parents as $code => $p) {
             $p['open'] = ['MST' => Opening::url('master'), 'GA' => Opening::url('ga'), 'HR' => Opening::url('hr'), 'PUR' => Opening::url('purchase'), 'KEU' => Opening::url('kas')][$code] ?? null;
-            if ($code === 'GA' && $user->isAdministrator()) {
-                $p['children'] = [...$p['children'], $soon('GA-BLD', 'Perawatan Gedung', 'fa-solid fa-building', 'gedung')];
-            }
             if ($code === 'HR') {   // Karyawan nyata (HRE), lalu Bagian = layar Departemen (hak DEP); Rekrutmen dan Kedisiplinan dari Modules.
                 $bagian = $user->canAccess('DEP') ? [['code' => 'HR-DEP', 'label' => 'Bagian', 'url' => route('departments.index'), 'type' => 'grid', 'icon' => 'fa-solid fa-sitemap']] : [];
                 $own = collect($p['children']);   // urutan: Karyawan, Bagian, Rekrutmen, Kedisiplinan

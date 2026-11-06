@@ -19,6 +19,7 @@ use App\Models\ReorderOrder;
 use App\Models\StockDocument;
 use App\Models\User;
 use App\Services\CountSchedule;
+use App\Services\FacCare;
 use Devlib\Locale;
 use Illuminate\Support\Facades\DB;
 
@@ -108,10 +109,10 @@ final class Opening
             if ($user->canAccess('KSK')) {
                 $facts['KSK'] = ['n' => Locale::number(CashOut::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
             }
-        }
             if ($user->canAccess('KSA')) {
                 $facts['KSA'] = ['n' => Locale::number(CashAdjustment::query()->where('status', 'approval')->count(), 0), 'note' => 'menunggu persetujuan'];
             }
+        }
 
         if ($section === 'kas' && ($user->canAccess('KSM') || $user->canAccess('KSK') || $user->canAccess('KSA') || $user->canAccess('R-KFLOW'))) {
             $page = array_merge($page, self::kasBoard());
@@ -252,7 +253,14 @@ final class Opening
             $draft && $todo[] = ['warn', $draft, 'pesanan kunjungan AC masih Draf', 'fa-solid fa-snowflake', 'GAM'];
             $facts['GAM'] = ['n' => Locale::number($a['units'], 0), 'note' => 'AC aktif'];
         }
-        foreach ([['GVO', 'fa-gauge-high', 'Catat Odometer'], ['GVS', 'fa-screwdriver-wrench', 'Catat Servis'], ['GAS', 'fa-calendar-check', 'Jadwalkan AC']] as [$code, $icon, $label]) {
+        if ($user->canAccess('FAM')) {
+            $f = FacCare::dashboard(false);
+            array_push($stats, ['value' => Locale::number($f['need'], 0), 'label' => 'Aset perlu perawatan', 'alert' => $f['need'] > 0], ['value' => Locale::number($f['open'], 0), 'label' => 'Tiket perawatan terbuka', 'alert' => $f['open'] > 0]);
+            $f['late'] && $todo[] = ['danger', $f['late'], 'jadwal perawatan gedung dan aset Terlambat', 'fa-solid fa-building-circle-check', 'FAM'];
+            $f['waiting'] && $todo[] = ['warn', $f['waiting'], 'tiket perawatan menunggu persetujuan', 'fa-solid fa-building-circle-check', 'FAM'];
+            $facts['FAM'] = ['n' => Locale::number($f['assets'], 0), 'note' => 'aset aktif · '.$f['open'].' tiket terbuka'];
+        }
+        foreach ([['GVO', 'fa-gauge-high', 'Catat Odometer'], ['GVS', 'fa-screwdriver-wrench', 'Catat Servis'], ['GAS', 'fa-calendar-check', 'Jadwalkan AC'], ['FAT', 'fa-triangle-exclamation', 'Lapor Kerusakan']] as [$code, $icon, $label]) {
             if ($user->canWrite($code)) {
                 $m = Modules::all()[$code];
                 $shortcuts[] = ['code' => $code, 'icon' => 'fa-solid '.$icon, 'label' => $label, 'url' => route($m[4])];

@@ -14,6 +14,7 @@ use App\Models\StockDocument;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\AcCare;
+use App\Services\FacCare;
 use App\Services\VehicleCare;
 use Devlib\Locale;
 
@@ -43,6 +44,7 @@ final class HomeCards
                 self::cash($user),
                 $fleet ? self::vehicles($fleet) : null,
                 $user->canAccess('GAM') ? self::ac() : null,
+                $user->canAccess('FAM') ? self::facility() : null,
             ])),
         ];
     }
@@ -113,6 +115,18 @@ final class HomeCards
             ['value' => Locale::number($c['late'], 0), 'label' => 'Terlambat', 'alert' => $c['late'] > 0],
             ['value' => Locale::number($c['week'], 0), 'label' => 'Minggu ini'],
         ], [[max(0, $c['units'] - $c['late']), 'ok', 'Aman'], [$c['late'], 'bad', 'Terlambat']]);
+    }
+
+    // GA Gedung dan Aset: aset aktif, tiket terbuka, dan jadwal terlambat; batang proporsi aset yang baik terhadap yang perlu perawatan.
+    private static function facility(): array
+    {
+        $f = FacCare::dashboard(false);
+
+        return self::card('FAM', 'GA · Gedung dan Aset', 'fa-solid fa-building-circle-check', 'blue', 'Perawatan Gedung dan Aset', [
+            ['value' => Locale::number($f['assets'], 0), 'label' => 'Aset'],
+            ['value' => Locale::number($f['open'], 0), 'label' => 'Tiket terbuka', 'alert' => $f['open'] > 0],
+            ['value' => Locale::number($f['late'], 0), 'label' => 'Jadwal terlambat', 'alert' => $f['late'] > 0],
+        ], [[max(0, $f['assets'] - $f['need']), 'ok', 'Baik'], [max(0, $f['need'] - $f['broken']), 'warn', 'Perlu perawatan'], [$f['broken'], 'bad', 'Rusak']]);
     }
 
     // Pengiriman: trip Ditugaskan hari ini, yang sedang jalan (sudah ada alamat ditandai tiba tapi belum semua), dan draf yang belum ditugaskan (hari ini dan seterusnya).

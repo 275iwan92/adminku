@@ -5,7 +5,7 @@
  Dipakai oleh : grid vehicles, vehicle-types, ac-units, ac-areas, ac-rooms, ac-vendors.
  Status       : Aktif.
 --}}
-@php($hubs = ['fleet' => ['GVM', 'fleet.setup'], 'ac' => ['GAM', 'ac-setup.index']])
+@php($hubs = ['fleet' => ['GVM', 'fleet.setup'], 'ac' => ['GAM', 'ac-setup.index'], 'fac' => ['FAM', 'fac-setup.index']])
 @if (auth()->user()->canAccess($hubs[$hub][0]))
     <x-dl::action-bar align="start">
         <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route($hubs[$hub][1])" />

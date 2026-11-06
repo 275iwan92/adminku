@@ -104,7 +104,7 @@ class AcSeederTest extends TestCase
     {
         $labels = collect(Menu::layers(User::factory()->administrator()->create()))->firstWhere('code', 'GA')['children'];
         // Menu ringkas: satu butir Perawatan AC (panel Monitoring); layar Penjadwalan, Kunjungan, master dibuka lewat tombol.
-        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung'], array_column($labels, 'label'));
+        $this->assertSame(['Perawatan Kendaraan', 'Perawatan AC', 'Perawatan Gedung dan Aset'], array_column($labels, 'label'));
         $this->assertStringNotContainsString('segera', $labels[1]['url']);
         $this->actingAs(User::factory()->administrator()->create())->get('/segera/ac')->assertNotFound();
         $this->get('/segera/gedung')->assertOk();   // Perawatan Gedung tetap layar sementara

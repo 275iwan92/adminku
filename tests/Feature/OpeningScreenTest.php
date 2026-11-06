@@ -101,7 +101,7 @@ class OpeningScreenTest extends TestCase
 
         $admin = User::factory()->administrator()->create();
         $labels = array_column($this->actingAs($admin)->get(route('opening', 'ga'))->viewData('page')['stats'], 'label');
-        $this->assertSame(['Kendaraan aktif', 'Kendaraan perlu tindakan', 'AC terlambat', 'AC terjadwal minggu ini'], $labels);
+        $this->assertSame(['Kendaraan aktif', 'Kendaraan perlu tindakan', 'AC terlambat', 'AC terjadwal minggu ini', 'Aset perlu perawatan', 'Tiket perawatan terbuka'], $labels);
     }
 
     public function test_master_counts_active_and_inactive(): void

@@ -45,7 +45,7 @@ class HomeCardsTest extends TestCase
     {
         $this->assertSame(['STB', 'PGK'], $this->codes(User::factory()->create()));
         $this->assertSame(['STB', 'PGK'], $this->codes(User::factory()->supervisor()->create()));
-        $this->assertSame(['STB', 'PGK', 'KSM', 'GVM', 'GAM'], $this->codes(User::factory()->administrator()->create()));
+        $this->assertSame(['STB', 'PGK', 'KSM', 'GVM', 'GAM', 'FAM'], $this->codes(User::factory()->administrator()->create()));
         $this->assertSame(['PGK'], $this->codes($this->group(['PGK' => 'ro'])));
         $this->assertSame(['KSK'], $this->codes($this->group(['KSK' => 'rw'])));   // kartu Keuangan membuka layar pertama yang boleh dibuka
         $this->assertSame([], $this->codes($this->group(['KSR' => 'ro'])));   // Kas / Rekening saja: tanpa kartu (hanya Uang Masuk / Keluar yang punya angka)
@@ -115,7 +115,7 @@ class HomeCardsTest extends TestCase
             ($phone ? $this->actingAs($admin)->withHeader('User-Agent', self::PHONE) : $this->actingAs($admin))->get(route('home'))->assertOk();
             $ms = (microtime(true) - $start) * 1000;
 
-            $this->assertLessThan(30, $queries, ($phone ? 'HP' : 'Desktop').": {$queries} kueri");
+            $this->assertLessThan(34, $queries, ($phone ? 'HP' : 'Desktop').": {$queries} kueri");
             $this->assertLessThan(250, $ms, ($phone ? 'HP' : 'Desktop').': '.round($ms).' ms');
         }
     }

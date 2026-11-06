@@ -82,6 +82,7 @@ final class SampleData
             (count(ItemSeeder::ITEMS) + count(array_unique(array_column(ItemSeeder::EXPIRING, 0)))).' barang, termasuk '.count(array_unique(array_column(ItemSeeder::EXPIRING, 0))).' barang berkedaluwarsa dengan '.count(ItemSeeder::EXPIRING).' batch (sudah lewat, hampir, dan masih lama; tanggalnya dihitung dari hari ini)',
             'GA Perawatan Kendaraan: 4 kendaraan fiktif (1 mobil penumpang, 3 small truck) dengan jenis dan rencana perawatan, dokumen, servis, dan odometer bertanggal relatif; status Aman, Segera, dan Terlambat',
             'GA Perawatan AC: 1 vendor, 4 area, 7 ruang dengan PIC, 9 unit AC fiktif (status Aman, Segera, dan Terlambat; tanggal cuci relatif terhadap hari ini) dan satu kunjungan Draf berisi 2 AC',
+            'GA Perawatan Gedung dan Aset: 3 gedung dengan ruangnya, 7 kategori, 26 aset (Baik, Perlu perawatan, Rusak), 9 jadwal berkala (Aman, Segera, Terlambat), dan 12 Perintah Kerja berstatus beragam dengan biaya 6 bulan; tanggal relatif terhadap hari ini',
             'HR: 2 karyawan contoh (David, Detta) dan 2 kandidat (Maya Denada, Dedi Sandiaga) dengan foto dan KTP tiruan',
             'Pembelian: satu rantai PP, PO, dan PV contoh (stok bertambah otomatis) serta satu PP menunggu persetujuan',
             'Riwayat transaksi: saldo awal bulan lalu, penerimaan, pengeluaran, dan opname, bertanggal relatif terhadap hari ini',

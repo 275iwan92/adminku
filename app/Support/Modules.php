@@ -34,6 +34,7 @@ final class Modules
     public const MENU_UNDER = [
         'GVD' => ['GVM'], 'GVS' => ['GVM'], 'GVO' => ['GVM'], 'GVK' => ['GVM'], 'GVT' => ['GVM'],
         'GAS' => ['GAM'], 'GAV' => ['GAM'], 'GAK' => ['GAM'], 'GAA' => ['GAM'], 'GAR' => ['GAM'], 'GAE' => ['GAM'],
+        'FAT' => ['FAM'], 'FAJ' => ['FAM'], 'FAA' => ['FAM'], 'FAG' => ['FAM'], 'FAC' => ['FAM'], 'FAR' => ['FAM'],
         'GAP' => ['GVM', 'GAM'],
         'KSR' => ['KSM', 'KSK'],
     ];
@@ -78,6 +79,13 @@ final class Modules
             'GAA' => ['GA', 'Area dan Gedung AC', 'fa-solid fa-building', 'grid', 'ac-areas.index', 'entry', ['ac-areas.']],
             'GAR' => ['GA', 'Ruang AC', 'fa-solid fa-door-open', 'grid', 'ac-rooms.index', 'entry', ['ac-rooms.']],
             'GAE' => ['GA', 'Vendor AC', 'fa-solid fa-handshake', 'grid', 'ac-vendors.index', 'entry', ['ac-vendors.']],
+            'FAM' => ['GA', 'Perawatan Gedung dan Aset', 'fa-solid fa-building-circle-check', 'grid', 'fac-care.index', 'entry', ['fac-care.', 'fac-setup.']],
+            'FAT' => ['GA', 'Tiket Perawatan', 'fa-solid fa-clipboard-list', 'grid', 'fac-orders.index', 'entry', ['fac-orders.']],
+            'FAJ' => ['GA', 'Jadwal Perawatan', 'fa-solid fa-calendar-check', 'grid', 'fac-plans.index', 'entry', ['fac-plans.']],
+            'FAA' => ['GA', 'Master Aset', 'fa-solid fa-boxes-stacked', 'grid', 'fac-assets.index', 'entry', ['fac-assets.']],
+            'FAG' => ['GA', 'Gedung dan Ruang', 'fa-solid fa-building', 'grid', 'fac-places.index', 'entry', ['fac-places.']],
+            'FAC' => ['GA', 'Kategori Aset', 'fa-solid fa-tags', 'grid', 'fac-categories.index', 'supervisor', ['fac-categories.']],
+            'FAR' => ['GA', 'Laporan Biaya Perawatan', 'fa-solid fa-file-invoice-dollar', 'report', 'reports.fac-cost', 'entry', ['reports.fac-cost']],
             'GAP' => ['GA', 'Pengaturan GA', 'fa-solid fa-sliders', 'form', 'ga-settings.edit', 'supervisor', ['ga-settings.']],
             'HRE' => ['HR', 'Karyawan', 'fa-solid fa-id-card', 'grid', 'employees.index', 'supervisor', ['employees.']],
             'HRR' => ['HR', 'Rekrutmen', 'fa-solid fa-user-plus', 'grid', 'candidates.index', 'supervisor', ['candidates.', 'recruit-steps.']],
@@ -89,6 +97,7 @@ final class Modules
             'KSM' => ['KEU', 'Uang Masuk', 'fa-solid fa-arrow-down-to-bracket', 'grid', 'cash-in.index', 'entry', ['cash-in.', 'cash-sources.']],
             'KSK' => ['KEU', 'Uang Keluar', 'fa-solid fa-arrow-up-from-bracket', 'grid', 'cash-out.index', 'entry', ['cash-out.', 'cash-purposes.']],
             'KSR' => ['KEU', 'Kas / Rekening', 'fa-solid fa-building-columns', 'grid', 'cash-accounts.index', 'supervisor', ['cash-accounts.']],
+            'KSA' => ['KEU', 'Penyesuaian Kas', 'fa-solid fa-scale-balanced', 'grid', 'cash-adjust.index', 'entry', ['cash-adjust.']],
             'KSB' => ['KEU', 'Kartu Saldo Kas', 'fa-solid fa-id-card', 'report', 'cash-card.index', 'entry', ['cash-card.']],
             'R-KFLOW' => ['KEU', 'Laporan Arus Kas', 'fa-solid fa-book', 'report', 'reports.cash-flow', 'entry', ['reports.cash-flow']],
             'R-KIN' => ['KEU', 'Laporan Penerimaan', 'fa-solid fa-file-arrow-down', 'report', 'reports.cash-receipts', 'entry', ['reports.cash-receipts']],
@@ -97,7 +106,6 @@ final class Modules
             'GRP' => ['SEC', 'Grup', 'fa-solid fa-people-group', 'grid', 'groups.index', 'administrator', ['groups.']],
             'SMP' => ['SEC', 'Data Contoh', 'fa-solid fa-rotate', 'grid', 'sample.index', 'administrator', ['sample.']],
             'MOD' => ['SEC', 'Daftar Modul', 'fa-solid fa-table-list', 'grid', 'modules.index', 'administrator', ['modules.']],
-            'KSA' => ['KEU', 'Penyesuaian Kas', 'fa-solid fa-scale-balanced', 'grid', 'cash-adjust.index', 'entry', ['cash-adjust.']],
         ];
     }
 

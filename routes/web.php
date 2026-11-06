@@ -34,6 +34,13 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DisciplineController;
 use App\Http\Controllers\DriverTripController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\FacAssetController;
+use App\Http\Controllers\FacCareController;
+use App\Http\Controllers\FacCategoryController;
+use App\Http\Controllers\FacOrderController;
+use App\Http\Controllers\FacPlaceController;
+use App\Http\Controllers\FacPlanController;
+use App\Http\Controllers\FacReportController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\GaSettingsController;
 use App\Http\Controllers\GroupController;
@@ -382,6 +389,11 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('cash-accounts/{account}', [CashAccountController::class, 'show'])->whereNumber('account')->name('cash-accounts.show');
     Route::put('cash-accounts/{account}', [CashAccountController::class, 'update'])->whereNumber('account')->name('cash-accounts.update');
     Route::post('cash-accounts/{account}/toggle', [CashAccountController::class, 'toggle'])->whereNumber('account')->name('cash-accounts.toggle');
+    Route::get('cash-adjust', [CashAdjustmentController::class, 'index'])->name('cash-adjust.index');
+    Route::get('cash-adjust/create', [CashAdjustmentController::class, 'create'])->name('cash-adjust.create');
+    Route::post('cash-adjust', [CashAdjustmentController::class, 'store'])->name('cash-adjust.store');
+    Route::get('cash-adjust/{adjustment}', [CashAdjustmentController::class, 'show'])->whereNumber('adjustment')->name('cash-adjust.show');
+    Route::put('cash-adjust/{adjustment}', [CashAdjustmentController::class, 'update'])->whereNumber('adjustment')->name('cash-adjust.update');
     Route::get('cash-card', [CashCardController::class, 'index'])->name('cash-card.index');
     Route::get('recruit-steps', [RecruitStepController::class, 'index'])->name('recruit-steps.index');
     Route::get('recruit-steps/create', [RecruitStepController::class, 'create'])->name('recruit-steps.create');
@@ -389,11 +401,6 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('recruit-steps/{step}', [RecruitStepController::class, 'show'])->name('recruit-steps.show');
     Route::put('recruit-steps/{step}', [RecruitStepController::class, 'update'])->name('recruit-steps.update');
 
-    Route::get('cash-adjust', [CashAdjustmentController::class, 'index'])->name('cash-adjust.index');
-    Route::get('cash-adjust/create', [CashAdjustmentController::class, 'create'])->name('cash-adjust.create');
-    Route::post('cash-adjust', [CashAdjustmentController::class, 'store'])->name('cash-adjust.store');
-    Route::get('cash-adjust/{adjustment}', [CashAdjustmentController::class, 'show'])->whereNumber('adjustment')->name('cash-adjust.show');
-    Route::put('cash-adjust/{adjustment}', [CashAdjustmentController::class, 'update'])->whereNumber('adjustment')->name('cash-adjust.update');
     // GA Perawatan AC (GAM): satu butir menu; panel Monitoring dan hub Setup. Layar lain dibuka lewat tombol di panel (hak per modul tetap).
     Route::get('ac-care', [AcCareController::class, 'index'])->name('ac-care.index');
     Route::get('ac-care/{unit}', [AcCareController::class, 'show'])->whereNumber('unit')->name('ac-care.show');
@@ -421,6 +428,25 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::post("{$path}/{{$param}}/toggle", [$controller, 'toggle'])->whereNumber($param)->name("{$path}.toggle");
     }
     Route::get('ac-areas/{area}/plan', [AcAreaController::class, 'plan'])->whereNumber('area')->name('ac-areas.plan');
+    // GA Perawatan Gedung dan Aset: panel (FAM), Tiket (FAT), Jadwal (FAJ), Aset (FAA), Gedung dan Ruang (FAG), Kategori Aset (FAC); Vendor memakai master Vendor AC; hak per modul lewat Grup.
+    Route::get('fac-care', [FacCareController::class, 'index'])->name('fac-care.index');
+    Route::get('fac-care/{asset}', [FacCareController::class, 'show'])->whereNumber('asset')->name('fac-care.show');
+    Route::get('fac-setup', [FacCareController::class, 'setup'])->name('fac-setup.index');
+    foreach (['fac-assets' => [FacAssetController::class, 'asset'], 'fac-places' => [FacPlaceController::class, 'place'], 'fac-categories' => [FacCategoryController::class, 'category'], 'fac-plans' => [FacPlanController::class, 'plan']] as $path => [$controller, $param]) {
+        Route::get($path, [$controller, 'index'])->name("{$path}.index");
+        Route::get("{$path}/create", [$controller, 'create'])->name("{$path}.create");
+        Route::post($path, [$controller, 'store'])->name("{$path}.store");
+        Route::get("{$path}/{{$param}}", [$controller, 'show'])->whereNumber($param)->name("{$path}.show");
+        Route::put("{$path}/{{$param}}", [$controller, 'update'])->whereNumber($param)->name("{$path}.update");
+        Route::post("{$path}/{{$param}}/toggle", [$controller, 'toggle'])->whereNumber($param)->name("{$path}.toggle");
+    }
+    Route::get('fac-assets/{asset}/photo', [FacAssetController::class, 'photo'])->whereNumber('asset')->name('fac-assets.photo');
+    Route::get('fac-orders', [FacOrderController::class, 'index'])->name('fac-orders.index');
+    Route::get('fac-orders/create', [FacOrderController::class, 'create'])->name('fac-orders.create');
+    Route::post('fac-orders', [FacOrderController::class, 'store'])->name('fac-orders.store');
+    Route::get('fac-orders/{order}', [FacOrderController::class, 'show'])->whereNumber('order')->name('fac-orders.show');
+    Route::put('fac-orders/{order}', [FacOrderController::class, 'update'])->whereNumber('order')->name('fac-orders.update');
+    Route::get('fac-orders/{order}/file/{kind}', [FacOrderController::class, 'file'])->whereNumber('order')->whereIn('kind', ['before', 'after'])->name('fac-orders.file');
     // GA Pengaturan (GAP): ambang kendaraan dan aturan Perawatan AC (sys_constant ga.*); hanya Supervisor ke atas, hak lewat Grup.
     Route::get('ga-settings', [GaSettingsController::class, 'edit'])->name('ga-settings.edit');
     Route::put('ga-settings', [GaSettingsController::class, 'update'])->name('ga-settings.update');
@@ -433,6 +459,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
         Route::get('issuance', 'issuance')->name('reports.issuance');
         Route::get('adjustment', 'adjustment')->middleware('supervisor')->name('reports.adjustment');
     });
+    Route::get('reports/fac-cost', [FacReportController::class, 'cost'])->name('reports.fac-cost');
     Route::prefix('reports')->controller(CashReportController::class)->group(function () {
         Route::get('cash-flow', 'cashFlow')->name('reports.cash-flow');
         Route::get('cash-receipts', 'receipts')->name('reports.cash-receipts');
