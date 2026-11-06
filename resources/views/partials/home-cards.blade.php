@@ -22,6 +22,13 @@
                         <li><b class="{{ ($s['alert'] ?? false) ? 'is-alert' : '' }}" @isset($s['title']) title="{{ $s['title'] }}" @endisset>{{ $s['value'] }}</b><span>{{ $s['label'] }}</span></li>
                     @endforeach
                 </ul>
+                @if (array_sum(array_column($c['bar'], 0)) > 0)
+                    <div class="sstock-mod__bar" role="img" aria-label="{{ collect($c['bar'])->filter(fn ($b) => $b[0] > 0)->map(fn ($b) => $b[2].': '.\Devlib\Locale::number($b[0], 0))->implode('; ') }}">
+                        @foreach ($c['bar'] as [$v, $k, $t])
+                            @if ($v > 0)<u class="is-{{ $k }}" style="flex: {{ $v }}" title="{{ $t }}"></u>@endif
+                        @endforeach
+                    </div>
+                @endif
                 <span class="sstock-mod__go">{{ $c['link'] }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
             </{{ $link[0] }}>
         @endforeach

@@ -69,6 +69,11 @@
         @endforeach
     </div>
 @endif
+@php
+    // Batang tipis per ubin: angka ubin relatif terhadap angka terbesar di halaman ini (hanya bila ada >= 2 ubin berangka).
+    $nums = collect($page['tiles'])->mapWithKeys(fn ($t) => [$t['code'] => ctype_digit($d = preg_replace('/\D/', '', (string) $t['n'])) && $d !== '' && preg_match('/^[\d.]+$/', (string) $t['n']) ? (int) $d : null])->filter(fn ($v) => $v !== null);
+    $maxNum = max([1, ...$nums->values()->all()]);
+@endphp
 <div class="sstock-otiles sstock-ohead--{{ $page['tone'] }}">
     @foreach ($page['tiles'] as $t)
         @if ($t['soon'])
@@ -78,6 +83,7 @@
                 <span class="sstock-otile__h"><i class="{{ $t['icon'] }}" aria-hidden="true"></i> {{ $t['label'] }}<em class="{{ $t['write'] ? 'is-w' : '' }}">{{ $t['write'] ? 'Tulis' : 'Baca' }}</em></span>
                 @if ($t['n'] !== null && $t['n'] !== '')<b>{{ $t['n'] }}</b>@endif
                 @if ($t['note'])<span class="sstock-otile__n">{{ $t['note'] }}</span>@endif
+                @if ($nums->count() >= 2 && isset($nums[$t['code']]) && $nums[$t['code']] > 0)<span class="sstock-otile__bar" aria-hidden="true"><u style="flex: {{ $nums[$t['code']] }} 0 0"></u><u style="flex: {{ $maxNum - $nums[$t['code']] }} 0 0; background: transparent; min-width: 0"></u></span>@endif
             </a>
         @endif
     @endforeach

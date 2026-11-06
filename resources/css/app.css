@@ -707,3 +707,15 @@ a.sstock-otile[data-hue]:is(:hover, :focus-visible) { box-shadow: 0 8px 20px col
 .sstock-ostat[data-hue] b { font-size: 28px; }
 .sstock-ohead--slate > i { color: #7fb3bd; }   /* ikon header slate terbaca di latar gelap */
 .sstock-ohead--slate { border-left-color: #3f7f8c; }
+
+/* Batang proporsi tipis di kartu Beranda (partial home-cards, data HomeCards bar) dan di ubin layar pembuka (.sstock-otile__bar). Segmen: ok hijau, warn amber, bad merah-koral, info biru, in hijau, out koral. SVG/CSS saja. */
+.sstock-mod__bar, .sstock-otile__bar { display: flex; gap: 2px; height: 8px; overflow: hidden; border-radius: 99px; background: var(--dl-surface-alt, rgba(0, 0, 0, .06)); }
+.sstock-mod__bar u, .sstock-otile__bar u { display: block; min-width: 4px; text-decoration: none; border-radius: 99px; background: var(--h, #64748b); }
+.sstock-mod__bar u.is-ok, .sstock-mod__bar u.is-in { background: #2f9e5b; }
+.sstock-mod__bar u.is-warn { background: #d99a1c; }
+.sstock-mod__bar u.is-bad, .sstock-mod__bar u.is-out { background: #e0623f; }
+.sstock-mod__bar u.is-info { background: #3b82c4; }
+.sstock-otile__bar { height: 6px; margin-top: 2px; }
+.sstock-otile__bar u { background: var(--h); }
+@media (prefers-reduced-motion: no-preference) { html[data-gaya="baru"] .sstock-mod__bar u, html[data-gaya="baru"] .sstock-otile__bar u { transform-origin: left; animation: sstock-grow .8s .3s ease-out both; } }
+@keyframes sstock-grow { from { transform: scaleX(0); } to { transform: none; } }
