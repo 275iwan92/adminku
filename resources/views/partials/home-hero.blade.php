@@ -74,7 +74,7 @@
     (() => {
         const root = document.querySelector('[data-sstock-hero]'), cv = root?.querySelector('.sstock-hero__fx');
         if (!cv || window.sstockGaya.reduced) return;
-        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [];
+        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [], tok = n => getComputedStyle(root).getPropertyValue(n).trim() || '#5eead4', accent = tok('--dl-accent'), warm = tok('--dl-amber');   // warna ikut tema (token --dl-*)
         let w = 0, h = 0, raf = 0;
         const size = () => {
             const r = root.getBoundingClientRect(), d = devicePixelRatio || 1;
@@ -90,11 +90,11 @@
                 if (a.y < 0 || a.y > h) a.vy *= -1;
                 const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
                 if (dm < 150) { a.x += (a.x - mouse.x) * .004; a.y += (a.y - mouse.y) * .004; }
-                ctx.fillStyle = 'rgba(94,234,212,.65)'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
-                if (dm < 170) { ctx.strokeStyle = `rgba(255,177,153,${.55 * (1 - dm / 170)})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
+                ctx.globalAlpha = .7; ctx.fillStyle = accent; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.283); ctx.fill();
+                if (dm < 170) { ctx.globalAlpha = .55 * (1 - dm / 170); ctx.strokeStyle = warm; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
                 for (const b of dots) {
                     const d = Math.hypot(a.x - b.x, a.y - b.y);
-                    if (d < 105 && a < b) { ctx.strokeStyle = `rgba(94,234,212,${.28 * (1 - d / 105)})`; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+                    if (d < 105 && a < b) { ctx.globalAlpha = .3 * (1 - d / 105); ctx.strokeStyle = accent; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
                 }
             }
             raf = requestAnimationFrame(draw);
