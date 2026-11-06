@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UnitRequest;
 use App\Models\Unit;
-use App\Support\Palette;
 use Devlib\Locale;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /* REMARK
  * Tujuan       : Master Satuan (pcs, box, set, ...) beserta konversinya (1 box = 12 pcs, berlaku untuk semua item). Hanya Supervisor.
@@ -23,7 +23,7 @@ class UnitController extends Controller
     public function index()
     {
         $rows = Unit::query()->withCount('items')->with('conversions')->orderBy('code')->get()->map(fn (Unit $u) => [
-            'id' => $u->id, 'code' => $u->code, 'name' => $u->name, 'kind' => Unit::KINDS[$u->kind] ?? $u->kind, 'hue' => Palette::unit($u->kind), 'items' => $u->items_count, 'active' => $u->is_active,
+            'id' => $u->id, 'code' => $u->code, 'name' => $u->name, 'kind' => Str::before(Unit::KINDS[$u->kind] ?? $u->kind, ' ('), 'items' => $u->items_count, 'itemsTone' => $u->items_count ? 'neutral' : 'warn', 'active' => $u->is_active,
             'conv' => $u->conversions->map(fn ($c) => '1 '.$u->code.' = '.Locale::decimal($c->factor, 6).' '.$c->to_unit)->implode('; '),
         ])->all();
 

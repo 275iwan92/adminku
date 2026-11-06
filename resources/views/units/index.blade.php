@@ -10,15 +10,19 @@
 @section('body')
     @include('partials.flash')
     {{-- Lebar dibatasi supaya kolom Unit, Conversions, dan jumlah item tidak terpisah jauh di layar lebar. --}}
-    <div style="max-width: 820px">
+    @php
+        $tones = ['Hitungan' => 'violet', 'Berat' => 'warn', 'Volume' => 'info', 'Panjang' => 'success', 'Luas' => 'neutral', 'Lainnya' => 'neutral'];
+        $hasConv = collect($rows)->contains(fn ($r) => $r['conv'] !== '');   // kolom Konversi disembunyikan selama belum ada satu pun konversi
+    @endphp
+    <div style="max-width: 760px">
     <x-dl::grid id="units" :rows="$rows" actions="edit" :new-url="route('units.create')" :open-url="url('units/{id}')" :toggle-url="url('units/{id}/toggle')"
         search="Search code or name..."
-        :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['kind', 'conv', 'items']]"
+        :phone-cards="['title' => 'name', 'sub' => 'code', 'badge' => 'kind', 'tones' => $tones, 'meta' => $hasConv ? ['conv', 'items'] : ['items']]"
         :columns="[
-            ['key' => 'name', 'label' => 'Unit', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => true],
-            ['key' => 'kind', 'label' => 'Type'],
-            ['key' => 'conv', 'label' => 'Conversions'],
-            ['key' => 'items', 'label' => 'Items using it', 'type' => 'integer'],
+            ['key' => 'name', 'label' => 'Unit', 'type' => 'identity', 'code' => 'code', 'avatar' => false, 'box' => false],
+            ['key' => 'kind', 'label' => 'Type', 'type' => 'badge', 'tones' => $tones],
+            ...($hasConv ? [['key' => 'conv', 'label' => 'Conversions']] : []),
+            ['key' => 'items', 'label' => 'Items using it', 'type' => 'badge', 'toneKey' => 'itemsTone'],
         ]"
         :stats="[['label' => 'All units'], ['label' => 'Inactive', 'where' => ['active' => false], 'tone' => 'warn']]" />
     </div>
