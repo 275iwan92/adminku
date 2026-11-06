@@ -78,6 +78,14 @@ if (root) {
     });
     function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
 
+    // Tutup di /help: halaman memudar seperti asap (fade, blur, naik, membesar) sekitar 600 ms, lalu ke Beranda. Tanpa animasi bila reduced-motion.
+    const closeLink = document.querySelector('.g-tabs .g-close');
+    closeLink?.addEventListener('click', (e) => {
+        if (reduce || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+        e.preventDefault();
+        document.documentElement.classList.add('ug-leaving');
+        setTimeout(() => { try { (window.top || window).location.assign(closeLink.href); } catch { window.location.assign(closeLink.href); } }, 600);
+    });
     window.addEventListener('hashchange', route);
     setMode(root.dataset.mode, false);
     route();

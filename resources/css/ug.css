@@ -438,3 +438,7 @@ html.ugf-on body { overflow: hidden !important; }
 .g-tabs .g-close:focus-visible { outline: 3px solid var(--dl-accent); outline-offset: 2px; }
 @media (max-width: 520px) { .g-tabs .g-close span { display: none; } .g-tabs .g-close { padding: 0; width: 40px; justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .g-tabs .g-close { transition: none; } }
+/* Tutup /help: halaman menghilang seperti asap */
+@keyframes ug-smoke { 0% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); } 100% { opacity: 0; filter: blur(16px); transform: translateY(-26px) scale(1.06); } }
+html.ug-leaving body { animation: ug-smoke .6s cubic-bezier(.4, 0, .8, .6) forwards; transform-origin: 50% 40%; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { html.ug-leaving body { animation: none; } }
