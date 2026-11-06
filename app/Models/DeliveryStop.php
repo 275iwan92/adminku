@@ -13,19 +13,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Dipakai oleh : DeliveryTrip, DeliveryTripController.
  * Status       : Aktif.
  */
-#[Fillable(['trip_id', 'seq', 'kind', 'customer', 'address', 'lat', 'lng', 'travel_min', 'arrived_at', 'items'])]
+#[Fillable(['trip_id', 'seq', 'kind', 'customer', 'address', 'lat', 'lng', 'travel_min', 'arrived_at', 'scanned_at', 'scan_code', 'scan_ok', 'items'])]
 class DeliveryStop extends Model
 {
     protected $table = 'delivery_stop';
 
     protected function casts(): array
     {
-        return ['items' => 'array', 'arrived_at' => 'datetime'];
+        return ['items' => 'array', 'arrived_at' => 'datetime', 'scanned_at' => 'datetime', 'scan_ok' => 'boolean'];
     }
 
     public function trip(): BelongsTo
     {
         return $this->belongsTo(DeliveryTrip::class, 'trip_id');
+    }
+
+    // Kode yang dianggap cocok saat dipindai di alamat ini: nomor surat jalan / PV yang tertaut, atau kode alamat (nomor trip-urutan) untuk barang ketikan.
+    public function expectedCodes(): array
+    {
+        return $this->docs->pluck('doc_no')->push($this->trip->number().'-'.$this->seq)->map(fn ($c) => mb_strtoupper(trim($c)))->all();
     }
 
     public function docs(): BelongsToMany

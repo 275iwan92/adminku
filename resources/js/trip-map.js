@@ -36,6 +36,14 @@ const legColor = (i) => LEG[i % LEG.length];
 const icon = (txt, cls, color) => L.divIcon({ className: '', html: '<span class="sp-pin ' + cls + '" style="background:' + color + '">' + txt + '</span>', iconSize: [28, 28], iconAnchor: [14, 14] });
 
 window.TripMap = {
+    // Posisi sopir terakhir: satu penanda yang dipindah tiap pembaruan; peta menyesuaikan sekali saat posisi pertama datang.
+    live(el, office) {
+        const map = L.map(el, { scrollWheelZoom: false }).setView([office.lat, office.lng], 12);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
+        setTimeout(() => map.invalidateSize(), 200);
+        let m = null;
+        return { set(lat, lng) { if (m) m.setLatLng([lat, lng]); else { m = L.marker([lat, lng], { icon: icon('S', 'sp-pa', '#e5742b') }).addTo(map); map.setView([lat, lng], 15); } } };
+    },
     router: straightRouter,
     legColor,
     straight: straightRouter,

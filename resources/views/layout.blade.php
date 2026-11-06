@@ -18,6 +18,7 @@
     <x-dl::theme-boot />
     <script src="{{ \Devlib\DevlibServiceProvider::asset('devlib.js') }}" defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
 </head>
 <body class="dl-body {{ $bodyClass ?? '' }} {{ \Devlib\Device::bodyClass(request()) }}">
     @yield('body')

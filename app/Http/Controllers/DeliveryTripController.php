@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StockDocumentType;
+use App\Models\DeliveryPosition;
 use App\Models\DeliveryStop;
 use App\Models\DeliveryTrip;
 use App\Models\StockDocument;
@@ -44,6 +45,14 @@ class DeliveryTripController extends Controller
     public function show(DeliveryTrip $trip)
     {
         return view('delivery-trips.form', $this->formData($trip->load(['stops.docs', 'creator'])));
+    }
+
+    // Posisi terakhir sopir (JSON) untuk peta di form trip; lat null bila belum ada kiriman.
+    public function position(DeliveryTrip $trip)
+    {
+        $p = DeliveryPosition::query()->where('trip_id', $trip->id)->latest('recorded_at')->latest('id')->first();
+
+        return response()->json($p ? ['lat' => $p->lat, 'lng' => $p->lng, 'at' => $p->recorded_at->format('H:i:s'), 'ago' => $p->recorded_at->diffForHumans()] : ['lat' => null])->header('Cache-Control', 'no-store');
     }
 
     public function store(Request $request): RedirectResponse

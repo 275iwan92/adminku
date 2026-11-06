@@ -81,6 +81,12 @@ Route::middleware('throttle:60,1')->prefix('d/{token}')->whereAlphaNumeric('toke
     Route::get('/', [DriverTripController::class, 'show'])->name('driver.show');
     Route::post('stop/{stop}/arrive', [DriverTripController::class, 'arrive'])->whereNumber('stop')->name('driver.arrive');
     Route::post('stop/{stop}/undo', [DriverTripController::class, 'undo'])->whereNumber('stop')->name('driver.undo');
+    Route::post('stop/{stop}/scan', [DriverTripController::class, 'scan'])->whereNumber('stop')->name('driver.scan');
+    Route::get('manifest.webmanifest', [DriverTripController::class, 'manifest'])->name('driver.manifest');
+});
+// Posisi GPS sopir: batas 6 kiriman per menit per perangkat (layar sopir mengirim tiap >= 15 dtk).
+Route::middleware('throttle:6,1')->prefix('d/{token}')->whereAlphaNumeric('token')->group(function () {
+    Route::post('position', [DriverTripController::class, 'position'])->name('driver.position');
 });
 
 Route::middleware('guest')->group(function () {
@@ -332,6 +338,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::post('trips', [DeliveryTripController::class, 'store'])->name('trips.store');
     Route::get('trips/{trip}', [DeliveryTripController::class, 'show'])->whereNumber('trip')->name('trips.show');
     Route::put('trips/{trip}', [DeliveryTripController::class, 'update'])->whereNumber('trip')->name('trips.update');
+    Route::get('trips/{trip}/position', [DeliveryTripController::class, 'position'])->whereNumber('trip')->name('trips.position');
     Route::get('delivery-notes', [DeliveryNoteController::class, 'index'])->name('delivery-notes.index');
     // Purchase, Penerimaan Pembelian (PUV): barang datang dari PO; Konfirmasi membuat Penerimaan Barang (RCV) di Stok otomatis.
     Route::get('pv', [PurchaseReceiptController::class, 'index'])->name('pv.index');

@@ -27,6 +27,26 @@
     @if ($now === 'cancelled')
         <x-dl::alert tone="warn" :message="raw('Trip dibatalkan'.($trip->reason ? '. Alasan: '.$trip->reason : '').'. Surat jalannya bebas dipakai lagi.')" />
     @endif
+    @if ($trip->status === 'assigned')
+        @vite('resources/js/trip-map.js')
+        <div class="dl-card" id="driver-live" data-url="{{ route('trips.position', $trip) }}" style="margin-bottom:12px">
+            <div class="sp-mapbar"><strong>Posisi sopir</strong><span class="sp-s" id="driver-live-note">Belum ada posisi (sopir belum membagikan lokasi dari HP).</span></div>
+            <div class="sp-map" id="driver-live-map"></div>
+        </div>
+        <script>
+            addEventListener('DOMContentLoaded', () => {
+                const box = document.getElementById('driver-live'), note = document.getElementById('driver-live-note');
+                const live = window.TripMap.live(document.getElementById('driver-live-map'), @js(config('sstock.office_geo')));
+                const poll = async () => {
+                    try {
+                        const p = await (await fetch(box.dataset.url, { headers: { Accept: 'application/json' } })).json();
+                        if (p.lat !== null) { live.set(p.lat, p.lng); note.textContent = 'Terakhir terlihat ' + p.at + ' (' + p.ago + ')'; }
+                    } catch (e) { /* jaringan putus: coba lagi di putaran berikut */ }
+                };
+                poll(); setInterval(poll, 30000);
+            });
+        </script>
+    @endif
     <x-dl::form :title="'Pengiriman · '.($isNew ? 'Baru' : raw($trip->number()))" :subtitle="$isNew ? null : raw($trip->driver)" panel="top" kind="document" :status="$now"
         :back="route('trips.index')" :new-url="route('trips.create')" :log="$log"
         :action="$isNew ? route('trips.store') : route('trips.update', $trip)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
