@@ -12,7 +12,7 @@ use App\Models\User;
  */
 final class GuideCatalog
 {
-    /** @return array{groups: array<string, array>, tours: array<string, array>, flows: array<string, array>} */
+    /** @return array{groups: array<string, array>, tours: array<string, array>, flows: array<string, array>, tips: array<int, array>} */
     public static function forUser(User $user): array
     {
         $raw = require resource_path('help/guide.php');
@@ -45,6 +45,8 @@ final class GuideCatalog
             }
         }
 
-        return ['groups' => $groups, 'tours' => $tours, 'flows' => $flows];
+        $tips = array_values(array_filter($raw['tips'] ?? [], fn ($t) => $t[4] === null || $user->canAccess($t[4])));
+
+        return ['groups' => $groups, 'tours' => $tours, 'flows' => $flows, 'tips' => $tips];
     }
 }

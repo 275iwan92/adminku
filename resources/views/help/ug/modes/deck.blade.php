@@ -6,17 +6,7 @@
 --}}
 @php
     $img = fn (string $n) => asset("media/ug/{$n}.png");
-    $tips = [
-        ['F1', 'F1 di layar mana pun', 'Membuka panduan ini tanpa mencari menu.', 'menu', null],
-        ['2x', 'Klik 2x pada baris', 'Membuka data di form, sama dengan ikon pensil.', 'grid', null],
-        ['+', 'Tombol plus', 'Pemasok atau Penerima belum ada? Tambah dari form yang sama, langsung terpilih.', 'tombol-plus', null],
-        ['CSV', 'Ekspor ke Excel', 'Grid diunduh sesuai pencarian, saringan, dan kolom yang tampil.', 'grid', null],
-        ['Tab', 'Banyak tab sekaligus', 'Pindah antar menu tanpa kehilangan isian.', 'menu', null],
-        ['Klik', 'Kotak ringkasan Beranda', 'Setiap kotak membuka menu terkait.', 'beranda', null],
-        ['Pesan', 'Catat Pemesanan', 'Tandai barang menipis sudah dipesan; perkiraan tiba dihitung otomatis.', 'catat-pemesanan', null],
-        ['Scan', 'Scan barang datang', 'Penerimaan Pembelian mencocokkan kode barang ke baris PO.', 'pur-puv', 'PUV'],
-    ];
-    $tips = array_values(array_filter($tips, fn ($t) => $t[4] === null || $can($t[4])));
+    $tips = $catalog['tips'];
     $groups = $catalog['groups'];
     $tours = $catalog['tours'];
     $mins = fn (array $t) => max(1, (int) round(count($t['steps']) * 0.5));

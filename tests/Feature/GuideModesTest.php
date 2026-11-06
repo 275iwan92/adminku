@@ -83,7 +83,10 @@ class GuideModesTest extends TestCase
             $this->assertStringContainsString('id="gb-'.$id.'"', $html, "Blog {$id}");
             $this->assertSame(count($t['steps']), substr_count($html, 'id="gb-'.$id.'--s'), "Langkah Blog {$id}");
         }
+        $this->assertStringContainsString('id="ugf"', $html, 'Bantuan layar penuh');
+        $this->assertStringContainsString('data-ugf-close', $html, 'Tombol Tutup layar penuh');
         $this->assertStringContainsString('prefers-reduced-motion', file_get_contents(resource_path('css/ug.css')));
+        $this->assertStringContainsString('orientation: portrait', file_get_contents(resource_path('css/ug.css')), 'Putar otomatis ke landscape di HP');
     }
 
     public function test_entry_user_does_not_get_restricted_content_in_any_mode(): void

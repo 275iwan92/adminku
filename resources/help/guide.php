@@ -230,4 +230,16 @@ return [
         'f-laporan' => ['Dari dokumen ke laporan', 'alur-laporan', [['si', 'Dokumen Terkonfirmasi masuk stok'], ['de', 'Pilih laporan dan periode'], ['de', 'Tampilkan'], ['de', 'Cetak atau ekspor']]],
         'f-ac' => ['Perawatan AC dari jadwal sampai selesai', 'ac', [['de', 'Penjadwalan: kunjungan Draf'], ['de', 'Kirim ke vendor (Terkirim)'], ['vn', 'Vendor mengonfirmasi'], ['de', 'Tandai Selesai'], ['si', 'Jatuh tempo AC dihitung ulang']]],
     ],
+
+    // Tahukah Anda: [ikon, judul, keterangan, anchor Detail, kode modul yang dibutuhkan atau null]
+    'tips' => [
+        ['F1', 'F1 di layar mana pun', 'Membuka panduan ini tanpa mencari menu.', 'menu', null],
+        ['2x', 'Klik 2x pada baris', 'Membuka data di form, sama dengan ikon pensil.', 'grid', null],
+        ['+', 'Tombol plus', 'Pemasok atau Penerima belum ada? Tambah dari form yang sama, langsung terpilih.', 'tombol-plus', null],
+        ['CSV', 'Ekspor ke Excel', 'Grid diunduh sesuai pencarian, saringan, dan kolom yang tampil.', 'grid', null],
+        ['Tab', 'Banyak tab sekaligus', 'Pindah antar menu tanpa kehilangan isian.', 'menu', null],
+        ['Klik', 'Kotak ringkasan Beranda', 'Setiap kotak membuka menu terkait.', 'beranda', null],
+        ['Pesan', 'Catat Pemesanan', 'Tandai barang menipis sudah dipesan; perkiraan tiba dihitung otomatis.', 'catat-pemesanan', null],
+        ['Scan', 'Scan barang datang', 'Penerimaan Pembelian mencocokkan kode barang ke baris PO.', 'pur-puv', 'PUV'],
+    ],
 ];

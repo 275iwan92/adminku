@@ -22,12 +22,18 @@ if (root) {
     const deck = makeDeck();
     const tour = makeTour();
     const blog = makeBlog();
+    const fs = makeFullscreen({
+        setMode: (m) => $(`[data-mode="${m}"]`).click(),
+        tour,
+        go: (h) => go(h),
+        restore: () => setMode(root.dataset.mode, false),
+    });
 
     function setMode(m, remember = true) {
         if (!MODES.includes(m)) m = 'deck';
         root.dataset.mode = m;
         if (remember) store.set('adminku.ug.mode', m);
-        m === 'deck' ? deck.resume() : deck.pause();
+        m === 'deck' && !fs.isOpen() ? deck.resume() : deck.pause();
         if (m !== 'tour') tour.close();
     }
 
@@ -316,6 +322,74 @@ function makeBlog() {
     Object.values(arts).forEach((a) => { a.hidden = true; });
     filter();
     return { show };
+}
+
+/* ---------- Bantuan layar penuh ---------- */
+function makeFullscreen(ctx) {
+    const el = $('#ugf');
+    const scroller = $('.ugf-scroll', el), secs = $$('.ugf-s', scroller), dotsEl = $('.ugf-dots', el), playBtn = $('[data-ugf-play]', el);
+    const html = document.documentElement, isOpen = () => html.classList.contains('ugf-on');
+    const phone = () => matchMedia('(pointer: coarse) and (max-width: 900px), (pointer: coarse) and (max-height: 500px)').matches;
+    let cur = 0, timer = null;
+    const behavior = () => (reduce ? 'auto' : 'smooth');
+
+    dotsEl.innerHTML = secs.map((s, i) => `<button type="button" aria-label="Bagian ${i + 1}: ${esc(s.getAttribute('aria-label') || '')}" data-i="${i}"></button>`).join('');
+    const dots = $$('button', dotsEl);
+    // Tinggi lokal (setelah diputar di HP tegak) menentukan mode ringkas, bukan tinggi layar.
+    new ResizeObserver(() => el.toggleAttribute('data-compact', el.clientHeight <= 460)).observe(el);
+    const io =new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('is-in');
+        cur = secs.indexOf(e.target);
+        dots.forEach((d, i) => d.classList.toggle('on', i === cur));
+    }), { root: scroller, threshold: 0.55 });
+    secs.forEach((s) => io.observe(s));
+    if (reduce) secs.forEach((s) => s.classList.add('is-in'));
+
+    function goTo(i) { i = Math.max(0, Math.min(secs.length - 1, i)); secs[i].scrollIntoView({ behavior: behavior(), block: 'start', inline: 'start' }); }
+    function stopPlay() { clearInterval(timer); timer = null; playBtn.setAttribute('aria-pressed', 'false'); $('span', playBtn).textContent = 'Putar otomatis'; }
+    function startPlay() { playBtn.setAttribute('aria-pressed', 'true'); $('span', playBtn).textContent = 'Jeda'; timer = setInterval(() => goTo(cur >= secs.length - 1 ? 0 : cur + 1), 7500); }
+
+    // Layar penuh + kunci landscape (Android Chrome; iOS tidak mendukung kunci, di sana CSS memutar tampilan).
+    async function enterFull() {
+        try { await html.requestFullscreen?.({ navigationUI: 'hide' }); } catch { /* iframe tanpa izin layar penuh: tetap jalan tanpa */ }
+        if (phone()) { try { await screen.orientation?.lock?.('landscape'); } catch { /* tidak didukung */ } }
+    }
+    function leaveFull() {
+        try { screen.orientation?.unlock?.(); } catch { /* abaikan */ }
+        if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    }
+    function open() { html.classList.add('ugf-on'); scroller.scrollTop = 0; scroller.scrollLeft = 0; ctx.restore(); scroller.focus({ preventScroll: true }); }
+    function close() { stopPlay(); html.classList.remove('ugf-on'); leaveFull(); ctx.restore(); }
+
+    el.addEventListener('click', (e) => {
+        const t = e.target.closest('[data-ugf-close],[data-ugf-full],[data-ugf-play],[data-ugf-next],[data-ugf-go],[data-ugf-try],[data-ugf-mode],[data-i]');
+        if (!t) return;
+        if (t.hasAttribute('data-ugf-close')) close();
+        else if (t.hasAttribute('data-ugf-full')) (document.fullscreenElement ? leaveFull() : enterFull());
+        else if (t.hasAttribute('data-ugf-play')) (timer ? stopPlay() : startPlay());
+        else if (t.hasAttribute('data-ugf-next')) { if (phone()) enterFull(); goTo(cur + 1); }
+        else if (t.dataset.i) goTo(+t.dataset.i);
+        else if (t.dataset.ugfGo) { e.preventDefault(); close(); ctx.go(t.dataset.ugfGo); }
+        else if (t.dataset.ugfTry) { close(); ctx.tour.autostart = true; ctx.go('#gt-' + t.dataset.ugfTry); }
+        else if (t.dataset.ugfMode) { close(); ctx.setMode(t.dataset.ugfMode); }
+    });
+    root.addEventListener('click', (e) => { if (e.target.closest('[data-ugf-open]')) open(); });
+    scroller.addEventListener('wheel', stopPlay, { passive: true });
+    scroller.addEventListener('touchstart', stopPlay, { passive: true });
+    document.addEventListener('keydown', (e) => {
+        if (!isOpen()) return;
+        const k = e.key;
+        if (k === 'Escape' && !document.fullscreenElement) close();
+        else if (k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && e.target === scroller)) { e.preventDefault(); stopPlay(); goTo(cur + 1); }
+        else if (k === 'ArrowUp' || k === 'PageUp') { e.preventDefault(); stopPlay(); goTo(cur - 1); }
+        else if (k === 'Home') { e.preventDefault(); goTo(0); }
+        else if (k === 'End') { e.preventDefault(); goTo(secs.length - 1); }
+    });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stopPlay(); });
+    window.addEventListener('hashchange', () => { if (location.hash && isOpen()) close(); });
+    if (isOpen()) scroller.focus({ preventScroll: true });
+    return { isOpen, open, close };
 }
 
 // Mengganti hash tanpa menambah riwayat; gagal diam-diam bila browser menolak (mis. halaman dibuka dari file:).
