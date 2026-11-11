@@ -93,7 +93,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../devlib",
+            "url": "../../Packages/devlib-adminku",
             "options": {
                 "symlink": true
             }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4bad22fc27419c96a507d0aac61a6bdd",
+    "content-hash": "2140263b6d5b2910ff1cc40b9fa2bd0b",
     "packages": [
         {
             "name": "brick/math",
@@ -1061,11 +1061,11 @@
         },
         {
             "name": "jo/devlib",
-            "version": "dev-main",
+            "version": "1.0.0",
             "dist": {
                 "type": "path",
-                "url": "../devlib",
-                "reference": "80dde671785949bcf7e819e986bb71e7868beb09"
+                "url": "../../Packages/devlib-adminku",
+                "reference": "1252b0f05bbd07c5145d645724bba843c6625421"
             },
             "require": {
                 "illuminate/support": "^13.0",
@@ -1078,6 +1078,10 @@
                     "providers": [
                         "Devlib\\DevlibServiceProvider"
                     ]
+                },
+                "devlib-pack": {
+                    "app": "adminku",
+                    "themes": []
                 }
             },
             "autoload": {
@@ -1093,7 +1097,7 @@
                     "name": "Jo"
                 }
             ],
-            "description": "DevLib — library induk komponen UI/UX (x-dl::*) dan acuan engine untuk proyek Laravel; dibuat oleh Jo, dipakai semua proyek",
+            "description": "DevLib library untuk adminku (paket mandiri hasil devlib:pack)",
             "transport-options": {
                 "symlink": true,
                 "relative": true
