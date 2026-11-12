@@ -141,7 +141,7 @@ class TransactionalRulesTest extends TestCase
         $this->postJson(route('groups.toggle', $group))->assertOk()->assertJson(['active' => false]);
         $this->assertFalse($group->fresh()->is_active);
         $this->get(route('users.create'))->assertDontSee('QA Team');
-        $this->get(route('groups.show', $group))->assertOk()->assertSee('Activate');
+        $this->get(route('groups.show', $group))->assertOk()->assertSee('&quot;status&quot;:&quot;inactive&quot;', false);
 
         $this->put(route('groups.update', $group), ['_action' => 'activate'])->assertRedirect();
         $this->assertTrue($group->fresh()->is_active);

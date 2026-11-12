@@ -19,7 +19,7 @@
         </div>
     </div>
     @include('partials.music')
-    <x-dl2::phone-offer :action="route('ui.set')" auto />
+    <x-dl2::phone-offer :config="['action' => route('ui.set'), 'auto' => true]" />
     <script>
         (() => {
             const dlg = document.getElementById('am-dialog');

@@ -126,9 +126,9 @@ class AcSeederTest extends TestCase
             $this->withHeader('User-Agent', 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36')->get(route('hp.open', $code))->assertOk();
         }
         $back = function (string $html) {
-            preg_match('/<a[^>]*href="([^"]*)"[^>]*data-f-act="back"|<a[^>]*data-f-act="back"[^>]*href="([^"]*)"/', $html, $m);
+            preg_match('/&quot;back&quot;:&quot;([^&]*)&quot;/', $html, $m);
 
-            return html_entity_decode($m[1] ?? $m[2] ?? '');
+            return html_entity_decode($m[1] ?? '');
         };
         $forms = [
             route('ac-units.create') => route('ac-units.index'), route('ac-units.show', AcUnit::first()) => route('ac-units.index'),

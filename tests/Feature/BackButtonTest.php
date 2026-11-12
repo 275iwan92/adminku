@@ -24,9 +24,9 @@ class BackButtonTest extends TestCase
 
     private function backHref(string $html): ?string
     {
-        preg_match('/<a[^>]*href="([^"]*)"[^>]*data-f-act="back"|<a[^>]*data-f-act="back"[^>]*href="([^"]*)"/', $html, $m);
+        preg_match('/&quot;back&quot;:&quot;([^&]*)&quot;/', $html, $m);   // DevLib 2: tombol Kembali dibangun JS dari konfigurasi form
 
-        return html_entity_decode($m[1] ?? $m[2] ?? '') ?: null;
+        return html_entity_decode($m[1] ?? '') ?: null;
     }
 
     public function test_every_form_back_button_points_to_its_grid(): void

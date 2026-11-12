@@ -85,9 +85,9 @@ class GaSettingsTest extends TestCase
     public function test_the_back_button_goes_to_home(): void
     {
         $html = $this->actingAs($this->admin)->get(route('ga-settings.edit'))->getContent();
-        preg_match('/<a[^>]*href="([^"]*)"[^>]*data-f-act="back"|<a[^>]*data-f-act="back"[^>]*href="([^"]*)"/', $html, $m);
+        preg_match('/&quot;back&quot;:&quot;([^&]*)&quot;/', $html, $m);   // DevLib 2: tombol Kembali dibangun JS dari konfigurasi form
 
-        $this->assertSame(route('home'), html_entity_decode($m[1] ?? $m[2] ?? ''));
+        $this->assertSame(route('home'), html_entity_decode($m[1] ?? ''));
     }
 
     public function test_saving_stores_the_keys_in_the_format_the_modules_read(): void

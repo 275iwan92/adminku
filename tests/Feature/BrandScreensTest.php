@@ -24,7 +24,7 @@ class BrandScreensTest extends TestCase
         foreach ([self::PC, self::PHONE] as $ua) {
             foreach (['login', 'password.request'] as $route) {
                 $html = $this->withHeader('User-Agent', $ua)->get(route($route))->assertOk()->getContent();
-                $this->assertStringContainsString('ak-logo-badge', $html, "$route ($ua) memuat lencana logo (gambarnya adminku.svg lewat app.css)");
+                $this->assertStringContainsString('&quot;brand&quot;:&quot;ADMINKU&quot;', $html, "$route ($ua) memuat merek");
                 $this->assertStringContainsString('<b>ADMINKU</b>', $html, "$route ($ua) mencetak nama merek (dua warna lewat CSS)");
                 $this->assertStringContainsString('KERJA JADI RAPI', $html);
                 $this->assertMatchesRegularExpression('/<title>[^<]*AdminKU<\/title>/u', $html);
@@ -36,7 +36,7 @@ class BrandScreensTest extends TestCase
     public function test_phone_ua_gets_the_phone_screens_and_home_header_is_the_brand(): void
     {
         $login = $this->withHeader('User-Agent', self::PHONE)->get('/login')->assertOk()->getContent();
-        $this->assertStringContainsString('ak-plogin', $login);
+        $this->assertStringContainsString('data-dl2="phone-login"', $login);
 
         $home = $this->actingAs(User::factory()->create())->withHeader('User-Agent', self::PHONE)->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('sstock-brandtitle', $home);
@@ -59,7 +59,7 @@ class BrandScreensTest extends TestCase
         foreach (['/', '/buka/transaksi', '/buka/laporan', '/buka/ga', '/buka/master', '/stok', '/m/find', '/m/counts', '/m/open/ITM', '/m/open/GVM', '/m/open/GAS', '/m/open/R-SUM'] as $path) {
             $html = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->get($path)->assertOk()->getContent();
             $this->assertStringContainsString('width=device-width', $html, $path);
-            $this->assertStringContainsString('dl-phone', $html, "$path memakai kerangka HP");
+            $this->assertStringContainsString('data-dl2="phone-shell"', $html, "$path memakai kerangka HP");
             $this->assertStringNotContainsString('Stoku', $html, $path);
         }
         // isian angka memakai keyboard angka (inputmode) di formulir odometer dan barang (baris dokumen digambar JS DevLib dan sudah decimal / numeric)

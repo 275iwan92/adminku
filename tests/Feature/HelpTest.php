@@ -283,7 +283,7 @@ class HelpTest extends TestCase
         $url = route('help.user-guide');
 
         foreach ([User::factory(), User::factory()->supervisor(), User::factory()->administrator()] as $factory) {
-            $this->actingAs($factory->create())->get(route('home'))->assertSee('data-dl2-help="'.e($url).'"', false);
+            $this->actingAs($factory->create())->get(route('home'))->assertSee('&quot;helpUrl&quot;:&quot;'.e($url).'&quot;', false);
         }
     }
 

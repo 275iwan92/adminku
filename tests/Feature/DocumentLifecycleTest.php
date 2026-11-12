@@ -214,21 +214,20 @@ class DocumentLifecycleTest extends TestCase
     {
         $doc = $this->draft('issuance', $this->issuePayload(1), $this->entry);
         $html = $this->actingAs($this->entry)->get(route('docs.show', ['issuance', $doc]))->assertOk()->getContent();
-        $this->assertStringContainsString('data-f-act="delete"', $html);
-        $this->assertStringContainsString('data-f-act="confirm"', $html);
-        $this->assertStringNotContainsString('data-f-act="cancel"', $html);
+        // DevLib 2: tombol panel (Delete / Confirm / Cancel) dibangun JS dari status di konfigurasi form; server menjaga lewat aksi.
+        $this->assertStringContainsString('&quot;status&quot;:&quot;draft&quot;', $html);
+        $this->assertStringNotContainsString('&quot;status&quot;:&quot;confirmed&quot;', $html);
 
         $this->act($this->draft('receiving', $this->receivePayload(5), $this->entry), 'confirm', $this->receivePayload(5));
         $this->act($doc, 'confirm', $this->issuePayload(1));
         foreach ([$this->entry, $this->sup] as $user) {                                             // semua pengguna melihat Cancel pada dokumen yang sudah Confirm
-            $this->assertStringContainsString('data-f-act="cancel"', $this->actingAs($user)->get(route('docs.show', ['issuance', $doc]))->getContent());
+            $this->assertStringContainsString('&quot;status&quot;:&quot;confirmed&quot;', $this->actingAs($user)->get(route('docs.show', ['issuance', $doc]))->getContent());
         }
 
         $this->act($doc, 'cancel', [], $this->entry, 'salah input');
         $forSup = $this->actingAs($this->sup)->get(route('docs.show', ['issuance', $doc]))->assertOk()->assertSee('menunggu persetujuan Supervisor', false)->getContent();
-        $this->assertStringContainsString('data-f-act="approve"', $forSup);                          // Supervisor menyetujui / menolak
-        $this->assertStringContainsString('data-f-act="reject"', $forSup);
+        $this->assertStringContainsString('&quot;canApprove&quot;:true', $forSup);                          // Supervisor menyetujui / menolak
         $forEntry = $this->actingAs($this->entry)->get(route('docs.show', ['issuance', $doc]))->getContent();
-        $this->assertStringNotContainsString('data-f-act="approve"', $forEntry);
+        $this->assertStringNotContainsString('&quot;canApprove&quot;:true', $forEntry);
     }
 }

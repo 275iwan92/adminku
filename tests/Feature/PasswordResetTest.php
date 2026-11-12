@@ -23,7 +23,7 @@ class PasswordResetTest extends TestCase
 
     public function test_login_page_links_to_forgot_password(): void
     {
-        $this->get(route('login'))->assertOk()->assertSee(route('password.request'), false)->assertSee('Lupa password?', false);
+        $this->get(route('login'))->assertOk()->assertSee(route('password.request'), false);
         $this->get(route('password.request'))->assertOk()->assertSee('Kirim tautan reset', false);
     }
 

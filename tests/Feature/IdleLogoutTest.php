@@ -21,16 +21,16 @@ class IdleLogoutTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)->get(route('help.user-guide'))->assertOk()
-            ->assertSee('data-dl2-idle', false)->assertSee('data-minutes="45"', false)
-            ->assertSee('data-logout-url="'.route('logout').'"', false)->assertSee('data-ping-url="'.route('session.ping').'"', false)
-            ->assertSee('data-login-url="'.route('login').'"', false)->assertSee('name="csrf-token"', false);
-        $this->assertSame(1, substr_count($this->actingAs($user)->get(route('home'))->getContent(), 'data-dl2-idle'));
+            ->assertSee('data-dl2="idle-logout"', false)->assertSee('&quot;minutes&quot;:45', false)
+            ->assertSee('&quot;logoutUrl&quot;:&quot;'.route('logout').'&quot;', false)->assertSee('&quot;pingUrl&quot;:&quot;'.route('session.ping').'&quot;', false)
+            ->assertSee('&quot;loginUrl&quot;:&quot;'.route('login').'&quot;', false)->assertSee('name="csrf-token"', false);
+        $this->assertSame(1, substr_count($this->actingAs($user)->get(route('home'))->getContent(), 'data-dl2="idle-logout"'));
     }
 
     public function test_guest_pages_do_not_mount_the_component(): void
     {
         foreach (['login', 'password.request'] as $name) {
-            $this->get(route($name))->assertOk()->assertDontSee('data-dl2-idle', false);
+            $this->get(route($name))->assertOk()->assertDontSee('data-dl2="idle-logout"', false);
         }
     }
 

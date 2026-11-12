@@ -14,7 +14,7 @@ class ScreenInfoPageTest extends TestCase
     public function test_guest_opens_the_page_without_login_and_without_menu(): void
     {
         $html = $this->get('/ukur')->assertOk()->getContent();
-        $this->assertStringContainsString('data-dl2-screen-info', $html);
+        $this->assertStringContainsString('data-dl2="screen-info"', $html);
         $this->assertStringContainsString('data-sinfo-copy', $html);
         $this->assertStringNotContainsString('dl-phone__burger', $html);
         $this->assertStringNotContainsString('dl-layer', $html);

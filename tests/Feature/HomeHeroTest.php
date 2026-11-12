@@ -32,7 +32,7 @@ class HomeHeroTest extends TestCase
 
     private function home(User $user, string $ua = self::PC): string
     {
-        return $this->actingAs($user)->withHeader('User-Agent', $ua)->get(route('home'))->assertOk()->getContent();
+        return $this->actingAs($user)->withHeader('User-Agent', $ua)->get(str_contains($ua, 'Mobile') ? route('home') : route('home.board'))->assertOk()->getContent();
     }
 
     private function limited(array $access, string $name = 'Sari Dewi'): User

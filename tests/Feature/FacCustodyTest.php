@@ -219,6 +219,6 @@ class FacCustodyTest extends TestCase
         $this->get(route('fac-assets.show', $a))->assertOk()->assertSee('TERLAMBAT')->assertSee('Kembalikan');
         $this->get(route('fac-care.show', $a))->assertOk()->assertSee('Riwayat pemegang')->assertSee('ST-1');
         $this->get(route('fac-assets.index'))->assertOk()->assertSee('Dipinjam: Rina');
-        $this->get(route('home'))->assertOk()->assertSee('Di luar kantor');
+        $this->get(route('home.board'))->assertOk()->assertSee('Di luar kantor');
     }
 }

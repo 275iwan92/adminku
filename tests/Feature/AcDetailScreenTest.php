@@ -55,7 +55,7 @@ class AcDetailScreenTest extends TestCase
     {
         $unit = $this->acLate();
 
-        $this->actingAs($this->admin)->get(route('ac-care.index'))->assertOk()->assertSee('ac-care\/{id}', false);
+        $this->actingAs($this->admin)->get(route('ac-care.index'))->assertOk()->assertSee('ac-care/{id}', false);
         $this->actingAs($this->admin)->get(route('ac-care.show', $unit))->assertOk()->assertSee($unit->asset_code)->assertSee('Terlambat')->assertSee('Belum ada perawatan selesai')->assertSee('Jadwalkan Kunjungan')->assertSee('Ubah Data AC');
     }
 

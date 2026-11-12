@@ -87,7 +87,7 @@ class StockCountStartScreensTest extends TestCase
         foreach ([$this->sup, $this->entry] as $user) {
             $this->actingAs($user)->get(route('stock-counts.show', $count))->assertOk()->assertSee($count->doc_no)->assertSee('Sedang dihitung');
         }
-        $this->actingAs($this->entry)->get(route('stock-counts.index'))->assertSee($count->doc_no)->assertSee('0 \/ 1', false);   // baris grid dikirim sebagai JSON (garis miring di-escape)
+        $this->actingAs($this->entry)->get(route('stock-counts.index'))->assertSee($count->doc_no)->assertSee('0 / 1', false);   // baris grid dikirim sebagai JSON (garis miring di-escape)
     }
 
     public function test_switches_default_off_when_unchecked_and_scope_needs_its_value(): void

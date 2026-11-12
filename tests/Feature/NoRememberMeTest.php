@@ -17,7 +17,7 @@ class NoRememberMeTest extends TestCase
 
     public function test_login_page_has_no_remember_checkbox(): void
     {
-        $this->get(route('login'))->assertOk()->assertSee('name="password"', false)->assertDontSee('name="remember"', false);
+        $this->get(route('login'))->assertOk()->assertSee('data-dl2="login-box"', false)->assertSee('&quot;usernameName&quot;:&quot;login&quot;', false)->assertDontSee('name="remember"', false);
     }
 
     public function test_forced_remember_input_is_ignored(): void

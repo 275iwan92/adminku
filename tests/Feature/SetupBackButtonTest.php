@@ -18,7 +18,7 @@ class SetupBackButtonTest extends TestCase
     private function backTo(string $url, string $to): void
     {
         $html = $this->actingAs(User::factory()->administrator()->create())->get($url)->assertOk()->getContent();
-        $this->assertMatchesRegularExpression('#<a[^>]*href="'.preg_quote($to, '#').'"[^>]*>.*?Kembali#s', $html, "Kembali di {$url} harus ke {$to}");
+        $this->assertStringContainsString('&quot;back&quot;:&quot;'.$to.'&quot;', $html, "Kembali di {$url} harus ke {$to}");
     }
 
     public function test_setup_grids_go_back_to_their_hub(): void

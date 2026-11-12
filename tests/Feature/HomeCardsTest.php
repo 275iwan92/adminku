@@ -35,7 +35,7 @@ class HomeCardsTest extends TestCase
     private function codes(User $user, bool $phone = false): array
     {
         $req = $this->actingAs($user);
-        $res = ($phone ? $req->withHeader('User-Agent', self::PHONE) : $req)->get(route('home'))->assertOk();
+        $res = ($phone ? $req->withHeader('User-Agent', self::PHONE) : $req)->get($phone ? route('home') : route('home.board'))->assertOk();
         $this->assertStringContainsString('sstock-hero', $res->getContent());
 
         return array_column($res->viewData('cards'), 'code');
@@ -56,7 +56,7 @@ class HomeCardsTest extends TestCase
 
     public function test_new_style_is_default_and_old_style_stays_switchable(): void
     {
-        $html = $this->actingAs(User::factory()->administrator()->create())->get(route('home'))->assertOk()->assertSee('Trip hari ini')->assertSee('Saldo kas')->getContent();
+        $html = $this->actingAs(User::factory()->administrator()->create())->get(route('home.board'))->assertOk()->assertSee('Trip hari ini')->assertSee('Saldo kas')->getContent();
 
         $this->assertStringContainsString('class="sstock-mods is-baru"', $html);
         $this->assertStringContainsString('data-gaya="lama"', $html);
@@ -65,7 +65,7 @@ class HomeCardsTest extends TestCase
 
     public function test_home_no_longer_carries_the_stock_content(): void
     {
-        $html = $this->actingAs(User::factory()->supervisor()->create())->get(route('home'))->assertOk()->getContent();
+        $html = $this->actingAs(User::factory()->supervisor()->create())->get(route('home.board'))->assertOk()->getContent();
 
         foreach (['Documents waiting approval', 'At / below reorder point', 'Open Receiving', 'reorder-modal'] as $text) {
             $this->assertStringNotContainsString($text, $html);
@@ -76,8 +76,8 @@ class HomeCardsTest extends TestCase
 
     public function test_stock_card_shows_value_only_to_supervisor(): void
     {
-        $this->actingAs(User::factory()->supervisor()->create())->get(route('home'))->assertSee('Nilai stok')->assertDontSee('Penerimaan hari ini');
-        $this->actingAs(User::factory()->create())->get(route('home'))->assertDontSee('Nilai stok')->assertSee('Penerimaan hari ini');
+        $this->actingAs(User::factory()->supervisor()->create())->get(route('home.board'))->assertSee('Nilai stok')->assertDontSee('Penerimaan hari ini');
+        $this->actingAs(User::factory()->create())->get(route('home.board'))->assertDontSee('Nilai stok')->assertSee('Penerimaan hari ini');
     }
 
     public function test_phone_stacks_the_cards_as_links_to_phone_screens(): void
@@ -107,12 +107,12 @@ class HomeCardsTest extends TestCase
         DB::listen(function () use (&$queries) {
             $queries++;
         });
-        $this->actingAs($admin)->get(route('home'))->assertOk();   // pemanasan: kompilasi tampilan tidak ikut diukur
+        $this->actingAs($admin)->get(route('home.board'))->assertOk();   // pemanasan: kompilasi tampilan tidak ikut diukur
 
         foreach ([false, true] as $phone) {
             $queries = 0;
             $start = microtime(true);
-            ($phone ? $this->actingAs($admin)->withHeader('User-Agent', self::PHONE) : $this->actingAs($admin))->get(route('home'))->assertOk();
+            ($phone ? $this->actingAs($admin)->withHeader('User-Agent', self::PHONE) : $this->actingAs($admin))->get($phone ? route('home') : route('home.board'))->assertOk();
             $ms = (microtime(true) - $start) * 1000;
 
             $this->assertLessThan(34, $queries, ($phone ? 'HP' : 'Desktop').": {$queries} kueri");

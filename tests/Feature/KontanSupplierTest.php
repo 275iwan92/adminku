@@ -86,8 +86,8 @@ class KontanSupplierTest extends TestCase
         $user = User::factory()->supervisor()->create();
         $other = Supplier::create(['code' => 'S1', 'name' => 'Biasa']);
 
-        $this->actingAs($user)->get(route('suppliers.show', $this->kontan()))->assertOk()->assertDontSee('data-f-act="deactivate"', false);
-        $this->get(route('suppliers.show', $other))->assertOk()->assertSee('data-f-act="deactivate"', false);
+        $this->actingAs($user)->get(route('suppliers.show', $this->kontan()))->assertOk()->assertSee('&quot;hide&quot;:[&quot;deactivate&quot;,&quot;activate&quot;]', false);   // DevLib 2: tombol dibangun JS; hide = tombol yang disembunyikan
+        $this->get(route('suppliers.show', $other))->assertOk()->assertDontSee('&quot;hide&quot;:[&quot;deactivate&quot;', false);
         $this->postJson(route('suppliers.toggle', $other))->assertOk()->assertJson(['active' => false]);
     }
 }

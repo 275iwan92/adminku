@@ -101,8 +101,8 @@ class RolesTest extends TestCase
         $this->put(route('pr.update', $pr), ['_action' => 'confirm'] + $payload)->assertSessionHasNoErrors();
         $this->assertSame('approval', $pr->fresh()->status);
 
-        $this->actingAs($this->adm)->get(route('pr.show', $pr))->assertOk()->assertDontSee('data-f-act="approve"', false);
-        $this->actingAs($this->spv)->get(route('pr.show', $pr))->assertOk()->assertSee('data-f-act="approve"', false);
+        $this->actingAs($this->adm)->get(route('pr.show', $pr))->assertOk()->assertDontSee('&quot;canApprove&quot;:true', false);
+        $this->actingAs($this->spv)->get(route('pr.show', $pr))->assertOk()->assertSee('&quot;canApprove&quot;:true', false);
         $this->actingAs($this->adm)->put(route('pr.update', $pr), ['_action' => 'approve'])->assertForbidden();
         $this->actingAs($this->adm)->put(route('pr.update', $pr), ['_action' => 'reject', 'reject_reason' => 'tidak'])->assertForbidden();
         $this->assertSame('approval', $pr->fresh()->status);
@@ -118,8 +118,8 @@ class RolesTest extends TestCase
         $po = PurchaseOrder::latest('id')->firstOrFail();
         $this->put(route('po.update', $po), ['_action' => 'confirm'] + $payload)->assertSessionHasNoErrors();
 
-        $this->actingAs($this->adm)->get(route('po.show', $po))->assertOk()->assertDontSee('data-f-act="approve"', false);
-        $this->actingAs($this->spv)->get(route('po.show', $po))->assertOk()->assertSee('data-f-act="approve"', false);
+        $this->actingAs($this->adm)->get(route('po.show', $po))->assertOk()->assertDontSee('&quot;canApprove&quot;:true', false);
+        $this->actingAs($this->spv)->get(route('po.show', $po))->assertOk()->assertSee('&quot;canApprove&quot;:true', false);
         $this->actingAs($this->adm)->put(route('po.update', $po), ['_action' => 'approve'])->assertForbidden();
         $this->actingAs($this->adm)->put(route('po.update', $po), ['_action' => 'reject', 'reject_reason' => 'tidak'])->assertForbidden();
         $this->actingAs($this->spv)->put(route('po.update', $po), ['_action' => 'approve'])->assertSessionHasNoErrors();
@@ -146,8 +146,8 @@ class RolesTest extends TestCase
         $this->actingAs($this->spv)->put(route('docs.update', ['receiving', $rcv]), ['_action' => 'approve'])->assertSessionHasNoErrors();
         $this->assertSame('cancelled', $rcv->fresh()->status);
 
-        $this->actingAs($this->adm)->get(route('docs.show', ['adjustment', $doc]))->assertOk()->assertDontSee('data-f-act="approve"', false);
-        $this->actingAs($this->spv)->get(route('docs.show', ['adjustment', $doc]))->assertOk()->assertSee('data-f-act="approve"', false);
+        $this->actingAs($this->adm)->get(route('docs.show', ['adjustment', $doc]))->assertOk()->assertDontSee('&quot;canApprove&quot;:true', false);
+        $this->actingAs($this->spv)->get(route('docs.show', ['adjustment', $doc]))->assertOk()->assertSee('&quot;canApprove&quot;:true', false);
         $this->actingAs($this->adm)->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'approve'])->assertForbidden();
         $this->actingAs($this->spv)->put(route('docs.update', ['adjustment', $doc]), ['_action' => 'approve'])->assertSessionHasNoErrors();
         $this->assertSame('approved', $doc->fresh()->status);

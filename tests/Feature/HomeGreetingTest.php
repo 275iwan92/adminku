@@ -24,7 +24,7 @@ class HomeGreetingTest extends TestCase
     {
         $user = $role === 'supervisor' ? User::factory()->supervisor()->create(['name' => 'Budi Santoso']) : User::factory()->create(['name' => 'Budi Santoso']);
 
-        return $this->actingAs($user)->withHeader('User-Agent', $ua ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/141.0.0.0 Safari/537.36')->get(route('home'))->assertOk();
+        return $this->actingAs($user)->withHeader('User-Agent', $ua ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/141.0.0.0 Safari/537.36')->get(str_contains((string) $ua, 'Mobile') ? route('home') : route('home.board'))->assertOk();
     }
 
     public function test_desktop_home_has_the_hero_banner_with_the_first_name_and_a_date_line(): void
