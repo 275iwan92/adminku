@@ -719,3 +719,19 @@ a.sstock-otile[data-hue]:is(:hover, :focus-visible) { box-shadow: 0 8px 20px col
 .ak-loginbox__reg { margin: 0; text-align: center; }
 .ak-plogin { display: flex; flex-direction: column; justify-content: center; min-height: 100%; padding: 16px; }
 .ak-stack { overflow-x: auto; }
+/* Tab form berwarna (pilihan C, 2026-11-02): pil terisi penuh, warna menurut urutan tab (Profil biru, Pekerjaan hijau, Dokumen ungu, Keluarga merah muda, Kontrak amber, Riwayat abu); aktif = tebal + cincin. */
+.dl2-form-tabs { gap: 8px; border-bottom: 0; padding: 4px 4px 8px; }
+.dl2-form-tabs .dl2-form-tab { --tc: #185FA5; --tt: #E6F1FB; display: inline-flex; align-items: center; gap: 6px; background: var(--tc); color: var(--tt); border: 0; border-radius: 999px; padding: 6px 14px; font-weight: 600; }
+.dl2-form-tabs .dl2-form-tab::before { font: 900 13px/1 'Font Awesome 6 Free', 'Font Awesome 5 Free', sans-serif; content: '\f007'; }
+.dl2-form-tabs .dl2-form-tab:nth-child(2) { --tc: var(--dl2-primary); --tt: var(--dl2-primary-ink); }
+.dl2-form-tabs .dl2-form-tab:nth-child(2)::before { content: '\f0b1'; }
+.dl2-form-tabs .dl2-form-tab:nth-child(3) { --tc: #534AB7; --tt: #EEEDFE; }
+.dl2-form-tabs .dl2-form-tab:nth-child(3)::before { content: '\f15c'; }
+.dl2-form-tabs .dl2-form-tab:nth-child(4) { --tc: #993556; --tt: #FBEAF0; }
+.dl2-form-tabs .dl2-form-tab:nth-child(4)::before { content: '\f0c0'; }
+.dl2-form-tabs .dl2-form-tab:nth-child(5) { --tc: #854F0B; --tt: #FAEEDA; }
+.dl2-form-tabs .dl2-form-tab:nth-child(5)::before { content: '\f573'; }
+.dl2-form-tabs .dl2-form-tab:nth-child(6) { --tc: #5F5E5A; --tt: #F1EFE8; }
+.dl2-form-tabs .dl2-form-tab:nth-child(6)::before { content: none; }
+.dl2-form-tabs .dl2-form-tab:hover { color: var(--tt); filter: brightness(1.08); }
+.dl2-form-tabs .dl2-form-tab.is-current { color: var(--tt); font-weight: 700; box-shadow: 0 0 0 2px var(--dl2-surface, #fff), 0 0 0 4px var(--tc); }

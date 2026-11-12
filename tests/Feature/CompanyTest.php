@@ -102,7 +102,7 @@ class CompanyTest extends TestCase
         $this->assertNull(Company::logoUrl());
         $this->assertSame(config('devlib.company.tagline'), Company::report()['tagline']);
 
-        $this->actingAs($this->sup())->get(route('docs.print', ['receiving', $this->doc()]))->assertOk()->assertSee(config('devlib.company.name'))->assertDontSee('dl-pdoc__brand', false);
+        $this->actingAs($this->sup())->get(route('docs.print', ['receiving', $this->doc()]))->assertOk()->assertSee(config('devlib.company.name'))->assertDontSee('ak-pdoc__brand', false);
     }
 
     public function test_logo_is_checked_by_content_resized_and_served_publicly_with_headers(): void
@@ -163,13 +163,13 @@ class CompanyTest extends TestCase
         $this->save(['logo' => UploadedFile::fake()->image('l.png', 200, 100)], $sup);
 
         $this->save(['kop_style' => 'logo_name_address'], $sup);
-        $this->get($url)->assertOk()->assertSee('dl-pdoc__brand', false)->assertSee('Maju Jaya')->assertSee('Jl. Mawar 1')->assertSee('PT Maju Jaya Abadi')->assertSee('NPWP 01.234.567.8-901.000');
+        $this->get($url)->assertOk()->assertSee('ak-pdoc__brand', false)->assertSee('Maju Jaya')->assertSee('Jl. Mawar 1')->assertSee('PT Maju Jaya Abadi')->assertSee('NPWP 01.234.567.8-901.000');
 
         $this->save(['kop_style' => 'logo_name'], $sup);
-        $this->get($url)->assertOk()->assertSee('dl-pdoc__brand', false)->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertDontSee('Jl. Mawar 1');
+        $this->get($url)->assertOk()->assertSee('ak-pdoc__brand', false)->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertDontSee('Jl. Mawar 1');
 
         $this->save(['kop_style' => 'name'], $sup);
-        $this->get($url)->assertOk()->assertDontSee('dl-pdoc__brand', false)->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertDontSee('Jl. Mawar 1');
+        $this->get($url)->assertOk()->assertDontSee('ak-pdoc__brand', false)->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertDontSee('Jl. Mawar 1');
     }
 
     public function test_legal_name_equal_to_the_name_is_not_printed_twice_and_empty_logo_falls_back_to_name_only(): void
@@ -178,7 +178,7 @@ class CompanyTest extends TestCase
         $url = route('docs.print', ['receiving', $this->doc()]);
 
         $this->save(['legal_name' => ' maju  JAYA ', 'kop_style' => 'logo_name_address'], $sup);   // logo belum ada
-        $this->get($url)->assertOk()->assertSee('Maju Jaya')->assertDontSee('dl-pdoc__legal', false)->assertDontSee('dl-pdoc__brand', false)->assertSee('Jl. Mawar 1');
+        $this->get($url)->assertOk()->assertSee('Maju Jaya')->assertDontSee('ak-pdoc__legal', false)->assertDontSee('ak-pdoc__brand', false)->assertSee('Jl. Mawar 1');
         $this->assertSame('logo_name_address', Company::get()['kop_style']);   // pilihan tetap tersimpan apa adanya
     }
 

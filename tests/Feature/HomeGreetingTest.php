@@ -105,7 +105,7 @@ class HomeGreetingTest extends TestCase
 
         $this->post('/logout');
         $login = $this->get(route('login'))->getContent();
-        $this->assertStringContainsString('dl-envbadge--loginver', $login);
+        $this->assertStringContainsString('data-dl2="env-badge"', $login);
         $this->assertStringContainsString('ver 0.'.$count, $login);
     }
 }

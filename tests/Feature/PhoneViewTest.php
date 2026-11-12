@@ -25,13 +25,13 @@ class PhoneViewTest extends TestCase
         // ponsel: halaman login HP (tanpa popup), tanpa jalan ke tampilan desktop (ponsel selalu Tampilan HP)
         $phone = $this->withHeader('User-Agent', self::PHONE)->get('/login')->assertOk()->getContent();
         $this->assertStringContainsString('data-dl2="phone-login"', $phone);
-        $this->assertStringNotContainsString('dl-phoneoffer', $phone);
+        $this->assertStringNotContainsString('data-dl2="phone-offer"', $phone);
         $this->assertStringNotContainsString('name="ui" value="desktop"', $phone);
 
         // komputer tanpa pilihan: login desktop + popup tawaran (CSS menampilkannya hanya pada layar phone: lebar < 600 px, atau HP landscape)
         $pc = $this->withHeader('User-Agent', self::PC)->get('/login')->getContent();
         $this->assertStringNotContainsString('ak-plogin', $pc);
-        $this->assertStringContainsString('dl-phoneoffer', $pc);
+        $this->assertStringContainsString('data-dl2="phone-offer"', $pc);
         $this->assertStringContainsString('Ingin tampilan yang lebih nyaman di smartphone?', $pc);
         $this->assertStringContainsString('Tetap desktop', $pc);
         $this->assertStringContainsString('data-auto', $pc, 'layar phone langsung ke Tampilan HP (DevLib phone-offer auto)');
@@ -39,7 +39,7 @@ class PhoneViewTest extends TestCase
         // pilihan pengguna (cookie) menang atas tebakan di komputer; di ponsel asli cookie desktop diabaikan
         $chosen = $this->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/login')->getContent();
         $this->assertStringContainsString('ak-plogin', $chosen);
-        $this->assertStringNotContainsString('dl-phoneoffer', $chosen);
+        $this->assertStringNotContainsString('data-dl2="phone-offer"', $chosen);
         $this->assertStringContainsString('ak-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/login')->getContent());
     }
 

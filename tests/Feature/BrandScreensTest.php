@@ -48,7 +48,7 @@ class BrandScreensTest extends TestCase
     public function test_form_tabs_are_colorful_pills(): void
     {
         $css = file_get_contents(resource_path('css/app.css'));
-        foreach (['.dl-form__body.dl-tabs > .dl-tabs__bar .dl-tabs__tab', ':nth-child(5)', '[data-tab="audit"]', 'border-radius: 999px'] as $needle) {
+        foreach (['.dl2-form-tabs .dl2-form-tab', ':nth-child(5)', '.dl2-form-tab.is-current', 'border-radius: 999px'] as $needle) {
             $this->assertStringContainsString($needle, $css);
         }
     }
