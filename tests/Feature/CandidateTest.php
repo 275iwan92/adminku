@@ -153,7 +153,7 @@ class CandidateTest extends TestCase
         $this->postJson(route('candidates.move'), ['card' => $c->id, 'to' => $this->step('Tes')->id, 'scheduled_on' => today()->toDateString(), 'scheduled_time' => '10:00', 'assessor' => 'Bu Sari']);
         $this->step('Interview 2')->update(['tone' => null]);
 
-        $page = $this->get(route('candidates.index'))->assertOk()->assertSee('flex: 1 1 0', false)->assertSee('dl:layer-menu-mini', false);   // kolom sama lebar; panel kiri mengecil otomatis
+        $page = $this->get(route('candidates.index'))->assertOk()->assertSee('flex: 1 1 0', false)->assertSee('.dl2-lm-fold', false);   // kolom sama lebar; panel kiri mengecil otomatis lewat tombol lipat Layer Menu v2
         $cols = collect($page->viewData('columns'));
         $this->assertSame(['neutral', 'accent', 'violet', 'warn', 'accent', 'success'], $cols->pluck('tone')->map(fn ($t, $i) => $i === 3 ? 'warn' : $t)->all());   // Interview 2 tanpa warna: bergilir, bukan abu-abu
         $this->assertNotSame('neutral', $cols[3]['tone']);
@@ -218,7 +218,7 @@ class CandidateTest extends TestCase
         $this->actingAs($this->admin)->post(route('candidates.store'), $this->payload(['ktp' => UploadedFile::fake()->create('lama.pdf', 50, 'application/pdf'), 'ktp_crop' => UploadedFile::fake()->image('profile.jpg', 856, 540)]))->assertRedirect();
         $c = Candidate::firstOrFail();
         $this->assertSame('profile.jpg', $c->ktp_name);
-        $this->get(route('candidates.show', $c))->assertOk()->assertSee('data-out-w="856"', false)->assertSee('data-out-h="540"', false);
+        $this->get(route('candidates.show', $c))->assertOk()->assertSee('&quot;outW&quot;:856', false)->assertSee('&quot;outH&quot;:540', false);   // photo-crop DevLib 2: ukuran hasil crop di konfigurasi
         $this->put(route('candidates.update', $c), $this->payload(['ktp_crop' => UploadedFile::fake()->image('x.png')]))->assertSessionHasErrors('ktp_crop');
     }
 

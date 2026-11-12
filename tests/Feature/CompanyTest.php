@@ -191,11 +191,11 @@ class CompanyTest extends TestCase
         $doc = $this->doc();
         $docs->confirm($doc, $sup);
         foreach (['stock-card', 'summary', 'expiry', 'receiving', 'issuance', 'adjustment'] as $report) {
-            $this->get(route('reports.'.$report, ['batch_id' => $doc->lines()->value('batch_id')]))->assertOk()->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertSee('dl-print__brand', false)->assertSee('Jl. Mawar 1, Jakarta')->assertSee('Telp. 021-555');
+            $this->get(route('reports.'.$report, ['batch_id' => $doc->lines()->value('batch_id')]))->assertOk()->assertSee('Maju Jaya')->assertSee('PT Maju Jaya Abadi')->assertSee('&quot;style&quot;:&quot;logo_name_address&quot;', false)->assertSee('/company/logo?v=', false)->assertSee('Jl. Mawar 1, Jakarta')->assertSee('Telp. 021-555');
         }
 
         $this->save(['kop_style' => 'name'], $sup);
-        $this->get(route('reports.summary'))->assertOk()->assertSee('Maju Jaya')->assertDontSee('dl-print__brand', false)->assertDontSee('Jl. Mawar 1');
+        $this->get(route('reports.summary'))->assertOk()->assertSee('Maju Jaya')->assertSee('&quot;style&quot;:&quot;name&quot;', false);   // kop v2 digambar JS menurut style: alamat dan logo tidak dicetak untuk gaya name
         $this->assertNull(Company::report()['tagline']);   // tagline bawaan hanya selama belum diisi
 
         $count = app(\App\Services\StockCounts::class)->start($sup, ['count_date' => today()->toDateString(), 'scope_type' => 'all', 'blind' => true, 'lock_transactions' => false, 'threshold_pct' => 5]);

@@ -11,7 +11,7 @@
     @if (\Devlib2\Device::view(request()) === \Devlib2\Device::PHONE)
         <x-hp-wallpaper><main class="ak-plogin">@include('auth._reset-password-box')</main></x-hp-wallpaper>
     @else
-        <x-dl2::frame bg="sstock" bg-order="random" box="right" color="light" widgets="brand@top-left, clock@top-right, quote@bottom-left" quotes="motivasi.txt">
+        <x-dl2::frame bg="sstock" bg-order="random" box="right" color="light" widgets="brand@top-left, clock@top-right, quote@bottom-left" quotes="motivasi.txt" :brand="config('devlib.brand.name')" :tagline="config('devlib.brand.tagline')" :logo="config('devlib.brand.logo')">
             @include('auth._reset-password-box')
         </x-dl2::frame>
     @endif

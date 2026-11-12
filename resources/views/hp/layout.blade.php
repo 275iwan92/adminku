@@ -10,7 +10,7 @@
 @section('body')
     @php $me = auth()->user(); @endphp
     <x-dl2::phone-shell :class="($brandTitle ?? false) ? 'sstock-brandtitle' : ''" :title="($brandTitle ?? false) ? '' : ($title ?? config('app.name'))" :back="$back ?? null" :active="$active ?? ''" :tabs="\App\Support\HpShell::tabs($me)" :modules="\App\Support\HpShell::modules($me)"
-        :user="['name' => $me->name, 'role' => $me->roleLabel()]" :logout-action="route('logout')" logout-top :device-action="\App\Support\HpShell::deviceAction()" :links="array_values(array_filter([$me->canAccess('ITM') ? ['label' => 'Cari Barang', 'icon' => 'fa-solid fa-magnifying-glass', 'url' => route('hp.find')] : null, ['label' => 'Bantuan', 'icon' => 'fa-solid fa-circle-question', 'url' => route('help.user-guide')]]))" :frame="$frame ?? null" auto-return>
+        :user="['name' => $me->name, 'role' => $me->roleLabel()]" :logout-action="route('logout')" logout-top :device-action="\App\Support\HpShell::deviceAction()" :links="array_values(array_filter([$me->canAccess('ITM') ? ['label' => 'Cari Barang', 'icon' => 'fa-solid fa-magnifying-glass', 'url' => route('hp.find')] : null, ['label' => 'Bantuan', 'icon' => 'fa-solid fa-circle-question', 'url' => route('help.user-guide')]]))" :frame="$frame ?? null" :config="['netLine' => ['clientIp' => app('devlib.net')['client_ip'], 'clientHost' => app('devlib.net')['client_host'], 'serverIp' => app('devlib.net')['server_ip'], 'serverHost' => app('devlib.net')['server_host'], 'pingUrl' => route('devlib.ping')]]" auto-return>
         @yield('content')
     </x-dl2::phone-shell>
 @endsection

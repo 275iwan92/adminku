@@ -122,7 +122,7 @@ class CashSourceBankTest extends TestCase
 
     private function jsonPair(string $key, mixed $value): string
     {
-        $encoded = is_string($value) ? json_encode($value) : (string) $value;
+        $encoded = is_string($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : (string) $value;   // atribut data-dl2-config memakai Unicode apa adanya
 
         return htmlspecialchars('"'.$key.'":'.$encoded, ENT_QUOTES);
     }

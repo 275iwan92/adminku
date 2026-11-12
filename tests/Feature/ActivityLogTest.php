@@ -145,7 +145,7 @@ class ActivityLogTest extends TestCase
         $this->assertStringContainsString(route('hp.open', 'LOG'), $menu);
         $this->assertStringNotContainsString('href="'.route('super.log').'"', $menu, 'tidak lagi halaman mandiri tanpa kerangka');
 
-        $this->actingAs($super)->withCookie('ui', 'hp')->get(route('hp.open', 'LOG'))->assertOk()->assertSee('data-dl2-phone-menu', false)->assertSee('<iframe class="dl-phone__frame" src="'.route('super.log').'"', false);
+        $this->actingAs($super)->withCookie('ui', 'hp')->get(route('hp.open', 'LOG'))->assertOk()->assertSee('data-dl2="phone-shell"', false)->assertSee('&quot;frame&quot;:&quot;'.route('super.log').'&quot;', false);   // phone-shell (menu + bilah) memuat layar desktop di iframe lewat opsi frame
         $this->actingAs($super)->withCookie('ui', 'hp')->get(route('hp.open', 'UAT'))->assertOk()->assertSee(route('super.accounts'), false);
         $this->actingAs(User::factory()->administrator()->create())->get(route('hp.open', 'LOG'))->assertNotFound();
     }
@@ -254,7 +254,7 @@ class ActivityLogTest extends TestCase
         ActivityLog::write('x', '8.8.4.4', 'Buka', 'home /');
         $before = (string) file_get_contents(ActivityLog::file());
 
-        $this->actingAs($this->super())->get(route('super.log'))->assertOk()->assertSee('Lokasi (perkiraan)')->assertSee('Jakarta, Jakarta, Indonesia \u00b7 Telkom', false)->assertSee('ipwho.is');   // data grid ada di atribut JSON, jadi "·" tampil sebagai ·
+        $this->actingAs($this->super())->get(route('super.log'))->assertOk()->assertSee('Lokasi (perkiraan)')->assertSee('Jakarta, Jakarta, Indonesia · Telkom', false)->assertSee('ipwho.is');   // data grid ada di atribut JSON (Unicode apa adanya)
 
         $this->assertStringNotContainsString('Jakarta', (string) file_get_contents(ActivityLog::file()));
         $this->assertStringStartsWith($before, (string) file_get_contents(ActivityLog::file()));   // hanya menambah baris Buka milik super admin sendiri

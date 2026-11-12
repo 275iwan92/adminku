@@ -58,6 +58,15 @@ class GaSettingsTest extends TestCase
         ];
     }
 
+    /** Hari terpilih = nilai awal checkboxes ac_days di konfigurasi komponen (DevLib 2 menggambar kotak centangnya di browser). */
+    private function acDays(string $html): array
+    {
+        preg_match('/&quot;name&quot;:&quot;ac_days&quot;,&quot;value&quot;:\[(.*?)\]/', $html, $m);
+        preg_match_all('/&quot;(\d)&quot;/', $m[1] ?? '', $d);
+
+        return array_map('intval', $d[1]);
+    }
+
     private function save(array $over = [])
     {
         return $this->actingAs($this->admin)->from(route('ga-settings.edit'))->put(route('ga-settings.update'), $this->valid($over));
@@ -68,9 +77,9 @@ class GaSettingsTest extends TestCase
         $res = $this->actingAs($this->admin)->get(route('ga-settings.edit'))->assertOk();
         $res->assertSee('Pengaturan GA')->assertSee('Kendaraan')->assertSee('Perawatan AC')->assertSee('Hari Kunjungan')->assertSee('Senin')->assertSee('Minggu');
         $res->assertSee('&quot;name&quot;:&quot;vehicle_soon_days&quot;', false)->assertSee('&quot;value&quot;:&quot;30&quot;', false)->assertSee('&quot;value&quot;:&quot;1000&quot;', false)->assertSee('&quot;value&quot;:&quot;09:00&quot;', false)->assertSee('&quot;value&quot;:&quot;16:00&quot;', false)->assertSee('&quot;value&quot;:&quot;15:00&quot;', false);
-        $this->assertSame(7, substr_count($res->getContent(), 'name="ac_days[]"'));
-        $this->assertSame(5, preg_match_all('/name="ac_days\[\]" value="[1-5]" checked/', $res->getContent()));
-        $this->assertSame(0, preg_match_all('/name="ac_days\[\]" value="[67]" checked/', $res->getContent()));
+        $this->assertSame(7, preg_match_all('/\{&quot;value&quot;:&quot;\d&quot;,&quot;label&quot;/', $res->getContent()));   // 7 hari = 7 opsi checkboxes DevLib 2 (digambar JS dari konfigurasi)
+        $this->assertSame([1, 2, 3, 4, 5], $this->acDays($res->getContent()));
+        
 
         Constants::set('ga.ac.capacity', 7, 'ga');
         Constants::set('ga.ac.days', '1,6', 'ga');
@@ -78,8 +87,8 @@ class GaSettingsTest extends TestCase
         Constants::set('ga.vehicle.soon_km', 2500, 'ga');
         $res = $this->get(route('ga-settings.edit'))->assertOk();
         $res->assertSee('&quot;value&quot;:&quot;7&quot;', false)->assertSee('&quot;value&quot;:&quot;08:30&quot;', false)->assertSee('&quot;value&quot;:&quot;2500&quot;', false);
-        $this->assertSame(2, preg_match_all('/name="ac_days\[\]" value="[16]" checked/', $res->getContent()));
-        $this->assertSame(0, preg_match_all('/name="ac_days\[\]" value="[2-57]" checked/', $res->getContent()));
+        $this->assertSame([1, 6], $this->acDays($res->getContent()));
+        
     }
 
     public function test_the_back_button_goes_to_home(): void

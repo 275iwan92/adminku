@@ -20,6 +20,12 @@ class HomeGreetingTest extends TestCase
 
     private const PHONE = 'Mozilla/5.0 (Linux; Android 15; CPH2700) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36';
 
+    /** Kerangka desktop (Layer Shell, route home): menu kiri, baris jaringan, label versi; isi Beranda ada di route home.board (home()). */
+    private function shell()
+    {
+        return $this->actingAs(User::factory()->create(['name' => 'Budi Santoso']))->get(route('home'));
+    }
+
     private function home(string $role = 'data_entry', ?string $ua = null)
     {
         $user = $role === 'supervisor' ? User::factory()->supervisor()->create(['name' => 'Budi Santoso']) : User::factory()->create(['name' => 'Budi Santoso']);
@@ -40,7 +46,7 @@ class HomeGreetingTest extends TestCase
 
     public function test_the_weather_card_is_rendered_only_when_the_company_has_a_place(): void
     {
-        $this->assertStringNotContainsString('data-dl2-weather', $this->home()->getContent());
+        $this->assertStringNotContainsString('data-dl2="weather"', $this->home()->getContent());
 
         Constants::set('company.weather_city', 'Malang', 'company');
         Constants::set('company.weather_lat', '-7.98', 'company');
@@ -48,7 +54,10 @@ class HomeGreetingTest extends TestCase
         Constants::forget();
         $html = $this->home()->getContent();
 
-        $this->assertStringContainsString('data-lat="-7.98" data-lon="112.63" data-city="Malang"', $html);
+        $this->assertStringContainsString('data-dl2="weather"', $html);
+        $this->assertStringContainsString('&quot;city&quot;:&quot;Malang&quot;', $html);
+        $this->assertStringContainsString('&quot;lat&quot;:-7.98', $html);
+        $this->assertStringContainsString('&quot;lon&quot;:112.63', $html);
         $this->assertSame(['city' => 'Malang', 'lat' => -7.98, 'lon' => 112.63], Company::weather());
     }
 
@@ -61,12 +70,11 @@ class HomeGreetingTest extends TestCase
     }
     public function test_every_user_gets_the_network_line_on_desktop_and_in_the_phone_menu_with_the_devlib_ping(): void
     {
-        $desktop = $this->home()->getContent();
-        $this->assertStringContainsString('data-dl2-net-line', $desktop);
-        $this->assertStringContainsString('data-ping="'.route('devlib.ping').'"', $desktop);
-        $this->assertStringNotContainsString('data-ping="'.route('session.ping').'"', $desktop);
+        $desktop = $this->shell()->getContent();
+        $this->assertStringContainsString('&quot;netLine&quot;:{', $desktop);   // Layer Shell v2 menggambar net-line di kaki panel kiri dari konfigurasi
+        $this->assertStringContainsString('&quot;pingUrl&quot;:&quot;'.route('devlib.ping').'&quot;', $desktop);   // ping tanpa sesi: session.ping memperpanjang sesi (idle-logout memakainya sendiri)
 
-        $this->assertStringContainsString('data-dl2-net-line', $this->home('supervisor', self::PHONE)->getContent());
+        $this->assertStringContainsString('&quot;netLine&quot;:{', $this->home('supervisor', self::PHONE)->getContent());   // phone-shell: opsi netLine dikirim; penggambarannya di lembar Menu menunggu dukungan phone-shell DevLib 2
     }
 
     public function test_the_devlib_ping_route_answers_without_a_session_so_it_cannot_extend_it(): void
@@ -100,8 +108,8 @@ class HomeGreetingTest extends TestCase
         $count = trim((string) shell_exec('git -C '.escapeshellarg(base_path()).' rev-list --count HEAD'));
         $this->assertMatchesRegularExpression('/^\d+$/', $count);
 
-        $home = $this->home()->getContent();
-        $this->assertMatchesRegularExpression('/dl-envbadge--version[^>]*title="alpha"[^>]*>ver 0\.'.$count.'\s*<span class="dl-envbadge__stage">A<\/span>/', $home);
+        $home = $this->shell()->getContent();
+        $this->assertStringContainsString('&quot;version&quot;:&quot;ver 0.'.$count.' A&quot;', $home);   // label versi di kaki Layer Shell (stage alpha = huruf A)
 
         $this->post('/logout');
         $login = $this->get(route('login'))->getContent();

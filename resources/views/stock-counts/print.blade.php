@@ -13,6 +13,6 @@
             <x-dl2::button variant="secondary" icon="back" label="Back" :href="route('stock-counts.show', $count)" />
             <x-dl2::doc-share target="#print-sheet" :type="'print-stock-count-'.$kind" :doc-id="$count->id" :number="$count->doc_no" :title="$data['title']" :email="false" orientation="landscape" />
         </x-dl2::action-bar>
-        <x-dl2::print-sheet id="print-sheet" :title="$data['title']" :code="$data['code']" :info="$data['info']" :sections="$data['sections']" :signatures="$data['signatures']" :note="$data['note']" :landscape="true" />
+        <x-dl2::print-sheet id="print-sheet" :letterhead="true" :title="$data['title']" :code="$data['code']" :info="$data['info']" :sections="$data['sections']" :signatures="$data['signatures']" :note="$data['note']" :landscape="true" />
     </x-dl2::box>
 @endsection

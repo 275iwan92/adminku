@@ -8,8 +8,10 @@
 --}}
 @extends('layout', ['title' => 'Home', 'bodyClass' => 'sstock-bare'])
 @section('body')
+    @php $net = app('devlib.net'); $ver = app('devlib.version'); @endphp   {{-- baris jaringan (IP client -> server + ping tanpa sesi) dan label versi di kaki panel kiri --}}
     <x-dl2::layer-shell :without="['chat', 'ai']" :help-url="route('help.user-guide')" :devices-url="route('devices.index')" :modules="$modules" :user="$user" :logout-action="route('logout')" :open="$open" :fresh="$fresh" menu-source="App\Support\Menu"
         :links="[['key' => 'music', 'label' => 'Musik dan Animasi', 'icon' => 'fa-solid fa-music', 'url' => '#music']]"
+        :net-line="['clientIp' => $net['client_ip'], 'clientHost' => $net['client_host'], 'serverIp' => $net['server_ip'], 'serverHost' => $net['server_host'], 'pingUrl' => route('devlib.ping'), 'labels' => ['offline' => \Devlib2\Lang::t('net_offline')]]" :version="trim($ver['text'].' '.$ver['letter'])"
         :config="['home' => ['id' => 'home', 'title' => 'Beranda', 'href' => route('home.board')], 'csrf' => csrf_token()]" id="adminku-shell" style="height:100vh"></x-dl2::layer-shell>
     {{-- Musik latar + animasi layar: dialog (isi partials.music-page) dibuka dari menu profil. --}}
     <div id="am-dialog" hidden style="position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center">

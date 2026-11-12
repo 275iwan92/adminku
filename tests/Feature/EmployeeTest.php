@@ -138,7 +138,7 @@ class EmployeeTest extends TestCase
         $this->actingAs($this->admin)->post(route('employees.store'), $this->payload(['photo' => UploadedFile::fake()->image('profile.jpg', 600, 800), 'ktp_crop' => UploadedFile::fake()->image('profile.jpg', 856, 540)]))->assertRedirect();
         $e = Employee::firstOrFail();
         $this->assertSame('profile.jpg', $e->ktp_name);   // hasil crop dari kotak foto DevLib
-        $this->get(route('employees.show', $e))->assertOk()->assertSee('data-out-w="856"', false)->assertSee('data-out-w="600"', false)->assertSee('data-lightbox', false);
+        $this->get(route('employees.show', $e))->assertOk()->assertSee('&quot;outW&quot;:856', false)->assertSee('data-dl2="photo-crop"', false)->assertSee('data-lightbox', false);   // KTP 856 x 540 dan foto profil memakai photo-crop DevLib 2
 
         $this->put(route('employees.update', $e), $this->payload(['ktp_file' => UploadedFile::fake()->create('ktp.pdf', 100, 'application/pdf')]))->assertRedirect();
         $this->assertSame('ktp.pdf', $e->refresh()->ktp_name);   // PDF tanpa crop

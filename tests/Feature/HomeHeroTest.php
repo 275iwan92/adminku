@@ -104,6 +104,6 @@ class HomeHeroTest extends TestCase
     {
         $this->assertSame('Server tidak menjawab', Lang::t('net_server_down'));
         $this->assertSame('Perangkat ini offline', Lang::t('net_offline'));
-        $this->assertStringContainsString('Server tidak menjawab', $this->home(User::factory()->supervisor()->create()));
+        $this->assertStringContainsString(Lang::t('net_offline'), $this->actingAs(User::factory()->supervisor()->create())->get(route('home'))->getContent());   // net-line v2 hanya punya keadaan offline; teks Indonesia dikirim lewat labels
     }
 }

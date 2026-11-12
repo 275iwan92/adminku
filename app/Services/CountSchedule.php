@@ -22,6 +22,7 @@ final class CountSchedule
     public const WEEKDAYS = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu'];
 
     public const WARN_DAYS = 3;
+    private const MEMO = 'count_schedule_state';   // kunci memo di atribut permintaan
 
     /** @return array{frequency: string, weekday: int, day_of_month: string} day_of_month = 1..31 atau "last" */
     public static function config(): array
@@ -38,6 +39,9 @@ final class CountSchedule
     /** @param  array<string, mixed>  $data  frequency (weekly|monthly), weekday (1..7), day_of_month (1..31 | last) */
     public static function save(array $data): void
     {
+        if (app()->bound('request')) {
+            request()->attributes->remove(self::MEMO);
+        }
         $freq = $data['frequency'] ?? null;
         if (! in_array($freq, ['weekly', 'monthly'], true)) {
             throw ValidationException::withMessages(['frequency' => 'Pilih frekuensi Mingguan atau Bulanan.']);
@@ -89,6 +93,19 @@ final class CountSchedule
      */
     public static function state(?Carbon $today = null): array
     {
+        // Satu permintaan memakai satu hasil (Beranda HP memanggil dari pengingat dan lencana menu): tanpa kueri ganda.
+        $bag = $today === null && app()->bound('request') ? request()->attributes : null;
+        if ($bag?->has(self::MEMO)) {
+            return $bag->get(self::MEMO);
+        }
+        $state = self::compute($today);
+        $bag?->set(self::MEMO, $state);
+
+        return $state;
+    }
+
+    private static function compute(?Carbon $today): array
+    {
         $today = ($today ?? today())->copy()->startOfDay();
         $last = self::lastDone();
         $setAt = Constants::get('opname.schedule_set_at');
@@ -117,7 +134,14 @@ final class CountSchedule
     // Tabel opname baru ada sesudah migrasi dijalankan; Beranda dan menu tidak boleh rusak sebelum itu.
     public static function available(): bool
     {
-        return Schema::hasTable('i_count');
+        $bag = app()->bound('request') ? request()->attributes : null;
+        if ($bag?->has(self::MEMO.'.available')) {
+            return $bag->get(self::MEMO.'.available');
+        }
+        $ok = Schema::hasTable('i_count');
+        $bag?->set(self::MEMO.'.available', $ok);
+
+        return $ok;
     }
 
     /** Lencana menu: sedang berjalan atau terlambat (null = tanpa lencana). @return array{badge: string, tone: string, title: string}|null tone = badgeTone Layer Shell (partial = kuning, danger = merah) */

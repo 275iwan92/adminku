@@ -13,6 +13,6 @@
             <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="back" label="Kembali" :href="route('ac-visits.show', $order)" />
             <x-dl2::doc-share target="#print-sheet" type="print-ac-visit" :doc-id="$order->id" :number="$order->no" :title="$data['title']" :email="false" orientation="portrait" />
         </x-dl2::action-bar>
-        <x-dl2::print-sheet id="print-sheet" :title="$data['title']" :code="$data['code']" :info="$data['info']" :sections="$data['sections']" :signatures="$data['signatures']" :note="$data['note']" :landscape="false" />
+        <x-dl2::print-sheet id="print-sheet" :letterhead="true" :title="$data['title']" :code="$data['code']" :info="$data['info']" :sections="$data['sections']" :signatures="$data['signatures']" :note="$data['note']" :landscape="false" />
     </x-dl2::box>
 @endsection

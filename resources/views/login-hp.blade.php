@@ -11,7 +11,7 @@
     <x-hp-wallpaper>
         <x-dl2::phone-login :config="['token' => csrf_token(), 'usernameName' => 'login']" :action="route('login.attempt')" :error="$error ?? ($errors->first() ?: null)" :username="$username" :forgot-url="route('password.request')" :brand="config('devlib.brand.name')" :tagline="config('devlib.brand.tagline')" :device-action="\App\Support\HpShell::deviceAction()">
             @if (session('status'))<x-dl2::alert tone="success" :message="session('status')" />@endif
-            <x-dl2::env-badge part="version" variant="loginver" />
+            <x-dl2::env-badge part="version" variant="loginver" :label="trim(app('devlib.version')['text'].' '.app('devlib.version')['letter'])" />
             @if (config('sstock.demo'))<p class="adminku-demo-note">Data demo, bisa direset</p>@endif
         </x-dl2::phone-login>
     </x-hp-wallpaper>

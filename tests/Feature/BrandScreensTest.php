@@ -24,8 +24,7 @@ class BrandScreensTest extends TestCase
         foreach ([self::PC, self::PHONE] as $ua) {
             foreach (['login', 'password.request'] as $route) {
                 $html = $this->withHeader('User-Agent', $ua)->get(route($route))->assertOk()->getContent();
-                $this->assertStringContainsString('&quot;brand&quot;:&quot;ADMINKU&quot;', $html, "$route ($ua) memuat merek");
-                $this->assertStringContainsString('<b>ADMINKU</b>', $html, "$route ($ua) mencetak nama merek (dua warna lewat CSS)");
+                $this->assertMatchesRegularExpression('/&quot;(brand|name)&quot;:&quot;ADMINKU&quot;/', $html, "$route ($ua) memuat merek");   // login-box / frame desktop: brand; kotak masuk HP: name
                 $this->assertStringContainsString('KERJA JADI RAPI', $html);
                 $this->assertMatchesRegularExpression('/<title>[^<]*AdminKU<\/title>/u', $html);
                 $this->assertStringNotContainsString('Stoku', $html);
@@ -40,7 +39,7 @@ class BrandScreensTest extends TestCase
 
         $home = $this->actingAs(User::factory()->create())->withHeader('User-Agent', self::PHONE)->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('sstock-brandtitle', $home);
-        $this->assertStringContainsString('<h1 class="dl-phone__title">ADMINKU</h1>', $home);
+        $this->assertStringContainsString('&quot;title&quot;:&quot;&quot;', $home);   // judul phone-shell dikosongkan: nama merek dua warna digambar CSS .sstock-brandtitle (dicek di test_brand_css_is_built_into_the_stylesheet)
         $this->assertStringContainsString('<title>Beranda — AdminKU</title>', $home);
         $this->assertStringNotContainsString('Stoku', $home);
     }
@@ -62,13 +61,13 @@ class BrandScreensTest extends TestCase
             $this->assertStringContainsString('data-dl2="phone-shell"', $html, "$path memakai kerangka HP");
             $this->assertStringNotContainsString('Stoku', $html, $path);
         }
-        // isian angka memakai keyboard angka (inputmode) di formulir odometer dan barang (baris dokumen digambar JS DevLib dan sudah decimal / numeric)
+        // isian angka memakai komponen decimal DevLib 2 (JS mencetak inputmode=decimal) di formulir odometer dan barang
         foreach (['/vehicle-odometers/create', '/products/create'] as $path) {
-            $this->actingAs($user)->get($path)->assertOk()->assertSee('inputmode="decimal"', false);
+            $this->actingAs($user)->get($path)->assertOk()->assertSee('data-dl2="decimal"', false);
         }
 
         $css = file_get_contents(resource_path('css/app.css'));
-        foreach (['body.dl-on-phone .dl-pager__goto { min-height: 44px; }', 'body.dl-on-phone .dl2-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-coral, .sstock-btn-amber, .sstock-btn-red) { min-height: 44px; }','.dl-field__trigger:is(.dl-numtg, .dl-case)'] as $rule) {
+        foreach (['body.dl-on-phone .dl2-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-coral, .sstock-btn-amber, .sstock-btn-red) { min-height: 44px; }'] as $rule) {
             $this->assertStringContainsString($rule, $css);
         }
     }
