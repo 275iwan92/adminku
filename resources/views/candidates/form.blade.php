@@ -24,7 +24,7 @@
         :status="$isNew ? 'new' : ($candidate->status === 'active' ? 'active' : 'inactive')" :back="route('candidates.index')" :new-url="route('candidates.create')" :hide="['deactivate', 'activate']"
         :action="$isNew ? route('candidates.store') : route('candidates.update', $candidate)" :method="$isNew ? 'post' : 'put'"
         :created-at="$candidate->created_at?->format('Y-m-d H:i:s')" :updated-at="$candidate->updated_at?->format('Y-m-d H:i:s')">
-        <x-slot:data>
+        <x-dl2::form-tab key="data">
             <x-dl2::form.row :cols="3">
                 <x-dl2::field.text name="nik" label="NIK KTP" :value="$v('nik')" code :case-toggle="false" required maxlength="16" :error="$e('nik')" hint="Wajib, 16 angka. Kunci pencarian kandidat." />
                 <x-dl2::field.text name="name" label="Nama" :value="$v('name')" required maxlength="150" :error="$e('name')" />
@@ -79,9 +79,9 @@
                     <x-dl2::button class="sstock-btn-teal" variant="primary" icon="fa-id-card" label="Jadikan karyawan" :href="route('employees.create', ['kandidat' => $candidate->id])" />
                 </x-dl2::form.row>
             @endif
-        </x-slot:data>
+        </x-dl2::form-tab>
         @unless ($isNew)
-            <x-slot:proses>
+            <x-dl2::form-tab key="proses">
                 <x-dl2::lines name="events" title="Riwayat Tahap" add-label="+ Tambah Baris" :rows="$events" :min-rows="0"
                     :columns="[
                         ['key' => 'step_id', 'label' => 'Tahap', 'type' => 'select', 'options' => $steps, 'required' => true, 'width' => '190px'],
@@ -103,7 +103,7 @@
                     @endforelse
                     </tbody>
                 </table>
-            </x-slot:proses>
+            </x-dl2::form-tab>
         @endunless
     </x-dl2::form>
     @include('partials.lightbox')

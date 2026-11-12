@@ -64,12 +64,12 @@
                 <x-dl2::field.decimal name="vat_pct" label="PPN (%)" :decimals="2" :value="$v('vat_pct') ?? 0" :error="$e('vat_pct')" hint="0 = tanpa PPN." />
                 <x-dl2::field.text name="note" label="Catatan" :value="$v('note')" maxlength="255" :error="$e('note')" />
             </x-dl2::form.row>
-        <x-slot:detail>
+        
             <x-dl2::lines name="lines" title="Baris" add-label="+ Tambah Barang" :rows="$rows" :min-rows="$locked ? 0 : 1" :readonly="$locked" :row-state="true" :columns="$columns" />
             @if ($po->exists)
                 <p class="ak-note">Subtotal {{ \Devlib2\Locale::number($po->subtotal(), 2) }} · PPN {{ \Devlib2\Locale::number($po->vat(), 2) }} · <b>Total {{ \Devlib2\Locale::number($po->total(), 2) }}</b> (dari data tersimpan).</p>
             @endif
-        </x-slot:detail>
+        
     </x-dl2::form>
     @unless ($locked)
         <script>

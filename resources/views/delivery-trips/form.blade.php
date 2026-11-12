@@ -66,8 +66,8 @@
             <x-dl2::field.text name="return_min" label="Menit pulang ke kantor" :value="$v('return_min')" maxlength="3" :error="$e('return_min')" />
             <x-dl2::field.text name="note" label="Catatan" :value="$v('note')" maxlength="255" :error="$e('note')" />
         </x-dl2::form.row>
-        <x-slot:detail>
+        
             @include('delivery-trips.planner', ['locked' => $locked])
-        </x-slot:detail>
+        
     </x-dl2::form>
 @endsection

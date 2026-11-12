@@ -29,13 +29,13 @@
                 <x-dl2::field.display label="Items using it" :value="(string) $unit->items_count" />
             </x-dl2::form.row>
         @endunless
-        <x-slot:detail>
+        
             <x-dl2::lines name="conversions" :title="'Konversi · 1 '.$code.' ='" add-label="+ Add Conversion" :rows="$conversions" :min-rows="0" :row-state="true"
                 :columns="[
                     ['key' => 'factor', 'label' => 'Factor', 'type' => 'number', 'required' => true, 'width' => '160px'],
                     ['key' => 'to_unit', 'label' => 'Unit', 'type' => 'select', 'options' => $targets, 'required' => true, 'width' => '280px'],
                 ]" />
             <p class="ak-note">Berlaku sama untuk semua barang yang memakai satuan ini. Arah sebaliknya dihitung otomatis (1 / faktor), jadi isi tiap pasangan satu kali saja.</p>
-        </x-slot:detail>
+        
     </x-dl2::form>
 @endsection

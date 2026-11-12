@@ -45,7 +45,7 @@
             </x-dl2::form.col>
         </x-dl2::form.row>
         @if ($cashIn->exists && $cashIn->status === 'approved')
-            <x-slot:detail>
+            
                 <x-dl2::grid id="cash-outs" :rows="$cashOuts" actions="worklist" :open-url="url('cash-out/{id}')"
                     search="Cari untuk apa..."
                     :columns="[
@@ -57,7 +57,7 @@
                     ]"
                     :stats="[['label' => 'Semua Uang Keluar']]" />
                 <p class="ak-note sstock-cashnote">Terpakai Rp {{ number_format($cashIn->usedAmount(), 0, ',', '.') }} dari Rp {{ number_format((float) $cashIn->amount, 0, ',', '.') }} — sisa Rp {{ number_format($cashIn->remainingAmount(), 0, ',', '.') }}.</p>
-            </x-slot:detail>
+            
         @endif
     </x-dl2::form>
 @endsection

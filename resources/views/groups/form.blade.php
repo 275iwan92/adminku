@@ -25,7 +25,7 @@
                 <x-dl2::field.display label="Members" :value="(string) $group->users_count" />
             @endunless
         </x-dl2::form.row>
-        <x-slot:detail>
+        
             <x-dl2::lines name="modules" key-field="code" title="Access per module" :rows="$rows" :addable="false" :duplicable="false" :min-rows="count($rows)"
                 :columns="[
                     ['key' => 'label', 'label' => 'Module', 'type' => 'display', 'width' => '260px'],
@@ -34,6 +34,6 @@
                     ['key' => 'access', 'label' => 'Access', 'type' => 'select', 'options' => ['none' => 'Tidak ada', 'ro' => 'Hanya baca (RO)', 'rw' => 'Baca & tulis (RW)'], 'width' => '220px'],
                 ]" />
             <p class="ak-note">{{ \Devlib2\Lang::text('RO opens the screen but blocks saving or changing anything. A user also needs a high enough role: Supervisor-only and Administrator-only modules stay closed to lower roles even when granted. Administrators always have full access.') }}</p>
-        </x-slot:detail>
+        
     </x-dl2::form>
 @endsection

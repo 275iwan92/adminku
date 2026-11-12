@@ -68,7 +68,7 @@
                 <x-dl2::field.display label="No. RCV (Stok)" :value="raw($pv->stockDocument->doc_no)" />
             @endif
         </x-dl2::form.row>
-        <x-slot:detail>
+        
             @if (! $order)
                 <p class="ak-note">Pilih PO di atas; halaman memuat barang pesanannya.</p>
             @else
@@ -97,7 +97,7 @@
                 </table>
                 <p class="ak-note">Jumlah awal = sisa PO. Ubah bila yang datang kurang; kosong atau 0 = barang itu belum datang. Konfirmasi membuat Penerimaan Barang (RCV) di Stok secara otomatis.</p>
             @endif
-        </x-slot:detail>
+        
     </x-dl2::form>
     @if ($editable && $order)
         <script>

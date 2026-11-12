@@ -19,7 +19,7 @@
         :action="$isNew ? route('suppliers.store') : route('suppliers.update', $supplier)" :method="$isNew ? 'post' : 'put'"
         :tabs="['data' => 'Data'] + ($isNew ? [] : ['history' => 'Riwayat beli'])"
         :hide="$supplier->is_system ? ['deactivate', 'activate'] : []" :created-at="$supplier->created_at?->format('Y-m-d H:i:s')" :updated-at="$supplier->updated_at?->format('Y-m-d H:i:s')">
-        <x-slot:data>
+        <x-dl2::form-tab key="data">
         <x-dl2::form.row :cols="3">
             <x-dl2::field.text name="code" label="Supplier Code" :value="$v('code')" code :case-toggle="false" required :readonly="! $isNew" maxlength="20" :error="$e('code')" hint="Unique. Cannot be changed after saving." />
             <x-dl2::field.text name="name" label="Supplier Name" :value="$v('name')" required :readonly="(bool) $supplier->is_system" maxlength="150" :error="$e('name')" />
@@ -40,9 +40,9 @@
         <x-dl2::form.row>
             <x-dl2::field.lookup name="area" lookup="geo_area" label="District, City / Regency, Province, Country" placeholder="Search district / city / postcode..." :value="old('area', $supplier->areaKey())" :required="App\Support\GeoArea::available()" :error="$e('area')" hint="One choice gives district, city / regency, province, country, and the postal code." />
         </x-dl2::form.row>
-        </x-slot:data>
+        </x-dl2::form-tab>
         @unless ($isNew)
-            <x-slot:history>
+            <x-dl2::form-tab key="history">
                 <table class="dl2-table" style="width:100%">
                     <thead><tr><th>Barang</th><th>Beli terakhir</th><th style="text-align:right">Harga terakhir</th><th style="text-align:right">Berapa kali</th></tr></thead>
                     <tbody>
@@ -54,7 +54,7 @@
                     </tbody>
                 </table>
                 <p class="ak-note">Dari Penerimaan Barang terkonfirmasi yang tidak dibatalkan; harga dalam satuan stok barang.</p>
-            </x-slot:history>
+            </x-dl2::form-tab>
         @endunless
     </x-dl2::form>
 @endsection

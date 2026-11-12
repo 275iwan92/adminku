@@ -66,3 +66,18 @@ window.akNum = (v) => {
     const n = s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s;
     return parseFloat(n) || 0;
 };
+
+// Ikon Font Awesome: DevLib 2 mencetak prop ikon apa adanya sebagai teks (.dl2-pic, .dl2-lm-ic); "fa-solid fa-house" diubah jadi <i class="fa-solid fa-house">.
+(() => {
+    const FA = /^(fa-(?:solid|regular|brands)\s+)?fa-[a-z0-9-]+(\s+fa-[a-z0-9-]+)*$/;
+    const fix = (root) => root.querySelectorAll?.('.dl2-pic, .dl2-lm-ic, .dl2-pt-ic').forEach((el) => {
+        if (el.children.length === 0 && FA.test(el.textContent.trim())) {
+            const i = document.createElement('i');
+            i.className = el.textContent.trim().startsWith('fa-solid') || el.textContent.includes('fa-regular') || el.textContent.includes('fa-brands') ? el.textContent.trim() : 'fa-solid ' + el.textContent.trim();
+            i.setAttribute('aria-hidden', 'true');
+            el.replaceChildren(i);
+        }
+    });
+    const start = () => { fix(document); new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => n.nodeType === 1 && (n.matches?.('.dl2-pic, .dl2-lm-ic, .dl2-pt-ic') ? fix(n.parentNode) : fix(n))))).observe(document.body, { childList: true, subtree: true }); };
+    document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+})();

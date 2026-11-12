@@ -58,9 +58,9 @@
             <x-dl2::field.date name="need_date" label="Dibutuhkan tgl" :value="$d('need_date')" :error="$e('need_date')" />
             <x-dl2::field.text name="note" label="Catatan" :value="$v('note')" maxlength="255" :error="$e('note')" />
         </x-dl2::form.row>
-        <x-slot:detail>
+        
             <x-dl2::lines name="lines" title="Baris" add-label="+ Tambah Barang" :rows="$rows" :min-rows="$locked ? 0 : 1" :readonly="$locked" :row-state="true" :columns="$columns" />
             <p class="ak-note">Pilih barang dari master, atau ketik nama barang baru dengan satuannya. Satuan kosong diisi satuan barang; estimasi harga satuan kosong diisi harga beli terakhir bila barang pernah dibeli.</p>
-        </x-slot:detail>
+        
     </x-dl2::form>
 @endsection

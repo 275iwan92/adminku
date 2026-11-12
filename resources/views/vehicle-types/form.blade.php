@@ -27,7 +27,7 @@
                 <x-dl2::field.display label="Kendaraan pemakai" :value="(string) $type->vehicles_count" />
             </x-dl2::form.row>
         @endunless
-        <x-slot:detail>
+        
             <x-dl2::lines name="plans" title="Rencana Perawatan" add-label="+ Tambah Pekerjaan" :rows="$plans" :min-rows="0" :row-state="true"
                 :columns="[
                     ['key' => 'name', 'label' => 'Pekerjaan', 'type' => 'text', 'required' => true, 'placeholder' => 'Mis. Oli mesin'],
@@ -35,6 +35,6 @@
                     ['key' => 'interval_months', 'label' => 'Interval (bulan)', 'type' => 'number', 'width' => '180px'],
                 ]" />
             <p class="ak-note">Isi interval km, interval bulan, atau keduanya; yang tercapai lebih dulu menentukan jadwal. Interval ini berlaku untuk semua kendaraan berjenis ini; tidak perlu diketik ulang saat mencatat servis. Mengganti nama pekerjaan dianggap pekerjaan baru.</p>
-        </x-slot:detail>
+        
     </x-dl2::form>
 @endsection

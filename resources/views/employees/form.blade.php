@@ -23,7 +23,7 @@
         :status="$isNew ? 'new' : ($employee->is_active ? 'active' : 'inactive')" :back="route('employees.index')" :new-url="route('employees.create')"
         :action="$isNew ? route('employees.store') : route('employees.update', $employee)" :method="$isNew ? 'post' : 'put'"
         :created-at="$employee->created_at?->format('Y-m-d H:i:s')" :updated-at="$employee->updated_at?->format('Y-m-d H:i:s')">
-        <x-slot:profile>
+        <x-dl2::form-tab key="profile">
             @if ($isNew && ($recipientId ?? old('penerima')))<input type="hidden" name="penerima" value="{{ $recipientId ?? old('penerima') }}">@endif
             <div class="rk-photos">
                 <div class="rk-photo-cell">
@@ -79,8 +79,8 @@
                 <x-dl2::field.text name="emergency_relation" label="Hubungan" :value="$v('emergency_relation')" maxlength="50" :error="$e('emergency_relation')" />
                 <x-dl2::field.phone name="emergency_phone" label="HP Kontak Darurat" :value="$v('emergency_phone')" :error="$e('emergency_phone')" />
             </x-dl2::form.row>
-        </x-slot:profile>
-        <x-slot:job>
+        </x-dl2::form-tab>
+        <x-dl2::form-tab key="job">
             <x-dl2::form.row :cols="3">
                 <x-dl2::field.select name="department_id" label="Bagian" :options="$departments" :value="$v('department_id')" required :error="$e('department_id')" hint="Bagian = Departemen di Data Master." />
                 <x-dl2::field.text name="position" label="Jabatan" :value="$v('position')" maxlength="100" :error="$e('position')" />
@@ -104,8 +104,8 @@
                     <x-dl2::field.text name="exit_note" label="Catatan Keluar" :value="$v('exit_note')" maxlength="255" :error="$e('exit_note')" />
                 </x-dl2::form.row>
             @endif
-        </x-slot:job>
-        <x-slot:docs>
+        </x-dl2::form-tab>
+        <x-dl2::form-tab key="docs">
             <x-dl2::lines name="docs" title="Dokumen" add-label="+ Tambah Dokumen" :rows="$docs" :min-rows="0"
                 :columns="[
                     ['key' => 'doc_type', 'label' => 'Jenis', 'type' => 'select', 'options' => \App\Models\Employee::DOC_TYPES, 'required' => true, 'width' => '220px'],
@@ -114,8 +114,8 @@
                     ['key' => 'note', 'label' => 'Catatan', 'type' => 'text'],
                 ]" />
             <p class="ak-note">Isi Berlaku s/d untuk dokumen yang habis masa berlakunya (mis. SIM); 30 hari sebelumnya karyawan muncul di kolom Perhatian. Berkas pindaian belum disimpan di sini.</p>
-        </x-slot:docs>
-        <x-slot:family>
+        </x-dl2::form-tab>
+        <x-dl2::form-tab key="family">
             <x-dl2::lines name="family" title="Keluarga" add-label="+ Tambah Anggota" :rows="$family" :min-rows="0"
                 :columns="[
                     ['key' => 'relation', 'label' => 'Hubungan', 'type' => 'select', 'options' => \App\Models\Employee::RELATIONS, 'required' => true, 'width' => '170px'],
@@ -124,8 +124,8 @@
                     ['key' => 'nik', 'label' => 'NIK', 'type' => 'text', 'width' => '190px'],
                     ['key' => 'is_deceased', 'label' => 'Meninggal', 'type' => 'bool', 'width' => '120px'],
                 ]" />
-        </x-slot:family>
-        <x-slot:contracts>
+        </x-dl2::form-tab>
+        <x-dl2::form-tab key="contracts">
             <x-dl2::lines name="contracts" title="Kontrak" add-label="+ Tambah Kontrak" :rows="$contracts" :min-rows="0"
                 :columns="[
                     ['key' => 'contract_no', 'label' => 'No. Kontrak', 'type' => 'text'],
@@ -135,9 +135,9 @@
                     ['key' => 'probation_end', 'label' => 'Percobaan s/d', 'type' => 'date', 'width' => '160px'],
                 ]" />
             <p class="ak-note">Kontrak terbaru (mulai paling akhir) yang dipantau: 60 hari sebelum Selesai, karyawan muncul di kolom Perhatian. Kosongkan Selesai untuk karyawan tetap. Tanpa gaji.</p>
-        </x-slot:contracts>
+        </x-dl2::form-tab>
         @unless ($isNew)
-            <x-slot:discipline>
+            <x-dl2::form-tab key="discipline">
                 @php $dall = $disciplines; @endphp
                 <table class="dl2-table" style="width:100%">
                     <thead><tr><th>No. Surat</th><th>Tanggal</th><th>Jenis</th><th>Berlaku s/d</th><th>Status</th><th>Alasan</th></tr></thead>
@@ -152,7 +152,7 @@
                 @if (auth()->user()->canWrite('HRD') && $employee->is_active)
                     <p style="margin-top:10px"><x-dl2::button class="sstock-btn-amber" variant="secondary" icon="fa-gavel" label="Terbitkan SP" :href="route('disciplines.create', ['employee' => $employee->id])" /></p>
                 @endif
-            </x-slot:discipline>
+            </x-dl2::form-tab>
         @endunless
     </x-dl2::form>
     @include('partials.lightbox')
