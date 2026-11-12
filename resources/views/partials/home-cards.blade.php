@@ -23,7 +23,7 @@
                     @endforeach
                 </ul>
                 @if (array_sum(array_column($c['bar'], 0)) > 0)
-                    <div class="sstock-mod__bar" role="img" aria-label="{{ collect($c['bar'])->filter(fn ($b) => $b[0] > 0)->map(fn ($b) => $b[2].': '.\Devlib\Locale::number($b[0], 0))->implode('; ') }}">
+                    <div class="sstock-mod__bar" role="img" aria-label="{{ collect($c['bar'])->filter(fn ($b) => $b[0] > 0)->map(fn ($b) => $b[2].': '.\Devlib2\Locale::number($b[0], 0))->implode('; ') }}">
                         @foreach ($c['bar'] as [$v, $k, $t])
                             @if ($v > 0)<u class="is-{{ $k }}" style="flex: {{ $v }}" title="{{ $t }}"></u>@endif
                         @endforeach
@@ -38,7 +38,7 @@
             const box = document.getElementById('sstock-mods'), btns = document.querySelectorAll('.sstock-gaya [data-gaya]');
             const show = () => btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.gaya === sstockGaya.get()));
             // Desktop: saklar pindah ke bilah tab (tempat tulisan "Belum ada menu terbuka" dulu); hilang sendiri begitu ada tab terbuka (CSS :not(:empty)).
-            const bar = document.querySelector('[data-dl-tabbar]'), sw = document.querySelector('.sstock-gaya');
+            const bar = document.querySelector('[data-dl2-tabbar]'), sw = document.querySelector('.sstock-gaya');
             if (bar && sw) { bar.parentElement.style.position = 'relative'; bar.after(sw); sw.classList.add('is-bar'); }
             addEventListener('sstock-gaya', show); show();
             btns.forEach(b => b.addEventListener('click', () => sstockGaya.set(b.dataset.gaya, true)));

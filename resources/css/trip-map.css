@@ -1,5 +1,5 @@
 /* Peta rute planner Pengiriman (dimuat trip-map.js saja; warna penanda adalah warna peta, bukan tema). */
-.sp-mapbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--dl-border); }
+.sp-mapbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--dl2-border); }
 .sp-map { height: 280px; z-index: 0; }
 .sp-pin { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #fff; font: 600 12px/1 system-ui, sans-serif; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
 .sp-pb { border-radius: 8px; } /* Ambil = kotak membulat, Antar = bulat; warna = warna ruas */

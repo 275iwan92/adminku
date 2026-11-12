@@ -10,7 +10,7 @@ use App\Models\Supplier;
 use App\Services\CountSchedule;
 use App\Services\LeadTimes;
 use App\Services\StockValuation;
-use Devlib\Device;
+use Devlib2\Device;
 use Illuminate\Http\Request;
 
 /* REMARK

@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Enums\StockDocumentType;
 use App\Services\LeadTimes;
-use Devlib\Engine\LeadTime;
-use Devlib\Locale;
+use Devlib2\Engine\LeadTime;
+use Devlib2\Locale;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -11,7 +11,7 @@
 <div id="plan" class="sp"></div>
 @vite('resources/js/trip-map.js')
 <script>
-(() => {
+window.akReady(() => {
     const DOCS = @js($docs), LOCKED = @js($locked), OFFICE = @js($office), ROUTE_URL = @js(config('sstock.route_url')), UNITS = ['kg', 'karung', 'dus', 'pcs', 'sak'];
     const S = @js($stops).map(s => ({ kind: s.kind, customer: s.customer, address: s.address || '', arr: s.arr ?? null, lat: s.lat ?? null, lng: s.lng ?? null, travel_min: +s.travel_min || 15, items: (s.items || []).map(r => r.slice()), docs: (s.docs || []).slice() }));
     let sel = S.length ? 0 : -1, pickOpen = false, pickSel = [], addAt = null, confirmDel = -1, dragI = -1;
@@ -57,7 +57,7 @@
             h += '<label class="sp-pc' + (on ? ' sp-pon' : '') + (off ? ' sp-poff' : '') + '"><input type="checkbox" data-pick="' + d.id + '"' + (on ? ' checked' : '') + (off ? ' disabled' : '') + '><div class="sp-grow"><b>' + esc(d.no) + '</b> <span class="sp-s">' + esc(d.cu)
                 + (d.cu && d.cu === s.customer ? ' · pelanggan sama' : '') + (off ? ' · dipakai alamat lain' : '') + '</span><div class="sp-s">' + esc(d.it.map(r => r[0] + ' (' + r[1] + ' ' + r[2] + ')').join(', ')) + '</div></div></label>';
         });
-        return h + '<div class="sp-act"><a class="sp-lk" href="' + @js(route('docs.create', 'issuance')) + '" target="_blank" rel="noopener">+ Buat surat jalan baru</a><span class="sp-push"></span><button type="button" class="sp-lk sp-mut" data-pc="1">Batal</button><button type="button" class="dl-btn" data-po="1">Pilih (' + pickSel.length + ')</button></div>';
+        return h + '<div class="sp-act"><a class="sp-lk" href="' + @js(route('docs.create', 'issuance')) + '" target="_blank" rel="noopener">+ Buat surat jalan baru</a><span class="sp-push"></span><button type="button" class="sp-lk sp-mut" data-pc="1">Batal</button><button type="button" class="dl2-btn" data-po="1">Pilih (' + pickSel.length + ')</button></div>';
     }
 
     function detailHtml() {
@@ -66,16 +66,16 @@
         if (pickOpen) return pickHtml(s);
         const ro = LOCKED ? ' disabled' : '', ant = s.kind === 'ant', hasDoc = s.docs.length > 0;
         let h = '<div class="sp-h">' + badge(s.kind) + ' <b>Alamat ' + (sel + 1) + '</b></div>'
-            + '<label class="sp-l">Nama pelanggan</label><input class="dl-input dl-input--boxed" data-f="customer" value="' + esc(s.customer) + '" maxlength="100"' + ro + '>'
-            + '<label class="sp-l">Alamat</label><input class="dl-input dl-input--boxed" data-f="address" value="' + esc(s.address) + '" maxlength="255"' + ro + '>'
-            + '<div class="sp-two"><div><label class="sp-l">Jenis</label><select class="dl-input dl-input--boxed" data-f="kind"' + ro + '><option value="ant"' + (ant ? ' selected' : '') + '>Antar</option><option value="amb"' + (ant ? '' : ' selected') + '>Ambil</option></select></div>'
-            + '<div><label class="sp-l">Menit tempuh dari titik sebelumnya</label><input class="dl-input dl-input--boxed" type="number" min="0" max="600" data-f="travel_min" value="' + s.travel_min + '"' + ro + '></div></div>'
+            + '<label class="sp-l">Nama pelanggan</label><input class="dl2-input" data-f="customer" value="' + esc(s.customer) + '" maxlength="100"' + ro + '>'
+            + '<label class="sp-l">Alamat</label><input class="dl2-input" data-f="address" value="' + esc(s.address) + '" maxlength="255"' + ro + '>'
+            + '<div class="sp-two"><div><label class="sp-l">Jenis</label><select class="dl2-input" data-f="kind"' + ro + '><option value="ant"' + (ant ? ' selected' : '') + '>Antar</option><option value="amb"' + (ant ? '' : ' selected') + '>Ambil</option></select></div>'
+            + '<div><label class="sp-l">Menit tempuh dari titik sebelumnya</label><input class="dl2-input" type="number" min="0" max="600" data-f="travel_min" value="' + s.travel_min + '"' + ro + '></div></div>'
             + '<div class="sp-sec"><b>Barang yang ' + (ant ? 'diantar' : 'diambil') + '</b>' + (ant && !LOCKED ? (hasDoc ? '<span><button type="button" class="sp-lk" data-pk="1">Ubah surat jalan</button> <button type="button" class="sp-lk sp-mut" data-un="1">Lepas semua</button></span>' : '<button type="button" class="sp-lk" data-pk="1">Ambil dari surat jalan</button>') : '') + '</div>';
         if (hasDoc) {
             h += s.docs.map(id => { const d = doc(id); return d ? '<div class="sp-sj"><div class="sp-sjh"><b>' + esc(d.no) + '</b><span class="sp-s">' + esc(d.cu) + '</span></div><table>' + d.it.map(r => '<tr><td>' + esc(r[0]) + '</td><td class="sp-r">' + esc(r[1]) + ' ' + esc(r[2]) + '</td></tr>').join('') + '</table></div>' : ''; }).join('');
         } else {
-            h += '<div class="sp-items">' + s.items.map((r, j) => '<div class="sp-it"><input class="dl-input dl-input--boxed" data-j="' + j + '" data-k="0" value="' + esc(r[0]) + '" placeholder="Nama barang"' + ro + '><input class="dl-input dl-input--boxed" type="number" step="any" min="0" data-j="' + j + '" data-k="1" value="' + esc(r[1]) + '"' + ro + '>'
-                + '<select class="dl-input dl-input--boxed" data-j="' + j + '" data-k="2"' + ro + '>' + UNITS.map(u => '<option' + (u === r[2] ? ' selected' : '') + '>' + u + '</option>').join('') + '</select><input class="dl-input dl-input--boxed" type="number" step="any" min="0" data-j="' + j + '" data-k="3" value="' + esc(r[3]) + '" placeholder="kg"' + ro + '>'
+            h += '<div class="sp-items">' + s.items.map((r, j) => '<div class="sp-it"><input class="dl2-input" data-j="' + j + '" data-k="0" value="' + esc(r[0]) + '" placeholder="Nama barang"' + ro + '><input class="dl2-input" type="number" step="any" min="0" data-j="' + j + '" data-k="1" value="' + esc(r[1]) + '"' + ro + '>'
+                + '<select class="dl2-input" data-j="' + j + '" data-k="2"' + ro + '>' + UNITS.map(u => '<option' + (u === r[2] ? ' selected' : '') + '>' + u + '</option>').join('') + '</select><input class="dl2-input" type="number" step="any" min="0" data-j="' + j + '" data-k="3" value="' + esc(r[3]) + '" placeholder="kg"' + ro + '>'
                 + (LOCKED ? '<span></span>' : '<button type="button" class="sp-x" data-r="' + j + '" aria-label="Hapus barang">×</button>') + '</div>').join('') + '</div>'
                 + (LOCKED ? '' : '<button type="button" class="sp-lk" data-ai="1">+ Tambah barang</button>');
         }
@@ -178,5 +178,5 @@
     root.addEventListener('drop', e => { e.preventDefault(); const r = e.target.closest('.sp-row[data-i]'); if (r && dragI >= 0 && +r.dataset.i !== dragI) { const k = +r.dataset.i, it = S.splice(dragI, 1)[0]; S.splice(k, 0, it); sel = k; } dragI = -1; all(); });
     root.addEventListener('dragend', () => { dragI = -1; });
     root.closest('form')?.addEventListener('submit', sync);
-})();
+});
 </script>

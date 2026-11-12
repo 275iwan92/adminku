@@ -18,9 +18,9 @@
         ];
     @endphp
     @include('partials.flash')
-    <x-dl::action-bar align="start">
-        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('fac-care.index')" />
-    </x-dl::action-bar>
+    <x-dl2::action-bar align="start">
+        <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('fac-care.index')" />
+    </x-dl2::action-bar>
     <div class="sstock-setup">
         @foreach ($tiles as [$module, $route, $icon, $label, $text])
             @if ($u->canAccess($module))

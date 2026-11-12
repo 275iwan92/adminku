@@ -2,22 +2,22 @@
  Tujuan       : Laporan Kedaluwarsa: barang yang masih ada stoknya dan sudah kedaluwarsa / akan kedaluwarsa dalam N hari (bawaan 30), dari yang paling dulu.
  Sumber hulu  : ReportController@expiry (i_batch.expiry_date + stock_qty). Nilai stok hanya untuk Supervisor.
  Input        : sup, days, categories, rows.
- Output       : filter (dalam berapa hari, kategori) + x-dl::report.
+ Output       : filter (dalam berapa hari, kategori) + x-dl2::report.
  Dipakai oleh : route reports.expiry (menu Laporan > Laporan Kedaluwarsa), KPI beranda.
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Expiry Report'])
 @section('body')
-    <x-dl::action-form method="get" :action="url()->current()" class="dl-report-filter">
-        <x-dl::form.row :cols="4">
-            <x-dl::field.number name="days" label="Expires within (days)" :min="0" :max="365" :value="$days" />
-            <x-dl::field.select name="category_id" label="Category" :options="['' => 'Semua kategori'] + $categories" :value="request('category_id')" />
-        </x-dl::form.row>
-        <x-dl::action-bar>
-            <x-dl::button type="submit" icon="fa-eye" label="Show" size="sm" />
-        </x-dl::action-bar>
-    </x-dl::action-form>
-    <x-dl::report phone-list title="Expiry Report" subtitle="Items with stock that are expired or about to expire" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
+    <x-dl2::action-form method="get" :action="url()->current()" class="ak-report-filter">
+        <x-dl2::form.row :cols="4">
+            <x-dl2::field.number name="days" label="Expires within (days)" :min="0" :max="365" :value="$days" />
+            <x-dl2::field.select name="category_id" label="Category" :options="['' => 'Semua kategori'] + $categories" :value="request('category_id')" />
+        </x-dl2::form.row>
+        <x-dl2::action-bar>
+            <x-dl2::button type="submit" icon="fa-eye" label="Show" size="sm" />
+        </x-dl2::action-bar>
+    </x-dl2::action-form>
+    <x-dl2::report phone-list title="Expiry Report" subtitle="Items with stock that are expired or about to expire" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
         :criteria="array_filter([
             'Expires within (days)' => raw((string) $days),
             'Category' => raw($categories[request('category_id')] ?? 'Semua kategori'),

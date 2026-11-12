@@ -5,7 +5,7 @@
  Dipakai oleh : products/form.blade.php.
  Status       : Aktif.
 --}}
-@use('Devlib\Locale')
+@use('Devlib2\Locale')
 @if ($advice)
     <div class="sstock-advice" data-advice data-usage="{{ $advice['usage'] }}" data-lead="{{ $advice['lead'] }}">
         <b>Saran pesan ulang</b> <span class="sstock-advice__basis">pemakaian rata-rata {{ Locale::decimal($advice['usage'], 2) }} {{ $unit }}/hari (90 hari terakhir) · lead time {{ $advice['lead'] }} hari</span>
@@ -16,17 +16,17 @@
         <p>Titik Pesan Ulang: <strong><span data-advice-rop>{{ $advice['rop'] }}</span> {{ $unit }}</strong> <small>= pemakaian/hari × (lead time {{ $advice['lead'] }} + <span data-advice-safety-txt>{{ $advice['safety'] }}</span> hari pengaman), dibulatkan ke atas</small></p>
         <p>Jml Pesan Ulang: <strong><span data-advice-qty>{{ $advice['qty'] }}</span> {{ $unit }}</strong> <small>= pemakaian/hari × <span data-advice-cover-txt>{{ $advice['cover'] }}</span> hari cakupan, dibulatkan ke atas</small></p>
         @if ($canApply)
-            <button type="button" class="dl-btn dl-btn--sm" data-advice-apply>Pakai saran</button>
+            <button type="button" class="dl2-btn dl2-btn-sm" data-advice-apply>Pakai saran</button>
         @endif
         <small class="sstock-advice__note">Hanya saran: mengisi kolom di atas, belum tersimpan sampai Simpan. Titik Pesan Ulang dan Jml Pesan Ulang tidak berubah sendiri.</small>
     </div>
     <style>
-        .sstock-advice { margin: 8px 0; padding: 10px 14px; border: 1px solid var(--dl-border); border-left: 3px solid var(--dl-primary, #2563eb); border-radius: 8px; background: var(--dl-surface); font-size: 13px; }
+        .sstock-advice { margin: 8px 0; padding: 10px 14px; border: 1px solid var(--dl2-border); border-left: 3px solid var(--dl2-primary, #2563eb); border-radius: 8px; background: var(--dl2-surface); font-size: 13px; }
         .sstock-advice p { margin: 4px 0; }
-        .sstock-advice small { color: var(--dl-muted); }
-        .sstock-advice__basis { color: var(--dl-muted); }
+        .sstock-advice small { color: var(--dl2-ink-soft); }
+        .sstock-advice__basis { color: var(--dl2-ink-soft); }
         .sstock-advice__calc { display: flex; gap: 16px; flex-wrap: wrap; margin: 6px 0; }
-        .sstock-advice__calc input { width: 64px; padding: 2px 6px; border: 1px solid var(--dl-border); border-radius: 6px; background: var(--dl-surface); color: inherit; }
+        .sstock-advice__calc input { width: 64px; padding: 2px 6px; border: 1px solid var(--dl2-border); border-radius: 6px; background: var(--dl2-surface); color: inherit; }
         .sstock-advice__note { display: block; margin-top: 6px; }
         /* Tampilan HP: teks 14px, isian angka 16px / 44px selebar kotak, tombol penuh selebar kotak. */
         body.dl-on-phone .sstock-advice { font-size: 14px; }
@@ -36,7 +36,7 @@
         body.dl-on-phone .sstock-advice [data-advice-apply] { width: 100%; min-height: 48px; font-size: 16px; }
     </style>
     <script>
-        (() => {
+        window.akReady(() => {
             const box = document.querySelector('[data-advice]'); if (!box) return;
             const q = s => box.querySelector(s), usage = +box.dataset.usage, lead = +box.dataset.lead;
             const up = x => Math.max(1, Math.ceil(x - 1e-9));
@@ -56,8 +56,8 @@
             };
             const apply = q('[data-advice-apply]');
             if (apply) apply.addEventListener('click', () => { const r = calc(); fill('reorder_point', r.rop); fill('reorder_qty', r.qty); });
-        })();
+        });
     </script>
 @else
-    <p class="dl-note">Saran pesan ulang (Titik Pesan Ulang dan Jml Pesan Ulang) muncul setelah barang punya lead time dan ada pengeluaran dalam 90 hari terakhir.</p>
+    <p class="ak-note">Saran pesan ulang (Titik Pesan Ulang dan Jml Pesan Ulang) muncul setelah barang punya lead time dan ada pengeluaran dalam 90 hari terakhir.</p>
 @endif

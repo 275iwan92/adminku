@@ -205,7 +205,7 @@ class HelpTest extends TestCase
     {
         $tg = $this->guide(User::factory()->administrator()->create(), 'help.technical-guide');
 
-        foreach (['lockAndAssert', 'createNumbered', 'unreversed()', 'bcmath', 'FEFO', 'm_item_unit', 'ReorderOrders::reconcile', 'Devlib\Engine\LeadTime', 'App\Support\QuickAdd', 'x-dl::field.select', 'x-dl::idle-logout', 'SESSION_LIFETIME', 'App\Support\Constants', 'stock_counts', 'StockLedger::assertNotLocked()', 'Install steps', 'id="testing"', 'composer setup', 'php artisan test'] as $needle) {
+        foreach (['lockAndAssert', 'createNumbered', 'unreversed()', 'bcmath', 'FEFO', 'm_item_unit', 'ReorderOrders::reconcile', 'Devlib2\Engine\LeadTime', 'App\Support\QuickAdd', 'x-dl2::field.select', 'x-dl2::idle-logout', 'SESSION_LIFETIME', 'App\Support\Constants', 'stock_counts', 'StockLedger::assertNotLocked()', 'Install steps', 'id="testing"', 'composer setup', 'php artisan test'] as $needle) {
             $this->assertStringContainsString($needle, $tg, "TG tidak memuat {$needle}");
         }
     }
@@ -243,7 +243,7 @@ class HelpTest extends TestCase
             ->assertSee('Faktor ini sudah dipakai di dokumen; hubungi Supervisor untuk mengubahnya.', false);
 
         $this->actingAs(User::factory()->administrator()->create())->get(route('help.technical-guide'))->assertOk()
-            ->assertSee('m_item_unit', false)->assertSee('ProductUnits::save', false)->assertSee('ReorderOrder::note()', false)->assertSee('add_supplier_qty_note_to_reorder_orders', false)->assertSee('App\Services\LeadTimes', false)->assertSee('Devlib\Engine\LeadTime', false);
+            ->assertSee('m_item_unit', false)->assertSee('ProductUnits::save', false)->assertSee('ReorderOrder::note()', false)->assertSee('add_supplier_qty_note_to_reorder_orders', false)->assertSee('App\Services\LeadTimes', false)->assertSee('Devlib2\Engine\LeadTime', false);
     }
 
     public function test_only_administrators_open_the_technical_guide(): void
@@ -283,7 +283,7 @@ class HelpTest extends TestCase
         $url = route('help.user-guide');
 
         foreach ([User::factory(), User::factory()->supervisor(), User::factory()->administrator()] as $factory) {
-            $this->actingAs($factory->create())->get(route('home'))->assertSee('data-dl-help="'.e($url).'"', false);
+            $this->actingAs($factory->create())->get(route('home'))->assertSee('data-dl2-help="'.e($url).'"', false);
         }
     }
 
@@ -293,7 +293,7 @@ class HelpTest extends TestCase
         $ug->assertSee('langsung keluar')->assertSee('Tidak ada pilihan &quot;ingat saya&quot;', false)->assertSee('Tetap masuk')->assertSee('30 menit')
             ->assertSee('hanya bisa diubah Supervisor')->assertSee('Dihitung presisi');
 
-        $this->get(route('help.technical-guide'))->assertOk()->assertSee('x-dl::idle-logout')->assertSee('session.ping')->assertSee('SESSION_LIFETIME=30')
+        $this->get(route('help.technical-guide'))->assertOk()->assertSee('x-dl2::idle-logout')->assertSee('session.ping')->assertSee('SESSION_LIFETIME=30')
             ->assertSee('EnsureActive')->assertSee('bcmath')->assertSee('global');
     }
 

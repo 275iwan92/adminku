@@ -10,12 +10,12 @@
 @section('content')
     @include('hp._find-box', ['q' => ''])
     @php $below = $product->reorder_point > 0 && (float) $product->available_qty <= $product->reorder_point; @endphp
-    <article class="dl-phone-card">
-        <h2 class="sstock-hpc__name">{{ $product->name }} <x-dl::badge :tone="$below ? 'danger' : 'success'" :label="$below ? 'PESAN ULANG' : 'AMAN'" /></h2>
+    <article class="ak-pcard">
+        <h2 class="sstock-hpc__name">{{ $product->name }} <x-dl2::badge :tone="$below ? 'danger' : 'success'" :label="$below ? 'PESAN ULANG' : 'AMAN'" /></h2>
         <p class="sstock-hpc__meta">{{ $product->code }}@if ($product->location) · {{ $product->location }}@endif</p>
-        <p><strong>{{ \Devlib\Locale::number($product->available_qty, 2) }} {{ $product->unit }}</strong> tersedia · titik pesan ulang {{ \Devlib\Locale::number($product->reorder_point, 2) }}</p>
+        <p><strong>{{ \Devlib2\Locale::number($product->available_qty, 2) }} {{ $product->unit }}</strong> tersedia · titik pesan ulang {{ \Devlib2\Locale::number($product->reorder_point, 2) }}</p>
         @if ($value !== null)
-            <p class="sstock-hpc__meta">Nilai stok IDR {{ \Devlib\Locale::number($value, 0) }}</p>
+            <p class="sstock-hpc__meta">Nilai stok IDR {{ \Devlib2\Locale::number($value, 0) }}</p>
         @endif
     </article>
     @forelse ($batches as $b)
@@ -23,12 +23,12 @@
             $state = $b->expiryState();
             $left = $b->expiry_date ? (int) today()->diffInDays($b->expiry_date, false) : null;
         @endphp
-        <article class="dl-phone-card" @if ($scanned && strcasecmp($scanned, $b->code) === 0) data-scanned @endif>
-            <h2 class="sstock-hpc__name">{{ $b->code }}@if ($state) <x-dl::badge :tone="$state === 'KEDALUWARSA' ? 'danger' : 'warn'" :label="$state" />@endif</h2>
-            <p><strong>{{ \Devlib\Locale::number($b->stock_qty, 2) }} {{ $b->unit }}</strong></p>
+        <article class="ak-pcard" @if ($scanned && strcasecmp($scanned, $b->code) === 0) data-scanned @endif>
+            <h2 class="sstock-hpc__name">{{ $b->code }}@if ($state) <x-dl2::badge :tone="$state === 'KEDALUWARSA' ? 'danger' : 'warn'" :label="$state" />@endif</h2>
+            <p><strong>{{ \Devlib2\Locale::number($b->stock_qty, 2) }} {{ $b->unit }}</strong></p>
             <p class="sstock-hpc__meta">
                 @if ($b->expiry_date)
-                    Kedaluwarsa {{ \Devlib\Locale::d($b->expiry_date) }} · {{ $left > 0 ? 'sisa '.$left.' hari' : ($left === 0 ? 'hari ini' : 'lewat '.abs($left).' hari') }}
+                    Kedaluwarsa {{ \Devlib2\Locale::d($b->expiry_date) }} · {{ $left > 0 ? 'sisa '.$left.' hari' : ($left === 0 ? 'hari ini' : 'lewat '.abs($left).' hari') }}
                 @else
                     Tanpa kedaluwarsa
                 @endif
@@ -36,6 +36,6 @@
             </p>
         </article>
     @empty
-        <x-dl::alert tone="info" message="Barang ini belum punya stok di batch mana pun." />
+        <x-dl2::alert tone="info" message="Barang ini belum punya stok di batch mana pun." />
     @endforelse
 @endsection

@@ -4,12 +4,12 @@
                 Dokumen terkunci menampilkan qty tersimpan (stock_qty dari server), bukan hitung ulang dengan faktor sekarang.
  Sumber hulu  : baris form (packs = JSON ItemUnits::options, stock_unit, unit, qty, stock_qty), daftar satuan aktif ($units).
  Input        : units (kode => label).
- Output       : pengganti cellRaw (kolom unit, stock_qty) dan refresh milik komponen x-dl::lines `lines` di halaman ini; tidak mengubah DevLib.
+ Output       : pengganti cellRaw (kolom unit, stock_qty) dan refresh milik komponen x-dl2::lines `lines` di halaman ini; tidak mengubah DevLib.
  Dipakai oleh : docs/form.blade.php (Penerimaan).
  Status       : Aktif.
 --}}
 <script>
-    (() => {
+    window.akReady(() => {
         const ALL = @json($units);
         let esc, fmt;
         const info = r => { try { return JSON.parse(r.packs || ''); } catch (e) { return null; } };
@@ -34,9 +34,9 @@
         };
         let tries = 0;
         const attach = () => {
-            const lines = window.Devlib && document.querySelector('[data-dl-lines][data-name="lines"]')?.dlComponent;   // skrip ini di atas form dan devlib.js dimuat defer: tunggu sampai komponen terpasang
+            const lines = window.Devlib2 && document.querySelector('[data-dl2-lines][data-name="lines"]')?.dlComponent;   // skrip ini di atas form dan devlib.js dimuat defer: tunggu sampai komponen terpasang
             if (!lines) { if (tries++ < 100) setTimeout(attach, 50); return; }
-            ({esc, fmt} = Devlib.h);
+            ({esc, fmt} = Devlib2.h);
             const cellRaw = lines.cellRaw, refresh = lines.refresh;
             lines.cellRaw = (c, r, i) => {
                 if (c.key === 'stock_qty') return `<td class="num dl-lines__ro" data-k="stock_qty">${esc(converted(lines, r))}</td>`;
@@ -50,5 +50,5 @@
             lines.body();
         };
         attach();
-    })();
+    });
 </script>

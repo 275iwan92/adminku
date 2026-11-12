@@ -11,9 +11,9 @@
     @include('partials.flash')
     <div style="max-width: 980px">
         <h2 class="sstock-pagetitle" style="margin: 4px 0 12px">Akun UAT</h2>
-        <p class="dl-note">Kata sandi di database disimpan sebagai hash dan tidak bisa dibaca. Kolom <b>Bawaan UAT</b> adalah nilai dari seeder: berlaku selama akun itu belum diubah (lewat layar ini, layar Pengguna, atau lupa password) dan hilang saat data contoh disegarkan, yang mengembalikannya ke nilai ini. Kata sandi baru yang Anda ketik di sini disimpan sebagai hash dan sesi lama akun itu keluar.</p>
-        <div class="dl-table-wrap dl-table--stack">
-            <table class="dl-table is-striped">
+        <p class="ak-note">Kata sandi di database disimpan sebagai hash dan tidak bisa dibaca. Kolom <b>Bawaan UAT</b> adalah nilai dari seeder: berlaku selama akun itu belum diubah (lewat layar ini, layar Pengguna, atau lupa password) dan hilang saat data contoh disegarkan, yang mengembalikannya ke nilai ini. Kata sandi baru yang Anda ketik di sini disimpan sebagai hash dan sesi lama akun itu keluar.</p>
+        <div class="dl2-table-responsive ak-stack">
+            <table class="dl2-table is-striped">
                 <thead><tr><th>Username</th><th>Nama</th><th>Peran</th><th>Aktif</th><th>Bawaan UAT</th><th>Kata sandi baru</th></tr></thead>
                 <tbody>
                     @foreach ($users as $u)
@@ -27,7 +27,7 @@
                                 <form method="POST" action="{{ route('super.password', $u) }}" style="display: flex; gap: 6px; align-items: center">
                                     @csrf
                                     <input type="text" name="password" required minlength="4" maxlength="100" autocomplete="off" placeholder="min. 4 karakter" style="width: 160px">
-                                    <x-dl::button type="submit" size="sm" variant="secondary" icon="fa-key" label="Ubah" />
+                                    <x-dl2::button type="submit" size="sm" variant="secondary" icon="fa-key" label="Ubah" />
                                 </form>
                             </td>
                         </tr>
@@ -35,6 +35,6 @@
                 </tbody>
             </table>
         </div>
-        @error('password')<x-dl::alert tone="danger" :message="$message" />@enderror
+        @error('password')<x-dl2::alert tone="danger" :message="$message" />@enderror
     </div>
 @endsection

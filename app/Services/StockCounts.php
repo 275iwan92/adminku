@@ -285,7 +285,7 @@ final class StockCounts
     }
 
     /**
-     * Baris lembar input (x-dl::sheet). Hitung buta: stok sistem TIDAK ikut dikirim ke browser. $trace (tampilan HP): ikut siapa (by_id, by) dan jam (at) terakhir yang mengisi baris, untuk peringatan lunak.
+     * Baris lembar input (x-dl2::sheet). Hitung buta: stok sistem TIDAK ikut dikirim ke browser. $trace (tampilan HP): ikut siapa (by_id, by) dan jam (at) terakhir yang mengisi baris, untuk peringatan lunak.
      *
      * @return array<int, array<string, mixed>>
      */

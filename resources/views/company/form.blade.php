@@ -15,41 +15,41 @@
         $styles = ['logo_name_address' => 'Logo + Nama + Alamat', 'logo_name' => 'Logo + Nama', 'name' => 'Nama saja'];
     @endphp
     @include('partials.flash')
-    <x-dl::form title="Perusahaan" subtitle="Data ini menjadi kop semua cetakan (dokumen stok, Lembar Hitung, Berita Acara, dan laporan)" panel="top" kind="master" status="active"
-        :hide="['activate', 'deactivate', 'new']" :action="route('company.update')" :hidden="['_method' => 'PUT']" enctype="multipart/form-data">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="name" label="Company Name" :value="$v('name')" required maxlength="100" :error="$e('name')" hint="Dicetak tebal di kop." />
-            <x-dl::field.text name="legal_name" label="Legal Entity Name" :value="$v('legal_name')" maxlength="150" :error="$e('legal_name')" hint="Nama PT / CV untuk urusan pajak. Dicetak kecil bila berbeda dari nama perusahaan." />
-            <x-dl::field.text name="npwp" label="Tax ID (NPWP)" :value="$v('npwp')" maxlength="30" :error="$e('npwp')" />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="phone" label="Phone" :value="$v('phone')" maxlength="60" :error="$e('phone')" />
-            <x-dl::field.text name="email" label="Email" :value="$v('email')" maxlength="100" :error="$e('email')" />
-        </x-dl::form.row>
-        <x-dl::form.row>
-            <x-dl::field.text name="address" label="Company Address" :value="$v('address')" multiline maxlength="500" :error="$e('address')" hint="Satu baris alamat per baris. Pendek lebih baik: kop cetakan memuat paling banyak tiga baris alamat dan kontak." />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="2">
-            <x-dl::field.upload name="logo" label="Logo" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" :value="$logoUrl ? ['url' => $logoUrl, 'name' => 'Logo saat ini'] : null" :error="$e('logo')"
+    <x-dl2::form title="Perusahaan" subtitle="Data ini menjadi kop semua cetakan (dokumen stok, Lembar Hitung, Berita Acara, dan laporan)" panel="top" kind="master" status="active"
+        :hide="['activate', 'deactivate', 'new']" :action="route('company.update')" method="put" enctype="multipart/form-data">
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="name" label="Company Name" :value="$v('name')" required maxlength="100" :error="$e('name')" hint="Dicetak tebal di kop." />
+            <x-dl2::field.text name="legal_name" label="Legal Entity Name" :value="$v('legal_name')" maxlength="150" :error="$e('legal_name')" hint="Nama PT / CV untuk urusan pajak. Dicetak kecil bila berbeda dari nama perusahaan." />
+            <x-dl2::field.text name="npwp" label="Tax ID (NPWP)" :value="$v('npwp')" maxlength="30" :error="$e('npwp')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="phone" label="Phone" :value="$v('phone')" maxlength="60" :error="$e('phone')" />
+            <x-dl2::field.text name="email" label="Email" :value="$v('email')" maxlength="100" :error="$e('email')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row>
+            <x-dl2::field.text name="address" label="Company Address" :value="$v('address')" multiline maxlength="500" :error="$e('address')" hint="Satu baris alamat per baris. Pendek lebih baik: kop cetakan memuat paling banyak tiga baris alamat dan kontak." />
+        </x-dl2::form.row>
+        <x-dl2::form.row :cols="2">
+            <x-dl2::field.upload name="logo" label="Logo" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" :value="$logoUrl ? ['url' => $logoUrl, 'name' => 'Logo saat ini'] : null" :error="$e('logo')"
                 hint="PNG, JPG, atau WebP (bukan SVG), paling besar 1 MB. Otomatis diperkecil selebar paling 600 piksel." />
             @if ($logoUrl)
-                <x-dl::field.checkbox name="remove_logo" label="Hapus logo" text="Hapus logo saat ini" :value="false" />
+                <x-dl2::field.checkbox name="remove_logo" label="Hapus logo" text="Hapus logo saat ini" :value="false" />
             @endif
-        </x-dl::form.row>
-        <x-dl::divider label="Cuaca di Beranda" />
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="weather_city" label="Weather City" :value="$v('weather_city')" maxlength="80" :error="$e('weather_city')" hint="Nama yang ditampilkan di kartu cuaca, mis. Malang." />
-            <x-dl::field.text name="weather_lat" label="Latitude" :value="$v('weather_lat')" maxlength="12" :error="$e('weather_lat')" hint="-90 sampai 90, mis. -7.98." />
-            <x-dl::field.text name="weather_lon" label="Longitude" :value="$v('weather_lon')" maxlength="12" :error="$e('weather_lon')" hint="-180 sampai 180, mis. 112.63." />
-        </x-dl::form.row>
-        <p class="dl-note">Cuaca di Beranda mengikuti posisi perangkat. Isian ini hanya CADANGAN bila lokasi perangkat tidak bisa dipakai (izin ditolak atau situs belum memakai HTTPS). Dikosongkan = tanpa cadangan: kartu cuaca tidak tampil.</p>
-        <x-dl::form.row>
-            <x-dl::field.radio name="kop_style" label="Print Header Style" :options="$styles" :value="$v('kop_style')" required :error="$e('kop_style')" />
-        </x-dl::form.row>
+        </x-dl2::form.row>
+        <x-dl2::divider label="Cuaca di Beranda" />
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="weather_city" label="Weather City" :value="$v('weather_city')" maxlength="80" :error="$e('weather_city')" hint="Nama yang ditampilkan di kartu cuaca, mis. Malang." />
+            <x-dl2::field.text name="weather_lat" label="Latitude" :value="$v('weather_lat')" maxlength="12" :error="$e('weather_lat')" hint="-90 sampai 90, mis. -7.98." />
+            <x-dl2::field.text name="weather_lon" label="Longitude" :value="$v('weather_lon')" maxlength="12" :error="$e('weather_lon')" hint="-180 sampai 180, mis. 112.63." />
+        </x-dl2::form.row>
+        <p class="ak-note">Cuaca di Beranda mengikuti posisi perangkat. Isian ini hanya CADANGAN bila lokasi perangkat tidak bisa dipakai (izin ditolak atau situs belum memakai HTTPS). Dikosongkan = tanpa cadangan: kartu cuaca tidak tampil.</p>
+        <x-dl2::form.row>
+            <x-dl2::field.radio name="kop_style" label="Print Header Style" :options="$styles" :value="$v('kop_style')" required :error="$e('kop_style')" />
+        </x-dl2::form.row>
 
-        <x-dl::divider label="Pratinjau kop" />
+        <x-dl2::divider label="Pratinjau kop" />
         <style>
-            .sstock-kop { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--dl-border); border-radius: 8px; background: #fff; color: #111; max-width: 520px; }
+            .sstock-kop { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--dl2-border); border-radius: 8px; background: #fff; color: #111; max-width: 520px; }
             .sstock-kop img { max-height: 48px; max-width: 120px; object-fit: contain; }
             .sstock-kop b { display: block; font-size: 15px; }
             .sstock-kop small { display: block; font-size: 11px; color: #444; white-space: pre-line; }
@@ -60,11 +60,11 @@
             <img data-kop-logo alt="Logo" hidden>
             <div><b data-kop-name></b><small data-kop-legal></small><small data-kop-addr></small></div>
         </div>
-        <p class="dl-note" data-kop-note hidden>Logo belum ada: kop akan memakai &quot;Nama saja&quot; sampai logo diunggah. Pilihan Anda tetap disimpan.</p>
-        <p class="dl-note">Pratinjau memberi gambaran. Hasil cetak mengikuti tata letak kertas dan memotong teks yang terlalu panjang.</p>
-    </x-dl::form>
+        <p class="ak-note" data-kop-note hidden>Logo belum ada: kop akan memakai &quot;Nama saja&quot; sampai logo diunggah. Pilihan Anda tetap disimpan.</p>
+        <p class="ak-note">Pratinjau memberi gambaran. Hasil cetak mengikuti tata letak kertas dan memotong teks yang terlalu panjang.</p>
+    </x-dl2::form>
     <script>
-        (() => {
+        window.akReady(() => {
             const q = s => document.querySelector(s), field = n => q(`[name="${n}"]`);
             const box = q('[data-kop]'), logo = q('[data-kop-logo]'), badge = q('[data-kop-badge]'), nameEl = q('[data-kop-name]'), legalEl = q('[data-kop-legal]'), addrEl = q('[data-kop-addr]'), note = q('[data-kop-note]');
             const saved = @json($logoUrl), fallback = @json(config('devlib.company.name'));
@@ -92,6 +92,6 @@
                 render();
             });
             render();
-        })();
+        });
     </script>
 @endsection

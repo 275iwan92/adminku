@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\UserGroup;
 use App\Support\HomeHero;
 use Carbon\Carbon;
-use Devlib\Lang;
+use Devlib2\Lang;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

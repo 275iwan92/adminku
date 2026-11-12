@@ -16,7 +16,7 @@ use App\Services\ItemUnits;
 use App\Services\StockDocuments;
 use App\Support\Decimal;
 use App\Support\StockDocumentPrint;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +25,7 @@ use App\Support\Text;
 /* REMARK
  * Tujuan       : Satu pengendali untuk empat jenis dokumen stok (rute docs/{type}): daftar, buat, lihat, simpan, dan siklus persetujuan penyesuaian.
  * Sumber hulu  : StockDocuments (logika), StockDocumentRequest (validasi + hak jenis), Lookup 'item_in|item_out|item_opn|item_adj'.
- * Output       : grid dokumen (docs.index) dan form dokumen (docs.form) berisi x-dl::lines.
+ * Output       : grid dokumen (docs.index) dan form dokumen (docs.form) berisi x-dl2::lines.
  * Dipakai oleh : routes/web.php (docs.*).
  * Status       : Aktif.
  */

@@ -19,32 +19,32 @@
         $u = auth()->user();
     @endphp
     @include('partials.flash')
-    <x-dl::headline>{{ $vehicle->plate }} · {{ $vehicle->name }} <x-dl::badge :tone="$badge($o['status'])" :label="$label($o['status'])" /></x-dl::headline>
-    <p class="dl-note">{{ $vehicle->type->name }}@if ($vehicle->year) · tahun {{ $vehicle->year }}@endif · {{ $vehicle->kir_required ? 'Wajib KIR' : 'Tidak wajib KIR' }}@unless ($vehicle->is_active) · NONAKTIF @endunless</p>
-    <x-dl::kpi-row>
-        <x-dl::stat-box label="Odometer terakhir" :value="VehicleCare::km($vehicle->odometer_km)" tone="accent" :sub="$vehicle->odometer_at?->format('d-m-Y')" />
-        <x-dl::stat-box label="Pajak tahunan" :value="$pajak['doc'] ? VehicleCare::daysText($pajak['days']) : 'Belum dicatat'" :tone="$pajak['status'] ? $badge($pajak['status']) : 'neutral'" :sub="$pajak['doc'] ? 'Berlaku sampai '.$pajak['valid_until']->format('d-m-Y') : null" />
-        <x-dl::stat-box label="Servis berikutnya" :value="$next ? $next['name'] : 'Tidak ada jadwal'" :tone="$next ? $badge($next['status']) : 'neutral'" :sub="$next ? $next['left'] : null" />
-        <x-dl::stat-box :label="'Biaya servis '.$year" :value="VehicleCare::rp($yearCost)" tone="neutral" />
-    </x-dl::kpi-row>
-    <x-dl::action-bar align="start">
-        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="back" label="Kembali" :href="route('fleet.index')" />
+    <x-dl2::headline><x-slot:title>{{ $vehicle->plate }} · {{ $vehicle->name }} <x-dl2::badge :tone="$badge($o['status'])" :label="$label($o['status'])" /></x-slot:title></x-dl2::headline>
+    <p class="ak-note">{{ $vehicle->type->name }}@if ($vehicle->year) · tahun {{ $vehicle->year }}@endif · {{ $vehicle->kir_required ? 'Wajib KIR' : 'Tidak wajib KIR' }}@unless ($vehicle->is_active) · NONAKTIF @endunless</p>
+    <x-dl2::kpi-row>
+        <x-dl2::stat-box label="Odometer terakhir" :value="VehicleCare::km($vehicle->odometer_km)" tone="accent" :sub="$vehicle->odometer_at?->format('d-m-Y')" />
+        <x-dl2::stat-box label="Pajak tahunan" :value="$pajak['doc'] ? VehicleCare::daysText($pajak['days']) : 'Belum dicatat'" :tone="$pajak['status'] ? $badge($pajak['status']) : 'neutral'" :sub="$pajak['doc'] ? 'Berlaku sampai '.$pajak['valid_until']->format('d-m-Y') : null" />
+        <x-dl2::stat-box label="Servis berikutnya" :value="$next ? $next['name'] : 'Tidak ada jadwal'" :tone="$next ? $badge($next['status']) : 'neutral'" :sub="$next ? $next['left'] : null" />
+        <x-dl2::stat-box :label="'Biaya servis '.$year" :value="VehicleCare::rp($yearCost)" tone="neutral" />
+    </x-dl2::kpi-row>
+    <x-dl2::action-bar align="start">
+        <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="back" label="Kembali" :href="route('fleet.index')" />
         @if ($vehicle->is_active)
         @if ($u->canWrite('GVD'))
-            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create', ['vehicle' => $vehicle->id])" />
+            <x-dl2::button class="sstock-btn-teal" variant="secondary" icon="fa-file-signature" label="Perpanjang Dokumen" :href="route('vehicle-docs.create', ['vehicle' => $vehicle->id])" />
         @endif
         @if ($u->canWrite('GVS'))
-            <x-dl::button class="sstock-btn-coral" variant="secondary" icon="fa-screwdriver-wrench" label="Catat Servis" :href="route('vehicle-services.create', ['vehicle' => $vehicle->id])" />
+            <x-dl2::button class="sstock-btn-coral" variant="secondary" icon="fa-screwdriver-wrench" label="Catat Servis" :href="route('vehicle-services.create', ['vehicle' => $vehicle->id])" />
         @endif
         @if ($u->canWrite('GVO'))
-            <x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-gauge-high" label="Catat Odometer" :href="route('vehicle-odometers.create', ['vehicle' => $vehicle->id])" />
+            <x-dl2::button class="sstock-btn-amber" variant="secondary" icon="fa-gauge-high" label="Catat Odometer" :href="route('vehicle-odometers.create', ['vehicle' => $vehicle->id])" />
         @endif
         @endif
-    </x-dl::action-bar>
+    </x-dl2::action-bar>
 
-    <x-dl::divider label="Dokumen dan masa berlaku" />
-    <div class="dl-table-wrap dl-table--stack">
-        <table class="dl-table is-striped">
+    <x-dl2::divider label="Dokumen dan masa berlaku" />
+    <div class="dl2-table-responsive ak-stack">
+        <table class="dl2-table is-striped">
             <thead><tr><th>Dokumen</th><th>Berlaku sampai</th><th>Sisa waktu</th><th>No. dokumen</th><th>Lampiran</th><th>Status</th></tr></thead>
             <tbody>
                 @foreach ($o['docs'] as $d)
@@ -56,11 +56,11 @@
                         <td data-label="Lampiran">@if ($d['doc']?->attachment_path)<a href="{{ route('fleet.file', ['doc', $d['doc']->id]) }}" target="_blank" rel="noopener">{{ $d['doc']->attachment_name ?: 'Lihat' }}</a>@else — @endif</td>
                         <td data-label="Status">
                             @if (! $d['required'])
-                                <x-dl::badge tone="neutral" label="Tidak wajib" />
+                                <x-dl2::badge tone="neutral" label="Tidak wajib" />
                             @elseif (! $d['doc'])
-                                <x-dl::badge :tone="$d['status'] ? 'warn' : 'neutral'" label="Belum dicatat" />
+                                <x-dl2::badge :tone="$d['status'] ? 'warn' : 'neutral'" label="Belum dicatat" />
                             @else
-                                <x-dl::badge :tone="$badge($d['status'])" :label="$label($d['status'])" />
+                                <x-dl2::badge :tone="$badge($d['status'])" :label="$label($d['status'])" />
                             @endif
                         </td>
                     </tr>
@@ -68,12 +68,12 @@
             </tbody>
         </table>
     </div>
-    <p class="dl-note">Masa berlaku yang dipakai adalah tanggal berlaku-sampai terbesar per jenis dokumen. Pajak tahunan (PKB + SWDKLLJ) dan asuransi 12 bulan, STNK + plat 5 tahun (60 bulan), KIR 6 bulan. Status Segera bila sisa waktu {{ VehicleCare::soonDays() }} hari atau kurang.</p>
+    <p class="ak-note">Masa berlaku yang dipakai adalah tanggal berlaku-sampai terbesar per jenis dokumen. Pajak tahunan (PKB + SWDKLLJ) dan asuransi 12 bulan, STNK + plat 5 tahun (60 bulan), KIR 6 bulan. Status Segera bila sisa waktu {{ VehicleCare::soonDays() }} hari atau kurang.</p>
 
-    <x-dl::divider label="Jadwal perawatan" />
+    <x-dl2::divider label="Jadwal perawatan" />
     @if ($o['items'])
-        <div class="dl-table-wrap dl-table--stack">
-            <table class="dl-table is-striped">
+        <div class="dl2-table-responsive ak-stack">
+            <table class="dl2-table is-striped">
                 <thead><tr><th>Pekerjaan</th><th>Interval</th><th>Terakhir dikerjakan</th><th>Berikutnya</th><th>Sisa</th><th>Kemajuan</th><th>Status</th></tr></thead>
                 <tbody>
                     @foreach ($o['items'] as $i)
@@ -89,22 +89,22 @@
                             </td>
                             <td data-label="Berikutnya">{{ collect([$i['next_km'] !== null ? VehicleCare::km($i['next_km']) : null, $i['next_at']?->format('d-m-Y')])->filter()->implode(' / ') }}</td>
                             <td data-label="Sisa">{{ $i['left'] }}</td>
-                            <td data-label="Kemajuan"><x-dl::progress :value="$i['progress']" :tone="$badge($i['status'])" label="Terpakai" /></td>
-                            <td data-label="Status"><x-dl::badge :tone="$badge($i['status'])" :label="$label($i['status'])" /></td>
+                            <td data-label="Kemajuan"><x-dl2::progress :value="$i['progress']" :tone="$badge($i['status'])" label="Terpakai" /></td>
+                            <td data-label="Status"><x-dl2::badge :tone="$badge($i['status'])" :label="$label($i['status'])" /></td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
-        <p class="dl-note">Jadwal dihitung dari servis terakhir tiap pekerjaan (odometer + interval km, tanggal + interval bulan); yang tercapai lebih dulu menentukan. Pekerjaan yang belum pernah dicatat dihitung dari odometer awal kendaraan. Segera bila sisa {{ number_format(VehicleCare::soonKm(), 0, ',', '.') }} km atau {{ VehicleCare::soonDays() }} hari atau kurang.</p>
+        <p class="ak-note">Jadwal dihitung dari servis terakhir tiap pekerjaan (odometer + interval km, tanggal + interval bulan); yang tercapai lebih dulu menentukan. Pekerjaan yang belum pernah dicatat dihitung dari odometer awal kendaraan. Segera bila sisa {{ number_format(VehicleCare::soonKm(), 0, ',', '.') }} km atau {{ VehicleCare::soonDays() }} hari atau kurang.</p>
     @else
-        <p class="dl-note">Jenis kendaraan ini belum punya rencana perawatan. Isi di Jenis Kendaraan.</p>
+        <p class="ak-note">Jenis kendaraan ini belum punya rencana perawatan. Isi di Jenis Kendaraan.</p>
     @endif
 
-    <x-dl::divider label="Riwayat servis" />
+    <x-dl2::divider label="Riwayat servis" />
     @if ($services->isNotEmpty())
-        <div class="dl-table-wrap dl-table--stack">
-            <table class="dl-table is-striped">
+        <div class="dl2-table-responsive ak-stack">
+            <table class="dl2-table is-striped">
                 <thead><tr><th>Tanggal</th><th>Pekerjaan</th><th>Bengkel</th><th>Odometer</th><th>Biaya</th></tr></thead>
                 <tbody>
                     @foreach ($services as $s)
@@ -120,9 +120,9 @@
             </table>
         </div>
         @if ($services->count() >= $historyLimit)
-            <p class="dl-note">Menampilkan {{ $historyLimit }} servis terakhir.</p>
+            <p class="ak-note">Menampilkan {{ $historyLimit }} servis terakhir.</p>
         @endif
     @else
-        <p class="dl-note">Belum ada servis tercatat.</p>
+        <p class="ak-note">Belum ada servis tercatat.</p>
     @endif
 @endsection

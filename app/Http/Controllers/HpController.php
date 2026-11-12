@@ -12,7 +12,7 @@ use App\Support\HpShell;
 use App\Support\Modules;
 use App\Support\Search;
 use App\Support\Text;
-use Devlib\Device;
+use Devlib2\Device;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -130,7 +130,7 @@ class HpController extends Controller
     }
 
     // Simpan pilihan tampilan (phone | desktop; nilai lama hp = phone) di cookie `ui`; pilihan pengguna selalu menang atas tebakan perangkat.
-    // auto=1 (x-dl::phone-offer auto / x-dl::phone-shell autoReturn) = peralihan otomatis karena lebar layar: cookie ui_auto menandainya sebagai BUKAN pilihan pengguna; tanpa auto, penanda dibuang.
+    // auto=1 (x-dl2::phone-offer auto / x-dl2::phone-shell autoReturn) = peralihan otomatis karena lebar layar: cookie ui_auto menandainya sebagai BUKAN pilihan pengguna; tanpa auto, penanda dibuang.
     public function setDevice(Request $request): RedirectResponse
     {
         $data = $request->validate(['ui' => ['required', Rule::in([...Device::CHOICES, ...array_keys(Device::ALIASES)])], 'auto' => ['sometimes', 'boolean']]);

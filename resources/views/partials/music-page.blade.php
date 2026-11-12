@@ -25,9 +25,9 @@
     <style>
         .gk-o { cursor: pointer; }
         .gk-o input { position: absolute; opacity: 0; }
-        .gk-o span { display: block; padding: 7px 12px; border: 1px solid var(--dl-border, #ccc); border-radius: 8px; font-size: 13px; }
-        .gk-o input:checked + span { background: var(--dl-accent, #2f7d4f); color: #fff; border-color: transparent; }
-        .gk-o input:focus-visible + span { outline: 2px solid var(--dl-accent, #2f7d4f); outline-offset: 2px; }
+        .gk-o span { display: block; padding: 7px 12px; border: 1px solid var(--dl2-border, #ccc); border-radius: 8px; font-size: 13px; }
+        .gk-o input:checked + span { background: var(--dl2-primary, #2f7d4f); color: #fff; border-color: transparent; }
+        .gk-o input:focus-visible + span { outline: 2px solid var(--dl2-primary, #2f7d4f); outline-offset: 2px; }
     </style>
     <script>
         addEventListener('DOMContentLoaded', () => {

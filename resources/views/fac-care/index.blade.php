@@ -27,16 +27,16 @@
             <div class="sstock-ostat" data-hue="{{ ['teal', 'amber', 'blue', 'coral', 'green'][$loop->index] }}"><b class="{{ $s['alert'] ? 'is-alert' : '' }}">{{ $s['value'] }}</b><span>{{ $s['label'] }}</span></div>
         @endforeach
     </div>
-    <x-dl::action-bar align="start">
-        @if ($can('FAT'))<x-dl::button class="sstock-btn-coral" variant="secondary" icon="fa-clipboard-list" label="Tiket" :href="route('fac-orders.index')" />@endif
-        @if ($can('FAJ'))<x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Jadwal" :href="route('fac-plans.index')" />@endif
-        @if ($can('FAA'))<x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-boxes-stacked" label="Aset" :href="route('fac-assets.index')" />@endif
-        @if ($can('FAH'))<x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-hand-holding" label="Serah Terima" :href="route('fac-handovers.index')" />@endif
-        @if ($can('FAO'))<x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-clipboard-check" label="Opname" :href="route('fac-checks.index')" />@endif
-        @if ($can('FAP'))<x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-user-tag" label="Per Pemegang" :href="route('reports.fac-holders')" />@endif
-        @if ($can('FAR'))<x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-file-invoice-dollar" label="Laporan Biaya" :href="route('reports.fac-cost')" />@endif
-        @if ($setup)<x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('fac-setup.index')" />@endif
-    </x-dl::action-bar>
+    <x-dl2::action-bar align="start">
+        @if ($can('FAT'))<x-dl2::button class="sstock-btn-coral" variant="secondary" icon="fa-clipboard-list" label="Tiket" :href="route('fac-orders.index')" />@endif
+        @if ($can('FAJ'))<x-dl2::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Jadwal" :href="route('fac-plans.index')" />@endif
+        @if ($can('FAA'))<x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-boxes-stacked" label="Aset" :href="route('fac-assets.index')" />@endif
+        @if ($can('FAH'))<x-dl2::button class="sstock-btn-amber" variant="secondary" icon="fa-hand-holding" label="Serah Terima" :href="route('fac-handovers.index')" />@endif
+        @if ($can('FAO'))<x-dl2::button class="sstock-btn-teal" variant="secondary" icon="fa-clipboard-check" label="Opname" :href="route('fac-checks.index')" />@endif
+        @if ($can('FAP'))<x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-user-tag" label="Per Pemegang" :href="route('reports.fac-holders')" />@endif
+        @if ($can('FAR'))<x-dl2::button class="sstock-btn-amber" variant="secondary" icon="fa-file-invoice-dollar" label="Laporan Biaya" :href="route('reports.fac-cost')" />@endif
+        @if ($setup)<x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('fac-setup.index')" />@endif
+    </x-dl2::action-bar>
     <section class="sstock-todo">
         <h2><i class="fa-solid fa-bell" aria-hidden="true"></i> Perlu tindakan @if ($todoTotal)<span class="sstock-todo__n">{{ number_format($todoTotal, 0, ',', '.') }}</span>@endif</h2>
         @forelse ($todo as [$tone, $n, $text, $icon, $url])

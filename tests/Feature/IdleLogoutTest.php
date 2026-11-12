@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /* REMARK
- * Tujuan       : Menjaga logout otomatis (x-dl::idle-logout): terpasang di halaman berlogin dengan menit = umur sesi server, tidak di halaman tamu; rute session.ping 204 untuk pengguna aktif, ditolak untuk tamu dan akun nonaktif.
+ * Tujuan       : Menjaga logout otomatis (x-dl2::idle-logout): terpasang di halaman berlogin dengan menit = umur sesi server, tidak di halaman tamu; rute session.ping 204 untuk pengguna aktif, ditolak untuk tamu dan akun nonaktif.
  * Dipakai oleh : php artisan test.
  * Status       : Aktif.
  */
@@ -21,16 +21,16 @@ class IdleLogoutTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)->get(route('help.user-guide'))->assertOk()
-            ->assertSee('data-dl-idle', false)->assertSee('data-minutes="45"', false)
+            ->assertSee('data-dl2-idle', false)->assertSee('data-minutes="45"', false)
             ->assertSee('data-logout-url="'.route('logout').'"', false)->assertSee('data-ping-url="'.route('session.ping').'"', false)
             ->assertSee('data-login-url="'.route('login').'"', false)->assertSee('name="csrf-token"', false);
-        $this->assertSame(1, substr_count($this->actingAs($user)->get(route('home'))->getContent(), 'data-dl-idle'));
+        $this->assertSame(1, substr_count($this->actingAs($user)->get(route('home'))->getContent(), 'data-dl2-idle'));
     }
 
     public function test_guest_pages_do_not_mount_the_component(): void
     {
         foreach (['login', 'password.request'] as $name) {
-            $this->get(route($name))->assertOk()->assertDontSee('data-dl-idle', false);
+            $this->get(route($name))->assertOk()->assertDontSee('data-dl2-idle', false);
         }
     }
 

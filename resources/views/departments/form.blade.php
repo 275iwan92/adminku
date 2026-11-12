@@ -14,20 +14,20 @@
         $e = fn (string $k) => $errors->first($k) ?: null;
     @endphp
     @include('partials.flash')
-    <x-dl::form :title="$isNew ? 'Departemen · Baru' : 'Departemen · '.raw($department->code)" :subtitle="$isNew ? null : raw($department->name)" panel="top" kind="master"
+    <x-dl2::form :title="$isNew ? 'Departemen · Baru' : 'Departemen · '.raw($department->code)" :subtitle="$isNew ? null : raw($department->name)" panel="top" kind="master"
         :status="$isNew ? 'new' : ($department->is_active ? 'active' : 'inactive')" :back="route('departments.index')" :new-url="route('departments.create')"
-        :action="$isNew ? route('departments.store') : route('departments.update', $department)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
+        :action="$isNew ? route('departments.store') : route('departments.update', $department)" :method="$isNew ? 'post' : 'put'"
         :created-at="$department->created_at?->format('Y-m-d H:i:s')" :updated-at="$department->updated_at?->format('Y-m-d H:i:s')">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="code" label="Department Code" :value="$v('code')" code :case-toggle="false" required :readonly="! $isNew" maxlength="20" :error="$e('code')" hint="Unique. Cannot be changed after saving." />
-            <x-dl::field.text name="name" label="Department Name" :value="$v('name')" required maxlength="100" :error="$e('name')" />
-        </x-dl::form.row>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="code" label="Department Code" :value="$v('code')" code :case-toggle="false" required :readonly="! $isNew" maxlength="20" :error="$e('code')" hint="Unique. Cannot be changed after saving." />
+            <x-dl2::field.text name="name" label="Department Name" :value="$v('name')" required maxlength="100" :error="$e('name')" />
+        </x-dl2::form.row>
         @unless ($isNew)
-            <x-dl::form.row :cols="3">
-                <x-dl::field.display label="Recipients" :value="(string) $department->recipients_count" />
-                <x-dl::field.display label="Issuance Documents" :value="(string) $department->documents_count" />
-                <x-dl::field.display label="Employees" :value="(string) $department->employees_count" />
-            </x-dl::form.row>
+            <x-dl2::form.row :cols="3">
+                <x-dl2::field.display label="Recipients" :value="(string) $department->recipients_count" />
+                <x-dl2::field.display label="Issuance Documents" :value="(string) $department->documents_count" />
+                <x-dl2::field.display label="Employees" :value="(string) $department->employees_count" />
+            </x-dl2::form.row>
         @endunless
-    </x-dl::form>
+    </x-dl2::form>
 @endsection

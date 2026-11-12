@@ -2,14 +2,14 @@
  Tujuan       : Daftar pengguna (Grid Master): nama + username, e-mail, peran. Hanya Administrator.
  Sumber hulu  : UserController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form pengguna.
+ Output       : x-dl2::grid; klik 2x / Edit membuka form pengguna.
  Dipakai oleh : route users.index (menu Keamanan > Pengguna).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Users'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="users" :rows="$rows" actions="edit" :new-url="route('users.create')" :open-url="url('users/{id}')" :toggle-url="url('users/{id}/toggle')"
+    <x-dl2::grid id="users" :rows="$rows" actions="edit" :new-url="route('users.create')" :open-url="url('users/{id}')" :toggle-url="url('users/{id}/toggle')"
         search="Search name, username, email..."
         :phone-cards="['title' => 'name', 'sub' => 'username', 'meta' => ['email', 'role', 'group']]"
         :columns="[

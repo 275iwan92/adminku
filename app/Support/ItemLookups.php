@@ -7,12 +7,12 @@ use App\Models\Item;
 use App\Models\PurchaseRequest;
 use App\Models\UnitConversion;
 use App\Services\ItemUnits;
-use Devlib\Locale;
-use Devlib\Lookup;
+use Devlib2\Locale;
+use Devlib2\Lookup;
 use Illuminate\Support\Arr;
 
 /* REMARK
- * Tujuan       : Pilihan barang di baris dokumen (x-dl::lines) dicari ke server; memilih mengisi kolom satuan, stok tersedia, selisih sistem, dan harga acuan di baris itu.
+ * Tujuan       : Pilihan barang di baris dokumen (x-dl2::lines) dicari ke server; memilih mengisi kolom satuan, stok tersedia, selisih sistem, dan harga acuan di baris itu.
  *                Penerimaan dan Saldo Awal memilih PRODUK (batch menurut tanggal kedaluwarsa dibuat otomatis). Pengeluaran dan Penyesuaian memilih BATCH (barang):
  *                daftar Pengeluaran hanya batch ber-stok yang belum kedaluwarsa, dengan kedaluwarsa paling cepat di atas (FEFO).
  * Sumber hulu  : m_item, items (hanya yang aktif). Harga acuan hanya untuk Supervisor.

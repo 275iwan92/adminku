@@ -8,11 +8,11 @@
 --}}
 @extends('layout', ['title' => 'Reset password', 'bodyClass' => 'sstock-bare'])
 @section('body')
-    @if (\Devlib\Device::view(request()) === \Devlib\Device::PHONE)
-        <x-hp-wallpaper><main class="dl-plogin">@include('auth._reset-password-box')</main></x-hp-wallpaper>
+    @if (\Devlib2\Device::view(request()) === \Devlib2\Device::PHONE)
+        <x-hp-wallpaper><main class="ak-plogin">@include('auth._reset-password-box')</main></x-hp-wallpaper>
     @else
-        <x-dl::frame bg="sstock" bg-order="random" box="right" color="light" widgets="brand@top-left, clock@top-right, quote@bottom-left" quotes="motivasi.txt">
+        <x-dl2::frame bg="sstock" bg-order="random" box="right" color="light" widgets="brand@top-left, clock@top-right, quote@bottom-left" quotes="motivasi.txt">
             @include('auth._reset-password-box')
-        </x-dl::frame>
+        </x-dl2::frame>
     @endif
 @endsection

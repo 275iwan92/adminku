@@ -17,7 +17,7 @@ use App\Services\AcCare;
 use App\Services\FacCare;
 use App\Services\FacCustody;
 use App\Services\VehicleCare;
-use Devlib\Locale;
+use Devlib2\Locale;
 
 /* REMARK
  * Tujuan       : Isi Beranda global (desktop dan HP) di bawah banner: satu kartu per modul (Stok, Pengiriman, Keuangan, GA Kendaraan, GA AC) berisi tiga angka dan tautan ke layar pembuka modul itu. Kartu hanya untuk yang berhak modulnya (STB, GVM, GAM).

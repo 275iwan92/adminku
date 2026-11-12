@@ -1,6 +1,6 @@
 {{-- REMARK
  Tujuan       : Panduan Pengguna bagian 3 (Masuk, keluar otomatis, Beranda, Catat Pemesanan, Menu), 4 (Cara memakai Grid) dan 5 (Cara memakai Form: tombol umum, tombol plus, baris detail, siklus dokumen).
- Sumber hulu  : AuthController, EnsureActive, x-dl::idle-logout (layout), HomeController dan partials/reorder-alert, count-reminder, expiry-alert, ReorderOrderController, ReorderOrders, LeadTimes, QuickAdd, StockDocuments.
+ Sumber hulu  : AuthController, EnsureActive, x-dl2::idle-logout (layout), HomeController dan partials/reorder-alert, count-reminder, expiry-alert, ReorderOrderController, ReorderOrders, LeadTimes, QuickAdd, StockDocuments.
  Dipakai oleh : help/user-guide.blade.php.
  Status       : Aktif.
 --}}

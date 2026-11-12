@@ -3,7 +3,7 @@
                 lalu satu baris per AC aktif: kode aset + ruang, area, cuci rutin berikutnya (+ sisa hari), servis besar berikutnya, kerusakan 12 bulan, status Aman / Segera / Terlambat / Rusak (breakdown terbuka).
  Sumber hulu  : AcCareController@index (rows, active, late, soon, broken, next).
  Input        : lihat sumber hulu.
- Output       : kpi-row + x-dl::grid (klik 2x / ikon Buka membuka Detail AC, ac-care.show); tombol hanya bagi yang punya hak modulnya.
+ Output       : kpi-row + x-dl2::grid (klik 2x / ikon Buka membuka Detail AC, ac-care.show); tombol hanya bagi yang punya hak modulnya.
  Dipakai oleh : route ac-care.index (menu GA > Perawatan AC).
  Status       : Aktif.
 --}}
@@ -17,24 +17,24 @@
         $schedule = $u->canAccess('GAS') || $u->canAccess('GAV');
     @endphp
     @include('partials.flash')
-    <x-dl::kpi-row>
-        <x-dl::stat-box label="AC aktif" :value="(string) $active" tone="accent" />
-        <x-dl::stat-box label="Terlambat" :value="(string) $late" :tone="$late ? 'danger' : 'success'" sub="Cuci atau servis besar sudah lewat" />
-        <x-dl::stat-box label="Segera" :value="(string) $soon" :tone="$soon ? 'warn' : 'success'" :sub="'Dalam '.AcCare::soonDays().' hari'" />
-        <x-dl::stat-box label="Kerusakan terbuka" :value="(string) $broken" :tone="$broken ? 'danger' : 'success'" sub="AC rusak belum selesai ditangani" />
-    </x-dl::kpi-row>
+    <x-dl2::kpi-row>
+        <x-dl2::stat-box label="AC aktif" :value="(string) $active" tone="accent" />
+        <x-dl2::stat-box label="Terlambat" :value="(string) $late" :tone="$late ? 'danger' : 'success'" sub="Cuci atau servis besar sudah lewat" />
+        <x-dl2::stat-box label="Segera" :value="(string) $soon" :tone="$soon ? 'warn' : 'success'" :sub="'Dalam '.AcCare::soonDays().' hari'" />
+        <x-dl2::stat-box label="Kerusakan terbuka" :value="(string) $broken" :tone="$broken ? 'danger' : 'success'" sub="AC rusak belum selesai ditangani" />
+    </x-dl2::kpi-row>
     @if ($setup || $schedule)
-        <x-dl::action-bar align="start">
+        <x-dl2::action-bar align="start">
         @if ($setup)
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('ac-setup.index')" />
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('ac-setup.index')" />
         @endif
         @if ($schedule)
-            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Penjadwalan" :href="route($u->canAccess('GAS') ? 'ac-schedule.index' : 'ac-visits.index')" />
+            <x-dl2::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Penjadwalan" :href="route($u->canAccess('GAS') ? 'ac-schedule.index' : 'ac-visits.index')" />
         @endif
-        </x-dl::action-bar>
+        </x-dl2::action-bar>
     @endif
-    <p class="dl-note">{{ $next ? 'Kunjungan terdekat: '.\App\Services\AcMessage::dateText($next->visit_date).' · '.$next->no.' · '.$next->typeText().' · '.AcCare::ORDER_STATUS[$next->status].'.' : 'Belum ada kunjungan terjadwal.' }}</p>
-    <x-dl::grid id="ac-care" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-care/{id}')" search="Cari kode aset, ruang, area, status..."
+    <p class="ak-note">{{ $next ? 'Kunjungan terdekat: '.\App\Services\AcMessage::dateText($next->visit_date).' · '.$next->no.' · '.$next->typeText().' · '.AcCare::ORDER_STATUS[$next->status].'.' : 'Belum ada kunjungan terjadwal.' }}</p>
+    <x-dl2::grid id="ac-care" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-care/{id}')" search="Cari kode aset, ruang, area, status..."
         :columns="[
             ['key' => 'code', 'label' => 'AC', 'type' => 'identity', 'code' => 'name', 'avatar' => false],
             ['key' => 'area', 'label' => 'Area'],

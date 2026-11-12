@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use App\Models\PurchaseRequest;
-use Devlib\PrintDoc\Document;
+use Devlib2\PrintDoc\Document;
 
 /* REMARK
  * Tujuan       : Cetakan Permintaan Pembelian (PP): departemen, tanggal butuh, baris barang + jumlah sudah dipesan. Tanpa harga. Tanda tangan Pembuat / Penyetuju.

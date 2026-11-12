@@ -3,12 +3,12 @@
 namespace App\Support;
 
 use App\Models\Discipline;
-use Devlib\Locale;
+use Devlib2\Locale;
 
 /* REMARK
- * Tujuan       : Data cetakan surat SP 1 / SP 2 / SP 3 / PHK untuk x-dl::print-sheet (A4 potret): kop perusahaan (otomatis), judul surat, nomor, identitas karyawan (NIK disamarkan), pelanggaran, ketentuan masa berlaku, tanda tangan penerbit dan karyawan.
+ * Tujuan       : Data cetakan surat SP 1 / SP 2 / SP 3 / PHK untuk x-dl2::print-sheet (A4 potret): kop perusahaan (otomatis), judul surat, nomor, identitas karyawan (NIK disamarkan), pelanggaran, ketentuan masa berlaku, tanda tangan penerbit dan karyawan.
  * Sumber hulu  : Discipline (employee.department), Company (kop lewat DevLib).
- * Output       : array prop untuk x-dl::print-sheet (title, code, info, sections, signatures, note, landscape).
+ * Output       : array prop untuk x-dl2::print-sheet (title, code, info, sections, signatures, note, landscape).
  * Dipakai oleh : DisciplineController@print (disciplines.print).
  * Status       : Aktif.
  */

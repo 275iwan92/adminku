@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use Devlib\Lookup;
+use Devlib2\Lookup;
 
 /* REMARK
  * Tujuan       : Lookup DevLib "geo_area" (kotak cari wilayah, ketik min. 2 huruf: kecamatan / kota / kode pos); nilai terpilih tampil sebagai label penuh + kode pos; kode pos disimpan server dari wilayah terpilih.

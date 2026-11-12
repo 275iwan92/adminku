@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\Opening;
-use Devlib\Device;
+use Devlib2\Device;
 use Illuminate\Http\Request;
 
 /* REMARK

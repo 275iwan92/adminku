@@ -2,14 +2,14 @@
  Tujuan       : Daftar Pesanan Pembelian (PO): nomor, tanggal, pemasok, kirim, total, persen diterima, status.
  Sumber hulu  : PurchaseOrderController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x membuka PO.
+ Output       : x-dl2::grid; klik 2x membuka PO.
  Dipakai oleh : route po.index (menu Purchase > Pesanan Pembelian (PO)).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Pesanan Pembelian'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="purchase-orders" :rows="$rows" actions="open" :open-url="url('po/{id}')"
+    <x-dl2::grid id="purchase-orders" :rows="$rows" actions="open" :open-url="url('po/{id}')"
         :new-url="auth()->user()->canWrite('PUO') ? route('po.create') : null"
         search="Cari nomor PO, pemasok..."
         :phone-cards="['title' => 'doc_no', 'sub' => 'supplier', 'meta' => ['state', 'total', 'received']]"

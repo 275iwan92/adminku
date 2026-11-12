@@ -24,13 +24,13 @@ class PhoneViewTest extends TestCase
     {
         // ponsel: halaman login HP (tanpa popup), tanpa jalan ke tampilan desktop (ponsel selalu Tampilan HP)
         $phone = $this->withHeader('User-Agent', self::PHONE)->get('/login')->assertOk()->getContent();
-        $this->assertStringContainsString('dl-plogin', $phone);
+        $this->assertStringContainsString('ak-plogin', $phone);
         $this->assertStringNotContainsString('dl-phoneoffer', $phone);
         $this->assertStringNotContainsString('name="ui" value="desktop"', $phone);
 
         // komputer tanpa pilihan: login desktop + popup tawaran (CSS menampilkannya hanya pada layar phone: lebar < 600 px, atau HP landscape)
         $pc = $this->withHeader('User-Agent', self::PC)->get('/login')->getContent();
-        $this->assertStringNotContainsString('dl-plogin', $pc);
+        $this->assertStringNotContainsString('ak-plogin', $pc);
         $this->assertStringContainsString('dl-phoneoffer', $pc);
         $this->assertStringContainsString('Ingin tampilan yang lebih nyaman di smartphone?', $pc);
         $this->assertStringContainsString('Tetap desktop', $pc);
@@ -38,9 +38,9 @@ class PhoneViewTest extends TestCase
 
         // pilihan pengguna (cookie) menang atas tebakan di komputer; di ponsel asli cookie desktop diabaikan
         $chosen = $this->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/login')->getContent();
-        $this->assertStringContainsString('dl-plogin', $chosen);
+        $this->assertStringContainsString('ak-plogin', $chosen);
         $this->assertStringNotContainsString('dl-phoneoffer', $chosen);
-        $this->assertStringContainsString('dl-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/login')->getContent());
+        $this->assertStringContainsString('ak-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/login')->getContent());
     }
 
     public function test_a_real_phone_is_always_the_phone_view_with_no_desktop_switch_and_a_narrowed_pc_window_has_no_visible_switch_either(): void
@@ -48,7 +48,7 @@ class PhoneViewTest extends TestCase
         $user = User::factory()->create();
         $phone = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('dl-phone', $phone);
-        $this->assertStringNotContainsString('data-dl-device', $phone);
+        $this->assertStringNotContainsString('data-dl2-device', $phone);
         $this->assertStringNotContainsString('action="'.route('ui.set').'"', $phone);
 
         $pc = $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get('/')->assertOk()->getContent();
@@ -122,7 +122,7 @@ class PhoneViewTest extends TestCase
     {
         $html = $this->actingAs(User::factory()->supervisor()->create())->withHeader('User-Agent', self::PC)->get('/')->getContent();
         $this->assertStringNotContainsString('data-lm-act="device"', $html);
-        $this->assertStringNotContainsString('data-dl-device', $html);
+        $this->assertStringNotContainsString('data-dl2-device', $html);
     }
 
     public function test_a_pc_browser_with_an_old_manual_phone_choice_is_released_to_desktop_and_the_cookie_is_cleared(): void
@@ -149,7 +149,7 @@ class PhoneViewTest extends TestCase
     public function test_every_phone_screen_renders_all_the_hooks_phone_shell_js_binds_to(): void
     {
         $user = User::factory()->supervisor()->create();
-        $hooks = ['data-dl-phone-menu', 'data-dl-phone-bar', 'data-dl-phone-more', 'data-dl-phone-list', 'data-dl-phone-panel', 'data-dl-phone-close-panel', 'data-dl-phone-sheet', 'dl-phone__main'];
+        $hooks = ['data-dl2-phone-menu', 'data-dl2-phone-bar', 'data-dl2-phone-more', 'data-dl2-phone-list', 'data-dl2-phone-panel', 'data-dl2-phone-close-panel', 'data-dl2-phone-sheet', 'dl-phone__main'];
 
         foreach (['/', route('opening', 'transaksi'), route('hp.open', 'ITM'), route('hp.find'), route('hp.counts')] as $url) {
             $html = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->get($url)->assertOk()->getContent();

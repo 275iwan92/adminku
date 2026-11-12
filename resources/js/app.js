@@ -1,5 +1,5 @@
 // Layar tinjau Stok Opname: ringkasan (jumlah / nilai lebih-kurang) dihitung server, jadi halaman dimuat ulang setelah sel tersimpan.
-document.addEventListener('dl:sheet-save', (e) => {
+document.addEventListener('saved.dl2.row-sheet', (e) => {
     if (e.target.closest('[data-reload-on-save]')) setTimeout(() => location.reload(), 600);
 });
 
@@ -8,15 +8,16 @@ document.addEventListener('dl:sheet-save', (e) => {
 document.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-count-save]');
     if (!btn) return;
-    const sheet = document.querySelector('[data-dl-sheet]')?.dlSheet;
+    const host = document.querySelector('[data-dl2="row-sheet"]');
+    const sheet = host && window.Devlib2?.classes?.['row-sheet']?.getInstance(host);
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
-    const toast = window.Devlib?.toast;
+    const toast = window.Devlib2?.toast;
     if (!sheet || !toast) return;
     btn.disabled = true;
     let res = null;
     for (let i = 0; i < 3; i++) {
         await new Promise((r) => setTimeout(r, 700));
-        const seen = sheet.data.filter((r) => (r.counted_qty !== '' && r.counted_qty != null) || r.skipped).length;
+        const seen = sheet.getRows().filter((r) => (r.counted_qty !== '' && r.counted_qty != null) || r.skipped).length;
         try {
             const r = await fetch(btn.dataset.countSave, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify({ seen }) });
             res = { ok: r.ok, ...(await r.json().catch(() => ({}))) };
@@ -25,7 +26,7 @@ document.addEventListener('click', async (e) => {
         }
         if (res.ok) break;
     }
-    toast(res.ok ? res.message : (res.error || 'Gagal menyimpan.'), res.ok ? 'success' : 'danger');
+    toast(res.ok ? res.message : (res.error || 'Gagal menyimpan.'), { tone: res.ok ? 'success' : 'danger' });
     btn.disabled = false;
 });
 
@@ -48,3 +49,20 @@ import './cash-form';
         document.readyState === 'complete' ? setTimeout(fire, 300) : window.addEventListener('load', () => setTimeout(fire, 300));
     }
 }
+// Isi bidang formulir lewat skrip (padanan Devlib.h.setField v1): ubah nilai lalu beri tahu DevLib 2 / penyimak change.
+window.akSetField = (form, name, value) => {
+    const el = form?.querySelector(`[name="${name}"]`);
+    if (!el) return;
+    const host = el.closest('[data-dl2]'), inst = host && window.Devlib2?.classes?.[host.dataset.dl2]?.getInstance(host);
+    if (inst?.setValue) { inst.setValue(value, true); return; }
+    el.value = value;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
+// Angka dari isian (format Indonesia "1.234,50" atau biasa "1234.5") ke Number; kosong = 0.
+window.akNum = (v) => {
+    const s = String(v ?? '').replace(/[^0-9,.\-]/g, '');
+    const n = s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s;
+    return parseFloat(n) || 0;
+};

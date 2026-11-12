@@ -2,22 +2,22 @@
  Tujuan       : Kartu Stok per item: histori pergerakan (saldo awal, masuk, keluar, penyesuaian, saldo berjalan) dalam rentang tanggal, lengkap tanggal, jam, dokumen, user.
  Sumber hulu  : ReportController@stockCard (rm_stockcard). Kolom biaya & nilai saldo hanya untuk Supervisor.
  Input        : sup, from, to, item, rows, opening, items (pilihan item).
- Output       : filter + x-dl::report (bisa dicetak).
+ Output       : filter + x-dl2::report (bisa dicetak).
  Dipakai oleh : route reports.stock-card (menu Reports > Stock Card).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Stock Card'])
 @section('body')
     <x-report-filter :from="$from" :to="$to">
-        <x-dl::field.select name="batch_id" label="Item" :options="$items" :value="$item?->id" required />
+        <x-dl2::field.select name="batch_id" label="Item" :options="$items" :value="$item?->id" required />
     </x-report-filter>
     @if (! $item)
-        <x-dl::empty-state title="Choose an item" message="Select an item and a period, then press Show to see its stock card." icon="file" />
+        <x-dl2::empty-state title="Choose an item" message="Select an item and a period, then press Show to see its stock card." icon="file" />
     @else
-        <x-dl::report phone-list title="Stock Card" subtitle="Stock movement history per item" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
+        <x-dl2::report phone-list title="Stock Card" subtitle="Stock movement history per item" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
             :criteria="array_filter([
                 'Item Code' => raw($item->code), 'Item Name' => raw($item->name), 'Unit' => raw($item->unit), 'Location' => raw($item->location ?? '—'),
-                'Period' => raw(Devlib\Locale::d($from).' — '.Devlib\Locale::d($to)),
+                'Period' => raw(Devlib2\Locale::d($from).' — '.Devlib2\Locale::d($to)),
                 'Valuation' => $sup ? 'Rata-rata bergerak' : null,
             ])"
             :opening="$opening" group-by="month" :groups="['month' => 'Per Month']"

@@ -15,34 +15,34 @@
         $typeId = $typeOf[$vehicleId] ?? null;
     @endphp
     @include('partials.flash')
-    <x-dl::form title="Catat Servis Kendaraan" subtitle="Jadwal servis berikutnya dihitung otomatis dari odometer dan tanggal servis" panel="top" kind="master" status="new" :back="$back" :action="route('vehicle-services.store')">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.select name="vehicle_id" label="Kendaraan" :options="$vehicles" :value="$vehicleId" required :error="$e('vehicle_id')" />
-            <x-dl::field.date name="serviced_at" label="Tanggal Servis" :value="old('serviced_at', today()->format('Y-m-d'))" required :error="$e('serviced_at')" />
-            <x-dl::field.decimal name="odometer_km" label="Odometer (km)" :decimals="0" unit="km" :value="old('odometer_km', $lastKm[$vehicleId] ?? 0)" required :error="$e('odometer_km')" hint="Bawaan: odometer terakhir kendaraan. Tidak boleh lebih kecil dari catatan terakhir." />
-        </x-dl::form.row>
+    <x-dl2::form title="Catat Servis Kendaraan" subtitle="Jadwal servis berikutnya dihitung otomatis dari odometer dan tanggal servis" panel="top" kind="master" status="new" :back="$back" :action="route('vehicle-services.store')">
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.select name="vehicle_id" label="Kendaraan" :options="$vehicles" :value="$vehicleId" required :error="$e('vehicle_id')" />
+            <x-dl2::field.date name="serviced_at" label="Tanggal Servis" :value="old('serviced_at', today()->format('Y-m-d'))" required :error="$e('serviced_at')" />
+            <x-dl2::field.decimal name="odometer_km" label="Odometer (km)" :decimals="0" unit="km" :value="old('odometer_km', $lastKm[$vehicleId] ?? 0)" required :error="$e('odometer_km')" hint="Bawaan: odometer terakhir kendaraan. Tidak boleh lebih kecil dari catatan terakhir." />
+        </x-dl2::form.row>
         @foreach ($plans as $planType => $options)
             <div data-jobs-type="{{ $planType }}" @if ((string) $planType !== (string) $typeId) hidden @endif>
-                <x-dl::form.row>
+                <x-dl2::form.row>
                     @if ($options)
-                        <x-dl::field.checkboxes name="jobs" label="Pekerjaan yang Dikerjakan" :options="$options" :value="old('jobs', [])" :disabled="(string) $planType !== (string) $typeId" :error="(string) $planType === (string) $typeId ? ($e('jobs') ?: $e('jobs.0')) : null" hint="Centang dari jadwal perawatan kendaraan ini. Jadwal pekerjaan yang dicentang dihitung ulang dari servis ini." />
+                        <x-dl2::field.checkboxes name="jobs" label="Pekerjaan yang Dikerjakan" :options="$options" :value="old('jobs', [])" :disabled="(string) $planType !== (string) $typeId" :error="(string) $planType === (string) $typeId ? ($e('jobs') ?: $e('jobs.0')) : null" hint="Centang dari jadwal perawatan kendaraan ini. Jadwal pekerjaan yang dicentang dihitung ulang dari servis ini." />
                     @else
-                        <p class="dl-note">Jenis kendaraan ini belum punya rencana perawatan (isi di Jenis Kendaraan). Tuliskan pekerjaannya di Catatan.</p>
+                        <p class="ak-note">Jenis kendaraan ini belum punya rencana perawatan (isi di Jenis Kendaraan). Tuliskan pekerjaannya di Catatan.</p>
                     @endif
-                </x-dl::form.row>
+                </x-dl2::form.row>
             </div>
         @endforeach
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="workshop" label="Bengkel" :value="old('workshop')" maxlength="100" :error="$e('workshop')" />
-            <x-dl::field.decimal name="cost" label="Biaya Total (IDR)" :decimals="2" :value="old('cost', 0)" required :error="$e('cost')" />
-        </x-dl::form.row>
-        <x-dl::form.row>
-            <x-dl::field.text name="note" label="Catatan" :value="old('note')" maxlength="255" :error="$e('note')" hint="Wajib bila tidak ada pekerjaan yang dicentang (servis di luar jadwal)." />
-        </x-dl::form.row>
-    </x-dl::form>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="workshop" label="Bengkel" :value="old('workshop')" maxlength="100" :error="$e('workshop')" />
+            <x-dl2::field.decimal name="cost" label="Biaya Total (IDR)" :decimals="2" :value="old('cost', 0)" required :error="$e('cost')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row>
+            <x-dl2::field.text name="note" label="Catatan" :value="old('note')" maxlength="255" :error="$e('note')" hint="Wajib bila tidak ada pekerjaan yang dicentang (servis di luar jadwal)." />
+        </x-dl2::form.row>
+    </x-dl2::form>
     <script>
         // Daftar pekerjaan dan odometer bawaan mengikuti kendaraan yang dipilih; pekerjaan jenis lain disembunyikan dan dinonaktifkan supaya tidak terkirim.
-        (() => {
+        window.akReady(() => {
             const typeOf = @json($typeOf), lastKm = @json($lastKm);
             const form = document.querySelector('form[action="{{ route('vehicle-services.store') }}"]');
             form.addEventListener('change', e => {
@@ -52,8 +52,8 @@
                     g.hidden = !on;
                     g.querySelectorAll('input').forEach(i => { i.disabled = !on; if (!on) i.checked = false; });
                 });
-                window.Devlib.h.setField(form, 'odometer_km', lastKm[e.target.value] ?? 0);
+                window.akSetField(form, 'odometer_km', lastKm[e.target.value] ?? 0);
             });
-        })();
+        });
     </script>
 @endsection

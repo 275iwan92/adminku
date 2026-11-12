@@ -1,7 +1,7 @@
 {{-- REMARK
  Tujuan       : Banner "hero" Beranda desktop dan HP: sapaan menurut jam, keterangan peran / Grup / perusahaan, empat angka ringkasan, tombol Panduan Pengguna, jam hidup, tanggal panjang, dan kartu cuaca.
                 Jam: skrip kecil memakai zona waktu aplikasi (data-tz, bukan zona perangkat) dan selisih jam server vs perangkat; tanpa JS yang tampil waktu server saat halaman dibuat.
-                Cuaca: x-dl::weather (tempat cadangan = kota di layar Perusahaan); belum diisi = kartu tidak dirender (tidak ada cuaca palsu).
+                Cuaca: x-dl2::weather (tempat cadangan = kota di layar Perusahaan); belum diisi = kartu tidak dirender (tidak ada cuaca palsu).
  Sumber hulu  : App\Support\HomeHero::build.
  Input        : hero (greeting, name, line, stats, time, date, tz, tzLabel, now, weather).
  Output       : banner dengan kelas sstock-hero* (CSS di resources/css/app.css).
@@ -17,7 +17,7 @@
         @if ($hero['stats'])
             <ul class="sstock-hero__stats">
                 @foreach ($hero['stats'] as $s)
-                    <li class="sstock-hero__stat"><b class="sstock-hero__num {{ $s['alert'] ? 'is-alert' : '' }}">{{ \Devlib\Locale::number($s['value'], 0) }}</b><span>{{ $s['label'] }}</span></li>
+                    <li class="sstock-hero__stat"><b class="sstock-hero__num {{ $s['alert'] ? 'is-alert' : '' }}">{{ \Devlib2\Locale::number($s['value'], 0) }}</b><span>{{ $s['label'] }}</span></li>
                 @endforeach
             </ul>
         @endif
@@ -27,7 +27,7 @@
         <div class="sstock-hero__clock"><span data-hero-time>{{ $hero['time'] }}</span> <small>{{ $hero['tzLabel'] }}</small></div>
         <div class="sstock-hero__date" data-hero-date>{{ $hero['date'] }}</div>
         @if ($hero['weather'])
-            <x-dl::weather class="sstock-hero__wx" :city="$hero['weather']['city']" :lat="$hero['weather']['lat']" :lon="$hero['weather']['lon']" />
+            <x-dl2::weather class="sstock-hero__wx" :city="$hero['weather']['city']" :lat="$hero['weather']['lat']" :lon="$hero['weather']['lon']" />
         @endif
     </div>
 </section></div>
@@ -74,7 +74,7 @@
     (() => {
         const root = document.querySelector('[data-sstock-hero]'), cv = root?.querySelector('.sstock-hero__fx');
         if (!cv || window.sstockGaya.reduced) return;
-        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [], tok = n => getComputedStyle(root).getPropertyValue(n).trim() || '#14b8a6', accent = tok('--dl-accent'), warm = tok('--dl-amber');   // warna ikut tema (token --dl-*)
+        const ctx = cv.getContext('2d'), mouse = {x: -999, y: -999}, dots = [], tok = n => getComputedStyle(root).getPropertyValue(n).trim() || '#14b8a6', accent = tok('--dl2-primary'), warm = tok('--dl2-warning');   // warna ikut tema (token --dl-*)
         let w = 0, h = 0, raf = 0;
         const size = () => {
             const r = root.getBoundingClientRect(), d = devicePixelRatio || 1;

@@ -2,7 +2,7 @@
  Tujuan       : Daftar Kebutuhan (pilihan di Uang Keluar): nama dan jumlah Uang Keluar yang memakainya.
  Sumber hulu  : CashPurposeController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form (ubah nama, hapus).
+ Output       : x-dl2::grid; klik 2x / Edit membuka form (ubah nama, hapus).
  Dipakai oleh : route cash-purposes.index (tombol Kelola Kebutuhan di Uang Keluar).
  Status       : Aktif.
 --}}
@@ -10,10 +10,10 @@
 @section('body')
     @php $rows = collect($rows)->map(fn ($r) => $r + ['usedTone' => $r['used'] ? 'neutral' : 'warn'])->all(); @endphp
     @include('partials.flash')
-    <x-dl::action-bar align="start">
-        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali ke Uang Keluar" :href="route('cash-out.index')" />
-    </x-dl::action-bar>
-    <x-dl::grid id="cash-purposes" :rows="$rows" actions="edit" :new-url="route('cash-purposes.create')" :open-url="url('cash-purposes/{id}')"
+    <x-dl2::action-bar align="start">
+        <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali ke Uang Keluar" :href="route('cash-out.index')" />
+    </x-dl2::action-bar>
+    <x-dl2::grid id="cash-purposes" :rows="$rows" actions="edit" :new-url="route('cash-purposes.create')" :open-url="url('cash-purposes/{id}')"
         search="Cari kebutuhan..."
         :phone-cards="['title' => 'name', 'meta' => ['used']]"
         :columns="[

@@ -1,7 +1,7 @@
 {{-- REMARK
  Tujuan       : Pratinjau gambar pop-up (lightbox) di tengah layar untuk unggahan berkas bergambar (Foto Profil, Scan KTP, Foto KTP): latar gelap, gambar terpusat dan muat layar, tutup (X, Esc, klik di luar), zoom +/- (tombol atau roda mouse), geser saat diperbesar, cubit untuk zoom di layar sentuh, dan unduh.
-                DevLib belum punya komponen lightbox (x-dl::image-gallery hanya membuka tab baru), jadi dibuat sederhana di sini. Berkas bukan gambar (PDF) tetap dibuka di tab baru.
- Sumber hulu  : markup x-dl::field.upload (gambar kecil .dl-upload__thumb di dalam tautan berkas tersimpan atau baris berkas yang baru dipilih).
+                DevLib belum punya komponen lightbox (x-dl2::image-gallery hanya membuka tab baru), jadi dibuat sederhana di sini. Berkas bukan gambar (PDF) tetap dibuka di tab baru.
+ Sumber hulu  : markup x-dl2::field.upload (gambar kecil .dl-upload__thumb di dalam tautan berkas tersimpan atau baris berkas yang baru dipilih).
  Input        : tanpa prop.
  Output       : CSS dan skrip; dipasang sekali per halaman.
  Dipakai oleh : employees.form, candidates.form.
@@ -13,8 +13,8 @@
     .rk-photo-cell { display: flex; flex-direction: column; gap: 4px; max-width: 320px; }
     .rk-photo-cell--ktp { max-width: 340px; }
     .rk-photo-label { font-size: 12.5px; font-weight: 600; }
-    .rk-photo-hint { font-size: 11.5px; color: var(--dl-muted, #666); }
-    .rk-photo-err { font-size: 11.5px; color: var(--dl-danger, #c0392b); }
+    .rk-photo-hint { font-size: 11.5px; color: var(--dl2-ink-soft, #666); }
+    .rk-photo-err { font-size: 11.5px; color: var(--dl2-danger, #c0392b); }
     .rk-zoom { font-size: 12px; text-decoration: none; }
     .lb-ov { position: fixed; inset: 0; z-index: 10000; background: rgba(10, 12, 18, .88); display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; }
     .lb-img { max-width: 92vw; max-height: 86vh; transform-origin: center; user-select: none; -webkit-user-drag: none; background: #fff; border-radius: 6px; cursor: grab; }
@@ -24,7 +24,7 @@
     .lb-cap { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; color: #e8e8e8; font-size: 12.5px; }
 </style>
 <script>
-    (() => {
+    window.akReady(() => {
         const open = (src, name) => {
             const ov = document.createElement('div');
             ov.className = 'lb-ov';
@@ -70,9 +70,9 @@
             open(a.dataset.lightbox, a.dataset.name || '');
         });
 
-        // Dialog crop DevLib (x-dl::photo-box) bertitle "Profile photo" dan berteks 3:4 bawaan; judul disesuaikan per kotak, teks KTP (856 x 540) juga.
-        setTimeout(() => document.querySelectorAll('[data-dl-photobox]').forEach((box) => {
-            const layer = window.Devlib?.h?.layer?.(box.dataset.cropId) || document.getElementById(box.dataset.cropId);
+        // Dialog crop DevLib (x-dl2::photo-box) bertitle "Profile photo" dan berteks 3:4 bawaan; judul disesuaikan per kotak, teks KTP (856 x 540) juga.
+        setTimeout(() => document.querySelectorAll('[data-dl2-photobox]').forEach((box) => {
+            const layer = window.Devlib2?.h?.layer?.(box.dataset.cropId) || document.getElementById(box.dataset.cropId);
             if (! layer) { return; }
             const ktp = box.dataset.outW === '856';
             const title = [...layer.querySelectorAll('*')].find((el) => el.children.length === 0 && el.textContent.trim() === 'Profile photo');
@@ -89,5 +89,5 @@
             const link = thumb.closest('a');
             open(link?.href || thumb.src, thumb.closest('.dl-upload__file')?.querySelector('.dl-upload__name')?.textContent?.trim() || '');
         }, true);
-    })();
+    });
 </script>

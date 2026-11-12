@@ -7,15 +7,15 @@ use App\Models\CashIn;
 use App\Services\CashLedger;
 use App\Models\CashOut;
 use App\Support\Text;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /* REMARK
  * Tujuan       : Laporan modul Kas: Arus Kas (buku kas per kas/rekening, saldo awal-berjalan-akhir), Penerimaan (Uang Masuk per sumber dana, terpakai/sisa), Pengeluaran (Uang Keluar per sumber dana lewat Uang Masuk tertaut).
- *                Semua tampil sebagai x-dl::report (kop, kriteria, ringkasan, kelompok, cetak), pola sama ReportController (laporan Stok).
+ *                Semua tampil sebagai x-dl2::report (kop, kriteria, ringkasan, kelompok, cetak), pola sama ReportController (laporan Stok).
  * Sumber hulu  : m_cash_account, k_cash_in, k_cash_out.
- * Output       : view reports.cash-* dengan filter GET (periode, kas, sumber dana, status) + x-dl::report.
+ * Output       : view reports.cash-* dengan filter GET (periode, kas, sumber dana, status) + x-dl2::report.
  * Dipakai oleh : routes/web.php (reports.cash-*).
  * Status       : Aktif.
  */

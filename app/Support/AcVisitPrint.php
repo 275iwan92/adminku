@@ -6,13 +6,13 @@ use App\Models\AcOrder;
 use App\Models\AcOrderLine;
 use App\Services\AcCare;
 use App\Services\AcMessage;
-use Devlib\Locale;
+use Devlib2\Locale;
 
 /* REMARK
- * Tujuan       : Data cetakan BERITA ACARA kunjungan perawatan AC untuk x-dl::print-sheet (A4 potret): kop perusahaan (otomatis), nomor pesanan, tanggal / jam / vendor, MODE (status pesanan),
+ * Tujuan       : Data cetakan BERITA ACARA kunjungan perawatan AC untuk x-dl2::print-sheet (A4 potret): kop perusahaan (otomatis), nomor pesanan, tanggal / jam / vendor, MODE (status pesanan),
  *                tabel AC (kode ruang · kode aset, area dan ruang, tipe, pekerjaan, tanggal selesai, kondisi / catatan untuk ditulis tangan) dan kotak tanda tangan (petugas vendor, PIC area, petugas GA).
  * Sumber hulu  : AcOrder (vendor, lines.unit.room.area), Company (kop lewat DevLib).
- * Output       : array prop untuk x-dl::print-sheet (title, code, info, sections, signatures, note, landscape).
+ * Output       : array prop untuk x-dl2::print-sheet (title, code, info, sections, signatures, note, landscape).
  * Dipakai oleh : AcVisitController@print (ac-visits.print).
  * Status       : Aktif.
  */

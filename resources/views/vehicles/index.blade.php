@@ -2,7 +2,7 @@
  Tujuan       : Daftar master Kendaraan (Grid Master, modul GVK): plat + nama / model dalam kotak berwarna menurut jenis, jenis, tahun, status wajib KIR, odometer terakhir, no. rangka dan mesin (tersembunyi).
  Sumber hulu  : VehicleController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form kendaraan.
+ Output       : x-dl2::grid; klik 2x / Edit membuka form kendaraan.
  Dipakai oleh : route vehicles.index (menu GA > Master Kendaraan).
  Status       : Aktif.
 --}}
@@ -10,7 +10,7 @@
 @section('body')
     @include('partials.flash')
     @include('partials.back-to-hub', ['hub' => 'fleet'])
-    <x-dl::grid id="vehicles" :rows="$rows" actions="edit" :new-url="route('vehicles.create')" :open-url="url('vehicles/{id}')" :toggle-url="url('vehicles/{id}/toggle')"
+    <x-dl2::grid id="vehicles" :rows="$rows" actions="edit" :new-url="route('vehicles.create')" :open-url="url('vehicles/{id}')" :toggle-url="url('vehicles/{id}/toggle')"
         search="Cari plat, nama, jenis..."
         :phone-cards="['title' => 'plate', 'sub' => 'name', 'meta' => ['type', 'kir', 'odometer']]"
         :columns="[

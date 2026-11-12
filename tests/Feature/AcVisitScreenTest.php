@@ -191,7 +191,7 @@ class AcVisitScreenTest extends TestCase
     {
         $o = $this->order();
         $ro = $this->acUser(['GAV' => 'ro']);
-        $this->actingAs($ro)->get(route('ac-visits.show', $o))->assertOk()->assertSee($o->no)->assertDontSee('Tandai selesai')->assertDontSee('data-dl-open="send-modal"', false)->assertDontSee('Batalkan kunjungan');
+        $this->actingAs($ro)->get(route('ac-visits.show', $o))->assertOk()->assertSee($o->no)->assertDontSee('Tandai selesai')->assertDontSee('data-dl2-open="send-modal"', false)->assertDontSee('Batalkan kunjungan');
         $this->get(route('ac-visits.index'))->assertOk();
         $this->get(route('ac-visits.print', $o))->assertOk();
         foreach (['send', 'confirm', 'cancel'] as $action) {

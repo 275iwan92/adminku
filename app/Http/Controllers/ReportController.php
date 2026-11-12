@@ -11,15 +11,15 @@ use App\Models\StockMovement;
 use App\Models\Supplier;
 use App\Services\LeadTimes;
 use App\Support\Decimal;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /* REMARK
- * Tujuan       : Laporan utama: Kartu Stok, Summary Stock, Kedaluwarsa, Penerimaan, Pengeluaran, Opname & Penyesuaian. Semua tampil sebagai x-dl::report (kop, kriteria, ringkasan, kelompok, cetak).
+ * Tujuan       : Laporan utama: Kartu Stok, Summary Stock, Kedaluwarsa, Penerimaan, Pengeluaran, Opname & Penyesuaian. Semua tampil sebagai x-dl2::report (kop, kriteria, ringkasan, kelompok, cetak).
  * Sumber hulu  : rm_stockcard (kartu stok), items (summary), rm_stock_line + rm_stock (laporan dokumen). Kolom harga / nilai hanya untuk Supervisor.
- * Output       : view reports.* dengan filter GET (periode, item, dst) + x-dl::report.
+ * Output       : view reports.* dengan filter GET (periode, item, dst) + x-dl2::report.
  * Dipakai oleh : routes/web.php (reports.*).
  * Status       : Aktif.
  */

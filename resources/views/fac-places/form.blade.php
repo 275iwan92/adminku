@@ -14,21 +14,21 @@
         $e = fn (string $k) => $errors->first($k) ?: null;
     @endphp
     @include('partials.flash')
-    <x-dl::form :title="($place->parent_id ? 'Ruang' : 'Gedung').' · '.($isNew ? 'Baru' : raw($place->code))" :subtitle="$isNew ? null : raw($place->name)" panel="top" kind="master"
+    <x-dl2::form :title="($place->parent_id ? 'Ruang' : 'Gedung').' · '.($isNew ? 'Baru' : raw($place->code))" :subtitle="$isNew ? null : raw($place->name)" panel="top" kind="master"
         :status="$isNew ? 'new' : ($place->is_active ? 'active' : 'inactive')" :back="route('fac-places.index')" :new-url="route('fac-places.create')"
-        :action="$isNew ? route('fac-places.store') : route('fac-places.update', $place)" :hidden="$isNew ? [] : ['_method' => 'PUT']"
+        :action="$isNew ? route('fac-places.store') : route('fac-places.update', $place)" :method="$isNew ? 'post' : 'put'"
         :created-at="$place->created_at?->format('Y-m-d H:i:s')" :updated-at="$place->updated_at?->format('Y-m-d H:i:s')">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="code" label="Kode" :value="$v('code')" code :case-toggle="false" maxlength="20" :error="$e('code')" hint="Kosong = otomatis dari nama." />
-            <x-dl::field.text name="name" label="Nama" :value="$v('name')" required maxlength="100" :error="$e('name')" />
-            <x-dl::field.select name="parent_id" label="Gedung induk" :options="['' => '(ini sebuah gedung)'] + $buildings" :value="$v('parent_id')" :error="$e('parent_id')" hint="Pilih gedung bila ini sebuah ruang / area." />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="2">
-            <x-dl::field.text name="pic_name" label="Penanggung jawab" :value="$v('pic_name')" maxlength="100" :error="$e('pic_name')" />
-            <x-dl::field.text name="note" label="Catatan" :value="$v('note')" maxlength="255" :error="$e('note')" />
-        </x-dl::form.row>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="code" label="Kode" :value="$v('code')" code :case-toggle="false" maxlength="20" :error="$e('code')" hint="Kosong = otomatis dari nama." />
+            <x-dl2::field.text name="name" label="Nama" :value="$v('name')" required maxlength="100" :error="$e('name')" />
+            <x-dl2::field.select name="parent_id" label="Gedung induk" :options="['' => '(ini sebuah gedung)'] + $buildings" :value="$v('parent_id')" :error="$e('parent_id')" hint="Pilih gedung bila ini sebuah ruang / area." />
+        </x-dl2::form.row>
+        <x-dl2::form.row :cols="2">
+            <x-dl2::field.text name="pic_name" label="Penanggung jawab" :value="$v('pic_name')" maxlength="100" :error="$e('pic_name')" />
+            <x-dl2::field.text name="note" label="Catatan" :value="$v('note')" maxlength="255" :error="$e('note')" />
+        </x-dl2::form.row>
         @if ($place->exists && $place->children->isNotEmpty())
-            <p class="dl-note">Ruang di gedung ini: {{ $place->children->pluck('name')->implode(', ') }}.</p>
+            <p class="ak-note">Ruang di gedung ini: {{ $place->children->pluck('name')->implode(', ') }}.</p>
         @endif
-    </x-dl::form>
+    </x-dl2::form>
 @endsection

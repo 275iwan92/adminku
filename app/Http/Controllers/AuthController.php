@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserDevice;
 use App\Support\Wallpapers;
-use Devlib\Device;
+use Devlib2\Device;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

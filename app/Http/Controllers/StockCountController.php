@@ -94,7 +94,7 @@ class StockCountController extends Controller
             : ['entryRows' => $this->counts->entryRows($count)]));
     }
 
-    // Simpan per sel dari lembar input (x-dl::lookup-grid auto-save): {changed: [baris]} -> {rows: seluruh baris}. Nama penghitung terakhir diingat per sesi dan mengisi baris berikutnya yang namanya kosong.
+    // Simpan per sel dari lembar input (x-dl2::lookup-grid auto-save): {changed: [baris]} -> {rows: seluruh baris}. Nama penghitung terakhir diingat per sesi dan mengisi baris berikutnya yang namanya kosong.
     public function saveLines(Request $request, StockCount $count): JsonResponse
     {
         $key = "stock-count.{$count->id}.counter";

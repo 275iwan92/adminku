@@ -19,11 +19,11 @@
     @endphp
     @include('partials.flash')
     @include('partials.back-to-hub', ['hub' => 'fac'])
-    <p class="dl-note">Klik kelompok gedung untuk melihat ruangnya. Tombol di bawah membuka gedung atau menambah ruang.</p>
+    <p class="ak-note">Klik kelompok gedung untuk melihat ruangnya. Tombol di bawah membuka gedung atau menambah ruang.</p>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
         @foreach ($buildings as $b)
-            <x-dl::button variant="secondary" size="sm" icon="fa-pen" :label="$b['code'].' · '.$b['name'].' ('.$b['assets'].' aset)'.($b['active'] ? '' : ' · nonaktif')" :href="url('fac-places/'.$b['id'])" />
-            <x-dl::button variant="secondary" size="sm" icon="fa-plus" :label="'Ruang di '.$b['name']" :href="route('fac-places.create', ['gedung' => $b['id']])" />
+            <x-dl2::button variant="secondary" size="sm" icon="fa-pen" :label="$b['code'].' · '.$b['name'].' ('.$b['assets'].' aset)'.($b['active'] ? '' : ' · nonaktif')" :href="url('fac-places/'.$b['id'])" />
+            <x-dl2::button variant="secondary" size="sm" icon="fa-plus" :label="'Ruang di '.$b['name']" :href="route('fac-places.create', ['gedung' => $b['id']])" />
         @endforeach
     </div>
     @include('partials.fac-cardlist', ['groups' => $groups, 'newUrl' => route('fac-places.create'), 'searchHint' => 'Cari kode atau nama ruang...'])

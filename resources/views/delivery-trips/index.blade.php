@@ -2,7 +2,7 @@
  Tujuan       : Daftar trip Pengiriman: nomor, tanggal, kendaraan, crew, jumlah alamat, status.
  Sumber hulu  : DeliveryTripController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x membuka planner trip.
+ Output       : x-dl2::grid; klik 2x membuka planner trip.
  Dipakai oleh : route trips.index (menu Pengiriman > Perencanaan Pengiriman).
  Status       : Aktif.
 --}}
@@ -10,7 +10,7 @@
 @section('body')
     @php $tones = ['Ditugaskan' => 'success', 'Draf' => 'neutral', 'Dibatalkan' => 'danger']; @endphp
     @include('partials.flash')
-    <x-dl::grid id="delivery-trips" :rows="$rows" actions="worklist" :open-url="url('trips/{id}')" :new-url="auth()->user()->canWrite('PGK') ? route('trips.create') : null"
+    <x-dl2::grid id="delivery-trips" :rows="$rows" actions="worklist" :open-url="url('trips/{id}')" :new-url="auth()->user()->canWrite('PGK') ? route('trips.create') : null"
         search="Cari nomor trip, plat, sopir..."
         :phone-cards="['title' => 'doc_no', 'sub' => 'crew', 'badge' => 'state', 'tones' => $tones, 'meta' => ['trip_date', 'vehicle', 'stops']]"
         :columns="[

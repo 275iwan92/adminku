@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\CashAccount;
 use App\Services\CashLedger;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /* REMARK
- * Tujuan       : Kartu Saldo per kas (KSB): pilih satu kas (Tunai / rekening bank), daftar mutasi buku besar kas bergulir dengan saldo berjalan, saldo awal dan akhir periode. Cetak / ekspor lewat x-dl::report.
+ * Tujuan       : Kartu Saldo per kas (KSB): pilih satu kas (Tunai / rekening bank), daftar mutasi buku besar kas bergulir dengan saldo berjalan, saldo awal dan akhir periode. Cetak / ekspor lewat x-dl2::report.
  * Sumber hulu  : k_cash_ledger (CashLedger), m_cash_account.
  * Output       : view cash-card.index.
  * Dipakai oleh : routes/web.php (cash-card.index).

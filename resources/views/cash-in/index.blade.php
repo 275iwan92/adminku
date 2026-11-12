@@ -2,7 +2,7 @@
  Tujuan       : Daftar Uang Masuk (Grid Transactional): nomor, tanggal, kas tujuan, sumber dana, jumlah, terpakai, sisa, status.
  Sumber hulu  : CashInController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x membuka Uang Masuk; tombol Setup ke master Kas/Rekening bagi yang berhak.
+ Output       : x-dl2::grid; klik 2x membuka Uang Masuk; tombol Setup ke master Kas/Rekening bagi yang berhak.
  Dipakai oleh : route cash-in.index (menu Kas > Uang Masuk).
  Status       : Aktif.
 --}}
@@ -12,15 +12,15 @@
         $tones = ['Draf' => 'neutral', 'Diajukan' => 'warn', 'Disetujui' => 'success', 'Ditolak' => 'danger', 'Dibatalkan' => 'danger'];
     @endphp
     @include('partials.flash')
-    <x-dl::action-bar align="start">
+    <x-dl2::action-bar align="start">
         @if (auth()->user()->canAccess('KSR'))
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-building-columns" label="Setup Kas / Rekening" :href="route('cash-accounts.index')" />
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-building-columns" label="Setup Kas / Rekening" :href="route('cash-accounts.index')" />
         @endif
         @if (auth()->user()->canWrite('KSM'))
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-hand-holding-dollar" label="Kelola Sumber Dana" :href="route('cash-sources.index')" />
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-hand-holding-dollar" label="Kelola Sumber Dana" :href="route('cash-sources.index')" />
         @endif
-    </x-dl::action-bar>
-    <x-dl::grid id="cash-in" :rows="$rows" actions="open" :open-url="url('cash-in/{id}')"
+    </x-dl2::action-bar>
+    <x-dl2::grid id="cash-in" :rows="$rows" actions="open" :open-url="url('cash-in/{id}')"
         :new-url="auth()->user()->canWrite('KSM') ? route('cash-in.create') : null"
         search="Cari nomor, kas tujuan, sumber dana..."
         :phone-cards="['title' => 'doc_no', 'sub' => 'source_name', 'badge' => 'status', 'tones' => $tones, 'meta' => ['amount', 'remaining']]"

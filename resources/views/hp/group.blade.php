@@ -9,8 +9,8 @@
 @extends('hp.layout', ['back' => route('home')])
 @section('content')
     @forelse ($items as $it)
-        <x-dl::phone-link :label="raw($it['label'])" :icon="$it['icon']" :url="$it['url']" :badge="$it['badge'] ?? null" />
+        <x-dl2::phone-link :label="raw($it['label'])" :icon="$it['icon']" :url="$it['url']" :badge="$it['badge'] ?? null" />
     @empty
-        <x-dl::alert tone="info" message="Tidak ada modul yang bisa Anda buka di kelompok ini." />
+        <x-dl2::alert tone="info" message="Tidak ada modul yang bisa Anda buka di kelompok ini." />
     @endforelse
 @endsection

@@ -81,7 +81,7 @@ Route::post('ui', [HpController::class, 'setDevice'])->name('ui.set');
 // Dibuka lewat GET (muat ulang / ganti mode "situs desktop" peramban / markah setelah ganti tampilan) tidak lagi 405: kembali ke Beranda tanpa mengubah pilihan.
 Route::get('ui', fn () => redirect()->route('home'));
 
-// Ukur layar (x-dl::screen-info): publik, murni sisi klien, tanpa data server; dibuka dari HP untuk mengukur layar sungguhan.
+// Ukur layar (x-dl2::screen-info): publik, murni sisi klien, tanpa data server; dibuka dari HP untuk mengukur layar sungguhan.
 Route::view('ukur', 'ukur')->name('ukur');
 
 // Laporan agen Python "More details" (Perangkat Saya): publik tanpa CSRF, dijaga token sekali pakai buatan pengguna yang sudah setuju (lihat AgentReportController).
@@ -113,11 +113,18 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [PasswordResetController::class, 'update'])->middleware('throttle:5,1')->name('password.update');
 });
 
+// Pencarian lookup DevLib 2 (field.lookup / kolom lookup di lines): Devlib2\Lookup::search; hanya untuk yang login (config devlib.lookup_middleware).
+Route::middleware(config('devlib.lookup_middleware', ['web', 'auth']))
+    ->get('_devlib2-lookup/{name}', fn (\Illuminate\Http\Request $r, string $name) => response()->json(\Devlib2\Lookup::search($name, (string) $r->query('q', ''), $r->except('q'))))
+    ->where('name', '[A-Za-z0-9_-]+')->name('devlib2.lookup');
+
 // Logo perusahaan di kop cetakan: tanpa login karena cetakan tautan publik (doc-share) memuatnya.
 Route::get('company/logo', [CompanyController::class, 'logo'])->name('company.logo');
 
 Route::middleware(['auth', 'active', 'module'])->group(function () {
     Route::get('/', HomeController::class)->name('home');
+    // Isi Beranda (tab pertama Layer Shell DevLib 2, dimuat sebagai iframe): banner + kartu modul.
+    Route::get('beranda', [HomeController::class, 'board'])->name('home.board');
     // Beranda Stok (modul STB): isi Beranda lama (pengingat opname, angka stok, titik pesan ulang, kedaluwarsa); Beranda global ada di route home.
     Route::get('stok', StockHomeController::class)->name('stock.home');
     // Layar pembuka kelompok menu / modul (induk menu diklik): Data Master, Transaksi, Laporan, GA, HR, Purchase; hak dicek OpeningController.
@@ -136,7 +143,7 @@ Route::middleware(['auth', 'active', 'module'])->group(function () {
     // Cari Barang tampilan HP (modul ITM, dijaga awalan nama rute hp.find): kolom cari/pindai -> kartu barang -> stok per batch FEFO.
     Route::get('m/find', [HpController::class, 'find'])->name('hp.find');
     Route::get('m/find/{product}', [HpController::class, 'product'])->name('hp.find.show');
-    // Ping x-dl::idle-logout: permintaan ini memperpanjang sesi; ikut EnsureActive (akun nonaktif ditolak), tanpa kode modul.
+    // Ping x-dl2::idle-logout: permintaan ini memperpanjang sesi; ikut EnsureActive (akun nonaktif ditolak), tanpa kode modul.
     Route::get('session/ping', fn () => response()->noContent())->name('session.ping');
     // HELP: User's Guide (Indonesia) untuk semua yang login; Technical Guide (English) hanya Administrator (grup di bawah).
     Route::view('help', 'help.user-guide')->name('help.user-guide');

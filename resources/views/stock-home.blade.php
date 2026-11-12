@@ -10,19 +10,19 @@
 @section('body')
     @include('partials.flash')
     @include('partials.count-reminder')
-    <x-dl::kpi-row>
-        <x-dl::kpi label="Active items" :value="$itemCount" icon="fa-boxes-stacked" data-open-tab="ITM" class="sstock-link" role="link" tabindex="0" />
-        <x-dl::kpi label="At / below reorder point" :value="$below->count()" icon="fa-triangle-exclamation" :tone="$below->isNotEmpty() ? 'danger' : 'success'" good-when="down" data-open-tab="ITM" class="sstock-link" role="link" tabindex="0" />
-        <x-dl::kpi label="Near expiry / expired" :value="$expiring->count()" icon="fa-hourglass-end" :tone="$expiring->isNotEmpty() ? ($expiring->contains(fn ($i) => $i->expiryState() === 'KEDALUWARSA') ? 'danger' : 'warn') : 'success'" good-when="down" data-open-tab="R-EXP" class="sstock-link" role="link" tabindex="0" />
-        <x-dl::kpi label="Receiving today" :value="$receivingToday" icon="fa-truck-ramp-box" data-open-tab="RCV" class="sstock-link" role="link" tabindex="0" />
-        <x-dl::kpi label="Issuance today" :value="$issuanceToday" icon="fa-dolly" data-open-tab="ISS" class="sstock-link" role="link" tabindex="0" />
+    <x-dl2::kpi-row>
+        <x-dl2::kpi label="Active items" :value="$itemCount" icon="fa-boxes-stacked" data-open-tab="ITM" class="sstock-link" role="link" tabindex="0" />
+        <x-dl2::kpi label="At / below reorder point" :value="$below->count()" icon="fa-triangle-exclamation" :tone="$below->isNotEmpty() ? 'danger' : 'success'" good-when="down" data-open-tab="ITM" class="sstock-link" role="link" tabindex="0" />
+        <x-dl2::kpi label="Near expiry / expired" :value="$expiring->count()" icon="fa-hourglass-end" :tone="$expiring->isNotEmpty() ? ($expiring->contains(fn ($i) => $i->expiryState() === 'KEDALUWARSA') ? 'danger' : 'warn') : 'success'" good-when="down" data-open-tab="R-EXP" class="sstock-link" role="link" tabindex="0" />
+        <x-dl2::kpi label="Receiving today" :value="$receivingToday" icon="fa-truck-ramp-box" data-open-tab="RCV" class="sstock-link" role="link" tabindex="0" />
+        <x-dl2::kpi label="Issuance today" :value="$issuanceToday" icon="fa-dolly" data-open-tab="ISS" class="sstock-link" role="link" tabindex="0" />
         @if ($stockValue !== null)
-            <x-dl::kpi label="Stock value" :value="$stockValue" format="money" icon="fa-coins" data-open-tab="R-SUM" class="sstock-link" role="link" tabindex="0" />
+            <x-dl2::kpi label="Stock value" :value="$stockValue" format="money" icon="fa-coins" data-open-tab="R-SUM" class="sstock-link" role="link" tabindex="0" />
         @endif
         @if ($pending !== null)
-            <x-dl::kpi label="Documents waiting approval" :value="$pending" icon="fa-scale-balanced" :tone="$pending ? 'warn' : 'success'" good-when="down" />
+            <x-dl2::kpi label="Documents waiting approval" :value="$pending" icon="fa-scale-balanced" :tone="$pending ? 'warn' : 'success'" good-when="down" />
         @endif
-    </x-dl::kpi-row>
+    </x-dl2::kpi-row>
     <div class="sstock-split">
         @if ($below->isNotEmpty())
             <div>@include('partials.reorder-alert')</div>
@@ -34,18 +34,18 @@
             <div class="sstock-box">
                 <div class="sstock-box-nav">
                     @if ($valuation['prev'])
-                        <x-dl::button variant="secondary" size="sm" icon="fa-chevron-left" label="Bulan lalu" :href="route('stock.home', ['month' => $valuation['prev']])" />
+                        <x-dl2::button variant="secondary" size="sm" icon="fa-chevron-left" label="Bulan lalu" :href="route('stock.home', ['month' => $valuation['prev']])" />
                     @else
                         <span></span>
                     @endif
                     <strong>{{ $valuation['title'] }}</strong>
                     @if ($valuation['next'])
-                        <x-dl::button variant="secondary" size="sm" icon="fa-chevron-right" label="Bulan depan" :href="route('stock.home', ['month' => $valuation['next']])" />
+                        <x-dl2::button variant="secondary" size="sm" icon="fa-chevron-right" label="Bulan depan" :href="route('stock.home', ['month' => $valuation['next']])" />
                     @else
                         <span></span>
                     @endif
                 </div>
-                <x-dl::chart type="hbar" format="money" height="320px" :legend="false" title="Nilai Stok" subtitle="Per minggu"
+                <x-dl2::chart type="hbar" format="money" height="320px" :legend="false" title="Nilai Stok" subtitle="Per minggu"
                     :labels="$valuation['labels']" :series="[['name' => 'Nilai stok', 'data' => $valuation['values'], 'tone' => 'violet']]" source="rm_stockcard" />
             </div>
         @endif

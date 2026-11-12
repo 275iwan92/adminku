@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\StockMovement;
 use App\Support\Decimal;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 

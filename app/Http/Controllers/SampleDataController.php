@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Services\SampleData;
 use App\Services\SampleHr;
 use App\Support\ActivityLog;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

@@ -7,7 +7,7 @@ use App\Models\FacCategory;
 use App\Models\FacOrder;
 use App\Models\FacPlace;
 use App\Services\FacCustody;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 

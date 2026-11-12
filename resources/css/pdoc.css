@@ -1,0 +1,162 @@
+/* REMARK
+ * Tujuan       : Tampilan cetakan dokumen transaksi (x-pdoc): lembar A5 landscape / A4 portrait, kop, blok field, tabel, total, tanda tangan. Kertas selalu terang (warna literal).
+ * Sumber hulu  : disalin dari aturan .dl-pdoc DevLib v1 (print-doc) dengan awalan ak-pdoc.
+ * Output       : resources/views/components/pdoc*.blade.php.
+ * Status       : Aktif.
+ */
+.ak-pdoc{display:flex;flex-direction:column;align-items:center;gap:6mm;padding:6mm;background:#8d939c;border-radius:var(--dl-radius-lg);overflow-x:auto}
+.ak-pdoc__sheet{width:210mm;flex:none;background:#fff;color:#111;display:flex;flex-direction:column;position:relative;overflow:hidden;box-sizing:border-box;
+    box-shadow:0 1mm 4mm rgba(0,0,0,.35);font-family:Tahoma,Verdana,"Segoe UI",sans-serif;font-weight:400;font-size:10pt;line-height:1.2;text-align:left}
+.ak-pdoc__sheet *{box-sizing:border-box;margin:0;padding:0}
+.ak-pdoc__sheet.is-a5{height:148mm;padding:6mm 9mm 4mm}
+.ak-pdoc__sheet.is-a4{height:297mm;padding:10mm 9mm 6mm}
+/* 1. Kop: perusahaan kiri, judul tengah, QR kanan */
+.ak-pdoc__kop{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4mm;height:14.5mm;padding-bottom:1.5mm;border-bottom:.8mm solid #8c8c8c}
+.ak-pdoc__co{display:flex;gap:2.5mm;align-items:center}
+.ak-pdoc__logo{width:11mm;height:11mm;border-radius:1.6mm;background:#222;color:#fff;font-weight:700;font-size:10pt;display:flex;align-items:center;justify-content:center;flex:none}
+.ak-pdoc__brand{display:block;height:5.6mm;width:auto;margin-bottom:.7mm}
+.ak-pdoc__co b{display:block;font-size:10.5pt;font-weight:700;letter-spacing:.02em;white-space:nowrap;text-transform:uppercase}
+.ak-pdoc__co small{display:block;font-size:6.6pt;color:#333;white-space:nowrap;line-height:1.2}
+.ak-pdoc__co.is-side .ak-pdoc__brand{height:auto;max-height:var(--co-logo-h);max-width:var(--co-logo-w);margin:0;flex:none}
+.ak-pdoc__co small.ak-pdoc__legal{font-weight:700}
+/* Kop bergaya: ukuran ikut kertas lewat variabel. Bawaan = A4 (juga lembar print-sheet); A5 rapat. Rasio nama : baris lain = 1,6 di keduanya.
+   Kelebihan baris dipotong (titik-titik), tidak menimpa judul atau garis kop. Kop tanpa style tidak memakai variabel ini. */
+.ak-pdoc__co.is-styled{--co-name:12pt;--co-sub:7.5pt;--co-lh:1.05;--co-logo-h:16mm;--co-logo-w:26mm;--co-badge:14mm;--co-max:18.5mm;gap:3.5mm;max-height:var(--co-max);overflow:hidden;min-width:0}
+.is-a5 .ak-pdoc__co.is-styled{--co-name:10pt;--co-sub:6pt;--co-logo-h:12mm;--co-logo-w:18mm;--co-badge:11mm;--co-max:13.4mm;gap:2.5mm}
+.ak-pdoc__co.is-styled b{font-size:var(--co-name);line-height:1.1}
+.ak-pdoc__co.is-styled small{font-size:var(--co-sub);line-height:var(--co-lh)}
+.ak-pdoc__co.is-styled .ak-pdoc__logo{width:var(--co-badge);height:var(--co-badge)}
+.ak-pdoc__co.is-styled > div{min-width:0}
+.ak-pdoc__co.is-styled b,.ak-pdoc__co.is-styled small{overflow:hidden;text-overflow:ellipsis}
+/* A4 + kop bergaya: kop 20 mm (+5,5) dibayar 2 mm dari margin atas, jadi lembar tumbuh 3,5 mm; sisa ruang A4 terkecil (infoRows 7, 22 baris) 5,3 mm */
+.ak-pdoc__sheet.is-a4:has(.ak-pdoc__co.is-styled){padding-top:8mm}
+.is-a4 .ak-pdoc__kop:has(.ak-pdoc__co.is-styled){height:20mm;grid-template-columns:minmax(0,1fr) auto auto} /* kolom perusahaan mengambil sisa lebar, QR sebesar isinya */
+.ak-pdoc__kop h1{font-size:15pt;font-weight:700;letter-spacing:.06em;text-align:center;line-height:1;white-space:nowrap;text-transform:uppercase;color:#111}
+.ak-pdoc__kop h1 small{display:block;font-size:7.5pt;font-weight:400;letter-spacing:.18em;color:#444;margin-top:1.2mm}
+.ak-pdoc__kop h1.is-compact{font-size:12pt;letter-spacing:.04em}
+.ak-pdoc__kopr{display:flex;justify-content:flex-end;align-items:center;gap:2mm}
+.ak-pdoc__kopr small{font-size:7pt;color:#333;text-align:right;line-height:1.3}
+.ak-pdoc__qr{width:12mm;height:12mm;flex:none;display:block;border:.2mm dashed #b5b5b5}
+.ak-pdoc__qr.is-on{border:0}
+.ak-pdoc__qr img,.ak-pdoc__qr canvas{width:100%!important;height:100%!important;display:block}
+/* 2. Blok field: 2 kolom x N baris tetap. Kiri baris 1 = nomor dokumen; kanan baris 1 = tanggal + status. */
+.ak-pdoc__info{display:grid;grid-template-columns:1fr 1.12fr;gap:0 8mm;padding:1.5mm 0 1.1mm;border-bottom:.3mm solid #9db7d6}
+.ak-pdoc__info>div{display:grid;grid-template-rows:repeat(var(--pd-info-rows,6),4.6mm)}
+.ak-pdoc__f{display:grid;grid-template-columns:29mm 3mm 1fr;align-items:center;min-width:0}
+.ak-pdoc__f>span{font-size:9pt;color:#333;white-space:nowrap}
+.ak-pdoc__f>i{font-style:normal;color:#333}
+.ak-pdoc__f>b{font-weight:400;font-size:10pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ak-pdoc__f>b strong{font-weight:700}
+.ak-pdoc__f.is-addr>b{font-size:9pt}
+.ak-pdoc__f.is-big>b{font-size:13pt;font-weight:700;letter-spacing:.02em}
+.ak-pdoc__f.is-st{grid-template-columns:29mm 3mm 1fr auto}
+.ak-pdoc__stamp{border:.3mm solid #222;padding:.3mm 2.2mm;font-weight:700;font-size:8.5pt!important;letter-spacing:.1em;color:#111!important;text-transform:uppercase}
+.ak-pdoc__stamp:empty{display:none}
+.ak-pdoc__wm{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:92pt;font-weight:800;font-style:italic;letter-spacing:.18em;text-transform:uppercase;color:#000;opacity:.09;transform:rotate(-28deg);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ak-pdoc__sheet.is-a5 .ak-pdoc__wm{font-size:68pt}
+.ak-pdoc__wm.is-long{font-size:50pt;white-space:nowrap}
+.ak-pdoc__sheet.is-a5 .ak-pdoc__wm.is-long{font-size:38pt}
+.ak-pdoc__hand,.dl-pdoc__hand{display:block;border-bottom:.15mm dotted #8a8a8a;height:3.4mm}
+/* 3. NB / kalimat pembuka */
+.ak-pdoc__nb{font-size:9pt;height:5.2mm;display:flex;align-items:center;white-space:nowrap;overflow:hidden}
+/* 4. Tabel: No | Nama | Qty | Unit selalu di posisi sama; zona varian di kanan (+ Harga, Subtotal untuk dokumen berharga). */
+.ak-pdoc__items{width:100%;border-collapse:collapse;border-top:.5mm solid #222;border-bottom:.5mm solid #8c8c8c;table-layout:fixed}
+.ak-pdoc__items th{background:#9a9a9a;color:#fff;font-weight:700;font-size:8pt;height:5mm;padding:0 1mm;text-align:left;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-transform:uppercase}
+.ak-pdoc__items td{height:var(--pd-rh,7.6mm);padding:0 1mm;font-size:9.5pt;vertical-align:middle;white-space:nowrap;overflow:hidden}
+.ak-pdoc__items tbody tr+tr td{border-top:.15mm dotted #c4c4c4}
+.ak-pdoc__items td.is-no{text-align:right;font-size:7.5pt;color:#333}
+.ak-pdoc__items .is-num{text-align:right}
+.ak-pdoc__items td.is-hand{border-left:.15mm dotted #9a9a9a;border-right:.15mm dotted #9a9a9a}
+.ak-pdoc__items td.is-name,.ak-pdoc__items td.is-wrap{white-space:normal}
+.ak-pdoc__items td.is-wrap{font-size:8pt;line-height:1.1}
+.ak-pdoc__w{max-height:7.2mm;line-height:1.05;overflow:hidden}
+.ak-pdoc__n1{font-size:9pt;line-height:1.12;max-height:2.3em;overflow:hidden}
+.is-two .ak-pdoc__n1{white-space:nowrap;max-height:1.15em}
+.ak-pdoc__n2{font-size:8pt;line-height:1.15;color:#333;white-space:nowrap;overflow:hidden}
+.ak-pdoc__n3{font-size:8pt;line-height:1.1;max-height:2.25em;overflow:hidden;margin-top:.3mm}
+/* Baris hasil split (Customer Plan Delivery): garis tebal di kiri + tulisan SPLIT tebal */
+.ak-pdoc__items tr.is-split td.is-no{border-left:1.1mm solid #222}
+.ak-pdoc__items tr.is-split td[data-pd-c=part]{font-weight:700}
+/* 5. Zona penutup: catatan kiri, kotak total kanan (tinggi tetap) */
+.ak-pdoc__tail{display:grid;grid-template-columns:1fr 62mm;gap:6mm;height:var(--pd-tail,18.5mm);padding-top:1.2mm;overflow:hidden}
+.ak-pdoc__notes{font-size:8.5pt;line-height:1.3;height:100%;overflow:hidden}
+.ak-pdoc__notes b{font-weight:700}
+.ak-pdoc__tot{font-size:9pt}
+.ak-pdoc__tot div{display:flex;justify-content:space-between;height:3.7mm;align-items:center}
+.ak-pdoc__tot b{font-weight:400}
+.ak-pdoc__tot .is-grand{border-top:.3mm solid #222;margin-top:.4mm;height:4.4mm;font-weight:700;font-size:10pt}
+.ak-pdoc__tot .is-grand b{font-weight:700}
+.ak-pdoc__tot .is-grand span{text-transform:uppercase}
+/* 6. Tanda tangan, dari kiri: pihak luar / penerima, Menyetujui, Mengetahui, Pembuat di paling kanan; dibagi rata */
+.ak-pdoc__sign{display:grid;gap:3mm;margin-top:auto;text-align:center}
+.ak-pdoc__sign span{display:block;font-size:9pt;letter-spacing:.06em;text-transform:uppercase}
+.ak-pdoc__sign small{display:block;font-size:7.5pt;color:#444;height:3mm}
+.ak-pdoc__sign>div>i{display:block;height:7mm}
+.is-a4 .ak-pdoc__sign>div>i{height:14mm}
+.ak-pdoc__sign b{display:block;font-weight:400;font-size:9pt;white-space:nowrap}
+.ak-pdoc__sign em.ak-pdoc__at{display:block;font-style:normal;font-size:6.5pt;margin-top:.5mm;white-space:nowrap}
+.ak-pdoc__sign u{display:inline-block;width:27mm;border-bottom:.2mm dotted #333;text-decoration:none;margin:0 .6mm}
+.ak-pdoc__sign u.is-name{border-bottom-style:solid;width:auto;min-width:27mm;padding:0 1mm}
+/* 7. Kaki */
+.ak-pdoc__foot{display:flex;justify-content:space-between;margin-top:1.2mm;padding-top:.8mm;border-top:.15mm solid #bbb;font-size:7pt;color:#444}
+.ak-pdoc__items+.ak-pdoc__foot{margin-top:auto}
+/* Lembar lampiran: blok facts / table / list / text di bawah kop (Document::appendices). Hitam di atas putih, tanpa abu-abu. */
+.ak-pdoc__appx-body{display:flex;flex-direction:column;gap:4mm;padding-top:4mm;flex:1;min-height:0;overflow:hidden}
+.ak-pdoc__blk h5{font-size:8.5pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-bottom:.3mm solid #222;padding-bottom:.8mm;margin-bottom:1.4mm}
+.ak-pdoc__kv{display:grid;grid-template-columns:42mm 1fr;gap:2mm;font-size:9pt;line-height:1.35;border-bottom:.15mm dotted #9a9a9a;padding:.6mm 0}
+.ak-pdoc__kv b{font-weight:600}
+.ak-pdoc__tbl{width:100%;border-collapse:collapse;font-size:9pt}
+.ak-pdoc__tbl th{background:#222;color:#fff;font-size:8pt;font-weight:700;letter-spacing:.04em;text-align:left;padding:1.2mm 2mm;text-transform:uppercase}
+.ak-pdoc__tbl td{padding:1mm 2mm;border-bottom:.15mm dotted #9a9a9a}
+.ak-pdoc__tbl .is-num{text-align:right;font-variant-numeric:tabular-nums}
+.ak-pdoc__ol{margin-left:5mm;font-size:9pt;line-height:1.45}
+.ak-pdoc__ol li{padding-left:1mm}
+.ak-pdoc__txt{font-size:9pt;line-height:1.45;white-space:pre-line}
+.ak-pdoc__cap{font-size:8pt;line-height:1.4;margin-top:1.2mm}
+.ak-pdoc__appx-body .dl2-card{break-inside:avoid}
+.ak-pdoc__chk{font-size:9pt;line-height:1.5;margin:1mm 0}
+.ak-pdoc__blk .ak-pdoc__sign{margin-top:4mm}
+/* Cetak langsung dari browser (Ctrl+P) dan halaman dokumen online: lembar saja, tanpa latar abu-abu */
+/* x-dl::print-doc gaya pilihan (data['style'] = color | bw; Jo 2026-11-07): nama produk membungkus, status di samping nomor. Token --pd-* = warna kertas cetak. */
+.ak-pdoc__sheet.is-sty-color,.ak-pdoc__sheet.is-sty-bw{--pd-ink:#000;--pd-blue:#1d4f91;--pd-blue-soft:#e3edf9;--pd-blue-dark:#12335f;--pd-green-soft:#e2f2e6;--pd-stripe:#f1f6fc;--pd-head:#ededed;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.is-sty-color .ak-pdoc__items td.is-name,.is-sty-bw .ak-pdoc__items td.is-name{white-space:normal;overflow:visible}
+.is-sty-color .ak-pdoc__n1,.is-sty-bw .ak-pdoc__n1,.is-sty-color .is-two .ak-pdoc__n1,.is-sty-bw .is-two .ak-pdoc__n1{max-height:none;overflow:visible;white-space:normal;overflow-wrap:anywhere;font-weight:700}
+.is-sty-color .ak-pdoc__items td[data-pd-c=due_date],.is-sty-bw .ak-pdoc__items td[data-pd-c=due_date],.is-sty-color .ak-pdoc__items td[data-pd-c=subtotal],.is-sty-bw .ak-pdoc__items td[data-pd-c=subtotal],.is-sty-color .ak-pdoc__items td.is-qty,.is-sty-bw .ak-pdoc__items td.is-qty{font-weight:700}
+.is-sty-color .ak-pdoc__items .is-num,.is-sty-bw .ak-pdoc__items .is-num{font-variant-numeric:tabular-nums}
+.is-sty-color .ak-pdoc__items td[data-pd-c=subtotal],.is-sty-bw .ak-pdoc__items td[data-pd-c=subtotal]{font-size:9pt}
+.is-sty-color .ak-pdoc__items th,.is-sty-bw .ak-pdoc__items th{letter-spacing:0;padding:0 .8mm}
+.is-sty-color .ak-pdoc__items td,.is-sty-bw .ak-pdoc__items td{padding:0 .8mm}
+.is-sty-color .ak-pdoc__stamp,.is-sty-bw .ak-pdoc__stamp{margin-left:3mm;border:.4mm solid var(--pd-ink);color:var(--pd-ink)!important;background:none;white-space:nowrap}
+.is-sty-color .ak-pdoc__info,.is-sty-bw .ak-pdoc__info{grid-template-columns:1.25fr 1fr}
+.is-sty-color .ak-pdoc__f.is-big.is-st,.is-sty-bw .ak-pdoc__f.is-big.is-st{grid-template-columns:29mm 3mm auto 1fr}
+.is-sty-color .ak-pdoc__f.is-big>b,.is-sty-bw .ak-pdoc__f.is-big>b{overflow:visible}
+.is-sty-color .ak-pdoc__f.is-big .ak-pdoc__stamp,.is-sty-bw .ak-pdoc__f.is-big .ak-pdoc__stamp{justify-self:start;font-size:8pt!important;letter-spacing:.06em}
+.ak-pdoc__sheet.is-sty-color>*,.ak-pdoc__sheet.is-sty-bw>*{flex-shrink:0} /* blok lembar tidak boleh dipepatkan: luapan harus terukur oleh print-doc.js */
+.is-sty-color .ak-pdoc__items tr,.is-sty-bw .ak-pdoc__items tr{break-inside:avoid}
+.is-sty-color .ak-pdoc__sum,.is-sty-bw .ak-pdoc__sum{display:flex;gap:4mm;align-items:center;height:7mm;font-size:9pt;white-space:nowrap;overflow:hidden;border-bottom:.3mm solid var(--pd-ink)}
+.is-sty-color .ak-pdoc__sum{border-color:var(--pd-blue)}
+.is-sty-color .ak-pdoc__sum>b,.is-sty-bw .ak-pdoc__sum>b{font-size:10pt}
+.is-sty-color .ak-pdoc__sum>span:nth-child(2),.is-sty-bw .ak-pdoc__sum>span:nth-child(2){overflow:hidden;text-overflow:ellipsis;font-weight:700}
+.is-sty-color .ak-pdoc__sum .ak-pdoc__stamp,.is-sty-bw .ak-pdoc__sum .ak-pdoc__stamp{margin-left:auto}
+.is-sty-bw .ak-pdoc__kop{border-bottom:.8mm solid var(--pd-ink)}
+.is-sty-bw .ak-pdoc__logo{background:none;color:var(--pd-ink);border:.4mm solid var(--pd-ink)}
+.is-sty-bw .ak-pdoc__info{border-bottom:.3mm solid var(--pd-ink)}
+.is-sty-bw .ak-pdoc__items{border-top:0;border-bottom:0}
+.is-sty-bw .ak-pdoc__items th{background:var(--pd-head);color:var(--pd-ink);border-top:.5mm solid var(--pd-ink);border-bottom:.5mm solid var(--pd-ink)}
+.is-sty-bw .ak-pdoc__tot .is-grand{border-top:.6mm solid var(--pd-ink);border-bottom:1mm double var(--pd-ink);height:5.4mm;background:none}
+.is-sty-color .ak-pdoc__kop{border-bottom:.8mm solid var(--pd-blue)}
+.is-sty-color .ak-pdoc__kop h1{color:var(--pd-blue)}
+.is-sty-color .ak-pdoc__info{border-bottom:.3mm solid var(--pd-blue);padding-top:1.5mm}
+.is-sty-color .ak-pdoc__info>div{padding:0 2mm;border-radius:1mm}
+.is-sty-color .ak-pdoc__info>div:first-child{background:var(--pd-blue-soft)}
+.is-sty-color .ak-pdoc__info>div:last-child{background:var(--pd-green-soft)}
+.is-sty-color .ak-pdoc__items{border-top:0;border-bottom:.5mm solid var(--pd-blue)}
+.is-sty-color .ak-pdoc__items th{background:var(--pd-blue);color:#fff}
+.is-sty-color .ak-pdoc__items tbody tr:nth-child(even) td{background:var(--pd-stripe)}
+.is-sty-color .ak-pdoc__tot .is-grand{background:var(--pd-blue-dark);color:#fff;border:0;padding:0 2mm;height:5.4mm}
+.is-sty-color .ak-pdoc__stamp.is-ok{border-color:#1e7a3c;color:#1e7a3c!important;background:var(--pd-green-soft)}
+.is-sty-color .ak-pdoc__stamp.is-warn{border-color:#a86400;color:#8a5200!important;background:#fff1d6}
+.is-sty-color .ak-pdoc__stamp.is-bad{border-color:#b3261e;color:#b3261e!important;background:#fde4e2}
+.is-sty-color .ak-pdoc__stamp.is-idle{border-color:var(--pd-blue);color:var(--pd-blue)!important;background:var(--pd-blue-soft)}
+@media print{.ak-pdoc{background:none;padding:0;gap:0;border-radius:0;display:block}.ak-pdoc__sheet{box-shadow:none;break-after:page}}
+

@@ -1,6 +1,6 @@
 {{-- REMARK
- Tujuan       : Banner peringatan dashboard Stok berbaris rapi (ikon, teks, tombol aksi di kanan; membungkus di layar sempit). Pengganti x-dl::alert untuk banner yang punya tombol (teks DevLib tidak bisa dibungkus, jadi tombol jatuh ke baris bawah).
- Input        : tone (danger|warn|info), message (teks aman/escape), icon (opsional), slot = x-dl::button (tombol tanpa variant = aksi utama berwarna tegas, variant secondary = outline).
+ Tujuan       : Banner peringatan dashboard Stok berbaris rapi (ikon, teks, tombol aksi di kanan; membungkus di layar sempit). Pengganti x-dl2::alert untuk banner yang punya tombol (teks DevLib tidak bisa dibungkus, jadi tombol jatuh ke baris bawah).
+ Input        : tone (danger|warn|info), message (teks aman/escape), icon (opsional), slot = x-dl2::button (tombol tanpa variant = aksi utama berwarna tegas, variant secondary = outline).
  Output       : div.sstock-abar (CSS di resources/css/app.css).
  Dipakai oleh : reorder-alert, expiry-alert, count-reminder.
  Status       : Aktif.

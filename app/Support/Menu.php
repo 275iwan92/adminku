@@ -7,7 +7,7 @@ use App\Services\CountSchedule;
 
 /* REMARK
  * Tujuan       : Menu Layer Shell dari daftar modul (App\Support\Modules), disaring menurut akses pengguna (peran + Grup). Modul tanpa akses tidak tampil.
- * Output       : modules() = daftar induk datar (HP, tes); layers() = array $modules untuk x-dl::layer-shell desktop (Stok membungkus Transaksi + Laporan) (code item dipakai juga oleh ?open= dan data-open-tab).
+ * Output       : modules() = daftar induk datar (HP, tes); layers() = array $modules untuk x-dl2::layer-shell desktop (Stok membungkus Transaksi + Laporan) (code item dipakai juga oleh ?open= dan data-open-tab).
  * Dipakai oleh : HomeController.
  * Status       : Aktif.
  */

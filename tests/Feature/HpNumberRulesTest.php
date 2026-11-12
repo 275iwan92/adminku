@@ -6,13 +6,13 @@ use App\Models\Batch;
 use App\Models\Category;
 use App\Models\User;
 use App\Services\StockCounts;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
 use Tests\TestCase;
 
 /* REMARK
- * Tujuan       : Menjaga angka Indonesia di hitung opname HP: pembaca angka cadangan resources/js/hp-number.js SAMA PERSIS dengan Devlib\Locale::parse (dan numStr DevLib di JS), jadi "1.250" = 1250 di HP seperti di desktop,
+ * Tujuan       : Menjaga angka Indonesia di hitung opname HP: pembaca angka cadangan resources/js/hp-number.js SAMA PERSIS dengan Devlib2\Locale::parse (dan numStr DevLib di JS), jadi "1.250" = 1250 di HP seperti di desktop,
  *                "0.500" = 0,5 (kanonik tetap "0.500"), "1.234,5" = 1234,5; dan server menerima nilai kanonik hasilnya (1250, 0.5, 1234.5) serta menolak yang lebih dari 3 desimal.
  * Dipakai oleh : php artisan test. Bagian JS dilewati bila Node tidak ada.
  * Status       : Aktif.

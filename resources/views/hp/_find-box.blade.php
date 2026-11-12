@@ -7,5 +7,5 @@
 --}}
 <form method="get" action="{{ route('hp.find') }}" class="sstock-hpc__find" data-hp-find>
     <input type="text" name="q" value="{{ $q ?? '' }}" class="sstock-hpc__search sstock-hpc__search--big" placeholder="Ketik atau pindai kode / nama / lokasi" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" autofocus aria-label="Cari barang">
-    <x-dl::button type="submit" size="lg" block icon="fa-magnifying-glass" label="Search" />
+    <x-dl2::button type="submit" size="lg" block icon="fa-magnifying-glass" label="Search" />
 </form>

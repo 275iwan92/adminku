@@ -5,7 +5,7 @@ namespace App\Support;
 use App\Models\User;
 
 /* REMARK
- * Tujuan       : Satu-satunya tempat definisi tombol plus "tambah cepat" (x-dl::field.select prop add) untuk dropdown master: alamat POST, judul, isian popup.
+ * Tujuan       : Satu-satunya tempat definisi tombol plus "tambah cepat" (x-dl2::field.select prop add) untuk dropdown master: alamat POST, judul, isian popup.
  *                Tombol hanya ada bila pengguna boleh MENULIS modul master itu (peran + Grup RW, sama dengan penjagaan rute); selain itu kosong = dropdown biasa.
  * Sumber hulu  : Modules / User::canWrite (hak), endpoint JSON store masing-masing master (balasan 201 {id,name}).
  * Input        : jenis (supplier | recipient | department | category | location | unit).

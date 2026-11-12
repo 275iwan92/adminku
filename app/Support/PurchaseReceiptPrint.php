@@ -4,7 +4,7 @@ namespace App\Support;
 
 use App\Models\Item;
 use App\Models\PurchaseReceipt;
-use Devlib\PrintDoc\Document;
+use Devlib2\PrintDoc\Document;
 
 /* REMARK
  * Tujuan       : Cetakan Penerimaan Pembelian (PV) / bukti terima barang: pemasok, PO asal, no. surat jalan, penerima, baris barang + kedaluwarsa. Tanpa harga; PO di kepala, PP per baris.

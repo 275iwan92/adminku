@@ -21,7 +21,7 @@ use App\Models\User;
 use App\Services\CountSchedule;
 use App\Services\FacCare;
 use App\Services\FacCustody;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Support\Facades\DB;
 
 /* REMARK

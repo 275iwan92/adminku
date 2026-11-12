@@ -10,8 +10,8 @@
 @section('content')
     @include('partials.flash')
     @forelse ($counts as $c)
-        <article class="dl-phone-card">
-            <h2 class="sstock-hpc__name">{{ $c['doc_no'] }} <x-dl::badge :tone="$c['tone']" :label="raw($c['status'])" /></h2>
+        <article class="ak-pcard">
+            <h2 class="sstock-hpc__name">{{ $c['doc_no'] }} <x-dl2::badge :tone="$c['tone']" :label="raw($c['status'])" /></h2>
             <p class="sstock-hpc__meta">{{ $c['date'] }} · {{ $c['scope'] }}</p>
             <p>Terisi {{ $c['progress'] }}</p>
             @if ($c['counting'])
@@ -21,7 +21,7 @@
             @endif
         </article>
     @empty
-        <x-dl::alert tone="info" message="Belum ada Stok Opname." />
+        <x-dl2::alert tone="info" message="Belum ada Stok Opname." />
     @endforelse
     @if ($sup)
         <a class="sstock-hpc__btn sstock-hpc__btn--block" href="{{ route('hp.open', 'SO') }}">Mulai atau tinjau opname (halaman desktop)</a>

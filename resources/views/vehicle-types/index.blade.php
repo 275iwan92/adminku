@@ -2,7 +2,7 @@
  Tujuan       : Daftar master Jenis Kendaraan (Grid Master, modul GVT) beserta jumlah butir rencana perawatan dan kendaraan pemakainya.
  Sumber hulu  : VehicleTypeController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Edit membuka form jenis.
+ Output       : x-dl2::grid; klik 2x / Edit membuka form jenis.
  Dipakai oleh : route vehicle-types.index (menu GA > Jenis Kendaraan).
  Status       : Aktif.
 --}}
@@ -12,7 +12,7 @@
     @include('partials.flash')
     @include('partials.back-to-hub', ['hub' => 'fleet'])
     <div style="max-width: 820px">
-    <x-dl::grid id="vehicle-types" :rows="$rows" actions="edit" :new-url="route('vehicle-types.create')" :open-url="url('vehicle-types/{id}')" :toggle-url="url('vehicle-types/{id}/toggle')"
+    <x-dl2::grid id="vehicle-types" :rows="$rows" actions="edit" :new-url="route('vehicle-types.create')" :open-url="url('vehicle-types/{id}')" :toggle-url="url('vehicle-types/{id}/toggle')"
         search="Cari kode atau nama..."
         :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['plans', 'vehicles']]"
         :columns="[

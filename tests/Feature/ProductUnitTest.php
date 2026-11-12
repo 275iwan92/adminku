@@ -83,12 +83,12 @@ class ProductUnitTest extends TestCase
         $this->pack($b, 'lusin', 12);
         UnitConversion::create(['from_unit' => 'kg', 'to_unit' => 'pcs', 'factor' => 4]);
 
-        $rows = collect($this->getJson(route('devlib.lookup', 'product_in').'?q=Pensil')->assertOk()->json())->keyBy('code');
+        $rows = collect($this->getJson(route('devlib2.lookup', 'product_in').'?q=Pensil')->assertOk()->json())->keyBy('code');
         $packs = fn (string $code) => json_decode($rows[$code]['packs'], true);
 
         $this->assertSame(['stock' => 'pcs', 'own' => ['dus' => '12.000000'], 'global' => ['kg' => '4.0000000000']], $packs('PU-A'));
         $this->assertSame(['lusin' => '12.000000'], $packs('PU-B')['own']);   // dus milik A tidak ditawarkan ke B
-        $this->assertArrayNotHasKey('packs', collect($this->getJson(route('devlib.lookup', 'product_opn').'?q=Pensil')->json())->first());   // Saldo Awal selalu satuan stok
+        $this->assertArrayNotHasKey('packs', collect($this->getJson(route('devlib2.lookup', 'product_opn').'?q=Pensil')->json())->first());   // Saldo Awal selalu satuan stok
     }
 
     public function test_receiving_form_carries_the_options_of_each_saved_line(): void

@@ -10,10 +10,10 @@
 @section('content')
     @include('partials.flash')
     @if ($count->review_note)
-        <x-dl::alert tone="info" :message="raw('Dikembalikan Supervisor untuk dihitung ulang: '.$count->review_note)" />
+        <x-dl2::alert tone="info" :message="raw('Dikembalikan Supervisor untuk dihitung ulang: '.$count->review_note)" />
     @endif
     @if ($rows === [])
-        <x-dl::alert tone="info" message="Lembar hitung ini tidak punya barang." />
+        <x-dl2::alert tone="info" message="Lembar hitung ini tidak punya barang." />
     @else
         <div class="sstock-hpc" data-hp-count data-save-url="{{ route('stock-counts.lines', $count) }}" data-me="{{ $me }}" data-key="stock-count.{{ $count->id }}">
             <script type="application/json" data-hp-rows>{!! json_encode($rows, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) !!}</script>
@@ -30,7 +30,7 @@
                     <div class="sstock-hpc__hits" data-hits hidden></div>
                 </div>
 
-                <article class="dl-phone-card sstock-hpc__card" data-card>
+                <article class="ak-pcard sstock-hpc__card" data-card>
                     <h2 class="sstock-hpc__name" data-name></h2>
                     <p class="sstock-hpc__meta" data-meta></p>
                     <p class="sstock-hpc__sys" data-system hidden></p>
@@ -63,13 +63,13 @@
                     </details>
                 </article>
 
-                <x-dl::phone-bar columns="1fr 1.5fr">
+                <x-dl2::phone-bar columns="1fr 1.5fr">
                     <button type="button" class="sstock-hpc__btn" data-prev>‹ Sebelumnya</button>
                     <button type="button" class="sstock-hpc__btn sstock-hpc__btn--go" data-next>Barang berikutnya</button>
-                </x-dl::phone-bar>
+                </x-dl2::phone-bar>
             </div>
 
-            <section class="dl-phone-card" data-summary hidden>
+            <section class="ak-pcard" data-summary hidden>
                 <h2 class="sstock-hpc__name">Ringkasan</h2>
                 <p data-sum-line></p>
                 <p class="sstock-hpc__meta" data-not-yet>Barang yang belum terisi (sentuh untuk membuka):</p>
@@ -77,10 +77,10 @@
                 <p class="sstock-hpc__meta" data-sum-more></p>
                 <div data-finish hidden>
                     <p>Semua barang sudah terisi. Sesudah Selesai hitung, hasil tidak bisa diubah kecuali dikembalikan Supervisor.</p>
-                    <x-dl::action-form :action="route('stock-counts.finish', $count)">
+                    <x-dl2::action-form :action="route('stock-counts.finish', $count)">
                         <input type="hidden" name="hp" value="1">
-                        <x-dl::button type="submit" size="lg" block icon="fa-flag-checkered" label="Finish Count" data-dl-confirm="Selesai hitung? Semua baris harus terisi (atau Tidak dihitung dengan catatan). Sesudah ini hasil tidak bisa diubah kecuali dikembalikan Supervisor." />
-                    </x-dl::action-form>
+                        <x-dl2::button type="submit" size="lg" block icon="fa-flag-checkered" label="Finish Count" data-dl2-confirm="Selesai hitung? Semua baris harus terisi (atau Tidak dihitung dengan catatan). Sesudah ini hasil tidak bisa diubah kecuali dikembalikan Supervisor." />
+                    </x-dl2::action-form>
                 </div>
                 <button type="button" class="sstock-hpc__btn sstock-hpc__btn--block" data-back-count>‹ Kembali menghitung</button>
             </section>

@@ -9,6 +9,7 @@ use App\Http\Middleware\EnsureSupervisor;
 use App\Http\Middleware\LogActivity;
 use App\Http\Middleware\PhoneStaysPhone;
 use App\Http\Middleware\ScalarQuery;
+use App\Http\Middleware\TranslateLabels;
 use App\Http\Middleware\TrackDevice;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['active' => EnsureActive::class, 'supervisor' => EnsureSupervisor::class, 'approver' => EnsureApprover::class, 'administrator' => EnsureAdministrator::class, 'module' => EnsureModuleAccess::class, 'super' => EnsureSuperAdmin::class]);
-        $middleware->web(append: [ScalarQuery::class, PhoneStaysPhone::class, TrackDevice::class, LogActivity::class]);
+        $middleware->web(append: [ScalarQuery::class, PhoneStaysPhone::class, TrackDevice::class, LogActivity::class, TranslateLabels::class]);
         $middleware->preventRequestForgery(except: ['agent/report/*', 'd/*']);   // laporan agen Python dan layar sopir: dijaga token, bukan sesi
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('home'));

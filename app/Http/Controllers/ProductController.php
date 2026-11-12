@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Services\LeadTimes;
 use App\Services\ItemUnits;
 use App\Support\Palette;
-use Devlib\Locale;
+use Devlib2\Locale;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ use Illuminate\Validation\ValidationException;
  *                Kode otomatis {AWALAN KATEGORI}-{URUT}. Stok ada di batch (items): barang biasa satu batch, barang berkedaluwarsa satu batch per tanggal (dibuat otomatis oleh Penerimaan / Saldo Awal).
  *                Parameter yang diubah diteruskan ke semua batch (Item::propagate).
  * Sumber hulu  : m_item, items (stok, biaya rata-rata, kedaluwarsa), m_category. Harga & nilai stok disembunyikan dari Data Entry.
- * Output       : grid Barang, form Barang (x-dl::form panel) dengan daftar batch.
+ * Output       : grid Barang, form Barang (x-dl2::form panel) dengan daftar batch.
  * Dipakai oleh : routes/web.php (products.*).
  * Status       : Aktif.
  */

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-// Halaman ukur layar publik /ukur: tanpa login, tanpa data pengguna, satu komponen DevLib x-dl::screen-info.
+// Halaman ukur layar publik /ukur: tanpa login, tanpa data pengguna, satu komponen DevLib x-dl2::screen-info.
 class ScreenInfoPageTest extends TestCase
 {
     use RefreshDatabase;
@@ -14,7 +14,7 @@ class ScreenInfoPageTest extends TestCase
     public function test_guest_opens_the_page_without_login_and_without_menu(): void
     {
         $html = $this->get('/ukur')->assertOk()->getContent();
-        $this->assertStringContainsString('data-dl-screen-info', $html);
+        $this->assertStringContainsString('data-dl2-screen-info', $html);
         $this->assertStringContainsString('data-sinfo-copy', $html);
         $this->assertStringNotContainsString('dl-phone__burger', $html);
         $this->assertStringNotContainsString('dl-layer', $html);

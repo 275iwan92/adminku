@@ -2,17 +2,17 @@
  Tujuan       : Kartu Saldo per kas: mutasi buku besar kas bergulir (Uang Masuk, Uang Keluar, Penyesuaian, pembatalan) dengan saldo berjalan; filter kas dan periode; cetak / ekspor.
  Sumber hulu  : CashCardController@index (k_cash_ledger).
  Input        : from, to, rows, account, accounts, open, in, out, close.
- Output       : filter (periode + kas) + x-dl::report.
+ Output       : filter (periode + kas) + x-dl2::report.
  Dipakai oleh : route cash-card.index (Keuangan > Kartu Saldo Kas).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Kartu Saldo Kas'])
 @section('body')
     <x-report-filter :from="$from" :to="$to">
-        <x-dl::field.select name="cash_account_id" label="Kas" :options="$accounts" :value="$account?->id" />
+        <x-dl2::field.select name="cash_account_id" label="Kas" :options="$accounts" :value="$account?->id" />
     </x-report-filter>
-    <x-dl::report phone-list title="Kartu Saldo Kas" subtitle="Mutasi buku besar kas dengan saldo berjalan" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
-        :criteria="['Kas' => raw($account?->name ?? '-'), 'Periode' => raw(Devlib\Locale::d($from).' — '.Devlib\Locale::d($to))]"
+    <x-dl2::report phone-list title="Kartu Saldo Kas" subtitle="Mutasi buku besar kas dengan saldo berjalan" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
+        :criteria="['Kas' => raw($account?->name ?? '-'), 'Periode' => raw(Devlib2\Locale::d($from).' — '.Devlib2\Locale::d($to))]"
         :summary="[
             ['label' => 'Saldo Awal', 'value' => $open],
             ['label' => 'Total Masuk', 'value' => $in],

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /* REMARK
- * Tujuan       : Menjaga endpoint JSON "tambah cepat" (x-dl::field.select add): balasan 201 {id,name}, galat 422 standar, nama kembar ditolak (kecuali Penerima), dan hak akses sama dengan master-nya
+ * Tujuan       : Menjaga endpoint JSON "tambah cepat" (x-dl2::field.select add): balasan 201 {id,name}, galat 422 standar, nama kembar ditolak (kecuali Penerima), dan hak akses sama dengan master-nya
  *                (Supplier / Penerima / Departemen: Data Entry boleh; Kategori / Lokasi / Satuan: hanya Supervisor; grup tanpa modul atau hanya RO ditolak).
  * Dipakai oleh : php artisan test.
  * Status       : Aktif.

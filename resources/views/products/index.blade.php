@@ -2,14 +2,14 @@
  Tujuan       : Daftar master Barang (Grid Master): satu baris per produk dengan total stok, stok tersedia (batch belum kedaluwarsa), kedaluwarsa terdekat, dan status pesan ulang.
  Sumber hulu  : ProductController@index (produk + jumlah batch). Kolom harga & nilai hanya untuk Supervisor.
  Input        : rows, sup.
- Output       : x-dl::grid; klik 2x / Edit membuka form barang; + New Record untuk semua pengguna, saklar aktif hanya Supervisor.
+ Output       : x-dl2::grid; klik 2x / Edit membuka form barang; + New Record untuk semua pengguna, saklar aktif hanya Supervisor.
  Dipakai oleh : route products.index (menu Master Data > Barang).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Items'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="products" :rows="$rows" :actions="$sup ? 'edit' : 'worklist'" new-record="+ New Record" :new-url="route('products.create')"
+    <x-dl2::grid id="products" :rows="$rows" :actions="$sup ? 'edit' : 'worklist'" new-record="+ New Record" :new-url="route('products.create')"
         :open-url="url('products/{id}')" :toggle-url="$sup ? url('products/{id}/toggle') : null" search="Search code, name, location..." row-tone="tone"
         :columns="array_values(array_filter([
             ['key' => 'name', 'label' => 'Item', 'type' => 'identity', 'code' => 'code', 'hue' => 'hue', 'box' => false],

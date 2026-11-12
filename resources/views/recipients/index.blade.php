@@ -3,7 +3,7 @@
                 kode karyawan bila terhubung, chip departemen / status / jumlah dokumen) dengan tab Semua / Nonaktif, segmen departemen, dan kotak cari; Daftar = grid DevLib (tombol aktif/nonaktif, ekspor).
  Sumber hulu  : RecipientController@index.
  Input        : rows, view (cards | list), departments, counts.
- Output       : kartu (klik membuka form penerima) atau x-dl::grid.
+ Output       : kartu (klik membuka form penerima) atau x-dl2::grid.
  Dipakai oleh : route recipients.index (menu Data Master > Penerima).
  Status       : Aktif.
 --}}
@@ -12,20 +12,20 @@
     @include('partials.flash')
     <div class="em-top">
         @if ($view === 'cards')
-            <x-dl::button class="sstock-btn-teal" variant="primary" icon="fa-plus" label="Penerima" :href="route('recipients.create')" />
+            <x-dl2::button class="sstock-btn-teal" variant="primary" icon="fa-plus" label="Penerima" :href="route('recipients.create')" />
             <div class="em-pills" id="rc-pills">
                 <button type="button" class="em-pill em-pill--blue is-active" data-f="all">Semua <b>{{ $counts['all'] }}</b></button>
                 <button type="button" class="em-pill em-pill--gray" data-f="off">Nonaktif <b>{{ $counts['off'] }}</b></button>
             </div>
             @if (count($departments) > 1)
-                <div class="dl-segment" id="rc-dept"><button type="button" class="dl-segment__opt is-active" data-d="">Semua departemen</button>@foreach ($departments as $d)<button type="button" class="dl-segment__opt" data-d="{{ $d }}">{{ $d }}</button>@endforeach</div>
+                <div class="ak-seg" id="rc-dept"><button type="button" class="ak-seg__opt is-active" data-d="">Semua departemen</button>@foreach ($departments as $d)<button type="button" class="ak-seg__opt" data-d="{{ $d }}">{{ $d }}</button>@endforeach</div>
             @endif
             <input type="search" class="em-search" id="rc-q" placeholder="Cari nama, departemen..." aria-label="Cari penerima">
         @endif
         <span class="em-spacer"></span>
-        <div class="dl-segment" id="rc-view">
-            <a class="dl-segment__opt {{ $view === 'cards' ? 'is-active' : '' }}" href="{{ route('recipients.index') }}" data-v="cards"><i class="fa-solid fa-table-cells-large"></i> Kartu</a>
-            <a class="dl-segment__opt {{ $view === 'list' ? 'is-active' : '' }}" href="{{ route('recipients.index', ['view' => 'list']) }}" data-v="list"><i class="fa-solid fa-list"></i> Daftar</a>
+        <div class="ak-seg" id="rc-view">
+            <a class="ak-seg__opt {{ $view === 'cards' ? 'is-active' : '' }}" href="{{ route('recipients.index') }}" data-v="cards"><i class="fa-solid fa-table-cells-large"></i> Kartu</a>
+            <a class="ak-seg__opt {{ $view === 'list' ? 'is-active' : '' }}" href="{{ route('recipients.index', ['view' => 'list']) }}" data-v="list"><i class="fa-solid fa-list"></i> Daftar</a>
         </div>
     </div>
 
@@ -56,11 +56,11 @@
                     </a>
                 @endif
             @endforeach
-            @if (! count($rows))<p class="dl-note">Belum ada penerima.</p>@endif
+            @if (! count($rows))<p class="ak-note">Belum ada penerima.</p>@endif
         </div>
-        <p class="dl-note" id="rc-empty" hidden>Tidak ada penerima yang cocok.</p>
+        <p class="ak-note" id="rc-empty" hidden>Tidak ada penerima yang cocok.</p>
     @else
-        <x-dl::grid id="recipients" :rows="$rows" actions="edit" :new-url="route('recipients.create')" :open-url="url('recipients/{id}')" :toggle-url="url('recipients/{id}/toggle')"
+        <x-dl2::grid id="recipients" :rows="$rows" actions="edit" :new-url="route('recipients.create')" :open-url="url('recipients/{id}')" :toggle-url="url('recipients/{id}/toggle')"
             search="Search name, department..."
             :phone-cards="['title' => 'name', 'sub' => 'department', 'meta' => ['documents']]"
             :columns="[
@@ -77,10 +77,10 @@
         .rc-plain > :not(.rc-head) { margin-left: 14px; margin-right: 14px; }
         .rc-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 9px 14px; font-weight: 700; font-size: 14px; border-radius: 5px 5px 0 0; margin-bottom: 8px; }
         .rc-head small { font-weight: 600; font-size: 11.5px; opacity: .85; }
-        .rc-num { font-size: 26px; font-weight: 700; color: var(--dl-ink-strong, #111); }
+        .rc-num { font-size: 26px; font-weight: 700; color: var(--dl2-ink, #111); }
     </style>
     <script>
-        (() => {
+        window.akReady(() => {
             // Pilihan tampilan diingat per pengguna (browser): tanpa ?view= di alamat, tampilan tersimpan dipakai.
             const KEY = 'jays-recipients-view';
             const current = @json($view), hasQuery = new URLSearchParams(location.search).has('view');
@@ -112,6 +112,6 @@
                 });
                 document.getElementById('rc-q')?.addEventListener('input', (e) => { st.q = e.target.value.trim().toLowerCase(); apply(); });
             }
-        })();
+        });
     </script>
 @endsection

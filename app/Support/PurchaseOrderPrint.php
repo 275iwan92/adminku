@@ -3,10 +3,10 @@
 namespace App\Support;
 
 use App\Models\PurchaseOrder;
-use Devlib\PrintDoc\Document;
+use Devlib2\PrintDoc\Document;
 
 /* REMARK
- * Tujuan       : Cetakan Pesanan Pembelian (PO) memakai tata letak DevLib x-dl::print-doc: pemasok di kanan, tanggal kirim, syarat bayar dan kirim ke di kiri, baris barang berharga, subtotal, PPN (hanya bila diisi) dan total.
+ * Tujuan       : Cetakan Pesanan Pembelian (PO) memakai tata letak DevLib x-dl2::print-doc: pemasok di kanan, tanggal kirim, syarat bayar dan kirim ke di kiri, baris barang berharga, subtotal, PPN (hanya bila diisi) dan total.
  * Sumber hulu  : p_order + p_order_line (+ m_item, m_supplier, pembuat / penyetuju).
  * Input        : PurchaseOrder (load()).
  * Output       : objek Document (A5 landscape sampai 5 baris, A4 portrait di atasnya).

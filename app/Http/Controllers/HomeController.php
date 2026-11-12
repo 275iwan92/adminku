@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Support\HomeCards;
 use App\Support\Menu;
-use Devlib\Device;
+use Devlib2\Device;
 use Illuminate\Http\Request;
 
 /* REMARK
@@ -31,4 +31,10 @@ class HomeController extends Controller
             'fresh' => (bool) session('fresh'),
         ]);
     }
+    // Isi tab Beranda Layer Shell (iframe): banner sapaan + kartu modul.
+    public function board(Request $request)
+    {
+        return view('home-board', HomeCards::page($request->user()));
+    }
+
 }

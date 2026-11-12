@@ -63,7 +63,7 @@ class LeadTimeTest extends TestCase
         return ReorderOrder::create(['item_id' => $this->item->item_id, 'ordered_at' => today()->subDays($ago + $days), 'ref_no' => 'X', 'closed_at' => today()->subDays($ago)->setTime(23, 59), 'first_received_at' => today()->subDays($ago)->setTime(23, 59), 'close_reason' => 'manual']);
     }
 
-    private function lead(): \Devlib\Engine\LeadTime
+    private function lead(): \Devlib2\Engine\LeadTime
     {
         return LeadTimes::for($this->item->item->fresh());
     }
@@ -121,7 +121,7 @@ class LeadTimeTest extends TestCase
         $expected = (new \DateTimeImmutable('today'))->modify('-4 days');
         $note = $late->note();
         $this->assertStringContainsString('Perkiraan tiba', $note);
-        $this->assertStringContainsString(\Devlib\DateValue::of($expected->format('Y-m-d'))->display(), $note);
+        $this->assertStringContainsString(\Devlib2\DateValue::of($expected->format('Y-m-d'))->display(), $note);
         $this->assertStringContainsString('Sudah 9 hari, biasanya 5. Periksa pesanan.', $note);
         $this->get(route('stock.home'))->assertOk()->assertSee('Sudah 9 hari, biasanya 5. Periksa pesanan.', false)->assertSee('Sari Supervisor. Diterima sejak dipesan: 0 dari 25 pcs. Perkiraan tiba', false);
 

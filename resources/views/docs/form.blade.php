@@ -1,5 +1,5 @@
 {{-- REMARK
- Tujuan       : Form dokumen stok (Master-Detail): header menurut jenis + tabel baris item (x-dl::lines). Semua jenis: Draft (belum menyentuh stok, boleh Delete) > Confirm (diproses ke stok; penyesuaian: diajukan lalu Approve Supervisor) > Cancel (pengguna mengajukan dengan alasan, Supervisor menyetujui; ditolak bila stok tidak cukup, koreksi lewat Stock Adjustment).
+ Tujuan       : Form dokumen stok (Master-Detail): header menurut jenis + tabel baris item (x-dl2::lines). Semua jenis: Draft (belum menyentuh stok, boleh Delete) > Confirm (diproses ke stok; penyesuaian: diajukan lalu Approve Supervisor) > Cancel (pengguna mengajukan dengan alasan, Supervisor menyetujui; ditolak bila stok tidak cukup, koreksi lewat Stock Adjustment).
  Sumber hulu  : StockDocumentController (t, doc, lines, suppliers, log, fefo), Lookup product_in / item_out / product_opn / item_adj (ItemLookups).
  Input        : t, doc, lines, suppliers, log, cancelProblem (hasil hitungan: stok masih cukup untuk membatalkan atau tidak).
  Output       : POST docs.store (baru = draf) / PUT docs.update (save, confirm, approve, reject, cancel, delete).
@@ -48,7 +48,7 @@
     @endphp
     @include('partials.flash')
     @if (! empty($cancelProblem))
-        <x-dl::alert tone="warn" :message="raw($cancelProblem)" />
+        <x-dl2::alert tone="warn" :message="raw($cancelProblem)" />
     @endif
     @if ($t === T::Receiving)
         @include('docs.pack-units')
@@ -57,56 +57,56 @@
         @endif
     @endif
     @if (! empty($fefo))
-        <x-dl::alert tone="warn" :message="raw(implode(' ', $fefo))" />
+        <x-dl2::alert tone="warn" :message="raw(implode(' ', $fefo))" />
     @endif
     @if ($pendingCancel)
-        <x-dl::alert tone="warn" :message="raw('Pembatalan diajukan oleh '.($doc->cancelRequester?->name ?? '-').' dan menunggu persetujuan Supervisor. Alasan: '.$doc->cancel_reason.'. Stok belum berubah.')" />
+        <x-dl2::alert tone="warn" :message="raw('Pembatalan diajukan oleh '.($doc->cancelRequester?->name ?? '-').' dan menunggu persetujuan Supervisor. Alasan: '.$doc->cancel_reason.'. Stok belum berubah.')" />
     @endif
-    <x-dl::form :title="$title" :subtitle="$isNew ? null : raw($doc->supplier?->name ?? $doc->recipient ?? $doc->reason)" panel="top" kind="document" :status="$status"
+    <x-dl2::form :title="$title" :subtitle="$isNew ? null : raw($doc->supplier?->name ?? $doc->recipient ?? $doc->reason)" panel="top" kind="document" :status="$status"
         :back="route('docs.index', $t->slug())" :new-url="route('docs.create', $t->slug())"
-        :action="$isNew ? route('docs.store', $t->slug()) : route('docs.update', [$t->slug(), $doc])" :hidden="$isNew ? [] : ['_method' => 'PUT']"
+        :action="$isNew ? route('docs.store', $t->slug()) : route('docs.update', [$t->slug(), $doc])" :method="$isNew ? 'post' : 'put'"
         :pipeline="true" :approval-levels="$isAdj || $pendingCancel ? 1 : 0" :approval-at="1" :can-approve="auth()->user()->canApprove()"
         :hide="array_merge(['hold', 'email', 'duplicate'], $doc->reversal_of_document_id ? ['cancel'] : [])" :print-url="$isNew ? null : route('docs.print', [$t->slug(), $doc])" :log="$log"
         :created-by="$doc->creator?->name" :created-at="$doc->created_at?->format('Y-m-d H:i:s')"
         :updated-by="$doc->approver?->name ?? $doc->creator?->name" :updated-at="$doc->updated_at?->format('Y-m-d H:i:s')">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.display label="Document No." :value="raw($doc->doc_no ?? '(otomatis)')" />
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.display label="Document No." :value="raw($doc->doc_no ?? '(otomatis)')" />
             @if ($t === T::Opening)
-                <x-dl::field.date name="doc_at" label="Balance As Of (period start)" :value="$v('doc_at') ? \Illuminate\Support\Carbon::parse($v('doc_at'))->format('Y-m-d') : today()->format('Y-m-d')" required :error="$e('doc_at')" hint="Only for items without any stock movement yet." />
+                <x-dl2::field.date name="doc_at" label="Balance As Of (period start)" :value="$v('doc_at') ? \Illuminate\Support\Carbon::parse($v('doc_at'))->format('Y-m-d') : today()->format('Y-m-d')" required :error="$e('doc_at')" hint="Only for items without any stock movement yet." />
             @else
-                <x-dl::field.display label="Date & Time" :value="raw($isNew ? 'Diisi saat disimpan' : \Devlib\Locale::stamp($doc->doc_at))" />
+                <x-dl2::field.display label="Date & Time" :value="raw($isNew ? 'Diisi saat disimpan' : \Devlib2\Locale::stamp($doc->doc_at))" />
             @endif
-            <x-dl::field.display label="Entered by" :value="raw($doc->creator?->name ?? auth()->user()->name)" />
-        </x-dl::form.row>
+            <x-dl2::field.display label="Entered by" :value="raw($doc->creator?->name ?? auth()->user()->name)" />
+        </x-dl2::form.row>
         @if ($t === T::Receiving)
-            <x-dl::form.row :cols="3">
-                <x-dl::field.select name="supplier_id" label="Supplier" :options="$suppliers + ($doc->supplier ? [$doc->supplier_id => $doc->supplier->name] : [])" :value="$v('supplier_id')" required :add="$locked ? [] : \App\Support\QuickAdd::for('supplier')" :error="$e('supplier_id')" />
-                <x-dl::field.text name="ref_no" label="Reference No. (delivery note / PO / invoice)" :value="$v('ref_no')" maxlength="60" :error="$e('ref_no')" />
-            </x-dl::form.row>
-            <x-dl::form.row :cols="3">
+            <x-dl2::form.row :cols="3">
+                <x-dl2::field.select name="supplier_id" label="Supplier" :options="$suppliers + ($doc->supplier ? [$doc->supplier_id => $doc->supplier->name] : [])" :value="$v('supplier_id')" required :add="$locked ? [] : \App\Support\QuickAdd::for('supplier')" :error="$e('supplier_id')" />
+                <x-dl2::field.text name="ref_no" label="Reference No. (delivery note / PO / invoice)" :value="$v('ref_no')" maxlength="60" :error="$e('ref_no')" />
+            </x-dl2::form.row>
+            <x-dl2::form.row :cols="3">
                 @include('docs.recipient-field')
                 @include('docs.department-field')
-            </x-dl::form.row>
+            </x-dl2::form.row>
         @elseif ($t === T::Issuance)
-            <x-dl::form.row :cols="3">
+            <x-dl2::form.row :cols="3">
                 @include('docs.recipient-field')
                 @include('docs.department-field')
-                <x-dl::field.text name="reason" label="Purpose (maintenance / ATK ...)" :value="$v('reason')" maxlength="255" :error="$e('reason')" />
-            </x-dl::form.row>
+                <x-dl2::field.text name="reason" label="Purpose (maintenance / ATK ...)" :value="$v('reason')" maxlength="255" :error="$e('reason')" />
+            </x-dl2::form.row>
         @elseif ($isAdj)
-            <x-dl::form.row :cols="3">
-                <x-dl::field.text name="reason" label="Reason for adjustment / opname" :value="$v('reason', 'Opname stok')" required maxlength="255" :error="$e('reason')" />
-            </x-dl::form.row>
-            <x-dl::form.row :cols="3">
+            <x-dl2::form.row :cols="3">
+                <x-dl2::field.text name="reason" label="Reason for adjustment / opname" :value="$v('reason', 'Opname stok')" required maxlength="255" :error="$e('reason')" />
+            </x-dl2::form.row>
+            <x-dl2::form.row :cols="3">
                 @include('docs.recipient-field')
                 @include('docs.department-field')
-            </x-dl::form.row>
+            </x-dl2::form.row>
         @endif
-        <x-dl::form.row>
-            <x-dl::field.text name="note" label="Notes" :value="$v('note')" multiline maxlength="1000" :error="$e('note')" />
-        </x-dl::form.row>
+        <x-dl2::form.row>
+            <x-dl2::field.text name="note" label="Notes" :value="$v('note')" multiline maxlength="1000" :error="$e('note')" />
+        </x-dl2::form.row>
         <x-slot:detail>
-            <x-dl::lines name="lines" title="Items" add-label="+ Add Item" :rows="$rows" :min-rows="$locked ? 0 : 1" :readonly="$locked" :row-state="true" :columns="$columns" />
+            <x-dl2::lines name="lines" title="Items" add-label="+ Add Item" :rows="$rows" :min-rows="$locked ? 0 : 1" :readonly="$locked" :row-state="true" :columns="$columns" />
         </x-slot:detail>
-    </x-dl::form>
+    </x-dl2::form>
 @endsection

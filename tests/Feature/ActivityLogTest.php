@@ -145,7 +145,7 @@ class ActivityLogTest extends TestCase
         $this->assertStringContainsString(route('hp.open', 'LOG'), $menu);
         $this->assertStringNotContainsString('href="'.route('super.log').'"', $menu, 'tidak lagi halaman mandiri tanpa kerangka');
 
-        $this->actingAs($super)->withCookie('ui', 'hp')->get(route('hp.open', 'LOG'))->assertOk()->assertSee('data-dl-phone-menu', false)->assertSee('<iframe class="dl-phone__frame" src="'.route('super.log').'"', false);
+        $this->actingAs($super)->withCookie('ui', 'hp')->get(route('hp.open', 'LOG'))->assertOk()->assertSee('data-dl2-phone-menu', false)->assertSee('<iframe class="dl-phone__frame" src="'.route('super.log').'"', false);
         $this->actingAs($super)->withCookie('ui', 'hp')->get(route('hp.open', 'UAT'))->assertOk()->assertSee(route('super.accounts'), false);
         $this->actingAs(User::factory()->administrator()->create())->get(route('hp.open', 'LOG'))->assertNotFound();
     }

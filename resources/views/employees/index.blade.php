@@ -3,7 +3,7 @@
                 Daftar = grid DevLib dengan foto bulat di kolom pertama. Tab Semua / Perlu perhatian / Keluar sebagai pil berwarna dengan penghitung, segmen bagian, dan kotak cari (tampilan Kartu). NIK tidak tampil di sini.
  Sumber hulu  : EmployeeController@index.
  Input        : rows, view (cards | list), departments, counts.
- Output       : kartu (klik membuka form karyawan) atau x-dl::grid.
+ Output       : kartu (klik membuka form karyawan) atau x-dl2::grid.
  Dipakai oleh : route employees.index (menu HR > Karyawan).
  Status       : Aktif.
 --}}
@@ -16,7 +16,7 @@
     @endphp
     <div class="em-top">
         @if ($view === 'cards' && auth()->user()->canWrite('HRE'))
-            <x-dl::button class="sstock-btn-teal" variant="primary" icon="fa-plus" label="Karyawan" :href="route('employees.create')" />
+            <x-dl2::button class="sstock-btn-teal" variant="primary" icon="fa-plus" label="Karyawan" :href="route('employees.create')" />
         @endif
         @if ($view === 'cards')
             <div class="em-pills" id="em-pills">
@@ -25,14 +25,14 @@
                 <button type="button" class="em-pill em-pill--gray" data-f="exited">Keluar <b>{{ $counts['exited'] }}</b></button>
             </div>
             @if (count($departments) > 1)
-                <div class="dl-segment" id="em-dept"><button type="button" class="dl-segment__opt is-active" data-d="">Semua bagian</button>@foreach ($departments as $d)<button type="button" class="dl-segment__opt" data-d="{{ $d }}">{{ $d }}</button>@endforeach</div>
+                <div class="ak-seg" id="em-dept"><button type="button" class="ak-seg__opt is-active" data-d="">Semua bagian</button>@foreach ($departments as $d)<button type="button" class="ak-seg__opt" data-d="{{ $d }}">{{ $d }}</button>@endforeach</div>
             @endif
             <input type="search" class="em-search" id="em-q" placeholder="Cari nama, kode, jabatan..." aria-label="Cari karyawan">
         @endif
         <span class="em-spacer"></span>
-        <div class="dl-segment" id="em-view">
-            <a class="dl-segment__opt {{ $view === 'cards' ? 'is-active' : '' }}" href="{{ route('employees.index') }}" data-v="cards"><i class="fa-solid fa-table-cells-large"></i> Kartu</a>
-            <a class="dl-segment__opt {{ $view === 'list' ? 'is-active' : '' }}" href="{{ route('employees.index', ['view' => 'list']) }}" data-v="list"><i class="fa-solid fa-list"></i> Daftar</a>
+        <div class="ak-seg" id="em-view">
+            <a class="ak-seg__opt {{ $view === 'cards' ? 'is-active' : '' }}" href="{{ route('employees.index') }}" data-v="cards"><i class="fa-solid fa-table-cells-large"></i> Kartu</a>
+            <a class="ak-seg__opt {{ $view === 'list' ? 'is-active' : '' }}" href="{{ route('employees.index', ['view' => 'list']) }}" data-v="list"><i class="fa-solid fa-list"></i> Daftar</a>
         </div>
     </div>
 
@@ -59,11 +59,11 @@
                     <span class="em-foot">Masuk {{ $r['joined'] }} · {{ $r['tenure'] }}</span>
                 </a>
             @endforeach
-            @if (! count($rows))<p class="dl-note">Belum ada karyawan.</p>@endif
+            @if (! count($rows))<p class="ak-note">Belum ada karyawan.</p>@endif
         </div>
-        <p class="dl-note" id="em-empty" hidden>Tidak ada karyawan yang cocok.</p>
+        <p class="ak-note" id="em-empty" hidden>Tidak ada karyawan yang cocok.</p>
     @else
-        <x-dl::grid id="employees" :rows="$rows" actions="edit" :new-url="auth()->user()->canWrite('HRE') ? route('employees.create') : null" :open-url="url('employees/{id}')"
+        <x-dl2::grid id="employees" :rows="$rows" actions="edit" :new-url="auth()->user()->canWrite('HRE') ? route('employees.create') : null" :open-url="url('employees/{id}')"
             search="Cari kode, nama, jabatan, bagian..."
             :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['position', 'department', 'status', 'attention']]"
             :columns="[
@@ -81,7 +81,7 @@
 
     @include('employees._cards-style')
     <script>
-        (() => {
+        window.akReady(() => {
             // Pilihan tampilan diingat per pengguna (browser): tanpa ?view= di alamat, tampilan tersimpan dipakai.
             const KEY = 'jays-employees-view';
             const current = @json($view), hasQuery = new URLSearchParams(location.search).has('view');
@@ -119,14 +119,14 @@
             // Tampilan Daftar: foto bulat 36px di kolom pertama (grid DevLib belum punya foto di kolom identitas, jadi disisipkan setelah digambar).
             const PHOTOS = @json(collect($rows)->mapWithKeys(fn ($r) => [$r['code'] => $r['photo']])->filter()->all());
             const decorate = () => {
-                document.querySelectorAll('[data-dl^="x-dl::grid id=employees"] tbody tr').forEach((tr) => {
+                document.querySelectorAll('[data-dl^="x-dl2::grid id=employees"] tbody tr').forEach((tr) => {
                     const box = tr.querySelector('.dl-avatar-id'); if (! box || tr.querySelector('.em-gphoto')) { return; }
                     const photo = PHOTOS[box.querySelector('small')?.textContent.trim()]; if (! photo) { return; }
                     box.insertAdjacentHTML('beforebegin', `<img class="em-gphoto" src="${photo}" alt="">`);
                 });
             };
-            const grid = document.querySelector('[data-dl^="x-dl::grid id=employees"]');
+            const grid = document.querySelector('[data-dl^="x-dl2::grid id=employees"]');
             if (grid) { new MutationObserver(decorate).observe(grid, { childList: true, subtree: true }); decorate(); }
-        })();
+        });
     </script>
 @endsection

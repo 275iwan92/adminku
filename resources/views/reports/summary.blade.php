@@ -2,20 +2,20 @@
  Tujuan       : Summary Stock per periode (dari tanggal sampai tanggal): saldo awal, masuk, keluar, penyesuaian, saldo akhir per item, status Reorder Point terhadap saldo akhir, dan untuk Supervisor nilai valuasi + total aset persediaan.
  Sumber hulu  : ReportController@summary (items + rm_stockcard). Data Entry tidak melihat biaya / nilai.
  Input        : sup, from, to, categories, rows.
- Output       : filter (periode, kategori, hanya reorder, termasuk nonaktif) + x-dl::report.
+ Output       : filter (periode, kategori, hanya reorder, termasuk nonaktif) + x-dl2::report.
  Dipakai oleh : route reports.summary (menu Reports > Summary Stock).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Summary Stock'])
 @section('body')
     <x-report-filter :from="$from" :to="$to">
-        <x-dl::field.select name="category_id" label="Category" :options="['' => 'Semua kategori'] + $categories" :value="request('category_id')" />
-        <x-dl::field.checkbox name="only_reorder" label="Filter" text="Only items at / below reorder point" :value="request()->boolean('only_reorder')" />
-        <x-dl::field.checkbox name="inactive" label="Inactive" text="Include inactive items" :value="request()->boolean('inactive')" />
+        <x-dl2::field.select name="category_id" label="Category" :options="['' => 'Semua kategori'] + $categories" :value="request('category_id')" />
+        <x-dl2::field.checkbox name="only_reorder" label="Filter" text="Only items at / below reorder point" :value="request()->boolean('only_reorder')" />
+        <x-dl2::field.checkbox name="inactive" label="Inactive" text="Include inactive items" :value="request()->boolean('inactive')" />
     </x-report-filter>
-    <x-dl::report phone-list title="Summary Stock" subtitle="Stock position and movement per period" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
+    <x-dl2::report phone-list title="Summary Stock" subtitle="Stock position and movement per period" :company="\App\Support\Company::report()" :printed-by="raw(auth()->user()->name)" paper="a4l"
         :criteria="array_filter([
-            'Period' => raw(Devlib\Locale::d($from).' — '.Devlib\Locale::d($to)),
+            'Period' => raw(Devlib2\Locale::d($from).' — '.Devlib2\Locale::d($to)),
             'Category' => raw($categories[request('category_id')] ?? 'Semua kategori'),
             'Scope' => raw(request()->boolean('only_reorder') ? 'Hanya barang pesan ulang' : 'Semua barang'),
             'Valuation' => $sup ? 'Rata-rata bergerak' : null,

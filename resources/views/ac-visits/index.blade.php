@@ -3,7 +3,7 @@
                 Pesanan dibuat dari layar Penjadwalan AC; pemberitahuan dikirim dari layar satu pesanan.
  Sumber hulu  : AcVisitController@index.
  Input        : rows.
- Output       : x-dl::grid dengan kotak status; klik 2x / Open membuka layar pesanan.
+ Output       : x-dl2::grid dengan kotak status; klik 2x / Open membuka layar pesanan.
  Dipakai oleh : route ac-visits.index (menu GA > Kunjungan AC).
  Status       : Aktif.
 --}}
@@ -12,16 +12,16 @@
     @php($tones = \App\Services\AcCare::ORDER_TONES)
     @include('partials.flash')
     @php($typeTones = ['Preventif' => 'neutral', 'Breakdown' => 'danger'])
-    <x-dl::action-bar align="start">
+    <x-dl2::action-bar align="start">
         @if (auth()->user()->canAccess('GAM'))
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('ac-care.index')" />
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('ac-care.index')" />
         @endif
         @if (auth()->user()->canAccess('GAS'))
-            <x-dl::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Jadwal" :href="route('ac-schedule.index')" />
+            <x-dl2::button class="sstock-btn-teal" variant="secondary" icon="fa-calendar-check" label="Jadwal" :href="route('ac-schedule.index')" />
         @endif
-        <x-dl::button class="sstock-btn-coral" icon="fa-truck-fast" label="Kunjungan dan Catat hasil" :href="route('ac-visits.index')" />
-    </x-dl::action-bar>
-    <x-dl::grid id="ac-visits" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-visits/{id}')" search="Cari nomor, vendor, status..."
+        <x-dl2::button class="sstock-btn-coral" icon="fa-truck-fast" label="Kunjungan dan Catat hasil" :href="route('ac-visits.index')" />
+    </x-dl2::action-bar>
+    <x-dl2::grid id="ac-visits" :rows="$rows" actions="worklist" :new-record="null" :open-url="url('ac-visits/{id}')" search="Cari nomor, vendor, status..."
         :phone-cards="['title' => 'no', 'sub' => 'vendor', 'badge' => 'status', 'tones' => $tones, 'meta' => ['date', 'time', 'units']]"
         :columns="[
             ['key' => 'no', 'label' => 'No. Pesanan', 'type' => 'identity', 'avatar' => false],

@@ -4,10 +4,10 @@ namespace App\Support;
 
 use App\Enums\StockDocumentType;
 use App\Models\StockDocument;
-use Devlib\PrintDoc\Document;
+use Devlib2\PrintDoc\Document;
 
 /* REMARK
- * Tujuan       : Cetakan dokumen stok (Saldo Awal, Penerimaan, Pengeluaran, Penyesuaian) memakai tata letak DevLib x-dl::print-doc. Setiap cetakan membawa MODE dokumen
+ * Tujuan       : Cetakan dokumen stok (Saldo Awal, Penerimaan, Pengeluaran, Penyesuaian) memakai tata letak DevLib x-dl2::print-doc. Setiap cetakan membawa MODE dokumen
  *                (DRAFT / CONFIRMED / CANCELLED, penyesuaian juga WAITING APPROVAL / APPROVED / REJECTED); yang belum / tidak sah diberi tanda air.
  * Sumber hulu  : rm_stock + rm_stock_line (+ items, supplier, pembuat / penyetuju).
  * Input        : StockDocument (load()).

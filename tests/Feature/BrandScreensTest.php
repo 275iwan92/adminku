@@ -24,7 +24,7 @@ class BrandScreensTest extends TestCase
         foreach ([self::PC, self::PHONE] as $ua) {
             foreach (['login', 'password.request'] as $route) {
                 $html = $this->withHeader('User-Agent', $ua)->get(route($route))->assertOk()->getContent();
-                $this->assertStringContainsString('dl-logo-badge', $html, "$route ($ua) memuat lencana logo (gambarnya adminku.svg lewat app.css)");
+                $this->assertStringContainsString('ak-logo-badge', $html, "$route ($ua) memuat lencana logo (gambarnya adminku.svg lewat app.css)");
                 $this->assertStringContainsString('<b>ADMINKU</b>', $html, "$route ($ua) mencetak nama merek (dua warna lewat CSS)");
                 $this->assertStringContainsString('KERJA JADI RAPI', $html);
                 $this->assertMatchesRegularExpression('/<title>[^<]*AdminKU<\/title>/u', $html);
@@ -36,7 +36,7 @@ class BrandScreensTest extends TestCase
     public function test_phone_ua_gets_the_phone_screens_and_home_header_is_the_brand(): void
     {
         $login = $this->withHeader('User-Agent', self::PHONE)->get('/login')->assertOk()->getContent();
-        $this->assertStringContainsString('dl-plogin', $login);
+        $this->assertStringContainsString('ak-plogin', $login);
 
         $home = $this->actingAs(User::factory()->create())->withHeader('User-Agent', self::PHONE)->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('sstock-brandtitle', $home);
@@ -68,7 +68,7 @@ class BrandScreensTest extends TestCase
         }
 
         $css = file_get_contents(resource_path('css/app.css'));
-        foreach (['body.dl-on-phone .dl-pager__goto { min-height: 44px; }', 'body.dl-on-phone .dl-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-coral, .sstock-btn-amber, .sstock-btn-red) { min-height: 44px; }','.dl-field__trigger:is(.dl-numtg, .dl-case)'] as $rule) {
+        foreach (['body.dl-on-phone .dl-pager__goto { min-height: 44px; }', 'body.dl-on-phone .dl2-btn:is(.sstock-btn-slate, .sstock-btn-teal, .sstock-btn-coral, .sstock-btn-amber, .sstock-btn-red) { min-height: 44px; }','.dl-field__trigger:is(.dl-numtg, .dl-case)'] as $rule) {
             $this->assertStringContainsString($rule, $css);
         }
     }
@@ -76,7 +76,7 @@ class BrandScreensTest extends TestCase
     public function test_brand_css_is_built_into_the_stylesheet(): void
     {
         $css = file_get_contents(resource_path('css/app.css'));
-        $this->assertStringContainsString("url('/media/brand/adminku.svg')", $css, 'semua lencana .dl-logo-badge memakai adminku.svg');
+        $this->assertStringContainsString("url('/media/brand/adminku.svg')", $css, 'semua lencana .ak-logo-badge memakai adminku.svg');
         $this->assertFileExists(public_path('media/brand/adminku.svg'));
         $this->assertStringContainsString('media/brand/adminku.svg', $this->withHeader('User-Agent', self::PC)->get('/login')->getContent(), 'pojok kiri atas login desktop');
         $this->assertStringContainsString('content: "Admin"', $css);

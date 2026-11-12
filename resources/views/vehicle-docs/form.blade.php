@@ -17,30 +17,30 @@
         $vehicleId = is_scalar(old('vehicle_id')) ? old('vehicle_id') : $selected;
     @endphp
     @include('partials.flash')
-    <x-dl::form title="Perpanjang Dokumen Kendaraan" subtitle="Pajak tahunan, STNK dan plat 5 tahunan, KIR, atau asuransi. Masa berlaku kendaraan memakai berlaku-sampai terbesar per jenis dokumen" panel="top" kind="master" status="new"
+    <x-dl2::form title="Perpanjang Dokumen Kendaraan" subtitle="Pajak tahunan, STNK dan plat 5 tahunan, KIR, atau asuransi. Masa berlaku kendaraan memakai berlaku-sampai terbesar per jenis dokumen" panel="top" kind="master" status="new"
         :back="$back" :action="route('vehicle-docs.store')" enctype="multipart/form-data">
-        <x-dl::form.row :cols="3">
-            <x-dl::field.select name="vehicle_id" label="Kendaraan" :options="$vehicles" :value="$vehicleId" required :error="$e('vehicle_id')" />
-        </x-dl::form.row>
-        <x-dl::form.row>
-            <x-dl::field.radio name="doc_type" label="Jenis Dokumen" :options="$docs" :value="$type" required :error="$e('doc_type')" />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="3">
-            <x-dl::field.date name="paid_at" label="Tanggal Bayar / Uji" :value="$paid" required :error="$e('paid_at')" />
-            <x-dl::field.date name="valid_until" label="Berlaku Sampai" :value="$until" required :error="$e('valid_until')" hint="Terisi otomatis dari tanggal bayar + masa berlaku jenis dokumen (pajak 12 bulan, STNK dan plat 60 bulan, KIR 6 bulan, asuransi 12 bulan). Boleh diubah." />
-            <x-dl::field.decimal name="cost" label="Biaya (IDR)" :decimals="2" :value="old('cost', 0)" required :error="$e('cost')" />
-        </x-dl::form.row>
-        <x-dl::form.row :cols="3">
-            <x-dl::field.text name="doc_no" label="No. Dokumen" :value="old('doc_no')" maxlength="60" :error="$e('doc_no')" hint="Mis. no. STNK, no. kir, atau no. polis." />
-            <x-dl::field.text name="note" label="Catatan" :value="old('note')" maxlength="255" :error="$e('note')" />
-        </x-dl::form.row>
-        <x-dl::form.row>
-            <x-dl::field.upload name="attachment" label="Lampiran" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti pembayaran / dokumen (dianjurkan, tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
-        </x-dl::form.row>
-    </x-dl::form>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.select name="vehicle_id" label="Kendaraan" :options="$vehicles" :value="$vehicleId" required :error="$e('vehicle_id')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row>
+            <x-dl2::field.radio name="doc_type" label="Jenis Dokumen" :options="$docs" :value="$type" required :error="$e('doc_type')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.date name="paid_at" label="Tanggal Bayar / Uji" :value="$paid" required :error="$e('paid_at')" />
+            <x-dl2::field.date name="valid_until" label="Berlaku Sampai" :value="$until" required :error="$e('valid_until')" hint="Terisi otomatis dari tanggal bayar + masa berlaku jenis dokumen (pajak 12 bulan, STNK dan plat 60 bulan, KIR 6 bulan, asuransi 12 bulan). Boleh diubah." />
+            <x-dl2::field.decimal name="cost" label="Biaya (IDR)" :decimals="2" :value="old('cost', 0)" required :error="$e('cost')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.text name="doc_no" label="No. Dokumen" :value="old('doc_no')" maxlength="60" :error="$e('doc_no')" hint="Mis. no. STNK, no. kir, atau no. polis." />
+            <x-dl2::field.text name="note" label="Catatan" :value="old('note')" maxlength="255" :error="$e('note')" />
+        </x-dl2::form.row>
+        <x-dl2::form.row>
+            <x-dl2::field.upload name="attachment" label="Lampiran" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" :error="$e('attachment')" hint="Foto atau PDF bukti pembayaran / dokumen (dianjurkan, tidak wajib). JPG, PNG, atau PDF, paling besar 5 MB." />
+        </x-dl2::form.row>
+    </x-dl2::form>
     <script>
         // Berlaku sampai mengikuti tanggal bayar + masa berlaku jenis dokumen selama belum diubah tangan; KIR dinonaktifkan untuk kendaraan yang tidak wajib KIR.
-        (() => {
+        window.akReady(() => {
             const kir = @json($kir), months = @json($months), manualFromServer = @json(session()->hasOldInput());
             const form = document.querySelector('form[action="{{ route('vehicle-docs.store') }}"]');
             const field = n => form.querySelector(`[name="${n}"]`);
@@ -60,7 +60,7 @@
             };
             const sync = () => {
                 const paid = field('paid_at').value, t = (form.querySelector('input[name="doc_type"]:checked') || {}).value;
-                if (!manual && paid && months[t]) window.Devlib.h.setField(form, 'valid_until', addMonths(paid, months[t]));
+                if (!manual && paid && months[t]) window.akSetField(form, 'valid_until', addMonths(paid, months[t]));
             };
             form.addEventListener('change', e => {
                 const n = e.target.name;
@@ -69,6 +69,6 @@
                 if (['vehicle_id', 'paid_at', 'doc_type'].includes(n)) sync();
             });
             syncKir();
-        })();
+        });
     </script>
 @endsection

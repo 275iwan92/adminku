@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Support\HpShell;
 use Closure;
-use Devlib\Device;
+use Devlib2\Device;
 use Illuminate\Http\Request;
 
 /* REMARK
@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
  *                Tombol Tampilan Desktop tidak digambar di ponsel (HpShell::deviceAction); middleware ini menutup jalan lain (cookie lama, POST /ui langsung).
  *                Sebaliknya, peramban komputer (UA dikenali, bukan ponsel) dengan cookie ui=phone sisa pilihan manual lama (tanpa penanda ui_auto) dilepas dari tampilan HP: tombol kembali sudah tidak ada, jadi cookie itu dibuang
  *                dari permintaan ini dan dihapus dari peramban. Jendela komputer yang menyempit pindah sendiri (ui_auto=1) dan tidak tersentuh.
- * Sumber hulu  : Devlib\Device (nama cookie ui), HpShell::isRealPhone (UA ponsel).
+ * Sumber hulu  : Devlib2\Device (nama cookie ui), HpShell::isRealPhone (UA ponsel).
  * Output       : cookie ui dibuang dari permintaan ini bila bernilai desktop di ponsel, atau bernilai phone sisa pilihan manual di komputer.
  * Dipakai oleh : bootstrap/app.php (grup web).
  * Status       : Aktif.

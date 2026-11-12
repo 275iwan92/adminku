@@ -2,7 +2,7 @@
  Tujuan       : Daftar Perintah Kerja / tiket perawatan (GA Gedung dan Aset, modul FAT): nomor WO, judul, aset atau gedung/ruang, prioritas dan status berlencana, penanggung pekerjaan, biaya.
  Sumber hulu  : FacOrderController@index.
  Input        : rows.
- Output       : x-dl::grid dengan kotak status; klik 2x membuka form Perintah Kerja.
+ Output       : x-dl2::grid dengan kotak status; klik 2x membuka form Perintah Kerja.
  Dipakai oleh : route fac-orders.index (tombol Tiket di panel Perawatan Gedung dan Aset).
  Status       : Aktif.
 --}}
@@ -14,11 +14,11 @@
     @endphp
     @include('partials.flash')
     @if ($u->canAccess('FAM'))
-        <x-dl::action-bar align="start">
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('fac-care.index')" />
-        </x-dl::action-bar>
+        <x-dl2::action-bar align="start">
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-arrow-left" label="Kembali" :href="route('fac-care.index')" />
+        </x-dl2::action-bar>
     @endif
-    <x-dl::grid id="fac-orders" :rows="$rows" actions="open" :open-url="url('fac-orders/{id}')" :new-url="$u->canWrite('FAT') ? route('fac-orders.create') : null" search="Cari nomor, judul, aset, vendor..."
+    <x-dl2::grid id="fac-orders" :rows="$rows" actions="open" :open-url="url('fac-orders/{id}')" :new-url="$u->canWrite('FAT') ? route('fac-orders.create') : null" search="Cari nomor, judul, aset, vendor..."
         :phone-cards="['title' => 'title', 'sub' => 'no', 'badge' => 'status', 'tones' => FacCare::STATUS_TONES, 'meta' => ['target', 'priority']]"
         :columns="[
             ['key' => 'no', 'label' => 'No. WO', 'type' => 'identity', 'avatar' => false],

@@ -74,7 +74,7 @@ class StockCountEntryTest extends TestCase
         $this->assertArrayNotHasKey('system_qty', $json[0]);
         $this->assertStringNotContainsString('12345.5', json_encode($json));
 
-        $this->getJson(route('devlib.lookup', 'item_count').'?q=Pensil')->assertOk()->assertJsonMissing(['stock' => 12345.5]);
+        $this->getJson(route('devlib2.lookup', 'item_count').'?q=Pensil')->assertOk()->assertJsonMissing(['stock' => 12345.5]);
     }
 
     public function test_open_count_shows_the_live_difference_per_row_after_each_save(): void

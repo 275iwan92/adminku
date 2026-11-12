@@ -32,7 +32,7 @@ class ItemSearchTest extends TestCase
 
     private function lookup(string $name, string $q): array
     {
-        return collect($this->actingAs($this->user)->getJson(route('devlib.lookup', $name).'?q='.urlencode($q))->assertOk()->json())->pluck('name')->all();
+        return collect($this->actingAs($this->user)->getJson(route('devlib2.lookup', $name).'?q='.urlencode($q))->assertOk()->json())->pluck('name')->all();
     }
 
     public function test_several_words_match_in_any_order(): void

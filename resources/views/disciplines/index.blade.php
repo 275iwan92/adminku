@@ -3,7 +3,7 @@
                 Dua bagian: penerbitan BULAN INI sebagai kartu pita berwarna per jenis (SP 1 kuning, SP 2 jingga, SP 3 merah muda tua, PHK merah), dan BULAN SEBELUMNYA sebagai tabel yang bisa disaring bulan demi bulan (filter Bulan).
  Sumber hulu  : DisciplineController@index.
  Input        : current (penerbitan bulan berjalan), history (bulan-bulan sebelumnya), monthName.
- Output       : dua x-dl::grid; klik 2x membuka penerbitan (detail, cetak, cabut).
+ Output       : dua x-dl2::grid; klik 2x membuka penerbitan (detail, cetak, cabut).
  Dipakai oleh : route disciplines.index (menu HR > Kedisiplinan).
  Status       : Aktif.
 --}}
@@ -36,14 +36,14 @@
     @endphp
 
     <div style="{{ $head }}">Bulan ini &middot; {{ $monthName }}</div>
-    <x-dl::grid id="disciplines-month" :rows="$current" actions="open" :open-url="url('disciplines/{id}')"
+    <x-dl2::grid id="disciplines-month" :rows="$current" actions="open" :open-url="url('disciplines/{id}')"
         :new-url="auth()->user()->canWrite('HRD') ? route('disciplines.create') : null"
         search="Cari nomor surat, karyawan, alasan..."
         :cards="['style' => 'band', 'start' => true, 'title' => 'employee', 'sub' => 'doc_no', 'icon' => 'icon', 'hue' => 'hue', 'big' => 'type', 'meta' => ['department', 'state']]"
         :columns="$columns" />
 
     <div style="{{ $head }}">Bulan sebelumnya</div>
-    <x-dl::grid id="disciplines-history" :rows="$history" actions="open" :open-url="url('disciplines/{id}')" :new-record="null"
+    <x-dl2::grid id="disciplines-history" :rows="$history" actions="open" :open-url="url('disciplines/{id}')" :new-record="null"
         search="Cari nomor surat, karyawan, alasan..."
         :phone-cards="['title' => 'employee', 'sub' => 'doc_no', 'meta' => ['type', 'state', 'department']]"
         :columns="$columns"

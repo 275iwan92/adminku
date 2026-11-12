@@ -2,14 +2,14 @@
  Tujuan       : Daftar Permintaan Pembelian (PP): nomor, tanggal, bagian peminta, pemohon, dibutuhkan, jumlah barang, estimasi total, status.
  Sumber hulu  : PurchaseRequestController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x membuka PP.
+ Output       : x-dl2::grid; klik 2x membuka PP.
  Dipakai oleh : route pr.index (menu Purchase > Permintaan Pembelian).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Permintaan Pembelian'])
 @section('body')
     @include('partials.flash')
-    <x-dl::grid id="purchase-requests" :rows="$rows" actions="open" :open-url="url('pr/{id}')"
+    <x-dl2::grid id="purchase-requests" :rows="$rows" actions="open" :open-url="url('pr/{id}')"
         :new-url="auth()->user()->canWrite('PUP') ? route('pr.create') : null"
         search="Cari nomor PP, bagian, pemohon..."
         :phone-cards="['title' => 'doc_no', 'sub' => 'department', 'meta' => ['requester', 'state', 'total']]"

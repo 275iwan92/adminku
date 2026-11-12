@@ -2,7 +2,7 @@
  Tujuan       : Rekrutmen (HRR): papan kanban kandidat per tahap (pindah bebas, loncat atau mundur) dan daftar kandidat (cari NIK / nama, filter tahap, status, sumber, bagian lewat pencarian). Satu tombol Setup (urutan tahap) dan tombol + Kandidat.
  Sumber hulu  : CandidateController@index.
  Input        : view (board | list), rows, cards, columns, steps.
- Output       : x-dl::kanban (pindah lewat POST candidates.move) atau x-dl::grid; klik kandidat membuka kartu kandidat.
+ Output       : x-dl2::kanban (pindah lewat POST candidates.move) atau x-dl2::grid; klik kandidat membuka kartu kandidat.
  Dipakai oleh : route candidates.index (menu HR > Rekrutmen).
  Status       : Aktif.
 --}}
@@ -10,73 +10,73 @@
 @section('body')
     @php $u = auth()->user(); @endphp
     @include('partials.flash')
-    <x-dl::kpi-row>
-        <x-dl::stat-box label="Kandidat aktif" :value="(string) $kpi['active']" tone="accent" />
-        <x-dl::stat-box label="Interview minggu ini" :value="(string) $kpi['interviews']" tone="violet" sub="Jadwal tes dan interview yang menunggu" />
-        <x-dl::stat-box label="Menunggu keputusan" :value="(string) $kpi['waiting']" tone="danger" sub="Hasil tahap berjalan belum diisi" />
-        <x-dl::stat-box label="Diterima bulan ini" :value="(string) $kpi['hired']" tone="success" />
-    </x-dl::kpi-row>
+    <x-dl2::kpi-row>
+        <x-dl2::stat-box label="Kandidat aktif" :value="(string) $kpi['active']" tone="accent" />
+        <x-dl2::stat-box label="Interview minggu ini" :value="(string) $kpi['interviews']" tone="violet" sub="Jadwal tes dan interview yang menunggu" />
+        <x-dl2::stat-box label="Menunggu keputusan" :value="(string) $kpi['waiting']" tone="danger" sub="Hasil tahap berjalan belum diisi" />
+        <x-dl2::stat-box label="Diterima bulan ini" :value="(string) $kpi['hired']" tone="success" />
+    </x-dl2::kpi-row>
     <div class="rk-top">
         @if ($u->canWrite('HRR'))
-            <x-dl::button class="sstock-btn-teal" variant="primary" icon="fa-plus" label="Kandidat" :href="route('candidates.create')" />
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('recruit-steps.index')" />
+            <x-dl2::button class="sstock-btn-teal" variant="primary" icon="fa-plus" label="Kandidat" :href="route('candidates.create')" />
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-gear" label="Setup" :href="route('recruit-steps.index')" />
         @endif
         @if ($view === 'board')
             @if (count($departments) > 1)
-                <div class="rk-seg dl-segment" id="rk-seg"><button type="button" class="dl-segment__opt is-active" data-q="">Semua</button>@foreach ($departments as $d)<button type="button" class="dl-segment__opt" data-q="{{ $d }}">{{ $d }}</button>@endforeach</div>
+                <div class="rk-seg ak-seg" id="rk-seg"><button type="button" class="ak-seg__opt is-active" data-q="">Semua</button>@foreach ($departments as $d)<button type="button" class="ak-seg__opt" data-q="{{ $d }}">{{ $d }}</button>@endforeach</div>
             @endif
             <select class="rk-sel" id="rk-src" aria-label="Sumber"><option value="">Semua sumber</option>@foreach ($sources as $k => $l)<option value="{{ $k }}">{{ $l }}</option>@endforeach</select>
             <select class="rk-sel" id="rk-who" aria-label="Penilai"><option value="">Semua penilai</option>@foreach ($assessors as $a)<option>{{ $a }}</option>@endforeach</select>
         @endif
         <span class="rk-spacer"></span>
-        <div class="dl-segment">
-            <a class="dl-segment__opt {{ $view === 'board' ? 'is-active' : '' }}" href="{{ route('candidates.index') }}"><i class="fa-solid fa-table-columns"></i> Papan</a>
-            <a class="dl-segment__opt {{ $view === 'list' ? 'is-active' : '' }}" href="{{ route('candidates.index', ['view' => 'list']) }}"><i class="fa-solid fa-list"></i> Daftar</a>
+        <div class="ak-seg">
+            <a class="ak-seg__opt {{ $view === 'board' ? 'is-active' : '' }}" href="{{ route('candidates.index') }}"><i class="fa-solid fa-table-columns"></i> Papan</a>
+            <a class="ak-seg__opt {{ $view === 'list' ? 'is-active' : '' }}" href="{{ route('candidates.index', ['view' => 'list']) }}"><i class="fa-solid fa-list"></i> Daftar</a>
         </div>
     </div>
     @if ($view === 'board')
         <div class="rk-legend">Sumber lamaran: @foreach (['referral' => '#639922', 'online' => '#378ADD', 'walkin' => '#EF9F27', 'other' => '#888780'] as $k => $col)<span><i style="background:{{ $col }}"></i>{{ $sources[$k] }}</span>@endforeach</div>
-        <x-dl::kanban :columns="$columns" :cards="$cards" :add-column="false" :add-card="true" :members="$assessors" :move-url="route('candidates.move')" :me="$u->name" open-on="click" undo />
-        <p class="dl-note">Seret kartu ke tahap mana pun (boleh loncat atau mundur; di HP tahan kartu sebentar lalu seret); tiap perpindahan tercatat dan bisa diurungkan 6 detik. Ketuk kartu untuk membuka kartu kandidat. Kandidat Ditolak atau Mundur hanya ada di Daftar.</p>
+        <x-dl2::kanban :columns="$columns" :cards="$cards" :add-column="false" :add-card="true" :members="$assessors" :move-url="route('candidates.move')" :me="$u->name" open-on="click" undo />
+        <p class="ak-note">Seret kartu ke tahap mana pun (boleh loncat atau mundur; di HP tahan kartu sebentar lalu seret); tiap perpindahan tercatat dan bisa diurungkan 6 detik. Ketuk kartu untuk membuka kartu kandidat. Kandidat Ditolak atau Mundur hanya ada di Daftar.</p>
         <style>
             /* Tambah kartu hanya di kolom Daftar (kolom pertama); membuka form Kandidat Baru. */
             .dl-kanban .dl-kcol:not(:first-child) .dl-kcol__foot { display: none; }
             .rk-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 8px; }
             .rk-spacer { flex: 1; }
             .rk-seg { display: inline-flex; flex-wrap: wrap; }
-            .rk-sel { padding: 6px 8px; border: 1px solid var(--dl-border, #ccc); border-radius: 6px; background: var(--dl-surface, #fff); color: var(--dl-ink, #222); font: inherit; font-size: 12.5px; }
-            .rk-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--dl-muted, #666); margin: 0 0 8px; }
+            .rk-sel { padding: 6px 8px; border: 1px solid var(--dl2-border, #ccc); border-radius: 6px; background: var(--dl2-surface, #fff); color: var(--dl2-ink, #222); font: inherit; font-size: 12.5px; }
+            .rk-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--dl2-ink-soft, #666); margin: 0 0 8px; }
             .rk-legend i { display: inline-block; width: 18px; height: 6px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
             .rk-strip { height: 6px; margin: -10px -10px 2px; border-radius: 8px 8px 0 0; }
-            .rk-photo { align-self: flex-end; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; margin: 0 0 -38px; border: 1px solid var(--dl-border, #ddd); }
+            .rk-photo { align-self: flex-end; width: 34px; height: 34px; border-radius: 50%; object-fit: cover; margin: 0 0 -38px; border: 1px solid var(--dl2-border, #ddd); }
             .dl-kcard:has(.rk-photo) .dl-kcard__title { padding-right: 42px; }
-            .rk-att { color: var(--dl-muted, #777); font-size: 11px; }
-            .rk-colmenu { border: none; background: none; cursor: pointer; color: var(--dl-muted, #777); padding: 0 4px; font-size: 15px; line-height: 1; }
-            .rk-menu { position: absolute; z-index: 9998; background: var(--dl-surface, #fff); border: 1px solid var(--dl-border, #ddd); border-radius: 8px; padding: 4px; min-width: 170px; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+            .rk-att { color: var(--dl2-ink-soft, #777); font-size: 11px; }
+            .rk-colmenu { border: none; background: none; cursor: pointer; color: var(--dl2-ink-soft, #777); padding: 0 4px; font-size: 15px; line-height: 1; }
+            .rk-menu { position: absolute; z-index: 9998; background: var(--dl2-surface, #fff); border: 1px solid var(--dl2-border, #ddd); border-radius: 8px; padding: 4px; min-width: 170px; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
             .rk-menu button { display: block; width: 100%; text-align: left; border: none; background: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 12.5px; color: inherit; }
-            .rk-menu button:hover { background: var(--dl-hover, #f1f1f1); }
+            .rk-menu button:hover { background: var(--dl2-hover, #f1f1f1); }
             /* Kolom membagi lebar papan sama rata (tanpa gulir mendatar); baru menggulir bila kolom terlalu sempit (tahap sangat banyak, layar kecil). */
             .dl-kanban .dl-kcol { flex: 1 1 0; min-width: 150px; }
-            .dl-kcard { background: var(--dl-surface, #fff); }
+            .dl-kcard { background: var(--dl2-surface, #fff); }
             .dl-kcard--ghost { transform: rotate(3deg); outline: 2px solid #7F77DD; box-shadow: 0 10px 24px rgba(60, 52, 137, .28); }
-            .dl-kcard__ph { background: var(--dl-surface, #fff); border-color: #7F77DD; }
-            .dl-kcard__due.is-soon { color: var(--dl-danger, #c0392b); font-weight: 600; }
+            .dl-kcard__ph { background: var(--dl2-surface, #fff); border-color: #7F77DD; }
+            .dl-kcard__due.is-soon { color: var(--dl2-danger, #c0392b); font-weight: 600; }
             .rk-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 12px; }
-            .rk-box { background: var(--dl-surface, #fff); color: var(--dl-ink, #222); border: 1px solid var(--dl-border, #ddd); border-radius: 12px; padding: 16px 18px; width: 100%; max-width: 380px; }
+            .rk-box { background: var(--dl2-surface, #fff); color: var(--dl2-ink, #222); border: 1px solid var(--dl2-border, #ddd); border-radius: 12px; padding: 16px 18px; width: 100%; max-width: 380px; }
             .rk-box h4 { margin: 0 0 2px; font-size: 15px; }
             .rk-sub { font-size: 12px; opacity: .75; margin-bottom: 10px; }
             .rk-row { display: flex; gap: 8px; }
             .rk-row > label { flex: 1; }
             .rk-box label { display: block; font-size: 12px; margin-bottom: 8px; }
-            .rk-box input, .rk-box select { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid var(--dl-border, #ccc); border-radius: 6px; background: transparent; color: inherit; font: inherit; }
-            .rk-err { color: var(--dl-danger, #c0392b); font-size: 11.5px; min-height: 14px; }
+            .rk-box input, .rk-box select { width: 100%; box-sizing: border-box; padding: 6px 8px; border: 1px solid var(--dl2-border, #ccc); border-radius: 6px; background: transparent; color: inherit; font: inherit; }
+            .rk-err { color: var(--dl2-danger, #c0392b); font-size: 11.5px; min-height: 14px; }
             .rk-act { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
         </style>
         <script>
-            (() => {
+            window.akReady(() => {
                 const SCHEDULED = @json($scheduled);   // id tahap => nama, tahap yang meminta tanggal + jam
                 const ASSESSORS = @json($assessors);
-                const board = document.querySelector('[data-dl-kanban]');
+                const board = document.querySelector('[data-dl2-kanban]');
 
                 // "Tambah kartu" di kolom Daftar = form Kandidat Baru (bukan kartu cepat bawaan papan).
                 board.addEventListener('click', (ev) => {
@@ -114,9 +114,9 @@
                     const ov = document.createElement('div');
                     ov.className = 'rk-ov';
                     ov.innerHTML = `<div class="rk-box" role="alertdialog" aria-modal="true"><h4>Hasil belum diisi</h4><div class="rk-sub">Hasil ${step} untuk ${name} belum diisi. Pindahkan tanpa hasil?</div>
-                        <div data-pane="ask" class="rk-act" style="flex-wrap:wrap"><button type="button" class="dl-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl-btn sstock-btn-amber" data-x="skip">Tetap pindahkan</button><button type="button" class="dl-btn sstock-btn-teal" data-x="fill">Isi hasil dulu</button></div>
+                        <div data-pane="ask" class="rk-act" style="flex-wrap:wrap"><button type="button" class="dl2-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl2-btn sstock-btn-amber" data-x="skip">Tetap pindahkan</button><button type="button" class="dl2-btn sstock-btn-teal" data-x="fill">Isi hasil dulu</button></div>
                         <div data-pane="fill" hidden><label>Hasil (wajib)<select data-f="result"><option value="">Pilih hasil</option><option value="pass">Lulus</option><option value="fail">Tidak lulus</option></select><span class="rk-err" data-e="result"></span></label><label>Catatan<input type="text" maxlength="255" data-f="note"></label><div class="rk-err" data-e="all"></div>
-                        <div class="rk-act"><button type="button" class="dl-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl-btn sstock-btn-teal" data-x="save">Simpan dan pindahkan</button></div></div></div>`;
+                        <div class="rk-act"><button type="button" class="dl2-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl2-btn sstock-btn-teal" data-x="save">Simpan dan pindahkan</button></div></div></div>`;
                     document.body.appendChild(ov);
                     const q = (s) => ov.querySelector(s), close = () => ov.remove();
                     ov.addEventListener('click', async (e) => {
@@ -142,7 +142,7 @@
                     ov.innerHTML = `<div class="rk-box" role="dialog" aria-modal="true"><h4>Jadwalkan: ${SCHEDULED[to]}</h4><div class="rk-sub">${card.title.replace(/</g, '&lt;')}</div>
                         <div class="rk-row"><label>Tanggal (wajib)<input type="date" data-f="date"><span class="rk-err" data-e="date"></span></label><label>Jam (wajib)<input type="time" data-f="time"><span class="rk-err" data-e="time"></span></label></div>
                         <label>Penilai<select data-f="assessor">${opts}</select></label><label>Catatan<input type="text" maxlength="255" data-f="note"></label>
-                        <div class="rk-act"><button type="button" class="dl-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl-btn sstock-btn-teal" data-x="save">Simpan</button></div></div>`;
+                        <div class="rk-act"><button type="button" class="dl2-btn sstock-btn-slate" data-x="cancel">Batal</button><button type="button" class="dl2-btn sstock-btn-teal" data-x="save">Simpan</button></div></div>`;
                     document.body.appendChild(ov);
                     const q = (s) => ov.querySelector(s);
                     const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
@@ -209,7 +209,7 @@
                 // Hanya otomatis: bila pemakai mengubah sendiri (tombol panel) selama papan terbuka, pilihannya dibiarkan dan tidak dikembalikan; pilihan tersimpan tidak ditimpa.
                 (() => {
                     let host, lm, btn, key, saved, applied = false, busy = false;
-                    try { host = window.parent !== window ? window.parent : null; lm = host?.document.querySelector('[data-dl-layer-menu]'); btn = lm?.querySelector('[data-lm-mini]'); } catch (e) { return; }
+                    try { host = window.parent !== window ? window.parent : null; lm = host?.document.querySelector('[data-dl2-layer-menu]'); btn = lm?.querySelector('[data-lm-mini]'); } catch (e) { return; }
                     if (! lm || ! btn) { return; }
                     key = 'dl-lm-' + lm.dataset.id + '-mini';
                     const store = (v) => { try { v === null ? host.localStorage.removeItem(key) : host.localStorage.setItem(key, v); } catch (e) { /* tanpa penyimpanan: abaikan */ } };
@@ -229,10 +229,10 @@
                     setInterval(sync, 400);
                     window.addEventListener('pagehide', () => { if (applied && lm.classList.contains('is-mini')) { press(); store(saved); applied = false; } });
                 })();
-            })();
+            });
         </script>
     @else
-        <x-dl::grid id="candidates" :rows="$rows" actions="open" :open-url="url('candidates/{id}')"
+        <x-dl2::grid id="candidates" :rows="$rows" actions="open" :open-url="url('candidates/{id}')"
             search="Cari NIK, nama, bagian..."
             :phone-cards="['title' => 'name', 'sub' => 'nik', 'meta' => ['depts', 'step', 'result']]"
             :columns="[

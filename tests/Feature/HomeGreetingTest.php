@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 /* REMARK
  * Tujuan       : Menjaga Beranda: banner hero (sapaan dengan nama depan, tanggal) di desktop dan HP, kartu cuaca hanya bila layar Perusahaan punya tempat (detail banner: HomeHeroTest),
- *                dan baris jaringan x-dl::net-line di bawah nama (desktop dan daftar Menu HP) untuk semua pengguna, dengan rute ping DevLib tanpa sesi (bukan session.ping yang memperpanjang sesi).
+ *                dan baris jaringan x-dl2::net-line di bawah nama (desktop dan daftar Menu HP) untuk semua pengguna, dengan rute ping DevLib tanpa sesi (bukan session.ping yang memperpanjang sesi).
  * Dipakai oleh : php artisan test.
  * Status       : Aktif.
  */
@@ -35,12 +35,12 @@ class HomeGreetingTest extends TestCase
         $this->assertMatchesRegularExpression('/Selamat (pagi|siang|sore|malam)<\/span>, Budi</', $html);
         $this->assertStringContainsString('data-hero-date', $html);
         $this->assertStringNotContainsString('👋', $html);
-        $this->assertStringNotContainsString('data-dl-weather', $html, 'tanpa kota di layar Perusahaan kartu cuaca tidak dirender');
+        $this->assertStringNotContainsString('data-dl2-weather', $html, 'tanpa kota di layar Perusahaan kartu cuaca tidak dirender');
     }
 
     public function test_the_weather_card_is_rendered_only_when_the_company_has_a_place(): void
     {
-        $this->assertStringNotContainsString('data-dl-weather', $this->home()->getContent());
+        $this->assertStringNotContainsString('data-dl2-weather', $this->home()->getContent());
 
         Constants::set('company.weather_city', 'Malang', 'company');
         Constants::set('company.weather_lat', '-7.98', 'company');
@@ -62,11 +62,11 @@ class HomeGreetingTest extends TestCase
     public function test_every_user_gets_the_network_line_on_desktop_and_in_the_phone_menu_with_the_devlib_ping(): void
     {
         $desktop = $this->home()->getContent();
-        $this->assertStringContainsString('data-dl-net-line', $desktop);
+        $this->assertStringContainsString('data-dl2-net-line', $desktop);
         $this->assertStringContainsString('data-ping="'.route('devlib.ping').'"', $desktop);
         $this->assertStringNotContainsString('data-ping="'.route('session.ping').'"', $desktop);
 
-        $this->assertStringContainsString('data-dl-net-line', $this->home('supervisor', self::PHONE)->getContent());
+        $this->assertStringContainsString('data-dl2-net-line', $this->home('supervisor', self::PHONE)->getContent());
     }
 
     public function test_the_devlib_ping_route_answers_without_a_session_so_it_cannot_extend_it(): void

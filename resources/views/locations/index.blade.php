@@ -25,9 +25,9 @@
     <style>
         .loc { max-width: 1040px }
         .loc-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px }
-        .loc-bar input[type=search] { flex: 1 1 220px; max-width: 360px; padding: 8px 12px; border: 1px solid var(--dl-border); border-radius: 10px; background: var(--dl-surface); color: var(--dl-ink); font: inherit }
-        .loc-off { border: 1px solid var(--dl-border); background: var(--dl-surface); color: var(--dl-muted); border-radius: 10px; padding: 7px 12px; font: inherit; font-size: .85rem; cursor: pointer }
-        .loc-off[aria-pressed=true] { background: var(--dl-accent-soft); color: var(--dl-ink-strong); border-color: var(--dl-accent) }
+        .loc-bar input[type=search] { flex: 1 1 220px; max-width: 360px; padding: 8px 12px; border: 1px solid var(--dl2-border); border-radius: 10px; background: var(--dl2-surface); color: var(--dl2-ink); font: inherit }
+        .loc-off { border: 1px solid var(--dl2-border); background: var(--dl2-surface); color: var(--dl2-ink-soft); border-radius: 10px; padding: 7px 12px; font: inherit; font-size: .85rem; cursor: pointer }
+        .loc-off[aria-pressed=true] { background: var(--ak-accent-soft); color: var(--dl2-ink); border-color: var(--dl2-primary) }
         .loc-bar .loc-new { margin-left: auto }
         .loc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px }
         .loc-cat { background: var(--bg); color: var(--fg); border-radius: 16px; animation: loc-in .35s; transition: opacity .2s }
@@ -42,12 +42,12 @@
         .loc-cat[open] > summary::after { content: '▲'; margin-left: auto; font-size: .8rem }
         .loc-grid:has(details[open]) .loc-cat:not([open]) { opacity: .55 }
         .loc-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; padding: 4px 12px 14px; animation: loc-in .3s }
-        .loc-card { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: var(--dl-surface); color: var(--dl-ink); border: 1px solid var(--dl-border-soft); border-radius: 12px; text-decoration: none; transition: box-shadow .15s, transform .15s }
+        .loc-card { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: var(--dl2-surface); color: var(--dl2-ink); border: 1px solid var(--dl2-border); border-radius: 12px; text-decoration: none; transition: box-shadow .15s, transform .15s }
         .loc-card:hover { box-shadow: 0 2px 10px rgba(0, 0, 0, .1); transform: translateY(-1px) }
         .loc-card b { font-size: .95rem }
-        .loc-card code { font-size: .75rem; color: var(--dl-muted) }
+        .loc-card code { font-size: .75rem; color: var(--dl2-ink-soft) }
         .loc-pill { align-self: flex-start; font-size: .75rem; padding: 1px 9px; border-radius: 99px; background: var(--bg); color: var(--fg) }
-        .loc-pill--empty, .loc-pill--off { background: var(--dl-surface-muted); color: var(--dl-muted) }
+        .loc-pill--empty, .loc-pill--off { background: var(--dl2-surface-2); color: var(--dl2-ink-soft) }
         .loc-card--off { opacity: .6 }
         .loc-none { padding: 6px 14px 14px; opacity: .8 }
         @keyframes loc-in { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: none } }
@@ -58,7 +58,7 @@
         <div class="loc-bar">
             <input type="search" id="loc-q" placeholder="Cari kode atau nama..." aria-label="Cari kode atau nama...">
             <button type="button" class="loc-off" id="loc-off" aria-pressed="false">Nonaktif ({{ $off }})</button>
-            <x-dl::button class="loc-new" variant="primary" size="sm" :href="route('locations.create')" label="+ New Record" />
+            <x-dl2::button class="loc-new" variant="primary" size="sm" :href="route('locations.create')" label="+ New Record" />
         </div>
         <div class="loc-grid">
             @foreach ($cats as $key => [$label, $icon, $bg, $fg])
@@ -86,7 +86,7 @@
         </div>
     </div>
     <script>
-        (() => {
+        window.akReady(() => {
             const q = document.getElementById('loc-q'), off = document.getElementById('loc-off');
             const apply = () => {
                 const t = q.value.trim().toLowerCase(), onlyOff = off.getAttribute('aria-pressed') === 'true';
@@ -105,6 +105,6 @@
             };
             q.addEventListener('input', apply);
             off.addEventListener('click', () => { off.setAttribute('aria-pressed', off.getAttribute('aria-pressed') !== 'true'); apply(); });
-        })();
+        });
     </script>
 @endsection

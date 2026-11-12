@@ -16,8 +16,8 @@
     @endphp
     <div style="max-width: 1100px">
         <div style="display: flex; justify-content: space-between; align-items: center">
-            <x-dl::divider label="Perangkat ini" style="flex: 1" />
-            <x-dl::button href="{{ route('devices.details') }}" variant="primary" size="lg" icon="fa-circle-info" label="More Details" />
+            <x-dl2::divider label="Perangkat ini" style="flex: 1" />
+            <x-dl2::button href="{{ route('devices.details') }}" variant="primary" size="lg" icon="fa-circle-info" label="More Details" />
         </div>
         @if ($report)
             @php
@@ -26,36 +26,36 @@
                 $sys = $disks->firstWhere('name', 'C:') ?? $disks->first();
                 $total = (float) ($sys['total_gb'] ?? 0); $usedGb = $total - (float) ($sys['free_gb'] ?? 0); $pct = $total > 0 ? (int) round($usedGb / $total * 100) : 0;
             @endphp
-            <x-dl::divider :label="'Hasil pemeriksaan lengkap · '.$report->checked_at->format('d/m/Y H:i')" />
-            <x-dl::kpi-row :style="$grid">
-                <x-dl::status-card title="Prosesor" status="Terukur" tone="success" icon="fa-microchip" :value="$cpu['name'] ?? 'Tidak dilaporkan'" :desc="($cpu['cores'] ?? '?').' core · '.($cpu['threads'] ?? '?').' thread'" />
-                <x-dl::status-card title="Memori (RAM)" status="Terukur" tone="success" icon="fa-memory" :value="isset($r['memory']['total_gb']) ? $r['memory']['total_gb'].' GB' : 'Tidak dilaporkan'" :desc="$mods ? count($mods).' modul · '.($mods[0]['speed'] ?? '?').' MT/s' : 'Rincian slot tidak dilaporkan'" />
-                <x-dl::status-card title="Grafis" status="Terukur" tone="success" icon="fa-display" :value="$gpu['name'] ?? 'Tidak dilaporkan'" :desc="isset($gpu['ram_mb']) ? 'Memori grafis '.$gpu['ram_mb'].' MB' : '-'" />
-                <x-dl::card title="Penyimpanan" icon="fa-hard-drive">
+            <x-dl2::divider :label="'Hasil pemeriksaan lengkap · '.$report->checked_at->format('d/m/Y H:i')" />
+            <x-dl2::kpi-row :style="$grid">
+                <x-dl2::status-card title="Prosesor" status="Terukur" tone="success" icon="fa-microchip" :value="$cpu['name'] ?? 'Tidak dilaporkan'" :desc="($cpu['cores'] ?? '?').' core · '.($cpu['threads'] ?? '?').' thread'" />
+                <x-dl2::status-card title="Memori (RAM)" status="Terukur" tone="success" icon="fa-memory" :value="isset($r['memory']['total_gb']) ? $r['memory']['total_gb'].' GB' : 'Tidak dilaporkan'" :desc="$mods ? count($mods).' modul · '.($mods[0]['speed'] ?? '?').' MT/s' : 'Rincian slot tidak dilaporkan'" />
+                <x-dl2::status-card title="Grafis" status="Terukur" tone="success" icon="fa-display" :value="$gpu['name'] ?? 'Tidak dilaporkan'" :desc="isset($gpu['ram_mb']) ? 'Memori grafis '.$gpu['ram_mb'].' MB' : '-'" />
+                <x-dl2::card title="Penyimpanan" icon="fa-hard-drive">
                     @if ($sys)
-                        <x-dl::progress :value="$pct" :tone="$pct >= 90 ? 'danger' : ($pct >= 80 ? 'warn' : 'success')" :label="'Disk '.($sys['name'] ?? '-')" :text="round($usedGb, 1).' / '.$total.' GB ('.$pct.'%)'" />
+                        <x-dl2::progress :value="$pct" :tone="$pct >= 90 ? 'danger' : ($pct >= 80 ? 'warn' : 'success')" :label="'Disk '.($sys['name'] ?? '-')" :text="round($usedGb, 1).' / '.$total.' GB ('.$pct.'%)'" />
                     @else
-                        <p class="dl-note">Tidak dilaporkan.</p>
+                        <p class="ak-note">Tidak dilaporkan.</p>
                     @endif
-                </x-dl::card>
-            </x-dl::kpi-row>
+                </x-dl2::card>
+            </x-dl2::kpi-row>
         @endif
         @unless ($report)
-            <p class="dl-note">Belum ada pemeriksaan lengkap. Klik More Details untuk membaca prosesor, RAM, grafis, dan disk komputer ini.</p>
+            <p class="ak-note">Belum ada pemeriksaan lengkap. Klik More Details untuk membaca prosesor, RAM, grafis, dan disk komputer ini.</p>
         @endunless
 
-        <x-dl::divider label="Kecepatan jaringan ke server" />
-        <x-dl::kpi-row id="device-speed" :style="$grid">
-            <x-dl::card data-k="down" title="Unduh" icon="fa-arrow-down">
-                <x-dl::gauge :value="0" :max="100" unit=" Mbps" label="Unduh" :bands="$bands" />
-            </x-dl::card>
-            <x-dl::card data-k="up" title="Unggah" icon="fa-arrow-up">
-                <x-dl::gauge :value="0" :max="100" unit=" Mbps" label="Unggah" :bands="$bands" />
-            </x-dl::card>
-            <x-dl::status-card data-k="ping" title="Latensi" status="Menguji" tone="info" icon="fa-stopwatch" value="-" desc="ke server aplikasi" />
-        </x-dl::kpi-row>
-        <p class="dl-note" id="speed-note">Menguji kecepatan...</p>
-        <x-dl::button type="button" variant="secondary" size="sm" icon="fa-rotate" label="Uji Ulang" id="speed-again" />
+        <x-dl2::divider label="Kecepatan jaringan ke server" />
+        <x-dl2::kpi-row id="device-speed" :style="$grid">
+            <x-dl2::card data-k="down" title="Unduh" icon="fa-arrow-down">
+                <x-dl2::gauge :value="0" :max="100" unit=" Mbps" label="Unduh" :bands="$bands" />
+            </x-dl2::card>
+            <x-dl2::card data-k="up" title="Unggah" icon="fa-arrow-up">
+                <x-dl2::gauge :value="0" :max="100" unit=" Mbps" label="Unggah" :bands="$bands" />
+            </x-dl2::card>
+            <x-dl2::status-card data-k="ping" title="Latensi" status="Menguji" tone="info" icon="fa-stopwatch" value="-" desc="ke server aplikasi" />
+        </x-dl2::kpi-row>
+        <p class="ak-note" id="speed-note">Menguji kecepatan...</p>
+        <x-dl2::button type="button" variant="secondary" size="sm" icon="fa-rotate" label="Uji Ulang" id="speed-again" />
 
         <script>
             (() => {
@@ -99,27 +99,27 @@
             })();
         </script>
 
-        <x-dl::divider label="Perangkat yang sedang masuk dengan akun Anda" />
-        <x-dl::kpi-row :style="$grid">
+        <x-dl2::divider label="Perangkat yang sedang masuk dengan akun Anda" />
+        <x-dl2::kpi-row :style="$grid">
             @foreach ($devices as $d)
                 @php $here = $d->session_id === $current; @endphp
                 <div>
-                    <x-dl::status-card :title="\App\Models\UserDevice::describe($d->agent)" :status="$here ? 'Perangkat ini' : 'Aktif'" :tone="$here ? 'success' : 'info'"
+                    <x-dl2::status-card :title="\App\Models\UserDevice::describe($d->agent)" :status="$here ? 'Perangkat ini' : 'Aktif'" :tone="$here ? 'success' : 'info'"
                         :icon="preg_match('/iPhone|Android|Mobile/', (string) $d->agent) ? 'fa-mobile-screen' : 'fa-laptop'"
                         :value="'IP '.($d->ip ?? '-')" :desc="'Masuk '.$d->created_at?->format('d/m/Y H:i')" :meta="'Aktif '.$d->last_active_at->diffForHumans()" />
                     @unless ($here)
-                        <x-dl::action-form :action="route('devices.destroy', $d)">
-                            <x-dl::button type="submit" variant="secondary" size="sm" icon="fa-right-from-bracket" label="Keluarkan Perangkat Ini" />
-                        </x-dl::action-form>
+                        <x-dl2::action-form :action="route('devices.destroy', $d)">
+                            <x-dl2::button type="submit" variant="secondary" size="sm" icon="fa-right-from-bracket" label="Keluarkan Perangkat Ini" />
+                        </x-dl2::action-form>
                     @endunless
                 </div>
             @endforeach
-        </x-dl::kpi-row>
-        <p class="dl-note">Bila ada yang tidak Anda kenal, keluarkan perangkat itu lalu ubah password.</p>
+        </x-dl2::kpi-row>
+        <p class="ak-note">Bila ada yang tidak Anda kenal, keluarkan perangkat itu lalu ubah password.</p>
         @if ($devices->count() > 1)
-            <x-dl::action-form :action="route('devices.destroy-others')">
-                <x-dl::action-bar><x-dl::button type="submit" variant="danger" icon="fa-right-from-bracket" label="Keluarkan Semua Perangkat Lain" /></x-dl::action-bar>
-            </x-dl::action-form>
+            <x-dl2::action-form :action="route('devices.destroy-others')">
+                <x-dl2::action-bar><x-dl2::button type="submit" variant="danger" icon="fa-right-from-bracket" label="Keluarkan Semua Perangkat Lain" /></x-dl2::action-bar>
+            </x-dl2::action-form>
         @endif
     </div>
 @endsection

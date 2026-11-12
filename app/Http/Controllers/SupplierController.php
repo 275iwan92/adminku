@@ -42,7 +42,7 @@ class SupplierController extends Controller
 
     public function store(SupplierRequest $request): RedirectResponse|JsonResponse
     {
-        if ($request->expectsJson()) {   // tambah cepat dari dropdown (x-dl::field.select add)
+        if ($request->expectsJson()) {   // tambah cepat dari dropdown (x-dl2::field.select add)
             return response()->json(Supplier::createQuick($request->validated())->only(['id', 'name']), 201);
         }
 

@@ -3,10 +3,10 @@
 namespace App\Support;
 
 use App\Models\User;
-use Devlib\Device;
+use Devlib2\Device;
 
 /* REMARK
- * Tujuan       : Data kerangka tampilan HP (x-dl::phone-shell): menu utama besar di panel Menu (Beranda, Stok, Transaksi, Opname; tombol kelima Menu = semua modul) dan modul panel Menu, disaring menurut akses pengguna.
+ * Tujuan       : Data kerangka tampilan HP (x-dl2::phone-shell): menu utama besar di panel Menu (Beranda, Stok, Transaksi, Opname; tombol kelima Menu = semua modul) dan modul panel Menu, disaring menurut akses pengguna.
  *                Modul yang belum punya tampilan HP dibuka lewat hp.open (halaman desktop di dalam kerangka); Stok Opname punya tampilan HP sendiri (hp.counts).
  * Sumber hulu  : Modules (daftar modul), Menu (modul menurut akses), User::canAccess.
  * Output       : tabs(), modules(), url(kode), tabFor(kode).
@@ -24,7 +24,7 @@ final class HpShell
         return Device::detect(request()->userAgent(), request()->header('Sec-CH-UA-Mobile')) === Device::PHONE;
     }
 
-    // Alamat peralihan tampilan untuk x-dl::phone-shell / phone-login: ponsel asli tidak punya (null = tombol tidak digambar); jendela komputer yang sempit tetap perlu jalan kembali ke desktop.
+    // Alamat peralihan tampilan untuk x-dl2::phone-shell / phone-login: ponsel asli tidak punya (null = tombol tidak digambar); jendela komputer yang sempit tetap perlu jalan kembali ke desktop.
     public static function deviceAction(): ?string
     {
         return self::isRealPhone() ? null : route('ui.set');

@@ -28,57 +28,57 @@
         $e = fn (string $k) => $errors->first($k) ?: null;
     @endphp
     @include('partials.flash')
-    <x-dl::headline>Kunjungan · {{ $order->no }} <x-dl::badge :tone="AcCare::ORDER_TONES[$label]" :label="$label" /> <x-dl::badge :tone="$order->isBreakdown() ? 'danger' : 'neutral'" :label="$order->typeText()" /></x-dl::headline>
-    <x-dl::kpi-row>
+    <x-dl2::headline><x-slot:title>Kunjungan · {{ $order->no }} <x-dl2::badge :tone="AcCare::ORDER_TONES[$label]" :label="$label" /> <x-dl2::badge :tone="$order->isBreakdown() ? 'danger' : 'neutral'" :label="$order->typeText()" /></x-slot:title></x-dl2::headline>
+    <x-dl2::kpi-row>
         @foreach ($stages as $i => [$short, $name, $sub])
-            <x-dl::stat-box :label="($i + 1).'. '.$short" :value="$name" :tone="$st === 'cancelled' ? 'neutral' : ($rank > $i ? 'success' : ($rank === $i ? ($st === 'rescheduled' ? 'warn' : 'accent') : 'neutral'))" :sub="$sub" />
+            <x-dl2::stat-box :label="($i + 1).'. '.$short" :value="$name" :tone="$st === 'cancelled' ? 'neutral' : ($rank > $i ? 'success' : ($rank === $i ? ($st === 'rescheduled' ? 'warn' : 'accent') : 'neutral'))" :sub="$sub" />
         @endforeach
-    </x-dl::kpi-row>
-    <x-dl::form.row :cols="4">
-        <x-dl::field.display label="Tanggal kunjungan" :value="raw(AcMessage::dateText($order->visit_date))" />
-        <x-dl::field.display label="Jam mulai" :value="raw(AcCare::timeText($order->timeText()))" />
-        <x-dl::field.display label="Vendor" :value="raw($order->vendor->name.($order->vendor->contact_name ? ' · '.$order->vendor->contact_name : ''))" />
-        <x-dl::field.display label="Jumlah AC" :value="raw($lines->count().' unit')" />
-    </x-dl::form.row>
+    </x-dl2::kpi-row>
+    <x-dl2::form.row :cols="4">
+        <x-dl2::field.display label="Tanggal kunjungan" :value="raw(AcMessage::dateText($order->visit_date))" />
+        <x-dl2::field.display label="Jam mulai" :value="raw(AcCare::timeText($order->timeText()))" />
+        <x-dl2::field.display label="Vendor" :value="raw($order->vendor->name.($order->vendor->contact_name ? ' · '.$order->vendor->contact_name : ''))" />
+        <x-dl2::field.display label="Jumlah AC" :value="raw($lines->count().' unit')" />
+    </x-dl2::form.row>
     @if ($order->isBreakdown())
-        <x-dl::form.row :cols="3">
-            <x-dl::field.display label="Tipe" :value="raw('Breakdown · '.\App\Models\AcOrder::PRIORITIES[$order->priority ?? 'normal'])" />
-            <x-dl::field.display label="Keluhan" :value="raw($order->complaint ?? '-')" />
-            <x-dl::field.display label="Alasan mendesak" :value="raw($order->override_reason ?? '-')" />
-        </x-dl::form.row>
+        <x-dl2::form.row :cols="3">
+            <x-dl2::field.display label="Tipe" :value="raw('Breakdown · '.\App\Models\AcOrder::PRIORITIES[$order->priority ?? 'normal'])" />
+            <x-dl2::field.display label="Keluhan" :value="raw($order->complaint ?? '-')" />
+            <x-dl2::field.display label="Alasan mendesak" :value="raw($order->override_reason ?? '-')" />
+        </x-dl2::form.row>
     @endif
     @if ($order->reschedule_reason)
-        <x-dl::alert tone="warn" :message="raw('Dijadwal ulang: '.$order->reschedule_reason)" />
+        <x-dl2::alert tone="warn" :message="raw('Dijadwal ulang: '.$order->reschedule_reason)" />
     @endif
     @if ($st === 'cancelled')
-        <x-dl::alert tone="danger" :message="raw('Dibatalkan '.$order->cancelled_at->format('d-m-Y H:i').' oleh '.($order->canceller?->name ?? '-').': '.$order->cancel_reason)" />
+        <x-dl2::alert tone="danger" :message="raw('Dibatalkan '.$order->cancelled_at->format('d-m-Y H:i').' oleh '.($order->canceller?->name ?? '-').': '.$order->cancel_reason)" />
     @endif
 
-    <x-dl::action-bar align="start">
-        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="back" label="Kembali" :href="route('ac-visits.index')" />
+    <x-dl2::action-bar align="start">
+        <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="back" label="Kembali" :href="route('ac-visits.index')" />
         @if ($canWrite)
             @if (in_array($st, ['draft', 'rescheduled', 'sent'], true))
-                <x-dl::button class="sstock-btn-teal" icon="fa-paper-plane" :label="$st === 'sent' ? 'Kirim ulang' : 'Kirim'" data-dl-open="send-modal" />
+                <x-dl2::button class="sstock-btn-teal" icon="fa-paper-plane" :label="$st === 'sent' ? 'Kirim ulang' : 'Kirim'" data-dl2-toggle="modal" data-dl2-target="#send-modal" />
             @endif
             @if ($st === 'sent')
-                <x-dl::action-form :action="route('ac-visits.confirm', $order)" style="display: inline">
-                    <x-dl::button class="sstock-btn-teal" type="submit" variant="secondary" icon="fa-circle-check" label="Tandai dikonfirmasi vendor" />
-                </x-dl::action-form>
+                <x-dl2::action-form :action="route('ac-visits.confirm', $order)" style="display: inline">
+                    <x-dl2::button class="sstock-btn-teal" type="submit" variant="secondary" icon="fa-circle-check" label="Tandai dikonfirmasi vendor" />
+                </x-dl2::action-form>
             @endif
             @if ($st === 'confirmed')
-                <x-dl::button class="sstock-btn-teal" icon="fa-flag-checkered" label="Tandai semua selesai" data-dl-open="done-modal" />
+                <x-dl2::button class="sstock-btn-teal" icon="fa-flag-checkered" label="Tandai semua selesai" data-dl2-toggle="modal" data-dl2-target="#done-modal" />
             @endif
             @if ($open)
-                <x-dl::button class="sstock-btn-amber" variant="secondary" icon="fa-calendar-days" label="Jadwal ulang" data-dl-open="move-modal" />
-                <x-dl::button class="sstock-btn-red" variant="secondary" icon="fa-ban" label="Batalkan" data-dl-open="cancel-modal" />
+                <x-dl2::button class="sstock-btn-amber" variant="secondary" icon="fa-calendar-days" label="Jadwal ulang" data-dl2-toggle="modal" data-dl2-target="#move-modal" />
+                <x-dl2::button class="sstock-btn-red" variant="secondary" icon="fa-ban" label="Batalkan" data-dl2-toggle="modal" data-dl2-target="#cancel-modal" />
             @endif
         @endif
-        <x-dl::button class="sstock-btn-slate" variant="secondary" icon="print" label="Cetak Berita Acara" :href="route('ac-visits.print', $order)" target="_blank" rel="noopener" />
-    </x-dl::action-bar>
+        <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="print" label="Cetak Berita Acara" :href="route('ac-visits.print', $order)" target="_blank" rel="noopener" />
+    </x-dl2::action-bar>
 
-    <x-dl::divider label="AC dalam kunjungan ini" />
-    <div class="dl-table-wrap dl-table--stack">
-        <table class="dl-table is-striped">
+    <x-dl2::divider label="AC dalam kunjungan ini" />
+    <div class="dl2-table-responsive ak-stack">
+        <table class="dl2-table is-striped">
             <thead><tr><th>AC</th><th>Area dan ruang</th><th>PIC</th><th>Pekerjaan</th><th>Selesai</th><th>Hasil</th><th>Foto sebelum</th><th>Foto sesudah</th></tr></thead>
             <tbody>
                 @foreach ($lines as $l)
@@ -102,82 +102,82 @@
         </table>
     </div>
     @if ($canWrite && $st === 'confirmed')
-        <x-dl::divider label="Catat hasil per AC" />
-        <p class="dl-note">Catat tiap AC sesudah dikerjakan: tanggal, kondisi, spare-part yang diganti, dan biaya. Mencatat ulang AC yang sama menggantikan catatan sebelumnya. Bila semua AC sudah tercatat, kunjungan otomatis Selesai.{{ $order->isBreakdown() ? ' Perbaikan Breakdown tidak menggeser jadwal cuci dan servis besar.' : '' }}</p>
-        <x-dl::action-form :action="route('ac-visits.result', $order)" id="result-form">
-            <x-dl::form.row :cols="3">
-                <x-dl::field.select name="line_id" label="AC" :options="$linesOpts" :value="old('line_id', array_key_first($linesOpts))" :error="$e('line_id')" />
-                <x-dl::field.date name="done_at" label="Tanggal dikerjakan" :value="old('done_at', $defaultDone->format('Y-m-d'))" required :error="$e('done_at')" hint="Tidak sebelum tanggal kunjungan, tidak setelah hari ini." />
-                <x-dl::field.decimal name="labor_cost" label="Biaya jasa (IDR)" :decimals="2" :value="old('labor_cost')" :error="$e('labor_cost')" hint="Opsional." />
-            </x-dl::form.row>
-            <x-dl::form.row :cols="$order->isBreakdown() ? 3 : 1">
-                <x-dl::field.text name="findings" label="Kondisi / temuan" :value="old('findings')" maxlength="255" :error="$e('findings')" hint="Mis. Baik, freon ditambah." />
+        <x-dl2::divider label="Catat hasil per AC" />
+        <p class="ak-note">Catat tiap AC sesudah dikerjakan: tanggal, kondisi, spare-part yang diganti, dan biaya. Mencatat ulang AC yang sama menggantikan catatan sebelumnya. Bila semua AC sudah tercatat, kunjungan otomatis Selesai.{{ $order->isBreakdown() ? ' Perbaikan Breakdown tidak menggeser jadwal cuci dan servis besar.' : '' }}</p>
+        <x-dl2::action-form :action="route('ac-visits.result', $order)" id="result-form">
+            <x-dl2::form.row :cols="3">
+                <x-dl2::field.select name="line_id" label="AC" :options="$linesOpts" :value="old('line_id', array_key_first($linesOpts))" :error="$e('line_id')" />
+                <x-dl2::field.date name="done_at" label="Tanggal dikerjakan" :value="old('done_at', $defaultDone->format('Y-m-d'))" required :error="$e('done_at')" hint="Tidak sebelum tanggal kunjungan, tidak setelah hari ini." />
+                <x-dl2::field.decimal name="labor_cost" label="Biaya jasa (IDR)" :decimals="2" :value="old('labor_cost')" :error="$e('labor_cost')" hint="Opsional." />
+            </x-dl2::form.row>
+            <x-dl2::form.row :cols="$order->isBreakdown() ? 3 : 1">
+                <x-dl2::field.text name="findings" label="Kondisi / temuan" :value="old('findings')" maxlength="255" :error="$e('findings')" hint="Mis. Baik, freon ditambah." />
                 @if ($order->isBreakdown())
-                    <x-dl::field.text name="cause" label="Penyebab kerusakan" :value="old('cause')" maxlength="255" :error="$e('cause')" />
-                    <x-dl::field.text name="action" label="Tindakan" :value="old('action')" maxlength="255" :error="$e('action')" />
+                    <x-dl2::field.text name="cause" label="Penyebab kerusakan" :value="old('cause')" maxlength="255" :error="$e('cause')" />
+                    <x-dl2::field.text name="action" label="Tindakan" :value="old('action')" maxlength="255" :error="$e('action')" />
                 @endif
-            </x-dl::form.row>
+            </x-dl2::form.row>
             <datalist id="part-names">@foreach ($partNames as $n)<option value="{{ $n }}">@endforeach</datalist>
             @for ($i = 0; $i < 3; $i++)
-                <x-dl::form.row :cols="3">
-                    <x-dl::field.text :name="'parts['.$i.'][name]'" :label="'Spare-part diganti '.($i + 1)" :value="old('parts.'.$i.'.name')" maxlength="100" list="part-names" :error="$e('parts.'.$i.'.name')" hint="{{ $i === 0 ? 'Nama bebas; kosongkan bila tidak ada.' : '' }}" />
-                    <x-dl::field.decimal :name="'parts['.$i.'][qty]'" label="Jumlah" :decimals="2" :value="old('parts.'.$i.'.qty')" :error="$e('parts.'.$i.'.qty')" />
-                    <x-dl::field.decimal :name="'parts['.$i.'][cost]'" label="Biaya (IDR)" :decimals="2" :value="old('parts.'.$i.'.cost')" :error="$e('parts.'.$i.'.cost')" />
-                </x-dl::form.row>
+                <x-dl2::form.row :cols="3">
+                    <x-dl2::field.text :name="'parts['.$i.'][name]'" :label="'Spare-part diganti '.($i + 1)" :value="old('parts.'.$i.'.name')" maxlength="100" list="part-names" :error="$e('parts.'.$i.'.name')" hint="{{ $i === 0 ? 'Nama bebas; kosongkan bila tidak ada.' : '' }}" />
+                    <x-dl2::field.decimal :name="'parts['.$i.'][qty]'" label="Jumlah" :decimals="2" :value="old('parts.'.$i.'.qty')" :error="$e('parts.'.$i.'.qty')" />
+                    <x-dl2::field.decimal :name="'parts['.$i.'][cost]'" label="Biaya (IDR)" :decimals="2" :value="old('parts.'.$i.'.cost')" :error="$e('parts.'.$i.'.cost')" />
+                </x-dl2::form.row>
             @endfor
-            <x-dl::action-bar align="start">
-                <x-dl::button class="sstock-btn-teal" type="submit" icon="fa-clipboard-check" label="Simpan hasil" />
-            </x-dl::action-bar>
-        </x-dl::action-form>
+            <x-dl2::action-bar align="start">
+                <x-dl2::button class="sstock-btn-teal" type="submit" icon="fa-clipboard-check" label="Simpan hasil" />
+            </x-dl2::action-bar>
+        </x-dl2::action-form>
     @endif
     @if ($canWrite && in_array($st, ['confirmed', 'done'], true))
-        <x-dl::action-form :action="route('ac-visits.photo', $order)" enctype="multipart/form-data">
-            <x-dl::form.row :cols="3">
-                <x-dl::field.select name="line_id" label="AC yang difoto" :options="$linesOpts" :value="old('line_id', array_key_first($linesOpts))" :error="$e('line_id')" />
-                <x-dl::field.select name="kind" label="Foto" :options="['before' => 'Sebelum dikerjakan', 'after' => 'Sesudah dikerjakan']" :value="old('kind', 'before')" :error="$e('kind')" />
-                <x-dl::field.upload name="photo" label="Foto bukti" accept=".jpg,.jpeg,.png,image/jpeg,image/png" :error="$e('photo')" hint="Opsional (dianjurkan). Dari ponsel, pilihan kamera muncul saat memilih berkas. JPG atau PNG, paling besar 5 MB." />
-            </x-dl::form.row>
-            <x-dl::action-bar align="start">
-                <x-dl::button class="sstock-btn-slate" type="submit" variant="secondary" size="sm" icon="fa-camera" label="Unggah foto" />
-            </x-dl::action-bar>
-        </x-dl::action-form>
+        <x-dl2::action-form :action="route('ac-visits.photo', $order)" enctype="multipart/form-data">
+            <x-dl2::form.row :cols="3">
+                <x-dl2::field.select name="line_id" label="AC yang difoto" :options="$linesOpts" :value="old('line_id', array_key_first($linesOpts))" :error="$e('line_id')" />
+                <x-dl2::field.select name="kind" label="Foto" :options="['before' => 'Sebelum dikerjakan', 'after' => 'Sesudah dikerjakan']" :value="old('kind', 'before')" :error="$e('kind')" />
+                <x-dl2::field.upload name="photo" label="Foto bukti" accept=".jpg,.jpeg,.png,image/jpeg,image/png" :error="$e('photo')" hint="Opsional (dianjurkan). Dari ponsel, pilihan kamera muncul saat memilih berkas. JPG atau PNG, paling besar 5 MB." />
+            </x-dl2::form.row>
+            <x-dl2::action-bar align="start">
+                <x-dl2::button class="sstock-btn-slate" type="submit" variant="secondary" size="sm" icon="fa-camera" label="Unggah foto" />
+            </x-dl2::action-bar>
+        </x-dl2::action-form>
     @endif
 
-    <x-dl::divider label="Pesan untuk vendor" />
-    <p class="dl-note">
+    <x-dl2::divider label="Pesan untuk vendor" />
+    <p class="ak-note">
         E-mail ke: <b>{{ $order->vendor->email ?: 'belum ada alamat e-mail' }}</b> · WhatsApp: <b>{{ $waNumber ? '+'.$waNumber : 'belum ada nomor yang sah' }}</b>.
         Tombol Kirim mengirim e-mail dan menandai Terkirim; pesan WhatsApp dikirim lewat tombol Buka WhatsApp (pesan sudah terisi). Tidak ada yang terkirim sebelum Anda menekan tombolnya.
     </p>
-    <x-dl::field.text name="preview_vendor" label="Pratinjau pesan" :multiline="true" :readonly="true" :value="$vendorMsg['text']" />
-    <x-dl::action-bar align="start">
+    <x-dl2::field.text name="preview_vendor" label="Pratinjau pesan" :multiline="true" :readonly="true" :value="$vendorMsg['text']" />
+    <x-dl2::action-bar align="start">
         @if ($vendorMsg['wa'])
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-whatsapp" label="Buka WhatsApp" :href="$vendorMsg['wa']" target="_blank" rel="noopener" />
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-whatsapp" label="Buka WhatsApp" :href="$vendorMsg['wa']" target="_blank" rel="noopener" />
         @endif
-    </x-dl::action-bar>
+    </x-dl2::action-bar>
 
-    <x-dl::divider label="Salinan untuk PIC area" />
-    <p class="dl-note">Pesan siap kirim untuk PIC tiap ruang, disarankan dikirim {{ $pic['send_at']->format('d-m-Y') }} pukul {{ $pic['send_at']->format('H.i') }} (sehari sebelum kunjungan). Tidak terkirim otomatis.</p>
+    <x-dl2::divider label="Salinan untuk PIC area" />
+    <p class="ak-note">Pesan siap kirim untuk PIC tiap ruang, disarankan dikirim {{ $pic['send_at']->format('d-m-Y') }} pukul {{ $pic['send_at']->format('H.i') }} (sehari sebelum kunjungan). Tidak terkirim otomatis.</p>
     @forelse ($pic['notices'] as $i => $n)
-        <x-dl::field.text :name="'preview_pic_'.$i" :label="'Untuk '.$n['pic'].' · '.$n['count'].' AC'.($n['phone'] ? ' · '.$n['phone'] : '')" :multiline="true" :readonly="true" :value="$n['text']" />
-        <x-dl::action-bar align="start">
+        <x-dl2::field.text :name="'preview_pic_'.$i" :label="'Untuk '.$n['pic'].' · '.$n['count'].' AC'.($n['phone'] ? ' · '.$n['phone'] : '')" :multiline="true" :readonly="true" :value="$n['text']" />
+        <x-dl2::action-bar align="start">
             @if ($n['wa'])
-                <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" icon="fa-whatsapp" label="Buka WhatsApp PIC" :href="$n['wa']" target="_blank" rel="noopener" />
+                <x-dl2::button class="sstock-btn-slate" variant="secondary" size="sm" icon="fa-whatsapp" label="Buka WhatsApp PIC" :href="$n['wa']" target="_blank" rel="noopener" />
             @endif
             @if ($n['email'])
-                <x-dl::button class="sstock-btn-slate" variant="secondary" size="sm" icon="email" label="E-mail PIC" :href="'mailto:'.$n['email'].'?subject='.rawurlencode(AcMessage::subject(['date' => $order->visit_date, 'lines' => range(1, $n['count']), 'no' => $order->no])).'&body='.rawurlencode($n['text'])" />
+                <x-dl2::button class="sstock-btn-slate" variant="secondary" size="sm" icon="email" label="E-mail PIC" :href="'mailto:'.$n['email'].'?subject='.rawurlencode(AcMessage::subject(['date' => $order->visit_date, 'lines' => range(1, $n['count']), 'no' => $order->no])).'&body='.rawurlencode($n['text'])" />
             @endif
-        </x-dl::action-bar>
+        </x-dl2::action-bar>
     @empty
-        <p class="dl-note">Belum ada PIC pada ruang-ruang di kunjungan ini. Isi PIC di master Ruang AC.</p>
+        <p class="ak-note">Belum ada PIC pada ruang-ruang di kunjungan ini. Isi PIC di master Ruang AC.</p>
     @endforelse
     @if ($pic['missing'])
-        <x-dl::alert tone="warn" :message="raw('Ruang tanpa PIC: '.implode(', ', $pic['missing']).'.')" />
+        <x-dl2::alert tone="warn" :message="raw('Ruang tanpa PIC: '.implode(', ', $pic['missing']).'.')" />
     @endif
 
     @if ($order->reschedules->isNotEmpty())
-        <x-dl::divider label="Riwayat jadwal ulang" />
-        <div class="dl-table-wrap dl-table--stack">
-            <table class="dl-table is-striped">
+        <x-dl2::divider label="Riwayat jadwal ulang" />
+        <div class="dl2-table-responsive ak-stack">
+            <table class="dl2-table is-striped">
                 <thead><tr><th>Dipindah pada</th><th>Dari</th><th>Ke</th><th>Alasan</th><th>Oleh</th></tr></thead>
                 <tbody>
                     @foreach ($order->reschedules->sortByDesc('id') as $h)
@@ -195,37 +195,37 @@
     @endif
 
     @if ($canWrite && in_array($st, ['draft', 'rescheduled', 'sent'], true))
-        <x-dl::modal id="send-modal" title="Kirim pemberitahuan" icon="fa-paper-plane" size="sm">
-            <x-dl::action-form :action="route('ac-visits.send', $order)" id="send-form">
-                <p class="dl-note">Kirim pemberitahuan kunjungan {{ $order->no }} ({{ AcMessage::dateText($order->visit_date) }}, {{ $lines->count() }} AC) ke vendor {{ $order->vendor->name }}?</p>
-                <p class="dl-note">{{ $order->vendor->email ? 'E-mail akan dikirim ke '.$order->vendor->email.' sekarang.' : 'Vendor tidak punya e-mail: hanya status yang berubah.' }} Pesan WhatsApp dikirim lewat tombol Buka WhatsApp sesudahnya.</p>
-            </x-dl::action-form>
-            <x-slot:footer><x-dl::button class="sstock-btn-teal" type="submit" form="send-form" icon="fa-paper-plane" label="Kirim" /></x-slot:footer>
-        </x-dl::modal>
+        <x-dl2::modal id="send-modal" title="Kirim pemberitahuan" icon="fa-paper-plane" size="sm">
+            <x-dl2::action-form :action="route('ac-visits.send', $order)" id="send-form">
+                <p class="ak-note">Kirim pemberitahuan kunjungan {{ $order->no }} ({{ AcMessage::dateText($order->visit_date) }}, {{ $lines->count() }} AC) ke vendor {{ $order->vendor->name }}?</p>
+                <p class="ak-note">{{ $order->vendor->email ? 'E-mail akan dikirim ke '.$order->vendor->email.' sekarang.' : 'Vendor tidak punya e-mail: hanya status yang berubah.' }} Pesan WhatsApp dikirim lewat tombol Buka WhatsApp sesudahnya.</p>
+            </x-dl2::action-form>
+            <x-slot:footer><x-dl2::button class="sstock-btn-teal" type="submit" form="send-form" icon="fa-paper-plane" label="Kirim" /></x-slot:footer>
+        </x-dl2::modal>
     @endif
     @if ($canWrite && $st === 'confirmed')
-        <x-dl::modal id="done-modal" title="Tandai selesai" icon="fa-flag-checkered" size="sm">
-            <x-dl::action-form :action="route('ac-visits.complete', $order)" id="done-form">
-                <x-dl::field.date name="done_at" label="Tanggal selesai" :value="old('done_at', $defaultDone->format('Y-m-d'))" required hint="Jatuh tempo berikutnya tiap AC dihitung dari tanggal ini. Tidak sebelum tanggal kunjungan, tidak setelah hari ini." />
-            </x-dl::action-form>
-            <x-slot:footer><x-dl::button class="sstock-btn-teal" type="submit" form="done-form" icon="save" label="Tandai selesai" /></x-slot:footer>
-        </x-dl::modal>
+        <x-dl2::modal id="done-modal" title="Tandai selesai" icon="fa-flag-checkered" size="sm">
+            <x-dl2::action-form :action="route('ac-visits.complete', $order)" id="done-form">
+                <x-dl2::field.date name="done_at" label="Tanggal selesai" :value="old('done_at', $defaultDone->format('Y-m-d'))" required hint="Jatuh tempo berikutnya tiap AC dihitung dari tanggal ini. Tidak sebelum tanggal kunjungan, tidak setelah hari ini." />
+            </x-dl2::action-form>
+            <x-slot:footer><x-dl2::button class="sstock-btn-teal" type="submit" form="done-form" icon="save" label="Tandai selesai" /></x-slot:footer>
+        </x-dl2::modal>
     @endif
     @if ($canWrite && $open)
-        <x-dl::modal id="move-modal" title="Jadwal ulang" icon="fa-calendar-days" size="sm">
-            <x-dl::action-form :action="route('ac-visits.reschedule', $order)" id="move-form">
-                <x-dl::field.date name="date" label="Tanggal baru" :value="old('date', $newDate->format('Y-m-d'))" required hint="Hanya hari {{ $days }}; kapasitas harian vendor dicek." />
-                <x-dl::field.time name="time" label="Jam mulai" :value="old('time', $order->timeText())" hint="Antara {{ $window }}." />
-                <x-dl::field.text name="reason" label="Alasan" :value="old('reason')" required maxlength="255" hint="Wajib; tersimpan di riwayat jadwal ulang." />
-            </x-dl::action-form>
-            <x-slot:footer><x-dl::button class="sstock-btn-amber" type="submit" form="move-form" icon="save" label="Jadwal ulang" /></x-slot:footer>
-        </x-dl::modal>
-        <x-dl::modal id="cancel-modal" title="Batalkan kunjungan" icon="fa-ban" size="sm">
-            <x-dl::action-form :action="route('ac-visits.cancel', $order)" id="cancel-form">
-                <p class="dl-note">Kunjungan yang dibatalkan tetap tersimpan sebagai catatan, dan AC-nya bisa dijadwalkan lagi.</p>
-                <x-dl::field.text name="reason" label="Alasan" :value="old('reason')" required maxlength="255" />
-            </x-dl::action-form>
-            <x-slot:footer><x-dl::button class="sstock-btn-red" type="submit" form="cancel-form" variant="danger" icon="fa-ban" label="Batalkan kunjungan" /></x-slot:footer>
-        </x-dl::modal>
+        <x-dl2::modal id="move-modal" title="Jadwal ulang" icon="fa-calendar-days" size="sm">
+            <x-dl2::action-form :action="route('ac-visits.reschedule', $order)" id="move-form">
+                <x-dl2::field.date name="date" label="Tanggal baru" :value="old('date', $newDate->format('Y-m-d'))" required hint="Hanya hari {{ $days }}; kapasitas harian vendor dicek." />
+                <x-dl2::field.time name="time" label="Jam mulai" :value="old('time', $order->timeText())" hint="Antara {{ $window }}." />
+                <x-dl2::field.text name="reason" label="Alasan" :value="old('reason')" required maxlength="255" hint="Wajib; tersimpan di riwayat jadwal ulang." />
+            </x-dl2::action-form>
+            <x-slot:footer><x-dl2::button class="sstock-btn-amber" type="submit" form="move-form" icon="save" label="Jadwal ulang" /></x-slot:footer>
+        </x-dl2::modal>
+        <x-dl2::modal id="cancel-modal" title="Batalkan kunjungan" icon="fa-ban" size="sm">
+            <x-dl2::action-form :action="route('ac-visits.cancel', $order)" id="cancel-form">
+                <p class="ak-note">Kunjungan yang dibatalkan tetap tersimpan sebagai catatan, dan AC-nya bisa dijadwalkan lagi.</p>
+                <x-dl2::field.text name="reason" label="Alasan" :value="old('reason')" required maxlength="255" />
+            </x-dl2::action-form>
+            <x-slot:footer><x-dl2::button class="sstock-btn-red" type="submit" form="cancel-form" variant="danger" icon="fa-ban" label="Batalkan kunjungan" /></x-slot:footer>
+        </x-dl2::modal>
     @endif
 @endsection

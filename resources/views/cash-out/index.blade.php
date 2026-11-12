@@ -2,7 +2,7 @@
  Tujuan       : Daftar Uang Keluar (Grid Transactional): nomor, tanggal, ditaut ke Uang Masuk, kas asal, jumlah, untuk apa, status.
  Sumber hulu  : CashOutController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x membuka Uang Keluar.
+ Output       : x-dl2::grid; klik 2x membuka Uang Keluar.
  Dipakai oleh : route cash-out.index (menu Kas > Uang Keluar).
  Status       : Aktif.
 --}}
@@ -13,11 +13,11 @@
     @endphp
     @include('partials.flash')
     @if (auth()->user()->canWrite('KSK'))
-        <x-dl::action-bar align="start">
-            <x-dl::button class="sstock-btn-slate" variant="secondary" icon="fa-bullseye" label="Kelola Kebutuhan" :href="route('cash-purposes.index')" />
-        </x-dl::action-bar>
+        <x-dl2::action-bar align="start">
+            <x-dl2::button class="sstock-btn-slate" variant="secondary" icon="fa-bullseye" label="Kelola Kebutuhan" :href="route('cash-purposes.index')" />
+        </x-dl2::action-bar>
     @endif
-    <x-dl::grid id="cash-out" :rows="$rows" actions="open" :open-url="url('cash-out/{id}')"
+    <x-dl2::grid id="cash-out" :rows="$rows" actions="open" :open-url="url('cash-out/{id}')"
         :new-url="auth()->user()->canWrite('KSK') ? route('cash-out.create') : null"
         search="Cari nomor, ditaut ke, untuk apa..."
         :phone-cards="['title' => 'doc_no', 'sub' => 'purpose', 'badge' => 'status', 'tones' => $tones, 'meta' => ['cash_in', 'amount']]"
