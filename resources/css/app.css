@@ -735,3 +735,7 @@ a.sstock-otile[data-hue]:is(:hover, :focus-visible) { box-shadow: 0 8px 20px col
 .dl2-form-tabs .dl2-form-tab:nth-child(6)::before { content: none; }
 .dl2-form-tabs .dl2-form-tab:hover { color: var(--tt); filter: brightness(1.08); }
 .dl2-form-tabs .dl2-form-tab.is-current { color: var(--tt); font-weight: 700; box-shadow: 0 0 0 2px var(--dl2-surface, #fff), 0 0 0 4px var(--tc); }
+
+/* Judul layer Layer Menu (di samping Kembali) yang punya layar pembuka bisa diklik (title diisi skrip home). */
+.dl2-lm-crumb b[title] { cursor: pointer; border-radius: 8px; padding: 0 6px; }
+.dl2-lm-crumb b[title]:hover { background: var(--dl2-hover, rgba(127, 127, 127, .15)); }

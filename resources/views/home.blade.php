@@ -21,7 +21,9 @@
         </div>
     </div>
     @include('partials.music')
+    @if (\App\Support\HpShell::offerPhoneView())
     <x-dl2::phone-offer :config="['action' => route('ui.set'), 'auto' => true]" />
+    @endif
     <script>
         (() => {
             const dlg = document.getElementById('am-dialog');
@@ -40,4 +42,14 @@
             });
         })();
     </script>
-@endsection
+    {{-- Induk di Layer Menu (Data Master, Stok, GA, HR, Pembelian, dst.): turun satu layer sekaligus membuka layar pembukanya (kunci open pada $modules) sebagai tab; judul layer di atas daftar (.dl2-lm-crumb b) bisa diklik lagi untuk membukanya kembali (mis. setelah tabnya ditutup). Layer Menu v2 hanya menyimpan open di node, jadi dibuka di sini. --}}
+    <script>
+        (() => {
+            const el = document.getElementById('adminku-shell'), shell = () => window.Devlib2 && Devlib2.classes['layer-shell'].getInstance(el);
+            const node = () => { const s = shell(), st = s && s.menu && s.menu.stack; return st && st.length ? st[st.length - 1] : null; };
+            const openIt = (n) => { const s = shell(); if (s && n && n.open) { s.open({ id: /^H-/.test(n.code) ? n.code : 'H-' + n.code, title: 'Beranda ' + n.label, href: n.open }); } };
+            document.addEventListener('layer.dl2.layer-menu', () => { const n = node(); if (n && n.open) { setTimeout(() => openIt(n)); } });
+            document.addEventListener('click', (e) => { const t = e.target.closest('.dl2-lm-crumb b'); if (t) { openIt(node()); } });
+            new MutationObserver(() => { const b = document.querySelector('.dl2-lm-crumb b'), n = node(); if (b && n && n.open) { b.title = 'Buka layar ' + n.label; } }).observe(el, { childList: true, subtree: true });
+        })();
+    </script>@endsection

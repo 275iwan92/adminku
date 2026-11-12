@@ -81,7 +81,7 @@ class ReorderOrderRecordTest extends TestCase
 
     public function test_the_alert_shows_supplier_and_quantity_and_the_report_has_the_columns(): void
     {
-        $this->get(route('stock.home'))->assertOk()->assertSee('name="supplier_id"', false)->assertSee('Jumlah Dipesan', false)->assertSee('Toko Maju', false)->assertSee('data-reorder-unit', false)->assertSee('No. Referensi Pemesanan', false)->assertDontSee('Referensi Pemesanan (PO)', false);   // popup (hanya ada selama ada barang yang belum dipesan)
+        $this->get(route('stock.home'))->assertOk()->assertSee('&quot;name&quot;:&quot;supplier_id&quot;', false)->assertSee('Jumlah Dipesan', false)->assertSee('Toko Maju', false)->assertSee('data-reorder-unit', false)->assertSee('No. Referensi Pemesanan', false)->assertDontSee('Referensi Pemesanan (PO)', false);   // popup (hanya ada selama ada barang yang belum dipesan)
         $this->post(route('reorder-orders.store'), $this->order());
         $expected = 'Sudah dipesan 25 pcs ke Toko Maju pada '.today()->format('d/m/Y').', ref PO-5 oleh Sari Supervisor. Diterima sejak dipesan: 3 dari 25 pcs.';
 

@@ -30,17 +30,15 @@ class PhoneViewTest extends TestCase
 
         // komputer tanpa pilihan: login desktop + popup tawaran (CSS menampilkannya hanya pada layar phone: lebar < 600 px, atau HP landscape)
         $pc = $this->withHeader('User-Agent', self::PC)->get('/login')->getContent();
-        $this->assertStringNotContainsString('ak-plogin', $pc);
+        $this->assertStringNotContainsString('data-dl2="phone-login"', $pc);
         $this->assertStringContainsString('data-dl2="phone-offer"', $pc);
-        $this->assertStringContainsString('Ingin tampilan yang lebih nyaman di smartphone?', $pc);
-        $this->assertStringContainsString('Tetap desktop', $pc);
-        $this->assertStringContainsString('data-auto', $pc, 'layar phone langsung ke Tampilan HP (DevLib phone-offer auto)');
+        $this->assertStringContainsString('&quot;auto&quot;:true', $pc, 'layar phone langsung ke Tampilan HP (DevLib phone-offer auto); teks tawaran digambar JS DevLib 2');
 
         // pilihan pengguna (cookie) menang atas tebakan di komputer; di ponsel asli cookie desktop diabaikan
         $chosen = $this->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/login')->getContent();
-        $this->assertStringContainsString('ak-plogin', $chosen);
+        $this->assertStringContainsString('data-dl2="phone-login"', $chosen);
         $this->assertStringNotContainsString('data-dl2="phone-offer"', $chosen);
-        $this->assertStringContainsString('ak-plogin', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/login')->getContent());
+        $this->assertStringContainsString('data-dl2="phone-login"', $this->withHeader('User-Agent', self::PC)->withCookie('ui', 'hp')->withCookie('ui_auto', '1')->get('/login')->getContent());
     }
 
     public function test_a_real_phone_is_always_the_phone_view_with_no_desktop_switch_and_a_narrowed_pc_window_has_no_visible_switch_either(): void
@@ -48,12 +46,10 @@ class PhoneViewTest extends TestCase
         $user = User::factory()->create();
         $phone = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('data-dl2="phone-shell"', $phone);
-        $this->assertStringNotContainsString('data-dl2-device', $phone);
-        $this->assertStringNotContainsString('action="'.route('ui.set').'"', $phone);
+        $this->assertStringNotContainsString('&quot;deviceAction&quot;', $phone, 'ponsel asli tanpa tombol Tampilan Desktop');
 
         $pc = $this->actingAs($user)->withHeader('User-Agent', self::PC)->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get('/')->assertOk()->getContent();
-        $this->assertStringContainsString('action="'.route('ui.set').'"', $pc, 'formulir tetap ada untuk peralihan otomatis; tombolnya disembunyikan lewat CSS (.dl-phone__dev)');
-        $this->assertStringContainsString('.dl-phone__dev', file_get_contents(resource_path('css/app.css')));
+        $this->assertStringContainsString('&quot;deviceAction&quot;:&quot;'.route('ui.set').'&quot;', $pc, 'jendela komputer yang menyempit tetap punya jalan kembali ke desktop');
     }
 
     public function test_guest_can_save_the_view_choice_from_the_popup_and_the_phone_login(): void
@@ -81,12 +77,12 @@ class PhoneViewTest extends TestCase
 
         $desktop = $this->actingAs($sup)->withHeader('User-Agent', self::PC)->get('/')->assertOk()->getContent();
         $this->assertStringContainsString('data-dl2="layer-shell"', $desktop);
-        $this->assertStringNotContainsString('dl-phone__burger', $desktop);
-        $this->assertStringContainsString('sstock-hero', $desktop, 'Beranda desktop memuat banner hero (menggantikan sapaan dan kutipan)');
+        $this->assertStringNotContainsString('data-dl2="phone-shell"', $desktop);
+        $this->assertStringContainsString('&quot;href&quot;:&quot;'.route('home.board').'&quot;', $desktop, 'Beranda desktop = tab pertama yang memuat banner hero (route home.board)');
 
         $phone = $this->actingAs($sup)->withHeader('User-Agent', self::PHONE)->get('/')->assertOk()->getContent();
-        $this->assertStringContainsString('dl-phone__burger', $phone);
-        $this->assertStringNotContainsString('dl-shell', $phone);
+        $this->assertStringContainsString('data-dl2="phone-shell"', $phone);
+        $this->assertStringNotContainsString('data-dl2="layer-shell"', $phone);
 
         // pilihan pengguna menang atas tebakan di komputer; di ponsel asli pilihan desktop diabaikan (ponsel selalu Tampilan HP)
         $this->actingAs($sup)->withHeader('User-Agent', self::PHONE)->withCookie('ui', 'desktop')->get('/')->assertSee('data-dl2="phone-shell"', false)->assertDontSee('data-dl2="layer-shell"', false);
@@ -145,11 +141,11 @@ class PhoneViewTest extends TestCase
         $this->actingAs($user)->post(route('ui.set'), ['ui' => 'tablet'])->assertSessionHasErrors('ui');
     }
 
-    // DevLib PhoneShell.init mengikat klik ke elemen-elemen ini tanpa pemeriksaan: satu saja hilang dari kerangka = galat JS "Cannot read properties of null (reading 'addEventListener')" dan menu HP mati.
+    // DevLib 2 menggambar menu, bilah, lembar dan panel HP dari konfigurasi phone-shell: tiap layar HP harus memuat kerangka + konfigurasi tab dan modul (tanpanya menu HP mati).
     public function test_every_phone_screen_renders_all_the_hooks_phone_shell_js_binds_to(): void
     {
         $user = User::factory()->supervisor()->create();
-        $hooks = ['data-dl2-phone-menu', 'data-dl2-phone-bar', 'data-dl2-phone-more', 'data-dl2-phone-list', 'data-dl2-phone-panel', 'data-dl2-phone-close-panel', 'data-dl2-phone-sheet', 'dl-phone__main'];
+        $hooks = ['data-dl2="phone-shell"', '&quot;tabs&quot;:[', '&quot;modules&quot;:['];
 
         foreach (['/', route('opening', 'transaksi'), route('hp.open', 'ITM'), route('hp.find'), route('hp.counts')] as $url) {
             $html = $this->actingAs($user)->withHeader('User-Agent', self::PHONE)->get($url)->assertOk()->getContent();
@@ -166,7 +162,7 @@ class PhoneViewTest extends TestCase
         $this->assertStringContainsString('Penerimaan Barang', $html);
         $this->assertStringNotContainsString('>Pengguna<', $html);
         $this->assertStringNotContainsString('Daftar Modul', $html);
-        $this->assertStringContainsString('action="'.route('ui.set').'"', $html);
+        $this->assertStringContainsString('&quot;deviceAction&quot;:&quot;'.route('ui.set').'&quot;', $html);
 
         $admin = User::factory()->administrator()->create();
         $this->actingAs($admin)->withCookie('ui', 'hp')->get('/')->assertSee('Pengguna');
@@ -176,15 +172,15 @@ class PhoneViewTest extends TestCase
     {
         $html = $this->actingAs(User::factory()->create())->withCookie('ui', 'hp')->get('/')->assertOk()->getContent();
 
-        $this->assertMatchesRegularExpression('#dl-phone__who--out.*action="'.preg_quote(route('logout'), '#').'".*dl-phone__poweroff#s', $html);
-        $this->assertStringNotContainsString('class="dl-phone__out"', $html);
+        $this->assertStringContainsString('&quot;logoutAction&quot;:&quot;'.route('logout').'&quot;', $html);
+        $this->assertStringContainsString('&quot;logoutTop&quot;:true', $html, 'ikon daya Keluar di baris nama (logoutTop), bukan tombol di dasar menu');
     }
 
     public function test_module_without_a_phone_screen_opens_its_desktop_page_inside_the_frame(): void
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)->withCookie('ui', 'hp')->get(route('hp.open', 'ITM'))->assertOk()->assertSee('<iframe class="dl-phone__frame" src="'.route('products.index').'"', false);
+        $this->actingAs($user)->withCookie('ui', 'hp')->get(route('hp.open', 'ITM'))->assertOk()->assertSee('&quot;frame&quot;:&quot;'.route('products.index').'&quot;', false);   // layar desktop dimuat di iframe oleh phone-shell
         $this->actingAs($user)->get(route('hp.open', 'USR'))->assertForbidden();
         $this->actingAs($user)->get(route('hp.open', 'XXX'))->assertNotFound();
     }

@@ -21,7 +21,7 @@ class PhoneReportsTest extends TestCase
         $this->withCookie('ui', 'phone');
 
         foreach (['reports.summary', 'reports.expiry', 'reports.receiving', 'reports.issuance', 'reports.adjustment'] as $route) {
-            $this->actingAs($sup)->get(route($route))->assertOk()->assertSee('data-phone-list', false);
+            $this->actingAs($sup)->get(route($route))->assertOk()->assertSee('&quot;phoneList&quot;:true', false);   // report DevLib 2: daftar kartu HP lewat opsi phoneList
         }
         $this->actingAs($sup)->get(route('reports.stock-card'))->assertOk();
     }

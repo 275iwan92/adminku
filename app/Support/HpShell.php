@@ -24,6 +24,14 @@ final class HpShell
         return Device::detect(request()->userAgent(), request()->header('Sec-CH-UA-Mobile')) === Device::PHONE;
     }
 
+    // Tawaran pindah ke Tampilan HP (x-dl2::phone-offer): hanya di tampilan desktop dan hanya selama pengguna belum memilih (pilihan otomatis dianggap belum dipilih). x-dl2::phone-offer v2 selalu menggambar diri, jadi syaratnya diputuskan di sini.
+    public static function offerPhoneView(): bool
+    {
+        $r = request();
+
+        return Device::view($r) === Device::DESKTOP && ($r->cookie(Device::COOKIE) === null || Device::autoChosen($r));
+    }
+
     // Alamat peralihan tampilan untuk x-dl2::phone-shell / phone-login: ponsel asli tidak punya (null = tombol tidak digambar); jendela komputer yang sempit tetap perlu jalan kembali ke desktop.
     public static function deviceAction(): ?string
     {

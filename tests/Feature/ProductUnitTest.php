@@ -101,7 +101,7 @@ class ProductUnitTest extends TestCase
         $html = str_replace('\\', '', $this->get(route('docs.show', ['receiving', StockDocument::latest('id')->firstOrFail()]))->assertOk()->getContent());
         $this->assertStringContainsString('&quot;stock_unit&quot;:&quot;pcs&quot;', $html);
         $this->assertStringContainsString('{&quot;stock&quot;:&quot;pcs&quot;,&quot;own&quot;:{&quot;dus&quot;:&quot;12.000000&quot;}', $html);
-        $this->assertStringContainsString('lines.cellRaw', $html);   // skrip pemilih satuan per baris terpasang
+        $this->assertStringContainsString('lines.cell = function', $html);   // skrip pemilih satuan per baris terpasang
     }
 
     public function test_a_unit_without_any_factor_asks_for_it_and_the_popup_creates_the_product_factor_not_a_global_one(): void

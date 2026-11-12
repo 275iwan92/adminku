@@ -18,7 +18,8 @@ class SetupBackButtonTest extends TestCase
     private function backTo(string $url, string $to): void
     {
         $html = $this->actingAs(User::factory()->administrator()->create())->get($url)->assertOk()->getContent();
-        $this->assertStringContainsString('&quot;back&quot;:&quot;'.$to.'&quot;', $html, "Kembali di {$url} harus ke {$to}");
+        // form: opsi back di konfigurasi; grid master: tombol Kembali (partials.back-to-hub) di bilah aksi
+        $this->assertTrue(str_contains($html, '&quot;back&quot;:&quot;'.$to.'&quot;') || preg_match('#<a[^>]*href="'.preg_quote($to, '#').'"[^>]*>.*?Kembali#s', $html) === 1, "Kembali di {$url} harus ke {$to}");
     }
 
     public function test_setup_grids_go_back_to_their_hub(): void

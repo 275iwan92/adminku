@@ -267,8 +267,8 @@ class StockFlowTest extends TestCase
         $item = $this->item('V2', rop: 5);
         $this->receive($item, 3, 10);
 
-        $this->actingAs($this->supervisor)->get(route('stock.home'))->assertOk()->assertSee('data-dl2-chart', false);
-        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertDontSee('data-dl2-chart', false);
+        $this->actingAs($this->supervisor)->get(route('stock.home'))->assertOk()->assertSee('data-dl2="chart"', false);
+        $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertDontSee('data-dl2="chart"', false);
     }
 
     public function test_reorder_order_is_recorded_shown_on_the_opening_screen_and_closed_when_the_quantity_is_received(): void

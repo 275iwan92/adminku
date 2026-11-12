@@ -15,6 +15,8 @@
         @if (config('sstock.demo'))<p class="adminku-demo-note">Data demo, bisa direset</p>@endif
     </x-dl2::frame>
     {{-- Layar sempit (< 600 px) tanpa pilihan tampilan: langsung Tampilan HP (auto); popup tetap sebagai cadangan; di layar lebar tidak pernah terlihat. --}}
+    @if (\App\Support\HpShell::offerPhoneView())
     <x-dl2::phone-offer :config="['action' => route('ui.set'), 'auto' => true]" />
+    @endif
     @include('partials.csrf-keepalive')
 @endsection

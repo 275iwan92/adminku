@@ -66,7 +66,8 @@ class PhoneFormsTest extends TestCase
         $p = $this->product();
         ItemUnit::create(['item_id' => $p->id, 'unit' => 'dus', 'factor' => 12]);
         $html = $this->withCookie('ui', 'phone')->withCookie('ui_auto', '1')->get(route('products.show', $p))->assertOk()->getContent();
-        $this->assertSame(2, substr_count($html, 'ak-stack'), 'tabel Batch dan Satuan masuk');
+        $this->assertSame(1, substr_count($html, 'ak-stack'), 'tabel Batch (tabel tulisan tangan)');
+        $this->assertSame(1, substr_count($html, 'dl2-table-stack'), 'tabel Satuan masuk (x-dl2::table stack)');
         $this->assertStringContainsString('data-label="Faktor ke pcs"', $html);
     }
 

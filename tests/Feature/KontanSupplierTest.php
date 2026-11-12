@@ -57,7 +57,8 @@ class KontanSupplierTest extends TestCase
     {
         Supplier::create(['code' => 'A1', 'name' => 'Aaa Pertama Abjad']);
         $user = User::factory()->supervisor()->create();
-        $first = fn (string $html) => preg_match('/data-value="(\d+)"/', substr($html, strpos($html, 'name="supplier_id"')), $m) ? (int) $m[1] : null;
+        // pilihan pemasok = opsi di konfigurasi komponen select DevLib 2 (urutan = urutan dropdown); opsi kosong "Semua pemasok" di laporan dilewati
+        $first = fn (string $html) => preg_match('/&quot;name&quot;:&quot;supplier_id&quot;,&quot;options&quot;:\[(?:\{&quot;value&quot;:&quot;&quot;,&quot;label&quot;:&quot;[^&]*&quot;\},)?\{&quot;value&quot;:&quot;(\d+)&quot;/', $html, $m) ? (int) $m[1] : null;
 
         $this->actingAs($user);
         $this->assertSame($this->kontan()->id, $first($this->get(route('docs.create', 'receiving'))->assertOk()->getContent()));

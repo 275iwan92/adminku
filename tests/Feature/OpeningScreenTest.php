@@ -128,8 +128,8 @@ class OpeningScreenTest extends TestCase
     public function test_the_layer_title_above_the_items_is_clickable_and_opens_the_same_screen(): void
     {
         $html = $this->actingAs(User::factory()->administrator()->create())->get('/')->assertOk()->getContent();
-        $this->assertStringContainsString("closest('.dl-lm__title')", $html);
-        $this->assertStringContainsString('.dl-lm__title[title]', file_get_contents(resource_path('css/app.css')));
+        $this->assertStringContainsString(".dl2-lm-crumb b", $html);
+        $this->assertStringContainsString('.dl2-lm-crumb b[title]', file_get_contents(resource_path('css/app.css')));
     }
 
     public function test_phone_group_list_is_replaced_by_the_opening_screen(): void

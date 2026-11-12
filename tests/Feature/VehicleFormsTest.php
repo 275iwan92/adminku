@@ -86,7 +86,7 @@ class VehicleFormsTest extends TestCase
             ->assertSee('PDF');
         $this->get(route('vehicle-docs.create', ['vehicle' => $this->car->id]))->assertOk();
         $this->get(route('vehicle-services.create', ['vehicle' => $this->truck->id]))->assertOk()->assertSee('Oli mesin')->assertSee('14000', false)->assertSee('Catat Servis Kendaraan');
-        $this->get(route('vehicle-odometers.create'))->assertOk()->assertSee('Catat Odometer')->assertSee('14.000');
+        $this->get(route('vehicle-odometers.create'))->assertOk()->assertSee('Catat Odometer')->assertSee('&quot;value&quot;:&quot;14000&quot;', false);   // kilometer bawaan = odometer terakhir (komponen decimal DevLib 2 memformat '14.000' di browser)
     }
 
     public function test_renewing_a_document_stores_it_with_the_attachment_and_redirects_to_the_detail(): void
@@ -212,11 +212,13 @@ class VehicleFormsTest extends TestCase
         $admin = $this->adminGa();
         $this->actingAs($admin);
         $this->get(route('fleet.show', $this->truck))->assertOk()->assertSee('Perpanjang Dokumen')->assertSee('Catat Servis')->assertSee('Catat Odometer');
-        $this->get(route('fleet.index'))->assertOk()->assertSee('Setup')->assertDontSee('Catat Odometer')->assertDontSee('Perpanjang Dokumen')->assertDontSee('Catat Servis');   // panel: satu tombol Setup; input harian di Detail
+        $this->get(route('fleet.index'))->assertOk()->assertDontSee('fleet/setup', false)->assertDontSee('Catat Odometer')->assertDontSee('Perpanjang Dokumen')->assertDontSee('Catat Servis');   // panel: satu tombol Setup; input harian di Detail
         // tombol aksi berwarna (teal / koral / kuning / slate); bilah form bawaan DevLib tidak memakainya
         $this->get(route('fleet.show', $this->truck))->assertSee('sstock-btn-slate', false)->assertSee('sstock-btn-teal', false)->assertSee('sstock-btn-coral', false)->assertSee('sstock-btn-amber', false);
         $this->get(route('vehicle-docs.create'))->assertOk()->assertDontSee('sstock-btn-', false);
         $this->assertSame(0, VehicleDoc::count() + VehicleService::count());
+
+        $this->actingAs($this->user(['GVM' => 'ro', 'GVK' => 'rw']))->get(route('fleet.index'))->assertOk()->assertSee('fleet/setup', false)->assertSee('Setup');   // tombol Setup hanya bagi pemegang hak GVK / GVT / GAP
 
         $this->actingAs(User::factory()->supervisor()->create());   // tanpa Grup: GA tidak otomatis, walau Supervisor
         $this->get(route('vehicle-docs.create'))->assertForbidden();

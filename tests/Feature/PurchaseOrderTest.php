@@ -204,7 +204,7 @@ class PurchaseOrderTest extends TestCase
 
         $this->actingAs($this->staff)->get(route('po.index'))->assertOk()->assertSee($po->fresh()->doc_no, false);
         $this->get(route('po.create'))->assertOk();
-        $this->get(route('po.show', $po))->assertOk()->assertSee('Map plastik', false)->assertSee('Riwayat', false);
+        $this->get(route('po.show', $po))->assertOk()->assertSee('Map plastik', false)->assertSee('&quot;log&quot;:[{', false);   // tab Riwayat digambar JS DevLib 2 dari konfigurasi log
         $this->get(route('po-decision.index'))->assertOk();
 
         $reader = UserGroup::create(['code' => 'PUR-RO', 'name' => 'Baca']);
