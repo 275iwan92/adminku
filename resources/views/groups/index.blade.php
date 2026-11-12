@@ -2,21 +2,23 @@
  Tujuan       : Daftar grup pengguna (Grid): kode + nama, jumlah anggota, jumlah modul. Hanya Administrator.
  Sumber hulu  : GroupController@index.
  Input        : rows.
- Output       : x-dl::grid; klik 2x / Buka membuka form grup (tempat mencentang modul).
+ Output       : x-dl2::grid (DevLib 2); klik 2x / Buka membuka form grup (tempat mencentang modul).
  Dipakai oleh : route groups.index (menu Keamanan > Grup).
  Status       : Aktif.
 --}}
 @extends('layout', ['title' => 'Groups'])
 @section('body')
-    @php $rows = collect($rows)->map(fn ($r) => $r + ['usersTone' => $r['users'] ? 'neutral' : 'warn', 'modulesTone' => $r['modules'] ? 'neutral' : 'warn'])->all(); @endphp
     @include('partials.flash')
-    <x-dl::grid id="groups" :rows="$rows" actions="edit" :new-url="route('groups.create')" :open-url="url('groups/{id}')" :toggle-url="url('groups/{id}/toggle')"
-        search="Search code, name..."
-        :phone-cards="['title' => 'name', 'sub' => 'code', 'meta' => ['users', 'modules']]"
-        :columns="[
+    <x-dl2::grid id="groups" :config="[
+        'rows' => $rows, 'actions' => 'edit', 'activeKey' => 'active', 'newUrl' => route('groups.create'), 'newLabel' => '+ Baru',
+        'openUrl' => url('groups/{id}'),
+        'labels' => ['search' => 'Search code, name...'],
+        'phoneCards' => ['title' => 'name', 'sub' => 'code', 'meta' => ['users', 'modules']],
+        'columns' => [
             ['key' => 'name', 'label' => 'Group', 'type' => 'identity', 'code' => 'code', 'avatar' => false, 'box' => false],
-            ['key' => 'users', 'label' => 'Members', 'type' => 'badge', 'toneKey' => 'usersTone'],
-            ['key' => 'modules', 'label' => 'Modules', 'type' => 'badge', 'toneKey' => 'modulesTone'],
-        ]"
-        :stats="[['label' => 'All groups'], ['label' => 'Inactive', 'where' => ['active' => false], 'tone' => 'warn']]" />
+            ['key' => 'users', 'label' => 'Members', 'type' => 'badge', 'tones' => ['0' => 'warning']],
+            ['key' => 'modules', 'label' => 'Modules', 'type' => 'badge', 'tones' => ['0' => 'warning']],
+        ],
+        'stats' => [['label' => 'All groups'], ['label' => 'Inactive', 'where' => ['active' => false], 'tone' => 'warn']],
+    ]" />
 @endsection
