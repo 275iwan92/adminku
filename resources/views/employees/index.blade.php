@@ -116,16 +116,16 @@
                 document.getElementById('em-q')?.addEventListener('input', (e) => { st.q = e.target.value.trim().toLowerCase(); apply(); });
             }
 
-            // Tampilan Daftar: foto bulat 36px di kolom pertama (grid DevLib belum punya foto di kolom identitas, jadi disisipkan setelah digambar).
+            // Tampilan Daftar: foto bulat 36px di kolom pertama (grid DevLib 2 belum punya foto di kolom identitas, jadi disisipkan setelah digambar).
             const PHOTOS = @json(collect($rows)->mapWithKeys(fn ($r) => [$r['code'] => $r['photo']])->filter()->all());
             const decorate = () => {
-                document.querySelectorAll('[data-dl^="x-dl2::grid id=employees"] tbody tr').forEach((tr) => {
-                    const box = tr.querySelector('.dl-avatar-id'); if (! box || tr.querySelector('.em-gphoto')) { return; }
+                document.querySelectorAll('#employees[data-dl2="grid"] tbody tr').forEach((tr) => {
+                    const box = tr.querySelector('.dl2-mp-id'); if (! box || tr.querySelector('.em-gphoto')) { return; }
                     const photo = PHOTOS[box.querySelector('small')?.textContent.trim()]; if (! photo) { return; }
                     box.insertAdjacentHTML('beforebegin', `<img class="em-gphoto" src="${photo}" alt="">`);
                 });
             };
-            const grid = document.querySelector('[data-dl^="x-dl2::grid id=employees"]');
+            const grid = document.querySelector('#employees[data-dl2="grid"]');
             if (grid) { new MutationObserver(decorate).observe(grid, { childList: true, subtree: true }); decorate(); }
         });
     </script>

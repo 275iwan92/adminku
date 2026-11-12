@@ -1,14 +1,13 @@
 {{-- REMARK
- Tujuan       : Pratinjau gambar pop-up (lightbox) di tengah layar untuk unggahan berkas bergambar (Foto Profil, Scan KTP, Foto KTP): latar gelap, gambar terpusat dan muat layar, tutup (X, Esc, klik di luar), zoom +/- (tombol atau roda mouse), geser saat diperbesar, cubit untuk zoom di layar sentuh, dan unduh.
+ Tujuan       : Pratinjau gambar pop-up (lightbox) di tengah layar untuk berkas bergambar (Foto Profil, Scan KTP, Foto KTP): latar gelap, gambar terpusat dan muat layar, tutup (X, Esc, klik di luar), zoom +/- (tombol atau roda mouse), geser saat diperbesar, cubit untuk zoom di layar sentuh, dan unduh.
                 DevLib belum punya komponen lightbox (x-dl2::image-gallery hanya membuka tab baru), jadi dibuat sederhana di sini. Berkas bukan gambar (PDF) tetap dibuka di tab baru.
- Sumber hulu  : markup x-dl2::field.upload (gambar kecil .dl-upload__thumb di dalam tautan berkas tersimpan atau baris berkas yang baru dipilih).
+ Sumber hulu  : tautan [data-lightbox] (atribut data-name = nama berkas) di bawah kotak foto x-dl2::photo-box; field.upload DevLib 2 tidak punya gambar kecil.
  Input        : tanpa prop.
  Output       : CSS dan skrip; dipasang sekali per halaman.
  Dipakai oleh : employees.form, candidates.form.
  Status       : Aktif.
 --}}
 <style>
-    .dl-upload__thumb { cursor: zoom-in; }
     .rk-photos { display: flex; flex-wrap: wrap; gap: 24px; margin: 4px 0 12px; }
     .rk-photo-cell { display: flex; flex-direction: column; gap: 4px; max-width: 320px; }
     .rk-photo-cell--ktp { max-width: 340px; }
@@ -69,25 +68,5 @@
             e.preventDefault();
             open(a.dataset.lightbox, a.dataset.name || '');
         });
-
-        // Dialog crop DevLib (x-dl2::photo-box) bertitle "Profile photo" dan berteks 3:4 bawaan; judul disesuaikan per kotak, teks KTP (856 x 540) juga.
-        setTimeout(() => document.querySelectorAll('[data-dl2-photobox]').forEach((box) => {
-            const layer = window.Devlib2?.h?.layer?.(box.dataset.cropId) || document.getElementById(box.dataset.cropId);
-            if (! layer) { return; }
-            const ktp = box.dataset.outW === '856';
-            const title = [...layer.querySelectorAll('*')].find((el) => el.children.length === 0 && el.textContent.trim() === 'Profile photo');
-            if (title) { title.textContent = ktp ? 'Scan KTP' : 'Foto profil'; }
-            const hint = layer.querySelector('.dl-photobox__hint');
-            if (hint && ktp) { hint.textContent = 'Geser gambar KTP di dalam bingkai dan atur zoom. Hasilnya 856 x 540 px, seukuran kartu (rasio 1,586 : 1).'; }
-        }), 600);
-
-        // Klik gambar kecil: unggahan tersimpan (tautan ke berkas) atau berkas yang baru dipilih (gambar sementara). PDF tidak punya gambar kecil, jadi tetap tab baru.
-        document.addEventListener('click', (e) => {
-            const thumb = e.target.closest('.dl-upload__thumb');
-            if (! thumb) { return; }
-            e.preventDefault(); e.stopPropagation();
-            const link = thumb.closest('a');
-            open(link?.href || thumb.src, thumb.closest('.dl-upload__file')?.querySelector('.dl-upload__name')?.textContent?.trim() || '');
-        }, true);
     });
 </script>

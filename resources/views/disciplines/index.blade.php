@@ -12,13 +12,14 @@
     @include('partials.flash')
     <style>
         /* Warna SP tegas (bukan pastel): kepala kartu solid dan lencana Jenis solid. SP 1 kuning, SP 2 jingga, SP 3 merah muda tua, PHK merah.
-           DevLib belum punya nada pink; kelas lencana pink hanya dipakai di halaman ini. */
-        #sp-vivid .dl-grid__card--band{--bc:hsl(var(--h) 90% 46%)}
-        #sp-vivid .dl-grid__bandhead{background:var(--bc);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35)}
-        #sp-vivid .dl-badge--yellow{background:hsl(48 96% 50%);color:#3a2d00}
-        #sp-vivid .dl-badge--tangerine{background:hsl(28 95% 52%);color:#fff}
-        #sp-vivid .dl-badge--pink{background:hsl(330 80% 42%);color:#fff}
-        #sp-vivid .dl-badge--danger{background:hsl(0 78% 48%);color:#fff}
+           DevLib 2 belum punya nada yellow / tangerine / pink; kelas lencananya hanya dipakai di halaman ini. */
+        #sp-vivid .dl2-g88-band-head{--bc:hsl(var(--h) 90% 46%)}
+        #sp-vivid .dl2-g88-band-head{background:var(--bc);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+        #sp-vivid .dl2-g88-band-big strong{color:hsl(var(--h) 90% 38%)}
+        #sp-vivid .dl2-badge-yellow{--b:hsl(48 96% 50%);--bi:#3a2d00}
+        #sp-vivid .dl2-badge-tangerine{--b:hsl(28 95% 52%);--bi:#fff}
+        #sp-vivid .dl2-badge-pink{--b:hsl(330 80% 42%);--bi:#fff}
+        #sp-vivid .dl2-badge-danger{--b:hsl(0 78% 48%);--bi:#fff}
     </style>
     <div id="sp-vivid">
     @php
@@ -32,7 +33,7 @@
             ['key' => 'state', 'label' => 'Status'],
             ['key' => 'reason', 'label' => 'Alasan'],
         ];
-        $head = 'margin:14px 4px 6px;font-weight:700;color:var(--dl-f-label)';
+        $head = 'margin:14px 4px 6px;font-weight:700;color:var(--dl2-ink-soft)';
     @endphp
 
     <div style="{{ $head }}">Bulan ini &middot; {{ $monthName }}</div>

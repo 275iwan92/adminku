@@ -26,6 +26,6 @@
         .em-warn--red { background: #fbe0e0; color: #8e1f1f; }
         .em-foot { font-size: 11.5px; color: var(--dl2-ink-soft, #666); margin-top: 4px; border-top: 1px solid var(--dl2-border, #eee); padding-top: 6px; }
         .em-gphoto { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 8px; border: 1px solid var(--dl2-border, #ddd); }
-        [data-dl^="x-dl2::grid id=employees"] .dl-avatar-id { vertical-align: middle; }
+        #employees[data-dl2="grid"] .dl2-mp-id { vertical-align: middle; }
         @media (max-width: 600px) { .em-cards { grid-template-columns: 1fr; } .em-search { width: 100%; } }
     </style>

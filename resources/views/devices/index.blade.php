@@ -61,15 +61,11 @@
             (() => {
                 const n = navigator, $ = (s) => document.querySelector(s);
                 const card = (id, k) => $(id + ' [data-k="' + k + '"]');
-                const tone = (v) => (v <= 5 ? 'danger' : v <= 20 ? 'warn' : 'success');
-
-                // Speedometer: jarum digeser ke nilai Mbps (skala 0-100); sudut sama dengan Gauge::point di server.
+                
+                // Speedometer: komponen gauge DevLib 2 (skala 0-100 Mbps); setValue menggeser jarum dan menulis angkanya.
                 const needle = (k, v) => {
-                    const box = card('#device-speed', k), a = Math.PI * (1 - Math.min(v, 100) / 100), line = box.querySelector('.dl-gauge__needle'), big = box.querySelector('.dl-gauge__big');
-                    line.setAttribute('x2', (100 + 62 * Math.cos(a)).toFixed(2));
-                    line.setAttribute('y2', (100 - 62 * Math.sin(a)).toFixed(2));
-                    big.textContent = v.toFixed(1) + ' Mbps';
-                    big.className = 'dl-gauge__big is-' + tone(v);
+                    const g = card('#device-speed', k).querySelector('[data-dl2="gauge"]');
+                    Devlib2.classes.gauge.getInstance(g).setValue(Math.round(Math.min(v, 100) * 10) / 10);
                 };
                 const csrf = document.querySelector('meta[name="csrf-token"]').content;
                 const mbps = (bytes, ms) => (bytes * 8) / 1e6 / (ms / 1000);
@@ -80,8 +76,8 @@
                         let t0 = t();
                         for (let i = 0; i < 3; i++) await fetch('{{ route('devices.speed-down', ['kb' => 1]) }}&r=' + Math.random(), { cache: 'no-store' });
                         const rtt = (t() - t0) / 3;
-                        ping.querySelector('.dl-scard__value').textContent = Math.round(rtt) + ' ms';
-                        ping.querySelector('.dl-badge').lastChild.textContent = rtt < 50 ? 'Baik' : rtt < 150 ? 'Cukup' : 'Lambat';
+                        ping.querySelector('.dl2-scard-value').textContent = Math.round(rtt) + ' ms';
+                        ping.querySelector('.dl2-badge').textContent = rtt < 50 ? 'Baik' : rtt < 150 ? 'Cukup' : 'Lambat';
                         t0 = t();
                         const down = await (await fetch('{{ route('devices.speed-down', ['kb' => 4096]) }}&r=' + Math.random(), { cache: 'no-store' })).arrayBuffer();
                         needle('down', mbps(down.byteLength, t() - t0));

@@ -1,10 +1,10 @@
 /* REMARK
  * Tujuan       : Tampilan cetakan dokumen transaksi (x-pdoc): lembar A5 landscape / A4 portrait, kop, blok field, tabel, total, tanda tangan. Kertas selalu terang (warna literal).
- * Sumber hulu  : disalin dari aturan .dl-pdoc DevLib v1 (print-doc) dengan awalan ak-pdoc.
+ * Sumber hulu  : aturan lembar cetak dengan awalan ak-pdoc (kelas milik AdminKU, bukan DevLib).
  * Output       : resources/views/components/pdoc*.blade.php.
  * Status       : Aktif.
  */
-.ak-pdoc{display:flex;flex-direction:column;align-items:center;gap:6mm;padding:6mm;background:#8d939c;border-radius:var(--dl-radius-lg);overflow-x:auto}
+.ak-pdoc{display:flex;flex-direction:column;align-items:center;gap:6mm;padding:6mm;background:#8d939c;border-radius:var(--dl2-radius-lg, 12px);overflow-x:auto}
 .ak-pdoc__sheet{width:210mm;flex:none;background:#fff;color:#111;display:flex;flex-direction:column;position:relative;overflow:hidden;box-sizing:border-box;
     box-shadow:0 1mm 4mm rgba(0,0,0,.35);font-family:Tahoma,Verdana,"Segoe UI",sans-serif;font-weight:400;font-size:10pt;line-height:1.2;text-align:left}
 .ak-pdoc__sheet *{box-sizing:border-box;margin:0;padding:0}
@@ -56,7 +56,7 @@
 .ak-pdoc__sheet.is-a5 .ak-pdoc__wm{font-size:68pt}
 .ak-pdoc__wm.is-long{font-size:50pt;white-space:nowrap}
 .ak-pdoc__sheet.is-a5 .ak-pdoc__wm.is-long{font-size:38pt}
-.ak-pdoc__hand,.dl-pdoc__hand{display:block;border-bottom:.15mm dotted #8a8a8a;height:3.4mm}
+.ak-pdoc__hand{display:block;border-bottom:.15mm dotted #8a8a8a;height:3.4mm}
 /* 3. NB / kalimat pembuka */
 .ak-pdoc__nb{font-size:9pt;height:5.2mm;display:flex;align-items:center;white-space:nowrap;overflow:hidden}
 /* 4. Tabel: No | Nama | Qty | Unit selalu di posisi sama; zona varian di kanan (+ Harga, Subtotal untuk dokumen berharga). */
