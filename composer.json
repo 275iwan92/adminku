@@ -12,7 +12,8 @@
         "php": "^8.3",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "jo/devlib": "@dev"
+        "jo/devlib": "@dev",
+        "jo/devlib2": "@dev"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -94,6 +95,13 @@
         {
             "type": "path",
             "url": "../../Packages/devlib-adminku",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../devlib2",
             "options": {
                 "symlink": true
             }
