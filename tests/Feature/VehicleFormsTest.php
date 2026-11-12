@@ -82,10 +82,10 @@ class VehicleFormsTest extends TestCase
     {
         $this->actingAs($this->adminGa());
 
-        $this->get(route('vehicle-docs.create'))->assertOk()->assertSee('Perpanjang Dokumen Kendaraan')->assertSee('value="2026-11-02"', false)->assertSee('value="2027-11-02"', false)->assertSee('N 1 TRK · Pickup')
+        $this->get(route('vehicle-docs.create'))->assertOk()->assertSee('Perpanjang Dokumen Kendaraan')->assertSee('&quot;value&quot;:&quot;2026-11-02&quot;', false)->assertSee('&quot;value&quot;:&quot;2027-11-02&quot;', false)->assertSee('N 1 TRK · Pickup')
             ->assertSee('PDF');
         $this->get(route('vehicle-docs.create', ['vehicle' => $this->car->id]))->assertOk();
-        $this->get(route('vehicle-services.create', ['vehicle' => $this->truck->id]))->assertOk()->assertSee('Oli mesin')->assertSee('14.000')->assertSee('Catat Servis Kendaraan');
+        $this->get(route('vehicle-services.create', ['vehicle' => $this->truck->id]))->assertOk()->assertSee('Oli mesin')->assertSee('14000', false)->assertSee('Catat Servis Kendaraan');
         $this->get(route('vehicle-odometers.create'))->assertOk()->assertSee('Catat Odometer')->assertSee('14.000');
     }
 

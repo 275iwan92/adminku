@@ -67,7 +67,7 @@ class GaSettingsTest extends TestCase
     {
         $res = $this->actingAs($this->admin)->get(route('ga-settings.edit'))->assertOk();
         $res->assertSee('Pengaturan GA')->assertSee('Kendaraan')->assertSee('Perawatan AC')->assertSee('Hari Kunjungan')->assertSee('Senin')->assertSee('Minggu');
-        $res->assertSee('name="vehicle_soon_days"', false)->assertSee('value="30"', false)->assertSee('value="1.000"', false)->assertSee('value="09:00"', false)->assertSee('value="16:00"', false)->assertSee('value="15:00"', false);
+        $res->assertSee('&quot;name&quot;:&quot;vehicle_soon_days&quot;', false)->assertSee('&quot;value&quot;:&quot;30&quot;', false)->assertSee('&quot;value&quot;:&quot;1000&quot;', false)->assertSee('&quot;value&quot;:&quot;09:00&quot;', false)->assertSee('&quot;value&quot;:&quot;16:00&quot;', false)->assertSee('&quot;value&quot;:&quot;15:00&quot;', false);
         $this->assertSame(7, substr_count($res->getContent(), 'name="ac_days[]"'));
         $this->assertSame(5, preg_match_all('/name="ac_days\[\]" value="[1-5]" checked/', $res->getContent()));
         $this->assertSame(0, preg_match_all('/name="ac_days\[\]" value="[67]" checked/', $res->getContent()));
@@ -77,7 +77,7 @@ class GaSettingsTest extends TestCase
         Constants::set('ga.ac.start_time', '08:30', 'ga');
         Constants::set('ga.vehicle.soon_km', 2500, 'ga');
         $res = $this->get(route('ga-settings.edit'))->assertOk();
-        $res->assertSee('value="7"', false)->assertSee('value="08:30"', false)->assertSee('value="2.500"', false);
+        $res->assertSee('&quot;value&quot;:&quot;7&quot;', false)->assertSee('&quot;value&quot;:&quot;08:30&quot;', false)->assertSee('&quot;value&quot;:&quot;2500&quot;', false);
         $this->assertSame(2, preg_match_all('/name="ac_days\[\]" value="[16]" checked/', $res->getContent()));
         $this->assertSame(0, preg_match_all('/name="ac_days\[\]" value="[2-57]" checked/', $res->getContent()));
     }
@@ -103,7 +103,7 @@ class GaSettingsTest extends TestCase
         $this->assertSame([45, 2500], [VehicleCare::soonDays(), VehicleCare::soonKm()]);
         $this->assertSame([4, 10, 14, 2, [1, 3, 6], '08:00', '12:30', '14:00'], [AcCare::washMonths(), AcCare::majorMonths(), AcCare::soonDays(), AcCare::capacity(), AcCare::visitDays(), AcCare::startTime(), AcCare::endTime(), AcCare::picNoticeTime()]);
 
-        $this->get(route('ga-settings.edit'))->assertSee('value="45"', false)->assertSee('value="2.500"', false);
+        $this->get(route('ga-settings.edit'))->assertSee('&quot;value&quot;:&quot;45&quot;', false)->assertSee('&quot;value&quot;:&quot;2500&quot;', false);
     }
 
     public function test_capacity_two_rejects_the_third_unit_of_the_same_day_and_soon_days_change_the_status(): void

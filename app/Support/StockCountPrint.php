@@ -44,7 +44,7 @@ final class StockCountPrint
         foreach ($this->counts->ordered($count)->groupBy(fn (StockCountLine $l) => (string) ($l->batch->location ?? '')) as $location => $lines) {
             $rows = $lines->values()->map(fn (StockCountLine $l, int $i) => [
                 'no' => $i + 1, 'code' => $l->batch->code, 'name' => $l->batch->name, 'batch' => $l->batch->expiry_date ? Locale::d($l->batch->expiry_date) : '—',
-                'location' => $location === '' ? '—' : $location, 'unit' => $l->batch->unit, 'system' => $this->qty($l->system_qty), 'counted' => self::BLANK, 'counter' => self::BLANK, 'note' => self::BLANK,
+                'location' => $location === '' ? '—' : $location, 'unit' => $l->batch->unit, ...($count->blind ? [] : ['system' => $this->qty($l->system_qty)]), 'counted' => self::BLANK, 'counter' => self::BLANK, 'note' => self::BLANK,
             ])->all();
             $sections[] = ['title' => $location === '' ? 'Tanpa lokasi' : 'Lokasi '.$location.(isset($names[$location]) ? ' · '.$names[$location] : ''), 'blocks' => [['type' => 'table', 'columns' => $columns, 'rows' => $rows]]];
         }

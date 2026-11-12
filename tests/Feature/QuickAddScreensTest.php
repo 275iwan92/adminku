@@ -37,13 +37,13 @@ class QuickAddScreensTest extends TestCase
 
     private function plus(string $html, string $path): int
     {
-        return substr_count($html, 'data-dl2-select-add data-url="'.$path.'"');
+        return substr_count($html, '&quot;add&quot;:{&quot;url&quot;:&quot;'.$path.'&quot;');   // DevLib 2: tombol + dibangun JS dari opsi add di konfigurasi select
     }
 
     public function test_receiving_form_has_a_supplier_plus_and_the_popup_posts_to_the_supplier_endpoint(): void
     {
         $html = $this->actingAs($this->entry)->get(route('docs.create', 'receiving'))->assertOk()
-            ->assertSee('data-dl2-sa-modal', false)->assertSee('Tambah Pemasok')->assertSee('name="contact_name"', false)->getContent();
+            ->assertSee('&quot;add&quot;:{&quot;url&quot;:&quot;/suppliers&quot;', false)->assertSee('Tambah Pemasok')->assertSee('&quot;name&quot;:&quot;contact_name&quot;', false)->getContent();
 
         $this->assertSame(1, $this->plus($html, '/suppliers'));
         $this->assertSame(1, $this->plus($html, '/recipients'));
@@ -76,7 +76,7 @@ class QuickAddScreensTest extends TestCase
         $payload = ['supplier_id' => Supplier::firstOrCreate(['code' => 'S1'], ['name' => 'S'])->id, 'lines' => [['batch_id' => $this->item->id, 'qty' => 5, 'unit_cost' => 10]]];
         $this->actingAs($this->entry)->post(route('docs.store', 'receiving'), $payload)->assertSessionHasNoErrors();
         $doc = StockDocument::latest('id')->firstOrFail();
-        $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->assertSee('data-dl2-select-add', false);   // draf masih bisa diubah
+        $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->assertSee('&quot;add&quot;:{&quot;url&quot;', false);   // draf masih bisa diubah
 
         $this->put(route('docs.update', ['receiving', $doc]), $payload + ['_action' => 'confirm'])->assertSessionHasNoErrors();
         $html = $this->get(route('docs.show', ['receiving', $doc]))->assertOk()->getContent();
@@ -89,12 +89,12 @@ class QuickAddScreensTest extends TestCase
     {
         $html = $this->actingAs($this->entry)->get(route('stock.home'))->assertOk()->assertSee('id="reorder-modal"', false)->getContent();
         $this->assertSame(1, $this->plus($html, '/suppliers'));
-        $this->assertSame(1, substr_count($html, 'data-dl2-select-add'));   // item_id tidak diberi plus
+        $this->assertSame(1, substr_count($html, '&quot;add&quot;:{'));   // item_id tidak diberi plus
 
         $group = UserGroup::create(['code' => 'ISSO', 'name' => 'Pengeluaran']);
         $group->syncAccess(['ISS' => 'rw', 'SUP' => 'ro', 'STB' => 'ro']);
         $html = $this->actingAs(User::factory()->create(['group_id' => $group->id]))->get(route('stock.home'))->assertOk()->getContent();
-        $this->assertSame(0, substr_count($html, 'data-dl2-select-add'));
+        $this->assertSame(0, substr_count($html, '&quot;add&quot;:{'));
     }
 
     public function test_recipient_form_has_a_department_plus(): void
@@ -105,27 +105,27 @@ class QuickAddScreensTest extends TestCase
     public function test_product_form_plus_buttons_follow_the_supervisor_only_masters(): void
     {
         $entry = $this->actingAs($this->entry)->get(route('products.create'))->assertOk()->getContent();
-        $this->assertSame(0, substr_count($entry, 'data-dl2-select-add'));
+        $this->assertSame(0, substr_count($entry, '&quot;add&quot;:{'));
 
         $new = $this->actingAs($this->sup)->get(route('products.create'))->assertOk()->getContent();
         $this->assertSame([1, 1, 1], [$this->plus($new, '/categories'), $this->plus($new, '/units'), $this->plus($new, '/locations')]);
-        $this->assertSame(3, substr_count($new, 'data-dl2-select-add'));
+        $this->assertSame(3, substr_count($new, '&quot;add&quot;:{'));
 
         $show = $this->get(route('products.show', $this->item->item_id))->assertOk()->getContent();
         $this->assertSame(2, $this->plus($show, '/units'));   // satuan stok + dialog Satuan masuk (pack_unit)
         $this->assertSame(1, $this->plus($show, '/locations'));
 
         $showEntry = $this->actingAs($this->entry)->get(route('products.show', $this->item->item_id))->assertOk()->getContent();
-        $this->assertSame(0, substr_count($showEntry, 'data-dl2-select-add'));
+        $this->assertSame(0, substr_count($showEntry, '&quot;add&quot;:{'));
     }
 
     public function test_filters_pickers_and_user_form_get_no_plus(): void
     {
         $this->actingAs($this->sup);
         foreach (['reports.summary', 'reports.receiving', 'reports.expiry', 'reports.adjustment', 'reports.stock-card'] as $route) {
-            $this->get(route($route))->assertOk()->assertDontSee('data-dl2-select-add', false);
+            $this->get(route($route))->assertOk()->assertDontSee('&quot;add&quot;:{', false);
         }
-        $this->actingAs(User::factory()->administrator()->create())->get(route('users.create'))->assertOk()->assertDontSee('data-dl2-select-add', false);
-        $this->get(route('units.create'))->assertOk()->assertDontSee('data-dl2-select-add', false);
+        $this->actingAs(User::factory()->administrator()->create())->get(route('users.create'))->assertOk()->assertDontSee('&quot;add&quot;:{', false);
+        $this->get(route('units.create'))->assertOk()->assertDontSee('&quot;add&quot;:{', false);
     }
 }

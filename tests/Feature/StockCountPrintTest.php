@@ -103,7 +103,7 @@ class StockCountPrintTest extends TestCase
         $preview = $this->actingAs($this->sup)->get(route('stock-counts.report', $count))->assertOk()->assertSee('Berita Acara Stok Opname')->assertSee('PRATINJAU')
             ->assertSee('Sari, Budi')->assertSee('Penghitung')->assertSee('Supervisor')->assertSee('Penanggung Jawab Gudang')->assertSee('Salah catat penerimaan')
             ->assertSee('2 batch (1 lebih · 1 kurang)')->assertSee('(dibuat saat disetujui)');
-        $this->assertSame(3, substr_count($preview->getContent(), '<i></i>'));   // tiga kotak tanda tangan: Penghitung, Supervisor, Penanggung Jawab Gudang
+        $this->assertSame(3, substr_count($preview->getContent(), '&quot;role&quot;:&quot;'));   // tiga kotak tanda tangan: Penghitung, Supervisor, Penanggung Jawab Gudang
         $this->get(route('stock-counts.show', $count))->assertSee('Pratinjau Berita Acara');
 
         $counts->approve($count, $this->sup);
