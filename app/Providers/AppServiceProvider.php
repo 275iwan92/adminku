@@ -18,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ItemLookups::register();
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Routing\Events\RouteMatched::class, fn (\Illuminate\Routing\Events\RouteMatched $e) => \App\Services\CountSchedule::beginRequest($e->request));   // memo jadwal opname hanya selama satu permintaan HTTP
+        $this->app->terminating(fn () => \App\Services\CountSchedule::endRequest());
         GeoLookup::register();
         Indonesian::register();
         Document::companyUsing(fn () => Company::kop());   // satu sumber kop semua cetakan: layar Perusahaan

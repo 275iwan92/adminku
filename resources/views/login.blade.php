@@ -8,7 +8,7 @@
 --}}
 @extends('layout', ['title' => 'Sign in', 'bodyClass' => 'sstock-bare'])
 @section('body')
-    <x-dl2::frame bg="sstock" bg-order="random" box="right" color="light" widgets="brand@top-left, clock@top-right, quote@bottom-left" quotes="motivasi.txt" :brand="config('devlib.brand.name')" :tagline="config('devlib.brand.tagline')" :logo="config('devlib.brand.logo')">
+    <x-dl2::frame :image-list="\App\Support\Wallpapers::list()" bg-order="random" box="right" color="light" widgets="brand@top-left, clock@top-right, quote@bottom-left" :quote-list="\App\Support\Wallpapers::quotes()" :brand="config('devlib.brand.name')" :tagline="config('devlib.brand.tagline')" :logo="config('devlib.brand.logo')">
         @if (session('status'))<x-dl2::alert tone="success" :message="session('status')" />@endif
         <x-dl2::login-box :config="['token' => csrf_token(), 'usernameName' => 'login']" show="brand, title, username, password, forgot, button" :forgot-url="route('password.request')" :action="route('login.attempt')" :error="$error ?? ($errors->first() ?: null)" :username="$username" :brand="config('devlib.brand.name')" :tagline="config('devlib.brand.tagline')" />
         <x-dl2::env-badge part="version" variant="loginver" :label="trim(app('devlib.version')['text'].' '.app('devlib.version')['letter'])" />

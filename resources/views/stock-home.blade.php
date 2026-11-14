@@ -45,7 +45,7 @@
                         <span></span>
                     @endif
                 </div>
-                <x-dl2::chart type="hbar" format="money" height="320px" :legend="false" title="Nilai Stok" subtitle="Per minggu"
+                <x-dl2::chart type="hbar" format="money" :height="320" :legend="false" title="Nilai Stok" subtitle="Per minggu"
                     :labels="$valuation['labels']" :series="[['name' => 'Nilai stok', 'data' => $valuation['values'], 'tone' => 'violet']]" source="rm_stockcard" />
             </div>
         @endif

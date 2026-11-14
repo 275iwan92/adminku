@@ -66,7 +66,16 @@ class StockCountPolishTest extends TestCase
 
     private function rows(string $html): Collection
     {
-        return collect(json_decode(html_entity_decode(preg_match('/data-rows="([^"]*)"/', $html, $m) ? $m[1] : '[]'), true))->keyBy('code');
+        // baris grid = "rows" di konfigurasi komponen (data-dl2-config) yang memuatnya
+        preg_match_all('/data-dl2-config="([^"]*)"/', $html, $all);
+        foreach ($all[1] as $cfg) {
+            $j = json_decode(html_entity_decode($cfg), true);
+            if (is_array($j) && isset($j['rows'])) {
+                return collect($j['rows'])->keyBy('code');
+            }
+        }
+
+        return collect();
     }
 
     public function test_large_differences_are_tinted_on_the_entry_sheet_but_never_on_a_blind_count(): void

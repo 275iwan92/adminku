@@ -77,6 +77,29 @@ final class Wallpapers
         return $done;
     }
 
+    /** Semua foto lanskap beserta kembaran tegaknya untuk imageList Frame DevLib 2 (peramban tidak membaca folder). @return list<array{src: string, portrait: ?string}> */
+    public static function list(?string $dir = null): array
+    {
+        $dir ??= self::dir();
+        $out = [];
+        foreach (glob($dir.DIRECTORY_SEPARATOR.'*.jpg') ?: [] as $file) {
+            if (self::isPortrait($file)) {
+                continue;
+            }
+            $twin = substr($file, 0, -4).'-portrait.jpg';
+            $out[] = ['src' => asset('media/bg/'.basename($dir).'/'.basename($file)), 'portrait' => file_exists($twin) ? asset('media/bg/'.basename($dir).'/'.basename($twin)) : null];
+        }
+
+        return $out;
+    }
+
+    /** Kutipan motivasi (public/media/text/motivasi.txt, satu per baris "teks | penulis", baris # diabaikan) untuk quoteList Frame. @return list<string> */
+    public static function quotes(?string $file = null): array
+    {
+        $file ??= public_path('media/text/motivasi.txt');
+
+        return is_file($file) ? array_values(array_filter(array_map('trim', file($file, FILE_IGNORE_NEW_LINES) ?: []), fn ($l) => $l !== '' && $l[0] !== '#')) : [];
+    }
     /** Alamat satu foto acak untuk layar HP: kembaran tegak bila ada, kalau tidak foto lanskapnya; null bila folder kosong. */
     public static function random(?string $dir = null): ?string
     {

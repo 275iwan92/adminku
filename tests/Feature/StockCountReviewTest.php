@@ -74,7 +74,15 @@ class StockCountReviewTest extends TestCase
         $count = $this->review();
 
         $page = $this->actingAs($this->sup)->get(route('stock-counts.show', $count))->assertOk()->assertSee('Setujui Opname')->assertSee('Kembalikan ke Penghitungan')->assertSee('Nilai Kurang');
-        $rows = collect(json_decode(html_entity_decode(preg_match('/data-rows="([^"]*)"/', $page->getContent(), $m) ? $m[1] : '[]'), true))->keyBy('code');
+        preg_match_all('/data-dl2-config="([^"]*)"/', $page->getContent(), $all);   // baris grid ada di konfigurasi komponen (rows)
+        $rows = collect();
+        foreach ($all[1] as $cfg) {
+            $j = json_decode(html_entity_decode($cfg), true);
+            if (is_array($j) && isset($j['rows'])) {
+                $rows = collect($j['rows'])->keyBy('code');
+                break;
+            }
+        }
         $this->assertSame([-2, -20, -3000, 'Besar', 'yes'], [$rows['A1']['diff'], $rows['A1']['pct'], $rows['A1']['value'], $rows['A1']['flag'], $rows['A1']['has_diff']]);   // -2 x 1.500
         $this->assertSame(['no', 0], [$rows['B1']['has_diff'], $rows['B1']['diff']]);
 

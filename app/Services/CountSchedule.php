@@ -39,9 +39,7 @@ final class CountSchedule
     /** @param  array<string, mixed>  $data  frequency (weekly|monthly), weekday (1..7), day_of_month (1..31 | last) */
     public static function save(array $data): void
     {
-        if (app()->bound('request')) {
-            request()->attributes->remove(self::MEMO);
-        }
+        self::endRequest();
         $freq = $data['frequency'] ?? null;
         if (! in_array($freq, ['weekly', 'monthly'], true)) {
             throw ValidationException::withMessages(['frequency' => 'Pilih frekuensi Mingguan atau Bulanan.']);
@@ -94,7 +92,7 @@ final class CountSchedule
     public static function state(?Carbon $today = null): array
     {
         // Satu permintaan memakai satu hasil (Beranda HP memanggil dari pengingat dan lencana menu): tanpa kueri ganda.
-        $bag = $today === null && app()->bound('request') ? request()->attributes : null;
+        $bag = $today === null ? self::memoBag() : null;
         if ($bag?->has(self::MEMO)) {
             return $bag->get(self::MEMO);
         }
@@ -102,6 +100,26 @@ final class CountSchedule
         $bag?->set(self::MEMO, $state);
 
         return $state;
+    }
+
+    // Memo hanya berlaku selama satu permintaan HTTP (ditandai saat rute cocok, dibuang saat selesai): pemanggilan di luar permintaan (tes, perintah) selalu membaca data terbaru.
+    public static function beginRequest($request): void
+    {
+        $request->attributes->set(self::MEMO.'.http', true);
+    }
+
+    public static function endRequest(): void
+    {
+        if (app()->bound('request')) {
+            foreach (['', '.available', '.http'] as $k) {
+                request()->attributes->remove(self::MEMO.$k);
+            }
+        }
+    }
+
+    private static function memoBag(): ?\Symfony\Component\HttpFoundation\ParameterBag
+    {
+        return app()->bound('request') && request()->attributes->get(self::MEMO.'.http') ? request()->attributes : null;
     }
 
     private static function compute(?Carbon $today): array
@@ -134,7 +152,7 @@ final class CountSchedule
     // Tabel opname baru ada sesudah migrasi dijalankan; Beranda dan menu tidak boleh rusak sebelum itu.
     public static function available(): bool
     {
-        $bag = app()->bound('request') ? request()->attributes : null;
+        $bag = self::memoBag();
         if ($bag?->has(self::MEMO.'.available')) {
             return $bag->get(self::MEMO.'.available');
         }

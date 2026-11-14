@@ -268,13 +268,14 @@ body.dl-on-phone .sstock-setup__tile { min-height: 64px; }
  * Output       : latar terang "Admin" #1B2545 + "KU" #14A796; latar gelap (tone light, tema dark_ / hitam_) "Admin" putih + "KU" #2DD4BF.
  * Status       : Aktif.
  */
-.dl2-brand, .sstock-brandtitle .dl2-pshell-title { --sstock-adm: #1b2545; --sstock-ku: var(--dl2-primary); }
+.dl2-brand, .sstock-brandtitle .dl2-pshell-top b { --sstock-adm: #1b2545; --sstock-ku: var(--dl2-primary); }
 .dl2-brand-light { --sstock-adm: #fff; --sstock-ku: var(--dl2-primary); }
-:is(html[data-dl2-theme^="dark_"], html[data-dl2-theme^="hitam_"]) :is(.dl2-brand-auto, .sstock-brandtitle .dl2-pshell-title) { --sstock-adm: #fff; --sstock-ku: var(--dl2-primary); }
-.dl2-brand b, .sstock-brandtitle .dl2-pshell-title { font-size: 0; }
-:is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-title)::before { content: "Admin"; color: var(--sstock-adm); }
-:is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-title)::after { content: "KU"; color: var(--sstock-ku); margin-left: -0.06em; }
-:is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-title)::before, :is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-title)::after { font-size: calc(18px * var(--ak-font-scale)); font-weight: 800; letter-spacing: 0; }
+:is(html[data-dl2-theme="dark"], html[data-dl2-theme^="dark_"], html[data-dl2-theme^="hitam_"]) :is(.dl2-brand-auto, .sstock-brandtitle .dl2-pshell-top b) { --sstock-adm: #fff; --sstock-ku: var(--dl2-primary); }
+@media (prefers-color-scheme: dark) { html:not([data-dl2-theme]) :is(.dl2-brand-auto, .sstock-brandtitle .dl2-pshell-top b) { --sstock-adm: #fff; --sstock-ku: var(--dl2-primary); } }
+.dl2-brand b, .sstock-brandtitle .dl2-pshell-top b { font-size: 0; }
+:is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-top b)::before { content: "Admin"; color: var(--sstock-adm); }
+:is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-top b)::after { content: "KU"; color: var(--sstock-ku); margin-left: -0.06em; }
+:is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-top b)::before, :is(.dl2-brand b, .sstock-brandtitle .dl2-pshell-top b)::after { font-size: calc(18px * var(--ak-font-scale)); font-weight: 800; letter-spacing: 0; }
 
 /* REMARK
  * Tujuan       : Perbaikan smartphone (potret 360-430 px): tulisan DevLib di bawah 12 px (badge, pager, kartu statistik, langkah formulir, petunjuk isian, label denah DevLib) naik ke 12 px; sasaran sentuh tombol kecil dalam isian (aa, ,00, 0), kotak "Ke halaman" pager, dan titik AC pada denah diperluas sampai >= 44 px (area sentuh lewat ::after, tampilan tidak berubah); moto di layar masuk HP dan label versi terbaca.
@@ -739,3 +740,6 @@ a.sstock-otile[data-hue]:is(:hover, :focus-visible) { box-shadow: 0 8px 20px col
 /* Judul layer Layer Menu (di samping Kembali) yang punya layar pembuka bisa diklik (title diisi skrip home). */
 .dl2-lm-crumb b[title] { cursor: pointer; border-radius: 8px; padding: 0 6px; }
 .dl2-lm-crumb b[title]:hover { background: var(--dl2-hover, rgba(127, 127, 127, .15)); }
+
+/* Label versi di bawah formulir masuk (x-dl2::env-badge variant=loginver): teks kecil redup di tengah, bukan lencana biru selebar kotak. */
+.dl2-env.is-loginver { display: block; width: auto; background: none; color: inherit; opacity: .65; font-weight: 400; font-size: 11px; text-align: center; padding: 4px 0 0; }

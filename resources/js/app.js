@@ -71,6 +71,14 @@ window.akNum = (v) => {
 (() => {
     const FA = /^(fa-(?:solid|regular|brands)\s+)?fa-[a-z0-9-]+(\s+fa-[a-z0-9-]+)*$/;
     const fix = (root) => root.querySelectorAll?.('.dl2-pic, .dl2-lm-ic, .dl2-pt-ic').forEach((el) => {
+        const bare = el.classList.contains('dl2-pic') && el.children.length === 0 && /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/.test(el.textContent.trim());   // phone-link / phone-tile membuang awalan fa-solid fa-: tinggal nama (clipboard-check)
+        if (bare) {
+            const i = document.createElement('i');
+            i.className = 'fa-solid fa-' + el.textContent.trim();
+            i.setAttribute('aria-hidden', 'true');
+            el.replaceChildren(i);
+            return;
+        }
         if (el.children.length === 0 && FA.test(el.textContent.trim())) {
             const i = document.createElement('i');
             i.className = el.textContent.trim().startsWith('fa-solid') || el.textContent.includes('fa-regular') || el.textContent.includes('fa-brands') ? el.textContent.trim() : 'fa-solid ' + el.textContent.trim();
