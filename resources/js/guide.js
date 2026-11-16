@@ -261,7 +261,7 @@ function makeTour() {
         const bar = document.createElement('div');
         bar.className = 'ug-taskbar'; bar.setAttribute('role', 'status');
         document.body.appendChild(bar);
-        const paintBar = () => { bar.innerHTML = `<b>Giliran Anda</b> klik titik oranye yang berdenyut <span>${Math.min(cur + 1, n)} dari ${n}</span>`; };
+        const paintBar = () => { bar.innerHTML = `<b>Giliran Anda</b> klik titik oranye <span>${Math.min(cur + 1, n)} dari ${n}</span>`; };
         // C: tombol Lanjut di popup = klik titik langkah ini (cadangan bila titik sulit dikenali).
         drv = driver({ ...base(), steps, showProgress: true, showButtons: ['next', 'close'], disableActiveInteraction: false,
             onNextClick: () => { hots[cur]?.onclick?.(); },
