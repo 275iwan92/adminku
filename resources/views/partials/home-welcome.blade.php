@@ -23,7 +23,7 @@
 <script>
     (() => {
         const d = document.getElementById('sstock-welcome'), key = 'adminku.welcome.{{ auth()->id() }}';
-        try { if (!d || localStorage.getItem(key)) return; } catch (e) { return; }
+        try { if (!d || localStorage.getItem(key) || new URLSearchParams(location.search).has('bantuan')) return; } catch (e) { return; }   // ?bantuan = panduan diminta: jangan tutup dengan dialog modal baru
         const off = document.getElementById('sstock-welcome-off'), save = () => { if (off.checked) try { localStorage.setItem(key, '1'); } catch (e) {} };
         // Tangkap di window (fase capture): tautan "Lihat panduan" dicegat DevLib untuk membuka tab, dan dialog modal yang tak tertutup membuat seluruh halaman tak bisa diklik.
         addEventListener('click', e => { if (e.target.closest?.('[data-welcome-close]')) { save(); d.close(); } }, true);
