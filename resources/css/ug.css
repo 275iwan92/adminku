@@ -117,6 +117,13 @@
 .ug-hot.explore { opacity: .85; pointer-events: auto; cursor: pointer; transform: scale(.6); background: #f59e0b; box-shadow: 0 0 0 3px #fff; }
 .ug-hot.explore:hover { transform: scale(.85); }
 .ug-hot.cur { opacity: 1; pointer-events: auto; cursor: pointer; transform: scale(1); background: #f59e0b; box-shadow: 0 0 0 3px #fff; animation: ug-pulse 1.4s ease-out infinite; z-index: 3; }
+/* B: tangan penunjuk bergoyang di samping titik langkah ini. */
+.ug-hot.cur::after { content: "\f25a"; font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif; font-weight: 900; position: absolute; left: 14px; top: 14px; font-size: 26px; line-height: 1; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .65), 0 0 0 #000; transform-origin: 20% 10%; animation: ug-tap 1s ease-in-out infinite; pointer-events: none; }
+@keyframes ug-tap { 0%, 100% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(-5px, -6px) rotate(-12deg); } }
+/* A: bilah tugas tetap, di atas overlay Driver (z 10000). */
+.ug-taskbar { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 10002; display: flex; gap: 8px; align-items: center; max-width: calc(100vw - 24px); padding: 8px 16px; font-size: 14px; color: #1f1300; background: #fbbf24; border: 2px solid #fff; border-radius: 99px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+.ug-taskbar span { padding: 2px 8px; font-weight: 700; background: rgba(255, 255, 255, .55); border-radius: 99px; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .ug-hot.cur::after { animation: none; } }
 .ug-hot.ok { opacity: 1; background: #16a34a; box-shadow: 0 0 0 3px #fff; transform: scale(.75); pointer-events: auto; cursor: pointer; }
 .ug-hot.ok::after { content: "\2713"; position: absolute; inset: 0; color: #fff; font-size: 14px; line-height: 26px; font-weight: 800; text-align: center; }
 @keyframes ug-pulse { 0% { box-shadow: 0 0 0 3px #fff, 0 0 0 3px rgba(245, 158, 11, .7); } 100% { box-shadow: 0 0 0 3px #fff, 0 0 0 22px rgba(245, 158, 11, 0); } }

@@ -251,13 +251,22 @@ function makeTour() {
             hots.forEach((h, i) => { h.classList.toggle('cur', i === cur); h.classList.toggle('ok', i < cur); });
             $$('[data-li]', st).forEach((li, i) => { li.classList.toggle('is-done', i < cur); li.classList.toggle('is-cur', i === cur); });
             $('[data-n]', st).textContent = cur;
+            paintBar();
         };
         const steps = hots.map((h) => ({
             element: h,
-            popover: { title: h.dataset.t, description: `${h.dataset.d}<br><span class="ug-pophint">Klik titik yang berdenyut untuk lanjut.</span>`, side: popSide(h), align: 'center' },
+            popover: { title: h.dataset.t, description: `${h.dataset.d}<br><span class="ug-pophint">Klik titik oranye yang berdenyut, atau tekan Lanjut.</span>`, side: popSide(h), align: 'center' },
         }));
-        drv = driver({ ...base(), steps, showProgress: true, showButtons: ['close'], disableActiveInteraction: false,
+        // A: bilah tugas tetap di atas layar (di atas overlay Driver) agar jelas pengguna harus bertindak, bukan menonton.
+        const bar = document.createElement('div');
+        bar.className = 'ug-taskbar'; bar.setAttribute('role', 'status');
+        document.body.appendChild(bar);
+        const paintBar = () => { bar.innerHTML = `<b>Giliran Anda</b> klik titik oranye yang berdenyut <span>${Math.min(cur + 1, n)} dari ${n}</span>`; };
+        // C: tombol Lanjut di popup = klik titik langkah ini (cadangan bila titik sulit dikenali).
+        drv = driver({ ...base(), steps, showProgress: true, showButtons: ['next', 'close'], disableActiveInteraction: false,
+            onNextClick: () => { hots[cur]?.onclick?.(); },
             onDestroyed: () => {
+                bar.remove();
                 drv = null;
                 if (finished) return;
                 reset(st); // ditutup di tengah jalan: kembali ke jelajah bebas
