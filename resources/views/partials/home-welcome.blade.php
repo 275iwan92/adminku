@@ -25,7 +25,8 @@
         const d = document.getElementById('sstock-welcome'), key = 'adminku.welcome.{{ auth()->id() }}';
         try { if (!d || localStorage.getItem(key)) return; } catch (e) { return; }
         const off = document.getElementById('sstock-welcome-off'), save = () => { if (off.checked) try { localStorage.setItem(key, '1'); } catch (e) {} };
-        d.querySelectorAll('[data-welcome-close]').forEach(b => b.addEventListener('click', () => { save(); d.close(); }));
+        // Tangkap di window (fase capture): tautan "Lihat panduan" dicegat DevLib untuk membuka tab, dan dialog modal yang tak tertutup membuat seluruh halaman tak bisa diklik.
+        addEventListener('click', e => { if (e.target.closest?.('[data-welcome-close]')) { save(); d.close(); } }, true);
         d.addEventListener('cancel', save);   // Esc: centang tetap dihormati
         d.showModal();
     })();
